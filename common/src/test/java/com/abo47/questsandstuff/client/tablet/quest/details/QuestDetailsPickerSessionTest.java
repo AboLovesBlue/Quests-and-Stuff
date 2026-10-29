@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsPickerSessionTest {
     @Test
     void typePickerUsesSingleTypedSession() {
-        TabletUiState state = contextAt(24, 36);
+        UiState state = contextAt(24, 36);
 
         QuestDetailsTransientManager.openTypePicker(state, "task_change", "task_a");
 
@@ -28,7 +28,7 @@ class QuestDetailsPickerSessionTest {
 
     @Test
     void itemSourceAndXpReplaceActivePickerSession() {
-        TabletUiState state = contextAt(12, 18);
+        UiState state = contextAt(12, 18);
 
         QuestDetailsTransientManager.openTypePicker(state, "task", "");
         QuestDetailsTransientManager.openItemSourcePicker(state, "task_item|quest_a|task_a|questsandstuff:item");
@@ -54,7 +54,7 @@ class QuestDetailsPickerSessionTest {
 
     @Test
     void closeFloatingPopupsClearsActivePickerSessionOnce() {
-        TabletUiState state = contextAt(8, 14);
+        UiState state = contextAt(8, 14);
         QuestDetailsTransientManager.openTypePicker(state, "reward", "");
 
         assertTrue(QuestDetailsTransientManager.closeFloatingPopups(state));
@@ -77,12 +77,12 @@ class QuestDetailsPickerSessionTest {
                 "questDetailsXpPickerEntryId"
         };
         for (String field : oldFields) {
-            assertThrows(NoSuchFieldException.class, () -> TabletUiState.class.getDeclaredField(field), field);
+            assertThrows(NoSuchFieldException.class, () -> UiState.class.getDeclaredField(field), field);
         }
     }
 
-    private static TabletUiState contextAt(int x, int y) {
-        TabletUiState state = new TabletUiState();
+    private static UiState contextAt(int x, int y) {
+        UiState state = new UiState();
         state.questDetails.questDetailsContextX = x;
         state.questDetails.questDetailsContextY = y;
         return state;

@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_6;
 
@@ -67,7 +67,7 @@ public final class PercentSliderControls {
                 },
                 commit
         );
-        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         if (tooltips != null && tooltips.length > 0) {
             field.setHoverTooltips(tooltips);
         }
@@ -129,7 +129,7 @@ public final class PercentSliderControls {
                 },
                 commit
         );
-        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         if (tooltips != null && tooltips.length > 0) {
             field.setHoverTooltips(tooltips);
         }

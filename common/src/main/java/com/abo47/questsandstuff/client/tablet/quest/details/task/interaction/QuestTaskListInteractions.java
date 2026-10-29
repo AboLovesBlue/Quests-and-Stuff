@@ -16,18 +16,18 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPa
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class QuestTaskListInteractions {
     private QuestTaskListInteractions() {
     }
 
-    public static void select(TabletUiState state, String kind, String id) {
+    public static void select(UiState state, String kind, String id) {
         state.questDetails.questDetailsSelectedTaskKind = QuestTaskSections.normalize(kind);
         state.questDetails.questDetailsSelectedTaskId = id == null ? "" : id;
     }
 
-    public static boolean clearSelection(TabletUiState state, String reason) {
+    public static boolean clearSelection(UiState state, String reason) {
         if (state == null) {
             return false;
         }
@@ -50,7 +50,7 @@ public final class QuestTaskListInteractions {
         return true;
     }
 
-    public static void selectAndBeginDrag(TabletUiState state, String kind, String id, double mouseX, double mouseY) {
+    public static void selectAndBeginDrag(UiState state, String kind, String id, double mouseX, double mouseY) {
         select(state, kind, id);
         state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
@@ -65,7 +65,7 @@ public final class QuestTaskListInteractions {
         state.questDetails.questDetailsTaskDragTargetIndex = -1;
     }
 
-    public static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
+    public static boolean handleDrag(Player player, UiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
         if (!QuestDetailsEditController.canEdit(state)) {
             clearDrag(state);
             return false;
@@ -94,7 +94,7 @@ public final class QuestTaskListInteractions {
         return false;
     }
 
-    public static boolean handleRelease(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind) {
+    public static boolean handleRelease(Player player, UiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind) {
         if (!QuestDetailsEditController.canEdit(state)) {
             clearDrag(state);
             return false;
@@ -128,14 +128,14 @@ public final class QuestTaskListInteractions {
         return false;
     }
 
-    public static void openRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+    public static void openRenameEditor(UiState state, String questId, String id, boolean task) {
         if (!QuestDetailsEditController.canEdit(state)) {
             return;
         }
         QuestTaskEditActions.openTaskRenameEditor(state, questId, id, task);
     }
 
-    public static boolean deleteSelected(Player player, TabletUiState state, String questId) {
+    public static boolean deleteSelected(Player player, UiState state, String questId) {
         if (!QuestDetailsEditController.canEdit(state) || state.questDetails.questDetailsSelectedTaskId.isBlank()) {
             return false;
         }
@@ -153,7 +153,7 @@ public final class QuestTaskListInteractions {
         return true;
     }
 
-    public static boolean moveSelected(Player player, TabletUiState state, String questId, int offset) {
+    public static boolean moveSelected(Player player, UiState state, String questId, int offset) {
         if (!QuestDetailsEditController.canEdit(state) || state.questDetails.questDetailsSelectedTaskId.isBlank() || offset == 0) {
             return false;
         }
@@ -168,7 +168,7 @@ public final class QuestTaskListInteractions {
         return false;
     }
 
-    static void clearDrag(TabletUiState state) {
+    static void clearDrag(UiState state) {
         state.questDetails.questDetailsTaskDragPending = false;
         state.questDetails.questDetailsTaskDragActive = false;
         state.questDetails.questDetailsTaskDragKind = "";
@@ -176,12 +176,12 @@ public final class QuestTaskListInteractions {
         state.questDetails.questDetailsTaskDragTargetIndex = -1;
     }
 
-    private static int taskInsertIndexAtY(TabletUiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
+    private static int taskInsertIndexAtY(UiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
         int scroll = "tasks".equals(kind) ? state.questDetails.questDetailsTaskScroll : state.questDetails.questDetailsRewardScroll;
         return CardDragSortUtil.insertIndexAtY(localY, listY, listBottom, scroll, QuestTaskListPanel.LIST_PAD, QuestTaskListPanel.CARD_H, QuestTaskListPanel.CARD_GAP, entries.size());
     }
 
-    private static void finishDrag(Player player, TabletUiState state, String questId, List<QuestTaskEntry> entries) {
+    private static void finishDrag(Player player, UiState state, String questId, List<QuestTaskEntry> entries) {
         String moving = state.questDetails.questDetailsTaskDragId;
         int target = Math.max(0, state.questDetails.questDetailsTaskDragTargetIndex);
         boolean task = "tasks".equals(state.questDetails.questDetailsTaskDragKind);

@@ -19,30 +19,30 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class ChapterContextMenuRows {
     private ChapterContextMenuRows() {
     }
 
-    public static List<ContextAction> actions(ChapterContextMenuLayout layout, TabletUiState state, Player player, Runnable refresh) {
+    public static List<ContextAction> actions(ChapterContextMenuLayout layout, UiState state, Player player, Runnable refresh) {
         ContextMenuSections sections = new ContextMenuSections();
         String target = layout.target();
         if (layout.hasTarget()) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", ThemeColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(tr("ui.questsandstuff.menu.rename"), () -> ChapterContextMenuActions.rename(state, target, refresh)));
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, List.of(
-                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)),
-                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeAssetIcon(state, target, refresh))
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, List.of(
+                    ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeIcon(state, target, refresh)),
+                    ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeAssetIcon(state, target, refresh))
             )));
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_CHAPTER_TEXTURE), "background", ActionTone.PRIMARY, List.of(
-                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)),
-                    ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeGameBackground(state, target, refresh))
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_CHAPTER_TEXTURE), "background", ActionTone.PRIMARY, List.of(
+                    ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeBackground(state, target, refresh)),
+                    ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ActionTone.PRIMARY, () -> ChapterContextMenuActions.changeGameBackground(state, target, refresh))
             )));
             String chapterBg = ClientQuestStateFacade.chapterBackground(target);
             if (!chapterBg.isBlank() && !"default".equals(chapterBg)) {
@@ -50,67 +50,67 @@ public final class ChapterContextMenuRows {
                 String currentMode = parsed != null ? parsed.mode() : "stretch";
                 String path = parsed != null ? parsed.path() : chapterBg;
                 List<ContextAction> modeActions = new ArrayList<>();
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"), "size", currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TranslationKeys.text("ui.questsandstuff.skin.mode_stretch"), "size", currentMode.equals("stretch") ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("stretch", path), 0);
                     refresh.run();
                 }));
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "brick-wall", currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TranslationKeys.text("ui.questsandstuff.skin.mode_tile"), "brick-wall", currentMode.equals("tile") ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY, () -> {
                     int curW = parsed != null && "tile".equals(parsed.mode()) ? parsed.leftEdge() : 0;
                     int curH = parsed != null && "tile".equals(parsed.mode()) ? parsed.rightEdge() : 0;
                     state.chapterPanel.chapterMenuOpen = false;
                     openChapterModeEditor(state, player, target, "tile", path, curW, curH, refresh);
                 }));
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"), "original_size", currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TranslationKeys.text("ui.questsandstuff.skin.mode_original_size"), "original_size", currentMode.equals("center") ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("center", path), 0);
                     refresh.run();
                 }));
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"), "dynamic", currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"), "dynamic", currentMode.equals("dynamic") ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY, () -> {
                     EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, BackgroundModes.encode("dynamic", path), 0);
                     refresh.run();
                 }));
-                modeActions.add(ContextActionFactory.action(TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"), "repeat", currentMode.equals("hrstretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY, () -> {
+                modeActions.add(ContextActionFactory.action(TranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"), "repeat", currentMode.equals("hrstretch") ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY, () -> {
                     int curL = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.leftEdge() : 0;
                     int curR = parsed != null && "hrstretch".equals(parsed.mode()) ? parsed.rightEdge() : 0;
                     state.chapterPanel.chapterMenuOpen = false;
                     openChapterModeEditor(state, player, target, "hrstretch", path, curL, curR, refresh);
                 }));
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"), "layout-dashboard", TabletColors.TEXT_PRIMARY, modeActions));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(TranslationKeys.text("ui.questsandstuff.skin.change_mode"), "layout-dashboard", ThemeColors.TEXT_PRIMARY, modeActions));
             }
         } else {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", TabletColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(tr("ui.questsandstuff.menu.new_chapter"), "add", ThemeColors.SUCCESS, () -> ChapterContextMenuActions.addChapter(state, refresh)));
             return sections.build();
         }
 
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)),
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameCompletionHudBackground(state, target, refresh))
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(tr("ui.questsandstuff.menu.text_style"), "style", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.textStyle(state, target, refresh)));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_completion_hud_background"), "completion_hud_background", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionHudBackground(state, target, refresh)),
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameCompletionHudBackground(state, target, refresh))
         )));
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)),
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameConnectionTexture(state, target, refresh))
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(tr("ui.questsandstuff.context.change_connection_texture"), "connect", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeConnectionTexture(state, target, refresh)),
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeGameConnectionTexture(state, target, refresh))
         )));
         if (chapterHasConnectionTexture(state, target)) {
             String connTexKey = "chapter:remove_conn_tex:" + target;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, tr("ui.questsandstuff.context.remove_connection_texture"), () -> ChapterContextMenuActions.removeConnectionTexture(player, state, target)));
         }
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(QuestTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
-                ContextActionFactory.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(QuestTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundGame(state, target, refresh)),
+                ContextActionFactory.action(tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> ChapterContextMenuActions.changeCompletionSoundCustom(state, target, refresh))
         )));
         boolean locked = ClientQuestStateFacade.chapterLockUntilUnlocked(target);
         boolean hidden = ClientQuestStateFacade.chapterHideUntilUnlocked(target);
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_VISIBILITY), "eye", TabletColors.INTERACTIVE, List.of(
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_VISIBILITY), "eye", ThemeColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(
                         tr(locked ? QuestTranslationKeys.CONTEXT_SHOW_CHAPTER_BEFORE_UNLOCKED : QuestTranslationKeys.CONTEXT_LOCK_CHAPTER_UNTIL_UNLOCKED),
                         locked ? "unlock_chapter" : "lock_chapter",
-                        locked ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
+                        locked ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
                         () -> ChapterContextMenuActions.setLockUntilUnlocked(player, state, target, !locked, refresh)
                 ),
                 ContextActionFactory.action(
                         tr(hidden ? QuestTranslationKeys.CONTEXT_REVEAL_CHAPTER : QuestTranslationKeys.CONTEXT_HIDE_CHAPTER_UNTIL_UNLOCKED),
                         hidden ? "eye" : "eye-off",
-                        hidden ? TabletColors.SUCCESS : TabletColors.WARNING,
+                        hidden ? ThemeColors.SUCCESS : ThemeColors.WARNING,
                         () -> ChapterContextMenuActions.setHideUntilUnlocked(player, state, target, !hidden, refresh)
                 )
         )));
@@ -133,7 +133,7 @@ public final class ChapterContextMenuRows {
         return sections.build();
     }
 
-    public static boolean click(ChapterContextMenuLayout layout, TabletUiState state, Player player, Runnable refresh, int x, int y) {
+    public static boolean click(ChapterContextMenuLayout layout, UiState state, Player player, Runnable refresh, int x, int y) {
         List<ContextAction> actions = actions(layout, state, player, refresh);
         return ContextMenuPanel.click(
                 actions,
@@ -155,7 +155,7 @@ public final class ChapterContextMenuRows {
         );
     }
 
-    private static void openChapterModeEditor(TabletUiState state, Player player, String target, String mode, String path, int left, int right, Runnable refresh) {
+    private static void openChapterModeEditor(UiState state, Player player, String target, String mode, String path, int left, int right, Runnable refresh) {
         int w = 240;
         int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         var mc = net.minecraft.client.Minecraft.getInstance();
@@ -184,7 +184,7 @@ public final class ChapterContextMenuRows {
         refresh.run();
     }
 
-    private static boolean chapterHasConnectionTexture(TabletUiState state, String target) {
+    private static boolean chapterHasConnectionTexture(UiState state, String target) {
         for (String questId : ClientQuestStateFacade.questIdsInChapter(target)) {
             CompoundTag quest = ClientQuestStateFacade.quest(questId);
             if (quest != null && quest.contains("connection_textures", Tag.TAG_COMPOUND)) {

@@ -28,11 +28,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 
@@ -40,7 +40,7 @@ final class CanvasContextQuestActions {
     private CanvasContextQuestActions() {
     }
 
-    static void addQuestActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
+    static void addQuestActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter) {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.QUEST || state.contextMenu.contextQuestId.isBlank()) {
             return;
         }
@@ -48,12 +48,12 @@ final class CanvasContextQuestActions {
         ContextMenuController.closeExclusiveSubmenus(state);
         QuestCardLayout contextQuest = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
 
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.open_quest"), "open", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
             openQuestDetails(canvasViewport, state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=open_quest quest={}", state.contextMenu.contextQuestId);
         })));
         if (CanvasContextMenuSupport.hasOtherQuest(canvasViewport, state.contextMenu.contextQuestId)) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", TabletColors.SUCCESS, withCleanup(canvasViewport, state, () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.connect_to"), "connect", ThemeColors.SUCCESS, withCleanup(canvasViewport, state, () -> {
                 state.canvas.connectSourceQuestId = state.contextMenu.contextQuestId;
                 state.canvas.connectSourceQuestIds.clear();
                 if (state.canvas.canvasSelection.questIds().contains(state.contextMenu.contextQuestId) && state.canvas.canvasSelection.questIds().size() > 1) {
@@ -66,18 +66,18 @@ final class CanvasContextQuestActions {
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connect_to sources={}", state.canvas.connectSourceQuestIds);
             })));
         }
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_TITLE), "rename", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_TITLE), "rename", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
             EditorQuestCommandClient.beginQuestTitleChange(state, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_title quest={}", state.contextMenu.contextQuestId);
         })));
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.menu.change_icon"), "icon", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_ICON), "icon", ThemeColors.INTERACTIVE, () -> {
                     EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.quest(state.contextMenu.contextQuestId));
                     ContextMenuController.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon quest={}", state.contextMenu.contextQuestId);
                     canvasViewport.refresh();
                 }),
-                ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_IMAGE), "image", ThemeColors.INTERACTIVE, () -> {
                     AssetPickerOpenActions.openQuestAssetIconPicker(state, state.contextMenu.contextQuestId);
                     ContextMenuController.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_icon_asset quest={}", state.contextMenu.contextQuestId);
@@ -92,7 +92,7 @@ final class CanvasContextQuestActions {
         addQuestBackgroundActions(sections, canvasViewport, state, player, questTag);
 
         if (CanvasGridFitController.canFitQuestToGrid(state, contextQuest)) {
-            sections.add(ContextMenuSection.ARRANGE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+            sections.add(ContextMenuSection.ARRANGE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
                 boolean changed = CanvasGridFitController.fitQuestToGrid(player, state, contextQuest);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=quest id={} changed={}", state.contextMenu.contextQuestId, changed);
             })));
@@ -120,7 +120,7 @@ final class CanvasContextQuestActions {
             })));
         }
         addQuestCopyAndDeleteActions(sections, canvasViewport, state, player);
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ThemeColors.INTERACTIVE, () -> {
             ContextMenuController.close(state);
             ContextMenuController.clearDeleteConfirm(state);
             boolean saved = CanvasBlueprintController.saveQuestWithNotice(canvasViewport, state, state.contextMenu.contextQuestId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
@@ -129,9 +129,9 @@ final class CanvasContextQuestActions {
         }));
     }
 
-    private static void addQuestBackgroundActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+    private static void addQuestBackgroundActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
                     AssetPickerOpenActions.openQuestBackgroundPicker(
                             state,
                             state.contextMenu.contextQuestId,
@@ -140,7 +140,7 @@ final class CanvasContextQuestActions {
                     );
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_quest_background quest={}", state.contextMenu.contextQuestId);
                 })),
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                     IconPickerOpenActions.openQuestGameTexturePicker(
                             state,
                             state.contextMenu.contextQuestId,
@@ -161,16 +161,16 @@ final class CanvasContextQuestActions {
         addCompletionHudBackgroundActions(sections, canvasViewport, state, player, questTag);
     }
 
-    private static void addCompletionSoundActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_GAME_SOUND), "audio-lines", TabletColors.INTERACTIVE, () -> {
+    private static void addCompletionSoundActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, CompoundTag questTag) {
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_GAME_SOUND), "audio-lines", ThemeColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
                     SoundPickerOpenActions.openQuestGameSoundPicker(state, state.contextMenu.contextQuestId, sound);
                     ContextMenuController.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=completion_sound_game quest={} sound={}", state.contextMenu.contextQuestId, sound);
                     canvasViewport.refresh();
                 }),
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_CUSTOM_SOUND), "audio-lines", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_CUSTOM_SOUND), "audio-lines", ThemeColors.INTERACTIVE, () -> {
                     String sound = questTag.getString("completion_sound");
                     SoundPickerOpenActions.openQuestCustomCompletionSoundPicker(state, state.contextMenu.contextQuestId, sound);
                     ContextMenuController.closeExclusiveSubmenus(state);
@@ -180,14 +180,14 @@ final class CanvasContextQuestActions {
         )));
     }
 
-    private static void addCompletionHudBackgroundActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addCompletionHudBackgroundActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
         String currentBackground = questTag == null ? "" : questTag.getString("completion_hud_background");
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
                     AssetPickerOpenActions.openQuestCompletionHudBackgroundPicker(state, state.contextMenu.contextQuestId, currentBackground);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background quest={}", state.contextMenu.contextQuestId);
                 })),
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                     IconPickerOpenActions.openQuestCompletionHudGameTexturePicker(state, state.contextMenu.contextQuestId);
                     ContextMenuController.closeExclusiveSubmenus(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_completion_hud_background_game quest={}", state.contextMenu.contextQuestId);
@@ -203,10 +203,10 @@ final class CanvasContextQuestActions {
         }
     }
 
-    private static void openQuestDetails(CanvasViewport canvasViewport, TabletUiState state) {
+    private static void openQuestDetails(CanvasViewport canvasViewport, UiState state) {
         QuestCardLayout card = canvasViewport.cardLookup().get(state.contextMenu.contextQuestId);
-        int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
-        int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
+        int viewportScreenX = WidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+        int viewportScreenY = WidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
         if (card == null) {
             QuestDetailsWindow.openAtSource(
                     state,
@@ -228,34 +228,34 @@ final class CanvasContextQuestActions {
         );
     }
 
-    private static void addQuestPrerequisiteActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_PREREQUISITES_MANAGER), "share-2", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+    private static void addQuestPrerequisiteActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, CompoundTag questTag) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_PREREQUISITES_MANAGER), "share-2", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
             AppOpenActions.openPrerequisitesManager(state, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={}", state.contextMenu.contextQuestId);
         })));
     }
 
-    private static void addQuestBehaviorActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addQuestBehaviorActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
         List<ContextAction> behaviorActions = new ArrayList<>();
         addQuestRepeatableAction(behaviorActions, canvasViewport, state, player, questTag);
         addQuestLockAction(behaviorActions, canvasViewport, state, player, questTag);
         addQuestHiddenAction(behaviorActions, canvasViewport, state, player, questTag);
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BEHAVIOR), "wrench", TabletColors.INTERACTIVE, behaviorActions));
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_BEHAVIOR), "wrench", ThemeColors.INTERACTIVE, behaviorActions));
     }
 
-    private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addQuestRepeatableAction(List<ContextAction> actions, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
         boolean repeatable = questTag.getBoolean("repeatable");
         actions.add(new ContextAction(
                 CanvasContextMenuController.tr(repeatable ? QuestTranslationKeys.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestTranslationKeys.CONTEXT_MAKE_QUEST_REPEATABLE),
                 repeatable ? "repeat-off" : "repeat",
-                repeatable ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
+                repeatable ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
                 withCleanup(canvasViewport, state, () -> {
                     EditorQuestCommandClient.setQuestRepeatable(player, state.contextMenu.contextQuestId, !repeatable);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_repeatable quest={} enabled={}", state.contextMenu.contextQuestId, !repeatable);
                 })));
     }
 
-    private static void addQuestLockAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addQuestLockAction(List<ContextAction> actions, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
         String hiddenMode = questTag.getString("hidden_mode");
         String locked = QuestVisibilityMode.LOCKED.serializedName();
         String prerequisitesVisible = QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName();
@@ -263,46 +263,46 @@ final class CanvasContextQuestActions {
         actions.add(new ContextAction(
                 CanvasContextMenuController.tr(lockUntilUnlocked ? QuestTranslationKeys.CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED : QuestTranslationKeys.CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED),
                 lockUntilUnlocked ? "unlock_quest" : "lock_quest",
-                lockUntilUnlocked ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
+                lockUntilUnlocked ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
                 withCleanup(canvasViewport, state, () -> {
                     EditorQuestCommandClient.setQuestHiddenMode(player, state.contextMenu.contextQuestId, lockUntilUnlocked ? prerequisitesVisible : locked);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_lock_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !lockUntilUnlocked);
                 })));
     }
 
-    private static void addQuestHiddenAction(List<ContextAction> actions, CanvasViewport canvasViewport, TabletUiState state, Player player, CompoundTag questTag) {
+    private static void addQuestHiddenAction(List<ContextAction> actions, CanvasViewport canvasViewport, UiState state, Player player, CompoundTag questTag) {
         boolean hidden = questTag.getBoolean("visual_hidden");
         actions.add(new ContextAction(
                 CanvasContextMenuController.tr(hidden ? QuestTranslationKeys.CONTEXT_REVEAL_QUEST : QuestTranslationKeys.CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED),
                 hidden ? "eye" : "eye-off",
-                hidden ? TabletColors.SUCCESS : TabletColors.WARNING,
+                hidden ? ThemeColors.SUCCESS : ThemeColors.WARNING,
                 withCleanup(canvasViewport, state, () -> {
                     EditorQuestCommandClient.setQuestVisualHidden(player, state.contextMenu.contextQuestId, !hidden);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=quest_hide_until_unlocked quest={} enabled={}", state.contextMenu.contextQuestId, !hidden);
                 })));
     }
 
-    private static void addQuestArrangeActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
+    private static void addQuestArrangeActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
         List<ContextAction> arrangeActions = new ArrayList<>();
         String layerKey = CanvasLayerOrdering.questKey(state.contextMenu.contextQuestId);
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, true)) {
-            arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
+            arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ThemeColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
                 CanvasLayerMutations.moveQuestLayer(state, selectedChapter, state.contextMenu.contextQuestId, true);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=quest id={}", state.contextMenu.contextQuestId);
             })));
         }
         if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, false)) {
-            arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", TabletColors.TEXT_MUTED, withCleanup(canvasViewport, state, () -> {
+            arrangeActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ThemeColors.TEXT_MUTED, withCleanup(canvasViewport, state, () -> {
                 CanvasLayerMutations.moveQuestLayer(state, selectedChapter, state.contextMenu.contextQuestId, false);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=quest id={}", state.contextMenu.contextQuestId);
             })));
         }
         if (!arrangeActions.isEmpty()) {
-            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ORDER), "arrow-up-down", TabletColors.INTERACTIVE, arrangeActions));
+            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_ORDER), "arrow-up-down", ThemeColors.INTERACTIVE, arrangeActions));
         }
     }
 
-    private static void addQuestCopyAndDeleteActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+    private static void addQuestCopyAndDeleteActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
         if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
             sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
                 CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
@@ -312,14 +312,14 @@ final class CanvasContextQuestActions {
         }
         if (CanvasContextDeleteController.canDeleteContext(state)) {
             String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
                 CanvasContextDeleteController.runDeleteAction(player, state);
                 canvasViewport.refresh();
             }));
         }
     }
 
-    private static Runnable withCleanup(CanvasViewport canvasViewport, TabletUiState state, Runnable action) {
+    private static Runnable withCleanup(CanvasViewport canvasViewport, UiState state, Runnable action) {
         return () -> {
             action.run();
             ContextMenuController.clearDeleteConfirm(state);

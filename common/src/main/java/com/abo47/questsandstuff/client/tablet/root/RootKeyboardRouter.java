@@ -1,0 +1,507 @@
+package com.abo47.questsandstuff.client.tablet.root;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.mojang.blaze3d.platform.Window;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Keybindings;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Lifecycle;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
+import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.asset.AssetPickerModal;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+
+final class RootKeyboardRouter {
+    private RootKeyboardRouter() {
+    }
+
+    static boolean keyPressed(
+            RootWidget root,
+            UiState state,
+            WidgetGroup modalLayer,
+            WidgetGroup frontWindowLayer,
+            CanvasViewport canvasViewport,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            KeyDelegate selfKey,
+            int keyCode,
+            int scanCode,
+            int modifiers
+    ) {
+        if (state.root.editorPopup != null) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                state.root.editorPopup = null;
+                state.root.editorPopupOpen = false;
+                refresher.run();
+                return true;
+            }
+            return state.root.editorPopup.keyPressed(keyCode, scanCode, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                state.root.skinModeEditorOpen = false;
+                root.closeContextMenu();
+                refresher.run();
+                return true;
+            }
+            return root.getContextMenuRoot().keyPressed(keyCode, scanCode, modifiers);
+        }
+        boolean textInputActive = RootWindowController.isTextInputActive(state, root);
+        if (!textInputActive && !root.isAnyModalOpen() && root.isFrontWindowOpen() && handleQuestDetailsRecipeViewerShortcut(state, keyCode, scanCode)) {
+            return true;
+        }
+        if (!textInputActive && !root.isAnyModalOpen() && handleGizmoModeShortcut(state, refresher, keyCode, scanCode)) {
+            return true;
+        }
+        if (!textInputActive && root.isAnyModalOpen() && modalLayer != null && modalLayer.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (!textInputActive && (Keybindings.openUiMatches(keyCode, scanCode)
+                || Keybindings.openQuestsUiMatches(keyCode, scanCode)
+                || Keybindings.openTeamsUiMatches(keyCode, scanCode)
+                || Keybindings.openChunkclaimerUiMatches(keyCode, scanCode))) {
+            Lifecycle.closeTabletUi(state, true, "keybind");
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (root.isContextMenuOpen()) {
+                root.closeContextMenu();
+            }
+
+            if (state.modal.modalWindowClosing) {
+                ModalCloseActions.closeAllImmediately(state);
+            }
+            if (state.questDetails.questDetailsClosing) {
+                QuestDetailsWindow.finishCloseAnimation(state);
+            }
+
+            boolean closedAnything = false;
+
+            if (state.root.skinEditMode) {
+                state.root.skinEditSelectedTarget = "";
+                state.root.skinEditMode = false;
+                root.closeContextMenu();
+                closedAnything = true;
+            }
+
+            int safety = 0;
+            while (!closedAnything && safety < 50 && RootWindowController.closeFrontmostWindow(state)) {
+                closedAnything = true;
+                safety++;
+            }
+            if (safety >= 50) {
+                QuestsAndStuffMod.debugLog("[QnS:UI] escape: closeFrontmostWindow hit safety limit, forcing clear");
+                forceClearStuckStates(state);
+            }
+
+            if (cancelInteractionStates(state)) {
+                closedAnything = true;
+            }
+
+            QuestsAndStuffMod.debugLog("[QnS:UI] escape: closedAnything={}, skinEditMode={}, questDetailsOpen={}, modalOpen={}",
+                    closedAnything, state.root.skinEditMode, state.questDetails.questDetailsOpen, state.modal.modalWindowClosing);
+
+            if (closedAnything) {
+                UiFactory.persistSkinState(state);
+                refresher.run();
+                return true;
+            }
+
+            Lifecycle.closeTabletUi(state, false, "escape");
+            return true;
+        }
+        if (root.isAnyModalOpen()) {
+            if (!RootWindowController.isTextInputActive(state, root) && AssetPickerModal.handleKeyPressed(state, refresher, keyCode)) {
+                return true;
+            }
+            if (modalLayer != null) {
+                modalLayer.keyPressed(keyCode, scanCode, modifiers);
+            }
+            return true;
+        }
+        if (root.isFrontWindowOpen()) {
+            if (Keybindings.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
+                return toggleSkinEdit(root, state, refresher);
+            }
+            return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
+        }
+        if (!Widget.isCtrlDown() && Keybindings.quickConnectMatches(keyCode, scanCode)) {
+            state.canvas.quickConnectHeld = true;
+        }
+        if (handleRenameCommit(root, state, refresher, keyCode)) {
+            return true;
+        }
+        if (!RootWindowController.isTextInputActive(state, root)
+                && ShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, Widget.isCtrlDown(), Widget.isShiftDown())) {
+            refresher.run();
+            return true;
+        }
+        if (handleCanvasClipboardShortcut(root, state, canvasViewport, refresher, keyCode)) {
+            return true;
+        }
+        if (selfKey.invoke(keyCode, scanCode, modifiers)) {
+            return true;
+        }
+        if (!textInputActive && keyCode == GLFW.GLFW_KEY_Z && !Widget.isCtrlDown()) {
+            if (state.canvas.canvasZoom != 1.0f) {
+                CanvasCameraController.resetZoom(state, true);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas zoom reset key=Z");
+                refresher.run();
+            }
+            return true;
+        }
+        if (!textInputActive && state.root.editorAvailable && Widget.isCtrlDown() && keyCode == GLFW.GLFW_KEY_E) {
+            state.root.editMode = !state.root.editMode;
+            state.root.canEdit = state.root.editorAvailable && state.root.editMode;
+            UiFactory.persistEditMode(state.root.editMode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] editor mode shortcut enabled={}", state.root.editMode);
+            refresher.run();
+            return true;
+        }
+        if (!textInputActive && Keybindings.toggleSkinEditMatches(keyCode, scanCode)) {
+            return toggleSkinEdit(root, state, refresher);
+        }
+        if (!state.root.canEdit || !Widget.isCtrlDown()) {
+            return false;
+        }
+        return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
+    }
+
+    private static boolean toggleSkinEdit(RootWidget root, UiState state, Runnable refresher) {
+        state.root.skinEditMode = !state.root.skinEditMode;
+        state.root.skinEditSelectedTarget = "";
+        root.closeContextMenu();
+        UiFactory.persistSkinState(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
+        refresher.run();
+        return true;
+    }
+
+    private static void forceClearStuckStates(UiState state) {
+        state.canvas.toolsMenuOpen = false;
+        state.canvas.toolsMenuClosing = false;
+        state.canvas.toolsGridSizeMenuOpen = false;
+        state.canvas.toolsGridOpacityMenuOpen = false;
+        state.chapterPanel.chapterTextMenuOpen = false;
+        state.chapterPanel.chapterMenuOpen = false;
+        state.pickers.assetContextOpen = false;
+        state.pickers.assetRenameOpen = false;
+        state.pickers.colorPaletteContextOpen = false;
+        state.contextMenu.contextMenuOpen = false;
+        ContextMenuController.clearDeleteConfirm(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] forceClearStuckStates done");
+    }
+
+    private static boolean keyPressedForFrontWindow(
+            RootWidget root,
+            UiState state,
+            WidgetGroup frontWindowLayer,
+            CanvasViewport canvasViewport,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode,
+            int scanCode,
+            int modifiers
+    ) {
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        if (!RootWindowController.isTextInputActive(state, root)
+                && ShortcutActions.handleGlobal(root.resolvePlayer(), state, canvasViewport, keyCode, scanCode, Widget.isCtrlDown(), Widget.isShiftDown())) {
+            refresher.run();
+            return true;
+        }
+        if (handleQuestDetailsClipboardShortcut(root, state, refresher, keyCode)) {
+            return true;
+        }
+        if (handleQuestDetailsHistoryShortcut(root, state, refresher, undoAction, redoAction, keyCode)) {
+            return true;
+        }
+        String renameDraftBefore = state.questDetails.questDetailsTaskRenameDraft;
+        if (frontWindowLayer != null) {
+            frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
+        }
+        if (QuestTaskListPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
+            refresher.run();
+        }
+        return true;
+    }
+
+    private static boolean handleRenameCommit(RootWidget root, UiState state, Runnable refresher, int keyCode) {
+        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
+            return false;
+        }
+        if (UiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
+            String typed = UiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
+            String created = UiFactory.uniqueChapterName(typed.isBlank() ? tr("ui.questsandstuff.chapter.default_name") : typed, "");
+            UiFactory.runChapterAction(root.resolvePlayer(), state, "create", created, created, 0);
+            state.root.selectedChapter = created;
+            state.chapterPanel.chapterDraft = created;
+            state.chapterPanel.chapterDraftName = created;
+            state.canvas.pendingChapterRename = "";
+            refresher.run();
+            return true;
+        }
+        if (!state.canvas.pendingChapterRename.isBlank()) {
+            String from = state.canvas.pendingChapterRename;
+            String typed = UiFactory.sanitizeChapterName(state.chapterPanel.chapterDraftName);
+            String renamed = UiFactory.uniqueChapterName(typed, from);
+            if (!renamed.equals(from)) {
+                UiFactory.runChapterAction(root.resolvePlayer(), state, "rename", from, renamed, 0);
+            }
+            state.root.selectedChapter = renamed;
+            state.chapterPanel.chapterDraft = renamed;
+            state.chapterPanel.chapterDraftName = renamed;
+            state.canvas.pendingChapterRename = "";
+            refresher.run();
+            return true;
+        }
+        if (!state.questDetails.pendingQuestTitleChangeId.isBlank() && EditorQuestCommandClient.commitQuestTitleChange(root.resolvePlayer(), state)) {
+            refresher.run();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean handleEditorShortcut(UiState state, Runnable refresher, Runnable undoAction, Runnable redoAction, int keyCode) {
+        boolean changed = switch (keyCode) {
+            case GLFW.GLFW_KEY_1 -> {
+                state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_2 -> {
+                state.canvas.mouseMode = CanvasMouseMode.DRAG_CANVAS;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_3 -> {
+                state.canvas.mouseMode = CanvasMouseMode.ADD_QUEST;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_4 -> {
+                state.canvas.mouseMode = CanvasMouseMode.CONNECT_QUESTS;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_G -> {
+                state.canvas.gridEnabled = !state.canvas.gridEnabled;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_H -> {
+                state.canvas.gridSnapLocked = !state.canvas.gridSnapLocked;
+                yield true;
+            }
+            case GLFW.GLFW_KEY_Z -> {
+                undoAction.run();
+                yield true;
+            }
+            case GLFW.GLFW_KEY_Y -> {
+                redoAction.run();
+                yield true;
+            }
+            default -> false;
+        };
+
+        if (changed) {
+            refresher.run();
+        }
+        return changed;
+    }
+
+    private static boolean handleQuestDetailsRecipeViewerShortcut(UiState state, int keyCode, int scanCode) {
+        double[] mouse = currentMousePosition();
+        return QuestTaskListPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
+    }
+
+    private static boolean handleGizmoModeShortcut(UiState state, Runnable refresher, int keyCode, int scanCode) {
+        if (!state.root.canEdit && !QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        CanvasTransformMode mode = null;
+        if (Keybindings.gizmoMoveMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.MOVE;
+        } else if (Keybindings.gizmoResizeMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.RESIZE;
+        } else if (Keybindings.gizmoRotateMatches(keyCode, scanCode)) {
+            mode = CanvasTransformMode.ROTATE;
+        }
+        if (mode == null) {
+            return false;
+        }
+        CanvasTransformGizmoAxis.setMode(state, mode);
+        QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo shortcut mode={}", mode.id);
+        refresher.run();
+        return true;
+    }
+
+    private static boolean handleCanvasClipboardShortcut(RootWidget root, UiState state, CanvasViewport canvasViewport, Runnable refresher, int keyCode) {
+        if (canvasViewport == null || !state.root.canEdit || !Widget.isCtrlDown() || RootWindowController.isTextInputActive(state, root)) {
+            return false;
+        }
+        if (keyCode == GLFW.GLFW_KEY_C) {
+            if (CanvasClipboardCopy.copySelectionToClipboard(canvasViewport, state)) {
+                refresher.run();
+            }
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_V) {
+            if (CanvasClipboardPaste.pasteNearSelectionOrViewportCenter(root.resolvePlayer(), state, canvasViewport)) {
+                refresher.run();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private static double[] currentMousePosition() {
+        Minecraft minecraft = Minecraft.getInstance();
+        Window window = minecraft.getWindow();
+        double mouseX = minecraft.mouseHandler.xpos() * window.getGuiScaledWidth() / window.getScreenWidth();
+        double mouseY = minecraft.mouseHandler.ypos() * window.getGuiScaledHeight() / window.getScreenHeight();
+        return new double[]{mouseX, mouseY};
+    }
+
+    private static boolean handleQuestDetailsClipboardShortcut(RootWidget root, UiState state, Runnable refresher, int keyCode) {
+        if (!QuestDetailsEditController.canEdit(state) || !Widget.isCtrlDown() || RootWindowController.isTextInputActive(state, root)) {
+            return false;
+        }
+        if (QuestDetailsWindow.handleClipboardShortcut(root.resolvePlayer(), state, keyCode)) {
+            refresher.run();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean handleQuestDetailsHistoryShortcut(
+            RootWidget root,
+            UiState state,
+            Runnable refresher,
+            Runnable undoAction,
+            Runnable redoAction,
+            int keyCode
+    ) {
+        if (!QuestDetailsEditController.canEdit(state) || !Widget.isCtrlDown() || RootWindowController.isTextInputActive(state, root)) {
+            return false;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Z) {
+            undoAction.run();
+            refresher.run();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_Y) {
+            redoAction.run();
+            refresher.run();
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean cancelInteractionStates(UiState state) {
+        if (!state.canvas.connectSourceQuestId.isBlank() || !state.canvas.connectSourceQuestIds.isEmpty()) {
+            state.canvas.connectSourceQuestId = "";
+            state.canvas.connectSourceQuestIds.clear();
+            state.canvas.connectExclusiveChoiceId = "";
+            state.canvas.quickConnectExclusiveChoiceId = "";
+            return true;
+        }
+        if (state.canvas.blueprintPlacement.active()) {
+            state.canvas.blueprintPlacement.cancel();
+            state.canvas.blueprintPlacement.clearUseLast();
+            return true;
+        }
+        if (state.canvas.canvasSelection.hasAny() || state.canvas.selectionBoundsVisible) {
+            state.canvas.canvasSelection.clear();
+            state.canvas.selectionBoundsVisible = false;
+            return true;
+        }
+        if (ShortcutActions.cancelTransient(state)) {
+            return true;
+        }
+        return false;
+    }
+
+    static boolean keyReleased(RootWidget root, UiState state, Runnable refresher, KeyDelegate selfKeyRelease, int keyCode, int scanCode, int modifiers) {
+        if (state.root.editorPopup != null) {
+            return state.root.editorPopup.keyReleased(keyCode, scanCode, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            return root.getContextMenuRoot().keyReleased(keyCode, scanCode, modifiers);
+        }
+        if (Keybindings.quickConnectMatches(keyCode, scanCode)) {
+            state.canvas.quickConnectHeld = false;
+            state.canvas.quickConnectSourceQuestId = "";
+            state.canvas.quickConnectExclusiveChoiceId = "";
+            refresher.run();
+            return true;
+        }
+        if (Keybindings.useLastBlueprintMatches(keyCode, scanCode)) {
+            if (CanvasBlueprintController.endUseLastPlacement(state)) {
+                refresher.run();
+            }
+            return true;
+        }
+        return selfKeyRelease.invoke(keyCode, scanCode, modifiers);
+    }
+
+    static boolean charTyped(RootWidget root, UiState state, WidgetGroup modalLayer, WidgetGroup frontWindowLayer, Runnable refresher, CharTypedDelegate selfCharTyped, char c, int modifiers) {
+        if (state.root.editorPopup != null) {
+            return state.root.editorPopup.charTyped(c, modifiers);
+        }
+        if (state.root.skinEditMode && state.root.skinModeEditorOpen && root.isContextMenuOpen()) {
+            return root.getContextMenuRoot().charTyped(c, modifiers);
+        }
+        if (root.isAnyModalOpen()) {
+            if (modalLayer != null) {
+                modalLayer.charTyped(c, modifiers);
+            }
+            return true;
+        }
+        if (root.isFrontWindowOpen()) {
+            String renameDraftBefore = state.questDetails.questDetailsTaskRenameDraft;
+            if (frontWindowLayer != null) {
+                frontWindowLayer.charTyped(c, modifiers);
+            }
+            if (QuestTaskListPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
+                refresher.run();
+            }
+            return true;
+        }
+        return selfCharTyped.invoke(c, modifiers);
+    }
+
+    private static String tr(String key, Object... args) {
+        return I18n.get(key, args);
+    }
+
+    @FunctionalInterface
+    interface KeyDelegate {
+        boolean invoke(int keyCode, int scanCode, int modifiers);
+    }
+
+    @FunctionalInterface
+    interface CharTypedDelegate {
+        boolean invoke(char c, int modifiers);
+    }
+}

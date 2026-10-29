@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -18,20 +18,20 @@ final class CanvasSmartSnapper {
     private CanvasSmartSnapper() {
     }
 
-    static CanvasSnapEngine.Bounds boundsForImage(TabletUiState state, CanvasImageLayer image) {
+    static CanvasSnapEngine.Bounds boundsForImage(UiState state, CanvasImageLayer image) {
         return CanvasSnapBounds.forImage(image);
     }
 
-    static CanvasSnapEngine.Bounds boundsForText(TabletUiState state, CanvasTextLayer text) {
+    static CanvasSnapEngine.Bounds boundsForText(UiState state, CanvasTextLayer text) {
         return CanvasSnapBounds.forText(text);
     }
 
-    static CanvasSnapEngine.Bounds boundsForExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+    static CanvasSnapEngine.Bounds boundsForExclusiveChoice(UiState state, CanvasExclusiveChoice ec) {
         return CanvasSnapBounds.forExclusiveChoice(ec);
     }
 
     static CanvasSnapEngine.SnapResult snap(
-            TabletUiState state,
+            UiState state,
             CanvasSnapEngine.Bounds moving,
             List<QuestCardLayout> cards,
             String chapter,
@@ -43,7 +43,7 @@ final class CanvasSmartSnapper {
     }
 
     static CanvasSnapEngine.SnapResult snap(
-            TabletUiState state,
+            UiState state,
             CanvasSnapEngine.Bounds moving,
             List<QuestCardLayout> cards,
             String chapter,
@@ -75,7 +75,7 @@ final class CanvasSmartSnapper {
     }
 
     private static List<CanvasSnapEngine.Bounds> snapTargets(
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             String chapter,
             Set<String> movingQuestIds,
@@ -110,7 +110,7 @@ final class CanvasSmartSnapper {
         return targets;
     }
 
-    private static void showGuides(TabletUiState state, CanvasSnapEngine.SnapResult result) {
+    private static void showGuides(UiState state, CanvasSnapEngine.SnapResult result) {
         if (result.guideXVisible()) {
             state.canvas.snapGuideX = CanvasGeometry.screenX(state, result.guideX());
             state.canvas.snapGuideXVisible = true;
@@ -121,7 +121,7 @@ final class CanvasSmartSnapper {
         }
     }
 
-    private static int snapThresholdLogical(TabletUiState state) {
+    private static int snapThresholdLogical(UiState state) {
         float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int screenThreshold = Math.max(1, Math.round(5.0f / zoom));
         if (!state.canvas.gridSnapLocked) {

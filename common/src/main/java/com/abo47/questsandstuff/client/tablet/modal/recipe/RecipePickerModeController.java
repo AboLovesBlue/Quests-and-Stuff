@@ -3,17 +3,17 @@ package com.abo47.questsandstuff.client.tablet.modal.recipe;
 import net.minecraft.network.chat.Component;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class RecipePickerModeController {
     private RecipePickerModeController() {
     }
 
-    public static RecipePickerMode mode(TabletUiState state) {
+    public static RecipePickerMode mode(UiState state) {
         return state == null ? RecipePickerMode.ITEMS : RecipePickerMode.safe(state.pickers.recipeMode);
     }
 
-    public static ContentKind contentKind(TabletUiState state) {
+    public static ContentKind contentKind(UiState state) {
         return contentKind(mode(state));
     }
 
@@ -25,7 +25,7 @@ public final class RecipePickerModeController {
         };
     }
 
-    public static String setSearch(TabletUiState state, String value) {
+    public static String setSearch(UiState state, String value) {
         if (state == null) {
             return "";
         }
@@ -34,12 +34,12 @@ public final class RecipePickerModeController {
         return state.pickers.recipeSearch;
     }
 
-    public static RecipePickerMode cycle(TabletUiState state, int direction) {
+    public static RecipePickerMode cycle(UiState state, int direction) {
         RecipePickerMode.cycle(state, direction);
         return mode(state);
     }
 
-    public static int cycleIndex(TabletUiState state) {
+    public static int cycleIndex(UiState state) {
         return RecipePickerMode.cycleIndex(mode(state));
     }
 
@@ -51,7 +51,7 @@ public final class RecipePickerModeController {
         return RecipePickerMode.iconAt(index);
     }
 
-    public static Component[] tooltip(TabletUiState state) {
+    public static Component[] tooltip(UiState state) {
         return mode(state).tooltip(state == null ? "" : state.pickers.recipeSearch);
     }
 

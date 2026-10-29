@@ -5,7 +5,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,7 +35,7 @@ class SettingsTabDescriptorsTest {
 
     @Test
     void canvasHudAnimationAndDebugTabsExposeOptionDescriptors() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertIterableEquals(
                 List.of(
@@ -75,7 +75,7 @@ class SettingsTabDescriptorsTest {
 
     @Test
     void chunkClaimsTabExposesProtectionAndCapOptions() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertIterableEquals(
                 List.of(
@@ -102,7 +102,7 @@ class SettingsTabDescriptorsTest {
 
     @Test
     void descriptorsCarryRowKindAndValueMetadata() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         SettingsOptionDescriptor hudAction = option(SettingsTabDescriptors.HUD, state, "editHudLayout");
         assertTrue(hudAction.isAction());
@@ -128,7 +128,7 @@ class SettingsTabDescriptorsTest {
                 .toList();
     }
 
-    private static SettingsOptionDescriptor option(int tab, TabletUiState state, String id) {
+    private static SettingsOptionDescriptor option(int tab, UiState state, String id) {
         return SettingsTabDescriptors.descriptor(tab).options(state).stream()
                 .filter(option -> option.id().equals(id))
                 .findFirst()

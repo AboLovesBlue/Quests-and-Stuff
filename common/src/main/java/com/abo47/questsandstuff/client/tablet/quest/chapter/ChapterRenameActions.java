@@ -4,8 +4,8 @@ import net.minecraft.client.resources.language.I18n;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 final class ChapterRenameActions {
     private ChapterRenameActions() {
@@ -15,7 +15,7 @@ final class ChapterRenameActions {
         return value == null ? "" : value.replace('\n', ' ').replace('\r', ' ');
     }
 
-    static void commitRename(Player player, TabletUiState state, Runnable refresh, String chapter, String currentString) {
+    static void commitRename(Player player, UiState state, Runnable refresh, String chapter, String currentString) {
         String raw = EditorChapterCommandClient.sanitizeChapterName(currentString);
         if (raw.isBlank()) {
             raw = tr("ui.questsandstuff.chapter.default_name");
@@ -23,18 +23,18 @@ final class ChapterRenameActions {
         String renamed = EditorChapterCommandClient.uniqueChapterName(raw, chapter);
         if (!renamed.equals(chapter)) {
             EditorChapterCommandClient.runChapterAction(player, state, "rename", chapter, renamed, 0);
-        } else if (TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
+        } else if (UiFactory.DRAFT_CHAPTER.equals(chapter)) {
             EditorChapterCommandClient.runChapterAction(player, state, "create", chapter, chapter, 0);
         }
         state.canvas.pendingChapterRename = "";
         state.root.selectedChapter = renamed;
         state.chapterPanel.chapterDraft = renamed;
         state.chapterPanel.chapterDraftName = renamed;
-        TabletUiFactory.persistUiState(state);
+        UiFactory.persistUiState(state);
         refresh.run();
     }
 
-    static void commitDraft(Player player, TabletUiState state, Runnable refresh, String currentString) {
+    static void commitDraft(Player player, UiState state, Runnable refresh, String currentString) {
         String typed = EditorChapterCommandClient.sanitizeChapterName(currentString);
         if (typed.isBlank()) {
             typed = tr("ui.questsandstuff.chapter.default_name");
@@ -45,7 +45,7 @@ final class ChapterRenameActions {
         state.chapterPanel.chapterDraft = created;
         state.chapterPanel.chapterDraftName = created;
         state.canvas.pendingChapterRename = "";
-        TabletUiFactory.persistUiState(state);
+        UiFactory.persistUiState(state);
         refresh.run();
     }
 

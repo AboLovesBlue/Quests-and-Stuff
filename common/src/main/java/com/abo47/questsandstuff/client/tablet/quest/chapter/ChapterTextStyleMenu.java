@@ -10,29 +10,29 @@ import com.abo47.questsandstuff.client.sync.state.ClientChapterState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 final class ChapterTextStyleMenu {
     private ChapterTextStyleMenu() {
     }
 
-    static void render(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
+    static void render(WidgetGroup overlay, UiState state, Player player, Runnable refresh) {
         if (!state.chapterPanel.chapterTextMenuOpen || state.chapterPanel.chapterTextMenuTarget.isBlank()) {
             return;
         }
-        int listHeight = state.chapterPanel.chapterListHeight > 0 ? state.chapterPanel.chapterListHeight : TabletUiFactory.chapterHeight(state) - 12;
-        int fy = TabletUiFactory.chapterTextMenuY(state, listHeight);
-        int fx = TabletUiFactory.chapterTextMenuX(state);
-        int fw = TabletUiFactory.chapterTextMenuWidth(state);
+        int listHeight = state.chapterPanel.chapterListHeight > 0 ? state.chapterPanel.chapterListHeight : UiFactory.chapterHeight(state) - 12;
+        int fy = UiFactory.chapterTextMenuY(state, listHeight);
+        int fx = UiFactory.chapterTextMenuX(state);
+        int fw = UiFactory.chapterTextMenuWidth(state);
         if (fw <= 0) {
             return;
         }
         int menuH = TextStyleButtons.menuHeightForWidth(fw);
-        int overlayX = TabletUiFactory.CHAPTER_X + state.chapterPanel.chapterListOriginX + fx;
-        int overlayY = TabletUiFactory.CHAPTER_Y + state.chapterPanel.chapterListOriginY + fy;
+        int overlayX = UiFactory.CHAPTER_X + state.chapterPanel.chapterListOriginX + fx;
+        int overlayY = UiFactory.CHAPTER_Y + state.chapterPanel.chapterListOriginY + fy;
         int columns = TextStyleButtons.columnsForWidth(fw);
         String target = state.chapterPanel.chapterTextMenuTarget;
         String align = ClientChapterState.normalizeTextAlign(ClientQuestStateFacade.chapterTextAlign(target));
@@ -53,7 +53,7 @@ final class ChapterTextStyleMenu {
                 align, textColor,
                 bold, italic, underline, strikethrough, false, false,
                 fontSize, fontSizeFieldOpen, false,
-                TabletColors.SUCCESS,
+                ThemeColors.SUCCESS,
                 traceC(++clickId, "align_left", () -> {
                     QuestsAndStuffMod.debugLog("[QnS:UI] chapter text align target={} align=left", target);
                     EditorChapterCommandClient.runChapterAction(player, state, "set_text_align", target, "left", 0);
@@ -134,7 +134,7 @@ final class ChapterTextStyleMenu {
         };
     }
 
-    private static void closeFontSizeField(TabletUiState state, Runnable refresh) {
+    private static void closeFontSizeField(UiState state, Runnable refresh) {
         state.chapterPanel.chapterTextFontSizeFieldTarget = "";
         refresh.run();
     }

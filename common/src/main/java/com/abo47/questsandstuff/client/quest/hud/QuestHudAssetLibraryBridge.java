@@ -12,7 +12,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class QuestHudAssetLibraryBridge {
     private QuestHudAssetLibraryBridge() {
@@ -26,7 +26,7 @@ final class QuestHudAssetLibraryBridge {
         }
         int screenW = minecraft.getWindow().getGuiScaledWidth();
         int screenH = minecraft.getWindow().getGuiScaledHeight();
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.tabletRootWidth = screenW;
         state.root.tabletRootHeight = screenH;
         AssetPickerOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayoutManager.background(element), QuestHudLayoutManager.opacityPercent(element));

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class CanvasLayerOrderingTest {
     @Test
     void normalizedOrderProvidesRenderOrderAndHitPriority() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         String chapter = "main";
         QuestCardLayout quest = card("quest_a");
         CanvasImageLayer image = image("image_a");

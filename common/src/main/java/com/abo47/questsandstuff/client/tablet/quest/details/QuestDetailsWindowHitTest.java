@@ -5,18 +5,18 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeomet
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.GAP;
 
 final class QuestDetailsWindowHitTest {
     private QuestDetailsWindowHitTest() {
     }
 
-    static boolean isInside(TabletUiState state, double mouseX, double mouseY) {
+    static boolean isInside(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen) {
             return false;
         }
@@ -26,7 +26,7 @@ final class QuestDetailsWindowHitTest {
                 && mouseY <= state.questDetails.questDetailsScreenY + state.questDetails.questDetailsH;
     }
 
-    static boolean isContextMenuHit(TabletUiState state, double mouseX, double mouseY) {
+    static boolean isContextMenuHit(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen || !state.questDetails.questDetailsContextOpen || state.questDetails.questDetailsContextW <= 0 || state.questDetails.questDetailsContextH <= 0) {
             return false;
         }
@@ -36,7 +36,7 @@ final class QuestDetailsWindowHitTest {
                 && mouseY >= y && mouseY <= y + state.questDetails.questDetailsContextH;
     }
 
-    static boolean isTextStyleMenuHit(TabletUiState state, double mouseX, double mouseY) {
+    static boolean isTextStyleMenuHit(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen || !state.questDetails.questDetailsTextStyleOpen
                 || state.questDetails.questDetailsTextStyleMenuW <= 0 || state.questDetails.questDetailsTextStyleMenuH <= 0) {
             return false;
@@ -52,7 +52,7 @@ final class QuestDetailsWindowHitTest {
                 || insideLoose(mouseX, mouseY, state.questDetails.questDetailsX + menuX, state.questDetails.questDetailsY + menuY, menuW, menuH);
     }
 
-    static boolean isTextStyleOwnerHit(TabletUiState state, double mouseX, double mouseY) {
+    static boolean isTextStyleOwnerHit(UiState state, double mouseX, double mouseY) {
         if (isTextStyleMenuHit(state, mouseX, mouseY)) {
             return true;
         }
@@ -70,14 +70,14 @@ final class QuestDetailsWindowHitTest {
         return isQuestDetailsTextHit(state, target, mouseX, mouseY, true);
     }
 
-    static boolean isTextEditorHit(TabletUiState state, double mouseX, double mouseY) {
+    static boolean isTextEditorHit(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen || !CanvasTextEditSession.isQuestDetailsEditing(state)) {
             return false;
         }
         return isQuestDetailsTextHit(state, state.questDetails.questDetailsTextEditTarget, mouseX, mouseY, true);
     }
 
-    private static boolean isQuestDetailsTextHit(TabletUiState state, String textId, double mouseX, double mouseY, boolean useDraftWhenEditing) {
+    private static boolean isQuestDetailsTextHit(UiState state, String textId, double mouseX, double mouseY, boolean useDraftWhenEditing) {
         String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         String normalizedTextId = textId == null ? "" : textId.trim();
         if (questId.isBlank() || normalizedTextId.isBlank()) {
@@ -112,7 +112,7 @@ final class QuestDetailsWindowHitTest {
         return mouseX >= x - 2 && mouseX <= x + w + 2 && mouseY >= y - 2 && mouseY <= y + h + 2;
     }
 
-    private static boolean isTextLayerLocalHit(TabletUiState state, CanvasTextLayer text, int localX, int localY, int viewportW, int viewportH) {
+    private static boolean isTextLayerLocalHit(UiState state, CanvasTextLayer text, int localX, int localY, int viewportW, int viewportH) {
         int oldContentX = state.canvas.canvasContentX;
         int oldContentY = state.canvas.canvasContentY;
         int oldContentW = state.canvas.canvasContentW;

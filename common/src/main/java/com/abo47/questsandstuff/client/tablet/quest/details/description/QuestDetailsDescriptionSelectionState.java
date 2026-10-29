@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class QuestDetailsDescriptionSelectionState {
     private QuestDetailsDescriptionSelectionState() {
     }
 
-    static Set<String> selectedTextIds(TabletUiState state) {
+    static Set<String> selectedTextIds(UiState state) {
         Set<String> ids = new LinkedHashSet<>(state.questDetails.questDetailsDescriptionSelection.textIds());
         if (!state.questDetails.questDetailsDescriptionSelection.primaryTextId().isBlank()) {
             ids.add(state.questDetails.questDetailsDescriptionSelection.primaryTextId());
@@ -19,7 +19,7 @@ final class QuestDetailsDescriptionSelectionState {
         return ids;
     }
 
-    static Set<String> selectedImageIds(TabletUiState state) {
+    static Set<String> selectedImageIds(UiState state) {
         Set<String> ids = new LinkedHashSet<>(state.questDetails.questDetailsDescriptionSelection.imageIds());
         if (!state.questDetails.questDetailsDescriptionSelection.primaryImageId().isBlank()) {
             ids.add(state.questDetails.questDetailsDescriptionSelection.primaryImageId());
@@ -27,15 +27,15 @@ final class QuestDetailsDescriptionSelectionState {
         return ids;
     }
 
-    static boolean hasSelection(TabletUiState state) {
+    static boolean hasSelection(UiState state) {
         return !selectedTextIds(state).isEmpty() || !selectedImageIds(state).isEmpty();
     }
 
-    static CanvasSelectionSet selectionSet(TabletUiState state) {
+    static CanvasSelectionSet selectionSet(UiState state) {
         return new CanvasSelectionSet(Set.of(), selectedImageIds(state), selectedTextIds(state));
     }
 
-    static void selectOnlyText(TabletUiState state, String id) {
+    static void selectOnlyText(UiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
             state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(id);
@@ -43,7 +43,7 @@ final class QuestDetailsDescriptionSelectionState {
         }
     }
 
-    static void selectOnlyImage(TabletUiState state, String id) {
+    static void selectOnlyImage(UiState state, String id) {
         clear(state);
         if (id != null && !id.isBlank()) {
             state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(id);
@@ -51,7 +51,7 @@ final class QuestDetailsDescriptionSelectionState {
         }
     }
 
-    static void clear(TabletUiState state) {
+    static void clear(UiState state) {
         state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId("");
         state.questDetails.questDetailsDescriptionSelection.textIds().clear();
@@ -64,7 +64,7 @@ final class QuestDetailsDescriptionSelectionState {
         state.canvas.selectionBoundsVisible = false;
     }
 
-    static List<String> selectedLayerKeys(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static List<String> selectedLayerKeys(UiState state, QuestDetailsDescriptionModel model) {
         List<String> selected = selectionSet(state).layerKeysInOrder(model.order);
         return selected.stream()
                 .filter(key -> {

@@ -13,12 +13,12 @@ import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsOptionDescr
 import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsOptionRowRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptor;
 import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptors;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 public final class SettingsOptionsPanelRenderer {
     private static final int ROW_H = SettingsOptionRowRenderer.ROW_H;
@@ -27,7 +27,7 @@ public final class SettingsOptionsPanelRenderer {
     private SettingsOptionsPanelRenderer() {
     }
 
-    public static void rebuildOptions(WidgetGroup panel, TabletUiState state, Runnable refresh, int listX, int listY, int listW, int listH) {
+    public static void rebuildOptions(WidgetGroup panel, UiState state, Runnable refresh, int listX, int listY, int listW, int listH) {
         panel.clearAllWidgets();
         SkinAnchorRegistry.clearShared("settings_option_cards");
         boolean skinEditMode = state.root.skinEditMode;
@@ -47,11 +47,11 @@ public final class SettingsOptionsPanelRenderer {
     }
 
     private interface RowDrawer<T> {
-        void draw(WidgetGroup list, T entry, int rowY, int rowW, boolean skinEditMode, TabletUiState state);
+        void draw(WidgetGroup list, T entry, int rowY, int rowW, boolean skinEditMode, UiState state);
     }
 
     private static <T> WidgetGroup buildList(WidgetGroup panel, int x, int y, int w, int h, int rowH, List<T> entries,
-                                      String emptyText, ScrollState scroll, Runnable refresh, boolean skinEditMode, RowDrawer<T> drawer, int vPad, TabletUiState state) {
+                                      String emptyText, ScrollState scroll, Runnable refresh, boolean skinEditMode, RowDrawer<T> drawer, int vPad, UiState state) {
         int rows = ScrollMath.listRows(h - vPad * 2, rowH, GRID_4);
         int maxStart = Math.max(0, entries.size() - rows);
         scroll.setValue(ScrollMath.clamp(scroll.value(), maxStart));
@@ -75,7 +75,7 @@ public final class SettingsOptionsPanelRenderer {
         };
         panel.addWidget(list);
         if (entries.isEmpty()) {
-            list.addWidget(label(8, vPad, emptyText, TabletColors.TEXT_MUTED));
+            list.addWidget(label(8, vPad, emptyText, ThemeColors.TEXT_MUTED));
             return list;
         }
         int end = Math.min(entries.size(), scroll.value() + rows);

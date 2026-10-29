@@ -6,13 +6,13 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelChrome;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawCanvasPanelOutlines;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawPanelOutline;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawCanvasPanelChrome;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawCanvasPanelOutlines;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawPanelOutline;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.SPLITTER_W;
 
 public final class SplitPanelLayout {
     private SplitPanelLayout() {
@@ -26,18 +26,18 @@ public final class SplitPanelLayout {
         return leftX + leftWidth + GAP;
     }
 
-    public static WidgetGroup leftPanel(int x, int y, int w, int h, TabletUiState state) {
+    public static WidgetGroup leftPanel(int x, int y, int w, int h, UiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                TabletPanelChrome.resolveFill(this).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                PanelChrome.resolveFill(this).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
                 drawPanelOutline(graphics, this, state);
             }
         };
     }
 
-    public static WidgetGroup rightPanel(int x, int y, int w, int h, TabletUiState state) {
+    public static WidgetGroup rightPanel(int x, int y, int w, int h, UiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -52,7 +52,7 @@ public final class SplitPanelLayout {
                                           int viewportX, int viewportY, int viewportW, int viewportH,
                                           boolean canEdit, boolean showGrid,
                                           int gridOpacity, int gridColor,
-                                          @javax.annotation.Nullable TabletUiState state) {
+                                          @javax.annotation.Nullable UiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import net.minecraft.nbt.CompoundTag;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestTaskSelectableRewardsTest {
     @Test
     void standaloneSelectableChoiceDoesNotUseEditSelection() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         QuestTaskSelectableRewards.selectChoice(state, "reward_item_0002");
 
@@ -26,7 +26,7 @@ class QuestTaskSelectableRewardsTest {
 
     @Test
     void oneStandaloneSelectableRewardChoiceCompletesStandaloneSelection() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CompoundTag quest = questWithRewards(
                 reward("reward_item_0001", true),
                 reward("reward_item_0002", true),
@@ -40,7 +40,7 @@ class QuestTaskSelectableRewardsTest {
 
     @Test
     void standaloneSelectableRewardsActAsOneChoiceGroup() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         QuestTaskSelectableRewards.selectChoice(state, "reward_item_0001");
         QuestTaskSelectableRewards.selectChoice(state, "reward_item_0002");
@@ -51,7 +51,7 @@ class QuestTaskSelectableRewardsTest {
 
     @Test
     void wrapperSelectableRewardChoiceUsesGroupChoiceState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CompoundTag quest = questWithRewards(wrapperReward("reward_selectable_0001"));
 
         QuestTaskSelectableRewards.selectChoice(state, "reward_selectable_0001\u001Fchoice_a");
@@ -77,7 +77,7 @@ class QuestTaskSelectableRewardsTest {
 
     @Test
     void clearingEditSelectionKeepsSelectableRewardChoice() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         QuestTaskSelectableRewards.selectChoice(state, "reward_item_0002");
         QuestTaskListInteractions.select(state, "rewards", "reward_item_0002");
 

@@ -20,9 +20,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
@@ -34,11 +34,11 @@ public final class CanvasBlueprintController {
     private CanvasBlueprintController() {
     }
 
-    public static void openBlueprintLibrary(TabletUiState state) {
+    public static void openBlueprintLibrary(UiState state) {
         AssetPickerOpenActions.openBlueprintPicker(state, state.canvas.blueprintPlacement.asset());
     }
 
-    public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, TabletUiState state, int noticeX, int noticeY) {
+    public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, UiState state, int noticeX, int noticeY) {
         String saved = saveSelection(canvasViewport, state);
         if (saved.isBlank()) {
             return false;
@@ -47,11 +47,11 @@ public final class CanvasBlueprintController {
         return true;
     }
 
-    public static String saveSelection(CanvasViewport canvasViewport, TabletUiState state) {
+    public static String saveSelection(CanvasViewport canvasViewport, UiState state) {
         if (canvasViewport == null || state == null) {
             return "";
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         if (chapter.isBlank()) {
             return "";
         }
@@ -62,7 +62,7 @@ public final class CanvasBlueprintController {
         return storeBlueprint(state, buildFromSelection(state, chapter, selection));
     }
 
-    public static boolean saveQuestWithNotice(CanvasViewport canvasViewport, TabletUiState state, String questId, int noticeX, int noticeY) {
+    public static boolean saveQuestWithNotice(CanvasViewport canvasViewport, UiState state, String questId, int noticeX, int noticeY) {
         String saved = saveQuest(canvasViewport, state, questId);
         if (saved.isBlank()) {
             return false;
@@ -71,11 +71,11 @@ public final class CanvasBlueprintController {
         return true;
     }
 
-    public static String saveQuest(CanvasViewport canvasViewport, TabletUiState state, String questId) {
+    public static String saveQuest(CanvasViewport canvasViewport, UiState state, String questId) {
         if (canvasViewport == null || state == null || questId == null || questId.isBlank()) {
             return "";
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         if (chapter.isBlank()) {
             return "";
         }
@@ -83,7 +83,7 @@ public final class CanvasBlueprintController {
                 new CanvasSelectionSet(Set.of(questId), Set.of(), Set.of(), Set.of())));
     }
 
-    private static String storeBlueprint(TabletUiState state, CanvasBlueprint blueprint) {
+    private static String storeBlueprint(UiState state, CanvasBlueprint blueprint) {
         if (blueprint.isEmpty()) {
             return "";
         }
@@ -94,7 +94,7 @@ public final class CanvasBlueprintController {
         return saved;
     }
 
-    public static void beginPlacement(TabletUiState state, String relativePath) {
+    public static void beginPlacement(UiState state, String relativePath) {
         String path = relativePath == null ? "" : relativePath.trim();
         if (path.isBlank() || !CanvasBlueprintStore.isBlueprint(path)) {
             return;
@@ -109,7 +109,7 @@ public final class CanvasBlueprintController {
         QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] placement begin path={} entries={}", path, blueprint.contentCount());
     }
 
-    public static boolean beginUseLastPlacement(TabletUiState state) {
+    public static boolean beginUseLastPlacement(UiState state) {
         if (state == null || state.canvas.blueprintPlacement.useLastHeld() || state.canvas.blueprintPlacement.active()) {
             return false;
         }
@@ -121,7 +121,7 @@ public final class CanvasBlueprintController {
         return true;
     }
 
-    public static boolean endUseLastPlacement(TabletUiState state) {
+    public static boolean endUseLastPlacement(UiState state) {
         boolean wasActive = state != null && state.canvas.blueprintPlacement.active();
         if (state != null) {
             state.canvas.blueprintPlacement.clearUseLast();
@@ -130,7 +130,7 @@ public final class CanvasBlueprintController {
         return wasActive;
     }
 
-    public static boolean cancelPlacement(TabletUiState state) {
+    public static boolean cancelPlacement(UiState state) {
         if (state == null || !state.canvas.blueprintPlacement.active()) {
             return false;
         }
@@ -139,7 +139,7 @@ public final class CanvasBlueprintController {
         return true;
     }
 
-    public static boolean placeAt(Player player, TabletUiState state, int localX, int localY) {
+    public static boolean placeAt(Player player, UiState state, int localX, int localY) {
         if (state == null || !state.canvas.blueprintPlacement.active()) {
             return false;
         }
@@ -165,24 +165,24 @@ public final class CanvasBlueprintController {
         return true;
     }
 
-    public static WidgetGroup placementGhost(CanvasViewport canvasViewport, TabletUiState state) {
+    public static WidgetGroup placementGhost(CanvasViewport canvasViewport, UiState state) {
         if (state == null || !state.canvas.blueprintPlacement.active() || !state.canvas.blueprintPlacement.hasAsset()) {
             return null;
         }
         return CanvasBlueprintMiniRenderer.placementGhost(canvasViewport, state);
     }
 
-    static PlacementAnchor placementAnchor(TabletUiState state, CanvasBlueprint blueprint, int localX, int localY) {
+    static PlacementAnchor placementAnchor(UiState state, CanvasBlueprint blueprint, int localX, int localY) {
         CanvasBlueprintMiniGeometry.BlueprintBounds bounds = CanvasBlueprintMiniGeometry.bounds(blueprint);
         int logicalX = (int) Math.round(CanvasGeometry.screenToLogicalX(state, localX) - bounds.width() / 2.0);
         int logicalY = (int) Math.round(CanvasGeometry.screenToLogicalY(state, localY) - bounds.height() / 2.0);
-        int snappedX = TabletUiFactory.snapToGrid(state, logicalX);
-        int snappedY = TabletUiFactory.snapToGrid(state, logicalY);
+        int snappedX = UiFactory.snapToGrid(state, logicalX);
+        int snappedY = UiFactory.snapToGrid(state, logicalY);
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, snappedX, snappedY, bounds.width(), bounds.height());
         return new PlacementAnchor(clamped.x, clamped.y);
     }
 
-    private static CanvasBlueprint buildFromSelection(TabletUiState state, String chapter, CanvasSelectionSet selection) {
+    private static CanvasBlueprint buildFromSelection(UiState state, String chapter, CanvasSelectionSet selection) {
         if (state == null || chapter == null || chapter.isBlank() || selection == null || selection.size() == 0) {
             return CanvasBlueprint.empty();
         }
@@ -218,7 +218,7 @@ public final class CanvasBlueprintController {
         return quests;
     }
 
-    private static List<CanvasImageLayer> selectedImages(TabletUiState state, String chapter, Set<String> imageIds) {
+    private static List<CanvasImageLayer> selectedImages(UiState state, String chapter, Set<String> imageIds) {
         if (imageIds.isEmpty()) {
             return List.of();
         }
@@ -231,7 +231,7 @@ public final class CanvasBlueprintController {
         return images;
     }
 
-    private static List<CanvasTextLayer> selectedTexts(TabletUiState state, String chapter, Set<String> textIds) {
+    private static List<CanvasTextLayer> selectedTexts(UiState state, String chapter, Set<String> textIds) {
         if (textIds.isEmpty()) {
             return List.of();
         }
@@ -244,7 +244,7 @@ public final class CanvasBlueprintController {
         return texts;
     }
 
-    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String chapter, Set<String> exclusiveChoiceIds) {
+    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(UiState state, String chapter, Set<String> exclusiveChoiceIds) {
         if (exclusiveChoiceIds.isEmpty()) {
             return List.of();
         }
@@ -261,7 +261,7 @@ public final class CanvasBlueprintController {
         return entries;
     }
 
-    private static CanvasPoint origin(TabletUiState state, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasBlueprint.ExclusiveChoiceEntry> ecs) {
+    private static CanvasPoint origin(UiState state, List<CanvasBlueprint.QuestEntry> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasBlueprint.ExclusiveChoiceEntry> ecs) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (CanvasBlueprint.QuestEntry quest : quests) {
@@ -281,12 +281,12 @@ public final class CanvasBlueprintController {
             minY = Math.min(minY, ec.sourceY());
         }
         if (minX == Integer.MAX_VALUE) {
-            return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
+            return new CanvasPoint(UiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), UiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
         }
         return new CanvasPoint(minX, minY);
     }
 
-    private static List<String> selectedLayerOrder(TabletUiState state, String chapter, CanvasSelectionSet selection) {
+    private static List<String> selectedLayerOrder(UiState state, String chapter, CanvasSelectionSet selection) {
         Set<String> selected = new LinkedHashSet<>(selection.layerKeys());
         List<String> order = new ArrayList<>();
         for (String key : state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of())) {

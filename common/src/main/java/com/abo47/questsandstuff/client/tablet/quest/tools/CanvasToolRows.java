@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import net.minecraft.network.chat.Component;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 final class CanvasToolRows {
     private CanvasToolRows() {
@@ -12,7 +12,7 @@ final class CanvasToolRows {
 
     static void grid(ToolMenuRows rows, boolean enabled, Runnable action) {
         rows.toggle("grid",
-                enabled ? TabletColors.SUCCESS : TabletColors.ERROR,
+                enabled ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 enabled,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.grid_toggle"),
@@ -23,7 +23,7 @@ final class CanvasToolRows {
 
     static void snap(ToolMenuRows rows, boolean enabled, Runnable action) {
         rows.toggle("magnet",
-                enabled ? TabletColors.SUCCESS : TabletColors.ERROR,
+                enabled ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 enabled,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.snap_to_grid"),
@@ -34,7 +34,7 @@ final class CanvasToolRows {
 
     static void centerX(ToolMenuRows rows, boolean enabled, Runnable action) {
         rows.toggle("align-center-vertical",
-                enabled ? TabletColors.SUCCESS : TabletColors.ERROR,
+                enabled ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 enabled,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.center_snap_vertical"),
@@ -45,7 +45,7 @@ final class CanvasToolRows {
 
     static void centerY(ToolMenuRows rows, boolean enabled, Runnable action) {
         rows.toggle("align-center-horizontal",
-                enabled ? TabletColors.SUCCESS : TabletColors.ERROR,
+                enabled ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 enabled,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.center_snap_horizontal"),
@@ -56,7 +56,7 @@ final class CanvasToolRows {
 
     static void objectSnap(ToolMenuRows rows, boolean enabled, Runnable action) {
         rows.toggle("objects",
-                enabled ? TabletColors.SUCCESS : TabletColors.ERROR,
+                enabled ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 enabled,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.object_snap"),
@@ -87,7 +87,7 @@ final class CanvasToolRows {
 
     static void canvasLock(ToolMenuRows rows, boolean locked, Runnable action) {
         rows.toggle(locked ? "lock_canvas" : "unlock_canvas",
-                locked ? TabletColors.ERROR : TabletColors.SUCCESS,
+                locked ? ThemeColors.ERROR : ThemeColors.SUCCESS,
                 !locked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_canvas"),
@@ -98,7 +98,7 @@ final class CanvasToolRows {
 
     static void splitterLock(ToolMenuRows rows, boolean locked, Runnable action) {
         rows.toggle(locked ? "lock_separator" : "unlock_separator",
-                locked ? TabletColors.ERROR : TabletColors.SUCCESS,
+                locked ? ThemeColors.ERROR : ThemeColors.SUCCESS,
                 !locked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),

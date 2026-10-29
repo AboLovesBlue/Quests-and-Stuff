@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.util.Locale;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.util.naming.SafeNames;
 
@@ -46,8 +46,8 @@ public final class CanvasBlueprintStore {
             return "";
         }
         try {
-            TabletUiFactory.ensureAssetsDirs();
-            Path dir = TabletUiFactory.ASSETS_ROOT_DIR.resolve(BLUEPRINTS_DIR);
+            UiFactory.ensureAssetsDirs();
+            Path dir = UiFactory.ASSETS_ROOT_DIR.resolve(BLUEPRINTS_DIR);
             Files.createDirectories(dir);
             String stem = SafeNames.fileStem(preferredName, "blueprint");
             Path target = uniquePath(dir, stem);
@@ -75,7 +75,7 @@ public final class CanvasBlueprintStore {
         if (!isBlueprint(normalized)) {
             return null;
         }
-        Path root = TabletUiFactory.ASSETS_ROOT_DIR.normalize();
+        Path root = UiFactory.ASSETS_ROOT_DIR.normalize();
         Path path = root.resolve(normalized).normalize();
         return path.startsWith(root) ? path : null;
     }

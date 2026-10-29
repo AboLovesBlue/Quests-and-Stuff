@@ -12,16 +12,16 @@ import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 
 import static com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer.CONTEXT_MENU_WIDTH;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.addWindowsContextRow;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CONTEXT_ROW_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.addWindowsContextRow;
 
 public final class ContextMenuPanel {
     public static final int PROMOTED_BAR_H = ContextActionLayout.PROMOTED_BAR_H;
@@ -41,7 +41,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction
     ) {
         return build(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, ContextMenuAnimationBridge.DEFAULT_KEY);
@@ -55,12 +55,12 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             String animationKey
     ) {
-        int maxW = Math.max(x + w + 4, TabletStateQueries.rootWidth(state));
-        int maxH = Math.max(y + heightFor(actions, visibleRows) + 4, TabletStateQueries.rootHeight(state));
+        int maxW = Math.max(x + w + 4, StateQueries.rootWidth(state));
+        int maxH = Math.max(y + heightFor(actions, visibleRows) + 4, StateQueries.rootHeight(state));
         return build(x, y, w, actions, start, visibleRows, borderColor, state, afterAction, animationKey, maxW, maxH);
     }
 
@@ -72,7 +72,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             int maxW,
             int maxH
@@ -88,7 +88,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             String animationKey,
             int maxW,
@@ -105,7 +105,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             int maxW,
             int maxH,
@@ -123,7 +123,7 @@ public final class ContextMenuPanel {
             int start,
             int visibleRows,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             String animationKey,
             boolean animate,
@@ -224,7 +224,7 @@ public final class ContextMenuPanel {
             int menuW,
             int mouseX,
             int mouseY,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             String animationKey
     ) {
@@ -274,7 +274,7 @@ public final class ContextMenuPanel {
         return true;
     }
 
-    private static void addPromotedBar(WidgetGroup menu, List<ContextAction> promoted, int menuW, TabletUiState state, Consumer<ContextAction> afterAction, String animationKey) {
+    private static void addPromotedBar(WidgetGroup menu, List<ContextAction> promoted, int menuW, UiState state, Consumer<ContextAction> afterAction, String animationKey) {
         if (promoted.isEmpty()) {
             return;
         }
@@ -288,11 +288,11 @@ public final class ContextMenuPanel {
                     .tooltips(new Component[]{Component.literal(action.label())}));
         }
         WidgetGroup sep = new WidgetGroup(OUTER_PAD, OUTER_PAD + PROMOTED_BAR_H - 1, menuW - OUTER_PAD * 2, 1);
-        sep.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 130)));
+        sep.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.BORDER_BASE, 130)));
         menu.addWidget(sep);
     }
 
-    private static void runAction(TabletUiState state, Consumer<ContextAction> afterAction, ContextAction action, String animationKey) {
+    private static void runAction(UiState state, Consumer<ContextAction> afterAction, ContextAction action, String animationKey) {
         if (action == null || action.hasSubmenu()) {
             return;
         }
@@ -314,7 +314,7 @@ public final class ContextMenuPanel {
             int maxW,
             int maxH,
             int borderColor,
-            TabletUiState state,
+            UiState state,
             Consumer<ContextAction> afterAction,
             String animationKey
     ) {
@@ -425,7 +425,7 @@ public final class ContextMenuPanel {
                 return true;
             }
         };
-        menu.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), borderColor));
+        menu.setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.SURFACE_BASE, 246), borderColor));
         return menu;
     }
 
@@ -461,8 +461,8 @@ public final class ContextMenuPanel {
                 int railW = 2;
                 int railX = getPositionX() + Math.max(0, (getSizeWidth() - railW) / 2);
                 int thumbX = getPositionX() + Math.max(0, (getSizeWidth() - DragScrollBarWidget.WIDTH) / 2);
-                DragScrollBarWidget.drawVerticalTrack(graphics, mouseX, mouseY, railX, getPositionY(), railW, getSizeHeight(), TabletColors.scrollTrack(false));
-                DragScrollBarWidget.drawVerticalThumb(graphics, mouseX, mouseY, thumbX, getPositionY() + knobOffset, DragScrollBarWidget.WIDTH, knobH, TabletColors.scrollThumb(false));
+                DragScrollBarWidget.drawVerticalTrack(graphics, mouseX, mouseY, railX, getPositionY(), railW, getSizeHeight(), ThemeColors.scrollTrack(false));
+                DragScrollBarWidget.drawVerticalThumb(graphics, mouseX, mouseY, thumbX, getPositionY() + knobOffset, DragScrollBarWidget.WIDTH, knobH, ThemeColors.scrollThumb(false));
             }
         });
     }

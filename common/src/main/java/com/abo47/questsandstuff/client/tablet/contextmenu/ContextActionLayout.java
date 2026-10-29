@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CONTEXT_ROW_H;
 
 final class ContextActionLayout {
     static final int PROMOTED_BAR_H = 18;

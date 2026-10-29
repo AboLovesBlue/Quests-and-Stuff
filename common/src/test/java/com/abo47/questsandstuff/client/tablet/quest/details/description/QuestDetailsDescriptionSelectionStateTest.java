@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsDescriptionSelectionStateTest {
     @Test
     void selectingDescriptionImageClearsMainCanvasSelection() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasSelection.questIds().add("main_quest");
         state.canvas.canvasSelection.setPrimaryImageId("main_image");
         state.canvas.canvasSelection.imageIds().add("main_image");
@@ -34,7 +34,7 @@ class QuestDetailsDescriptionSelectionStateTest {
 
     @Test
     void descriptionSelectedLayerKeysUseSharedSelectionOrdering() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsDescriptionSelection.imageIds().add("desc_image");
         state.questDetails.questDetailsDescriptionSelection.textIds().add("desc_text");
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();

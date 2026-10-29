@@ -13,15 +13,15 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 
 public final class ChapterContextMenu {
     private ChapterContextMenu() {
     }
 
-    public static void rebuild(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
+    public static void rebuild(WidgetGroup overlay, UiState state, Player player, Runnable refresh) {
         overlay.clearAllWidgets();
         if (!state.chapterPanel.chapterMenuOpen) {
             return;
@@ -37,7 +37,7 @@ public final class ChapterContextMenu {
                 actions,
                 0,
                 ContextMenuPanel.rowActionCount(actions),
-                TabletColors.BORDER_BASE,
+                ThemeColors.BORDER_BASE,
                 state,
                 action -> {
                     if (action.closeAfterClick()) {
@@ -73,15 +73,15 @@ public final class ChapterContextMenu {
         }
     }
 
-    public static int width(TabletUiState state, int maxAvailableWidth) {
+    public static int width(UiState state, int maxAvailableWidth) {
         return ChapterContextMenuLayout.width(state, maxAvailableWidth);
     }
 
-    public static boolean click(TabletUiState state, Player player, Runnable refresh, int x, int y) {
+    public static boolean click(UiState state, Player player, Runnable refresh, int x, int y) {
         if (!state.chapterPanel.chapterMenuOpen) {
             return false;
         }
-        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, TabletStateQueries.rootWidth(state), TabletStateQueries.rootHeight(state), player, refresh);
+        ChapterContextMenuLayout layout = ChapterContextMenuLayout.resolve(state, StateQueries.rootWidth(state), StateQueries.rootHeight(state), player, refresh);
         return ChapterContextMenuRows.click(layout, state, player, refresh, x, y);
     }
 }

@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
@@ -18,7 +18,7 @@ public final class EntityVariantModal {
     private EntityVariantModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         EntityVariantPickerModel model = EntityVariantPickerModel.create(state);
         if (model == null) {
             closeAll(state);
@@ -33,7 +33,7 @@ public final class EntityVariantModal {
         return search;
     }
 
-    private static TextFieldWidget addControls(WidgetGroup modal, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w) {
+    private static TextFieldWidget addControls(WidgetGroup modal, UiState state, Runnable refresh, EntityVariantPickerModel model, int w) {
         int rightX = ModalPreviewLayout.RIGHT_X;
         int rightW = w - ModalPreviewLayout.RIGHT_X - ModalPreviewLayout.PREVIEW_X;
         int controlsY = 2;

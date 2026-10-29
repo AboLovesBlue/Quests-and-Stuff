@@ -15,9 +15,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -27,19 +27,19 @@ public final class CanvasClipboardPaste {
     private CanvasClipboardPaste() {
     }
 
-    public static boolean pasteAtContext(Player player, TabletUiState state) {
-        int anchorX = TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX);
-        int anchorY = TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY);
+    public static boolean pasteAtContext(Player player, UiState state) {
+        int anchorX = UiFactory.snapToGrid(state, state.contextMenu.contextLogicalX);
+        int anchorY = UiFactory.snapToGrid(state, state.contextMenu.contextLogicalY);
         return pasteAt(player, state, anchorX, anchorY, "context");
     }
 
-    public static boolean pasteNearSelectionOrViewportCenter(Player player, TabletUiState state, CanvasViewport canvasViewport) {
+    public static boolean pasteNearSelectionOrViewportCenter(Player player, UiState state, CanvasViewport canvasViewport) {
         CanvasPoint anchor = keyboardPasteAnchor(state, canvasViewport);
         return pasteAt(player, state, anchor.x, anchor.y, "shortcut");
     }
 
-    private static boolean pasteAt(Player player, TabletUiState state, int anchorX, int anchorY, String source) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+    private static boolean pasteAt(Player player, UiState state, int anchorX, int anchorY, String source) {
+        String chapter = StateQueries.selectedChapterName(state);
         if (chapter.isBlank() || !CanvasClipboardCopy.hasClipboardContent(state)) {
             return false;
         }
@@ -63,7 +63,7 @@ public final class CanvasClipboardPaste {
         return state.clipboard.canvasClipboard.hasQuestClipboard() || pastedElements;
     }
 
-    private static boolean pasteCanvasElements(TabletUiState state, String chapter, int anchorX, int anchorY) {
+    private static boolean pasteCanvasElements(UiState state, String chapter, int anchorX, int anchorY) {
         boolean pasted = false;
         Set<String> existingImageIds = existingImageIds(state, chapter);
         Set<String> existingTextIds = existingTextIds(state, chapter);
@@ -71,8 +71,8 @@ public final class CanvasClipboardPaste {
         int index = 0;
         for (CanvasImageLayer image : state.clipboard.canvasClipboard.imageLayers()) {
             String id = uniqueLayerId("img", existingImageIds);
-            int x = TabletUiFactory.snapToGrid(state, anchorX + image.x() - state.clipboard.canvasClipboard.originX());
-            int y = TabletUiFactory.snapToGrid(state, anchorY + image.y() - state.clipboard.canvasClipboard.originY());
+            int x = UiFactory.snapToGrid(state, anchorX + image.x() - state.clipboard.canvasClipboard.originX());
+            int y = UiFactory.snapToGrid(state, anchorY + image.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             CanvasImageLayer duplicate = new CanvasImageLayer(id, image.asset(), clamped.x, clamped.y, image.w(), image.h(), image.rotation(), image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
             if (state.canvas.gridSnapLocked) {
@@ -87,8 +87,8 @@ public final class CanvasClipboardPaste {
         }
         for (CanvasTextLayer text : state.clipboard.canvasClipboard.textLayers()) {
             String id = uniqueLayerId("txt", existingTextIds);
-            int x = TabletUiFactory.snapToGrid(state, anchorX + text.x() - state.clipboard.canvasClipboard.originX());
-            int y = TabletUiFactory.snapToGrid(state, anchorY + text.y() - state.clipboard.canvasClipboard.originY());
+            int x = UiFactory.snapToGrid(state, anchorX + text.x() - state.clipboard.canvasClipboard.originX());
+            int y = UiFactory.snapToGrid(state, anchorY + text.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
             CanvasTextLayer duplicate = new CanvasTextLayer(id, text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
             if (state.canvas.gridSnapLocked) {
@@ -103,8 +103,8 @@ public final class CanvasClipboardPaste {
         }
         for (CanvasExclusiveChoice ec : state.clipboard.canvasClipboard.exclusiveChoiceLayers()) {
             String id = uniqueLayerId("ec", existingExclusiveChoiceIds);
-            int x = TabletUiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
-            int y = TabletUiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
+            int x = UiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
+            int y = UiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
             CanvasExclusiveChoice duplicate = new CanvasExclusiveChoice(id, clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections());
             if (state.canvas.gridSnapLocked) {
@@ -120,7 +120,7 @@ public final class CanvasClipboardPaste {
         return pasted || index > 0;
     }
 
-    private static Set<String> existingImageIds(TabletUiState state, String chapter) {
+    private static Set<String> existingImageIds(UiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());
@@ -128,7 +128,7 @@ public final class CanvasClipboardPaste {
         return ids;
     }
 
-    private static Set<String> existingTextIds(TabletUiState state, String chapter) {
+    private static Set<String> existingTextIds(UiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
             ids.add(text.id());
@@ -136,7 +136,7 @@ public final class CanvasClipboardPaste {
         return ids;
     }
 
-    private static Set<String> existingExclusiveChoiceIds(TabletUiState state, String chapter) {
+    private static Set<String> existingExclusiveChoiceIds(UiState state, String chapter) {
         Set<String> ids = new LinkedHashSet<>();
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(ec.id());
@@ -150,7 +150,7 @@ public final class CanvasClipboardPaste {
         return id;
     }
 
-    private static CanvasPoint keyboardPasteAnchor(TabletUiState state, CanvasViewport canvasViewport) {
+    private static CanvasPoint keyboardPasteAnchor(UiState state, CanvasViewport canvasViewport) {
         int step = CanvasGeometry.gridSize(state);
         CanvasPoint selectionAnchor = selectedCanvasAnchor(state, canvasViewport, step);
         if (selectionAnchor != null) {
@@ -163,12 +163,12 @@ public final class CanvasClipboardPaste {
                 1.0f
         );
         return new CanvasPoint(
-                TabletUiFactory.snapToGrid(state, center.x),
-                TabletUiFactory.snapToGrid(state, center.y)
+                UiFactory.snapToGrid(state, center.x),
+                UiFactory.snapToGrid(state, center.y)
         );
     }
 
-    private static CanvasPoint selectedCanvasAnchor(TabletUiState state, CanvasViewport canvasViewport, int step) {
+    private static CanvasPoint selectedCanvasAnchor(UiState state, CanvasViewport canvasViewport, int step) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (String questId : state.canvas.canvasSelection.questIds()) {
@@ -179,7 +179,7 @@ public final class CanvasClipboardPaste {
             minX = Math.min(minX, card.logicalX());
             minY = Math.min(minY, card.logicalY());
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         Set<String> imageIds = CanvasSelectionActions.selectedImageIds(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (imageIds.contains(image.id())) {
@@ -205,8 +205,8 @@ public final class CanvasClipboardPaste {
             return null;
         }
         return new CanvasPoint(
-                TabletUiFactory.snapToGrid(state, minX + step),
-                TabletUiFactory.snapToGrid(state, minY + step)
+                UiFactory.snapToGrid(state, minX + step),
+                UiFactory.snapToGrid(state, minY + step)
         );
     }
 }

@@ -1,0 +1,167 @@
+package com.abo47.questsandstuff.client.tablet.bootstrap;
+
+import java.util.List;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
+import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
+import com.abo47.questsandstuff.client.tablet.home.HomeComposer;
+import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.quest.QuestAppComposer;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.settings.SettingsAppComposer;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.teams.TeamsAppComposer;
+import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
+import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
+import com.abo47.questsandstuff.network.ModNetwork;
+import com.abo47.questsandstuff.network.quest.editor.C2SEditorControlPacket;
+import com.abo47.questsandstuff.quest.QuestServiceRegistry;
+
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.applyCanvasBgOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.clampGridSizeIndex;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.defaultGridOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ensureAssetsDirs;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterPanelCollapsed;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.readPersistedSkinState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.readPersistedUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.syncCanvasStateFromCache;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
+
+public final class Bootstrap {
+    private static boolean appsRegistered;
+
+    private Bootstrap() {
+    }
+
+    static void ensureAppsRegistered() {
+        if (appsRegistered) return;
+        appsRegistered = true;
+        TabletAppRegistry.register(new TabletAppDescriptor("home",
+                "ui.questsandstuff.app.home",
+                new ResourceLocation("questsandstuff", "textures/gui/home.png"),
+                HomeComposer::create));
+        TabletAppRegistry.register(new TabletAppDescriptor("QUESTS",
+                "ui.questsandstuff.app.quests",
+                IconAtlas.icon("app_quests"),
+                "app_quests",
+                QuestAppComposer::create));
+        TabletAppRegistry.register(new TabletAppDescriptor("TEAMS",
+                "ui.questsandstuff.app.teams",
+                IconAtlas.icon("app_teams"),
+                "app_teams",
+                TeamsAppComposer::create));
+        TabletAppRegistry.register(new TabletAppDescriptor("CHUNKCLAIMER",
+                "ui.questsandstuff.app.chunkclaimer",
+                IconAtlas.icon("app_chunkclaimer"),
+                "app_chunkclaimer",
+                ChunkClaimerAppComposer::create));
+        TabletAppRegistry.register(new TabletAppDescriptor("SETTINGS",
+                "ui.questsandstuff.app.settings",
+                IconAtlas.icon("app_settings"),
+                "app_settings",
+                SettingsAppComposer::create));
+    }
+
+    public static UiState prepare(Player player) {
+        ensureAppsRegistered();
+        UiThemeManager.activeThemeName();
+        ensureAssetsDirs();
+        UiState state = new UiState();
+        state.root.editorAvailable = player.hasPermissions(2);
+        readPersistedUiState(state);
+        readPersistedSkinState(state);
+        state.root.canEdit = state.root.editorAvailable && state.root.editMode;
+        state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
+        state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
+        if (!state.chapterPanel.chapterPanelCollapsed) {
+            state.chapterPanel.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelWidth));
+        }
+        keepSelectedChapterValid(state, false);
+        state.chapterPanel.chapterDraft = selectedChapterName(state);
+        state.chapterPanel.chapterDraftName = state.chapterPanel.chapterDraft;
+        state.canvas.gridSizeIndex = clampGridSizeIndex(state.canvas.gridSizeIndex);
+        state.canvas.gridOpacityPercent = defaultGridOpacityPercent(state);
+        state.canvas.toolsGridOpacityDraft = Integer.toString(state.canvas.gridOpacityPercent);
+        applyCanvasBgOpacityPercent(state, state.canvas.canvasBgOpacityPercent);
+        syncCanvasStateFromCache(state);
+        return state;
+    }
+
+    public static Runnable undoAction(UiState state, Player player) {
+        return () -> {
+            if (!canUseEditorHistory(state)) {
+                return;
+            }
+            IntegratedServerActions.run(
+                    player,
+                    serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).undo(serverPlayer),
+                    () -> ModNetwork.sendToServer(new C2SEditorControlPacket("undo")));
+        };
+    }
+
+    public static Runnable redoAction(UiState state, Player player) {
+        return () -> {
+            if (!canUseEditorHistory(state)) {
+                return;
+            }
+            IntegratedServerActions.run(
+                    player,
+                    serverPlayer -> QuestServiceRegistry.editor(serverPlayer.server).redo(serverPlayer),
+                    () -> ModNetwork.sendToServer(new C2SEditorControlPacket("redo")));
+        };
+    }
+
+    private static boolean canUseEditorHistory(UiState state) {
+        return state != null && state.root.editorAvailable && (state.root.canEdit || QuestDetailsEditController.canEdit(state));
+    }
+
+    public static void keepSelectedChapterValid(UiState state, boolean persist) {
+        List<String> groups = ClientQuestStateFacade.selectableChapterOrder(state.root.canEdit);
+        if (groups.isEmpty()) {
+            state.root.selectedChapter = "";
+            return;
+        }
+        if (state.root.selectedChapter == null) {
+            state.root.selectedChapter = groups.get(0);
+            state.chapterPanel.chapterDraft = state.root.selectedChapter;
+            state.chapterPanel.chapterDraftName = state.root.selectedChapter;
+            if (persist) {
+                persistUiState(state);
+            }
+            return;
+        }
+        String selected = state.root.selectedChapter.trim();
+        if (selected.isBlank() || groups.contains(selected)) {
+            state.root.selectedChapter = selected;
+            return;
+        }
+        if (state.chapterPanel.recentlyCreatedChapters.contains(selected)) {
+            ClientQuestStateFacade.createChapterLocal(selected);
+            state.root.selectedChapter = selected;
+            state.chapterPanel.chapterDraft = selected;
+            state.chapterPanel.chapterDraftName = selected;
+            if (persist) {
+                persistUiState(state);
+            }
+            QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] preserved optimistic chapter selected={} chapters={}", selected, ClientQuestStateFacade.chapterOrder());
+            return;
+        }
+        state.root.selectedChapter = groups.get(0);
+        state.chapterPanel.chapterDraft = state.root.selectedChapter;
+        state.chapterPanel.chapterDraftName = state.root.selectedChapter;
+        if (persist) {
+            persistUiState(state);
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] selected chapter missing, reset to={} available={}", state.root.selectedChapter, groups);
+    }
+}

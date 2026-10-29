@@ -6,21 +6,21 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 
 public final class TwoFieldEditor {
     private TwoFieldEditor() {
     }
 
-    public static WidgetGroup build(TabletUiState state, int x, int y, int w, int h,
+    public static WidgetGroup build(UiState state, int x, int y, int w, int h,
             String titleKey, String leftLabelKey, String rightLabelKey,
             int left, int right, BiConsumer<Integer, Integer> onApply, Runnable onCancel) {
         int pad = 8;
@@ -30,11 +30,11 @@ public final class TwoFieldEditor {
         int[] edges = { left, right };
         Runnable apply = () -> onApply.accept(edges[0], edges[1]);
 
-        WidgetGroup popup = panel(x, y, w, h, withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT);
+        WidgetGroup popup = panel(x, y, w, h, withAlpha(ThemeColors.SURFACE_BASE, 246), ThemeColors.BORDER_ACCENT);
         popup.addWidget(flatHitButton(0, 0, w, h, click -> {}));
-        popup.addWidget(label(pad, 6, TabletTranslationKeys.text(titleKey), TabletColors.TEXT_PRIMARY));
+        popup.addWidget(label(pad, 6, TranslationKeys.text(titleKey), ThemeColors.TEXT_PRIMARY));
 
-        popup.addWidget(label(pad, 26, TabletTranslationKeys.text(leftLabelKey), TabletColors.TEXT_SECONDARY));
+        popup.addWidget(label(pad, 26, TranslationKeys.text(leftLabelKey), ThemeColors.TEXT_SECONDARY));
         TextFieldWidget leftField = StyledTextFields.integerField(
                 pad, 38, w - pad * 2, 16,
                  left, 0, Integer.MAX_VALUE, 4,
@@ -46,10 +46,10 @@ public final class TwoFieldEditor {
                 },
                 apply, onCancel, () -> {});
         leftField.setClientSideWidget();
-        StyledTextFields.applyStandardStyle(leftField, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(leftField, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
         popup.addWidget(leftField);
 
-        popup.addWidget(label(pad, 60, TabletTranslationKeys.text(rightLabelKey), TabletColors.TEXT_SECONDARY));
+        popup.addWidget(label(pad, 60, TranslationKeys.text(rightLabelKey), ThemeColors.TEXT_SECONDARY));
         TextFieldWidget rightField = StyledTextFields.integerField(
                 pad, 72, w - pad * 2, 16,
                  right, 0, Integer.MAX_VALUE, 4,
@@ -61,11 +61,11 @@ public final class TwoFieldEditor {
                 },
                 apply, onCancel, () -> {});
         rightField.setClientSideWidget();
-        StyledTextFields.applyStandardStyle(rightField, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(rightField, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
         popup.addWidget(rightField);
 
-        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_SAVE), TabletColors.SUCCESS, null, click -> apply.run());
-        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_CANCEL), TabletColors.ERROR, null, click -> onCancel.run());
+        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", TranslationKeys.text(TranslationKeys.COMMON_SAVE), ThemeColors.SUCCESS, null, click -> apply.run());
+        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", TranslationKeys.text(TranslationKeys.COMMON_CANCEL), ThemeColors.ERROR, null, click -> onCancel.run());
 
         leftField.setFocus(true);
         QuestsAndStuffMod.debugLog("[QnS:Skin] TwoFieldEditor opened: title={}, left={}, right={}", titleKey, left, right);

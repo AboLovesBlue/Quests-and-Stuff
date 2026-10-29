@@ -10,18 +10,18 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntries;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class QuestTaskDragDispatcher {
-    private static final int SECTION_GAP = TabletUiFactory.PANEL_INSET;
+    private static final int SECTION_GAP = UiFactory.PANEL_INSET;
     private static final int TITLE_H = 18;
-    private static final int HEADER_H = TabletUiFactory.HEADER_H;
+    private static final int HEADER_H = UiFactory.HEADER_H;
 
     private QuestTaskDragDispatcher() {
     }
 
-    public static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, double mouseX, double mouseY, int button) {
+    public static boolean handleDrag(Player player, UiState state, Runnable refresh, double mouseX, double mouseY, int button) {
         if (state == null || (!state.questDetails.questDetailsTaskDragPending && !state.questDetails.questDetailsTaskDragActive)) {
             return false;
         }
@@ -48,7 +48,7 @@ public final class QuestTaskDragDispatcher {
         );
     }
 
-    public static boolean handleRelease(Player player, TabletUiState state, Runnable refresh) {
+    public static boolean handleRelease(Player player, UiState state, Runnable refresh) {
         if (state == null || (!state.questDetails.questDetailsTaskDragPending && !state.questDetails.questDetailsTaskDragActive)) {
             return false;
         }
@@ -61,13 +61,13 @@ public final class QuestTaskDragDispatcher {
         return true;
     }
 
-    private static TaskDragScope dragScope(TabletUiState state) {
+    private static TaskDragScope dragScope(UiState state) {
         String questId = state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
         CompoundTag quest = questId.isBlank() ? null : ClientQuestStateFacade.quest(questId);
         if (quest == null || quest.isEmpty()) {
             return TaskDragScope.invalid();
         }
-        int panelY = TabletUiFactory.CHAPTER_Y + QuestTaskListPanel.leftPanelContentY();
+        int panelY = UiFactory.CHAPTER_Y + QuestTaskListPanel.leftPanelContentY();
         int panelH = QuestTaskListPanel.leftPanelContentH();
         int sectionsY = HEADER_H + SECTION_GAP;
         int sectionsH = panelH - HEADER_H - SECTION_GAP;

@@ -17,17 +17,17 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class TeamsMemberCardRenderer {
     private static final int CARD_H = ROW_H_32;
@@ -37,7 +37,7 @@ final class TeamsMemberCardRenderer {
     private TeamsMemberCardRenderer() {
     }
 
-    static void rebuildMemberList(WidgetGroup panel, TabletUiState state, Runnable refresh) {
+    static void rebuildMemberList(WidgetGroup panel, UiState state, Runnable refresh) {
         panel.clearAllWidgets();
         SkinAnchorRegistry.clearShared("teams_member_cards");
 
@@ -70,11 +70,11 @@ final class TeamsMemberCardRenderer {
     }
 
     private static WidgetGroup createMemberCard(ClientTeamCache.ClientMember member, boolean isOwner,
-                                                 TabletUiState state, Runnable refresh, int cardW) {
+                                                 UiState state, Runnable refresh, int cardW) {
         boolean isOwnerMember = member.role() == ClientTeamCache.ClientMember.Role.OWNER;
 
         WidgetGroup card = new WidgetGroup(0, 0, cardW, CARD_H);
-        card.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
+        card.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE));
         applyCardSkin(card, state, cardW);
 
         PlayerFaceTexture faceTexture = new PlayerFaceTexture(member.uuid(), member.name());
@@ -87,12 +87,12 @@ final class TeamsMemberCardRenderer {
 
         int nameY = (CARD_H - 9 - 2 - 9) / 2;
         int roleY = nameY + 9 + 2;
-        LabelWidget nameLabel = label(textX, nameY, member.name(), TabletColors.TEXT_PRIMARY);
+        LabelWidget nameLabel = label(textX, nameY, member.name(), ThemeColors.TEXT_PRIMARY);
         LabelWidget roleLabel = label(textX, roleY,
                 isOwnerMember
                         ? I18n.get("ui.questsandstuff.teams.owner")
                         : I18n.get("ui.questsandstuff.teams.member"),
-                isOwnerMember ? TabletColors.WARNING : TabletColors.TEXT_MUTED);
+                isOwnerMember ? ThemeColors.WARNING : ThemeColors.TEXT_MUTED);
 
         card.addWidget(headBtn);
         card.addWidget(nameLabel);
@@ -140,7 +140,7 @@ final class TeamsMemberCardRenderer {
         return card;
     }
 
-    private static void applyCardSkin(WidgetGroup card, TabletUiState state, int cardW) {
+    private static void applyCardSkin(WidgetGroup card, UiState state, int cardW) {
         String rawOverride = SkinOverrideKey.resolveOverride(state, "teams_member_cards");
         if (rawOverride == null) return;
         SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);

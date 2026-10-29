@@ -12,9 +12,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 final class CanvasMinimapOverlay {
     private CanvasMinimapOverlay() {
@@ -22,7 +22,7 @@ final class CanvasMinimapOverlay {
 
     static void render(
             CanvasViewport canvasViewport,
-            TabletUiState state
+            UiState state
     ) {
         clearState(state);
         if (!QuestsAndStuffConfig.minimapEnabled()) {
@@ -57,7 +57,7 @@ final class CanvasMinimapOverlay {
 
     private static WidgetGroup minimapWidget(
             CanvasViewport canvasViewport,
-            TabletUiState state,
+            UiState state,
             boolean animationsEnabled,
             String chapter,
             CanvasMinimapGeometry.Layout layout,
@@ -97,7 +97,7 @@ final class CanvasMinimapOverlay {
         };
     }
 
-    private static float minimapOpenProgress(TabletUiState state, boolean animationsEnabled) {
+    private static float minimapOpenProgress(UiState state, boolean animationsEnabled) {
         if (!animationsEnabled) {
             return state.canvas.minimapCollapsed ? 0.0f : 1.0f;
         }
@@ -109,7 +109,7 @@ final class CanvasMinimapOverlay {
         );
     }
 
-    private static void clearState(TabletUiState state) {
+    private static void clearState(UiState state) {
         state.canvas.minimapPanelX = 0;
         state.canvas.minimapPanelY = 0;
         state.canvas.minimapPanelW = 0;
@@ -124,7 +124,7 @@ final class CanvasMinimapOverlay {
         state.canvas.minimapH = 0;
     }
 
-    private static void applyLayout(TabletUiState state, CanvasMinimapGeometry.Layout layout) {
+    private static void applyLayout(UiState state, CanvasMinimapGeometry.Layout layout) {
         state.canvas.minimapPanelX = layout.panelX();
         state.canvas.minimapPanelY = layout.panelY();
         state.canvas.minimapPanelW = layout.panelW();
@@ -135,7 +135,7 @@ final class CanvasMinimapOverlay {
         state.canvas.minimapToggleH = layout.toggleH();
     }
 
-    private static void applyProjection(TabletUiState state, CanvasMinimapGeometry.Projection projection) {
+    private static void applyProjection(UiState state, CanvasMinimapGeometry.Projection projection) {
         state.canvas.minimapX = projection.drawX();
         state.canvas.minimapY = projection.drawY();
         state.canvas.minimapW = projection.drawW();

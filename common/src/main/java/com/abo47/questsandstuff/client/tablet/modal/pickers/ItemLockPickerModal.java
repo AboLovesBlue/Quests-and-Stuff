@@ -15,23 +15,23 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class ItemLockPickerModal {
     private ItemLockPickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         return RegistryTilePicker.rebuild(modal, state, player, refresh, w, h, new RegistryTilePicker.Config(
-                TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_ITEM_LOCK),
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_ITEM_LOCKS),
+                TranslationKeys.text(QuestTranslationKeys.CHOOSE_ITEM_LOCK),
+                TranslationKeys.text(QuestTranslationKeys.NO_ITEM_LOCKS),
                 "item lock",
                 "item",
-                TabletColors.LOCKED,
+                ThemeColors.LOCKED,
                 new RegistryTilePicker.StateAccess(
                         () -> state.pickers.itemLockSearch,
                         value -> state.pickers.itemLockSearch = value,

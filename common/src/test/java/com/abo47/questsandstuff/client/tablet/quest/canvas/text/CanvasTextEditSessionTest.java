@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.text;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TextEditSessionTest {
     @Test
     void mainCanvasBeginClosesQuestDetailsDraftAndOpensCanvasStyleOwner() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextEditSession.beginQuestDetails(state, "desc:text", "Description");
 
         CanvasTextEditSession.beginMainCanvas(state, "canvas:text", "Canvas");
@@ -30,7 +30,7 @@ class TextEditSessionTest {
 
     @Test
     void questDetailsBeginUsesSharedDraftCursorAndClosesCanvasStyleOwner() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextStyleSession.openMainCanvas(state, "canvas:text");
 
         CanvasTextEditSession.beginQuestDetails(state, "desc:text", "Description");
@@ -49,7 +49,7 @@ class TextEditSessionTest {
 
     @Test
     void replacementNormalizesSelectionAndKeepsQuestDetailsDraftInSync() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextEditSession.beginQuestDetails(state, "desc:text", "abcdef");
         CanvasTextEditSession.moveCursor(state, 2, false);
         CanvasTextEditSession.moveCursor(state, 5, true);
@@ -68,7 +68,7 @@ class TextEditSessionTest {
 
     @Test
     void insertCapsDraftAtSharedMaximum() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextEditSession.beginMainCanvas(state, "text", "a".repeat(CanvasTextEditSession.MAX_DRAFT_LENGTH - 1));
 
         CanvasTextEditSession.Replacement replacement = CanvasTextEditSession.insert(state, "bcdef");
@@ -79,7 +79,7 @@ class TextEditSessionTest {
 
     @Test
     void closeQuestDetailsClearsStaleQuestFieldsEvenWhenCommonOpenFlagIsOff() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasTextEditOpen = false;
         state.questDetails.questDetailsTextEditTarget = "stale";
         state.questDetails.questDetailsTextEditDraft = "draft";

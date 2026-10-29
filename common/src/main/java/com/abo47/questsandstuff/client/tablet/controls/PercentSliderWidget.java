@@ -10,7 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.SliderWidget;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -67,9 +67,9 @@ final class PercentSliderWidget extends SliderWidget {
         initTemplate();
         valueStep = 100;
         handleSize = 6;
-        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_PANEL_ALT, 130), withAlpha(TabletColors.BORDER_BASE, 180)));
+        setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 130), withAlpha(ThemeColors.BORDER_BASE, 180)));
         setHoverTexture(GlowShaderHelper.hoverGlow());
-        handleTexture = SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 180), withAlpha(TabletColors.INTERACTIVE, 235));
+        handleTexture = SurfaceFactory.bordered(withAlpha(ThemeColors.INTERACTIVE, 180), withAlpha(ThemeColors.INTERACTIVE, 235));
         handleHoverTexture = GlowShaderHelper.hoverGlow();
         setOverlay(null);
         setValue(normalize(currentValue));

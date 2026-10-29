@@ -13,16 +13,16 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 public final class CanvasSelectionRenderer {
     private static final int SELECTION_PAD = GRID_4;
@@ -31,7 +31,7 @@ public final class CanvasSelectionRenderer {
     private CanvasSelectionRenderer() {
     }
 
-    public static void renderSelectionOverlay(WidgetGroup canvasViewport, TabletUiState state, List<QuestCardLayout> visibleCards) {
+    public static void renderSelectionOverlay(WidgetGroup canvasViewport, UiState state, List<QuestCardLayout> visibleCards) {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -48,7 +48,7 @@ public final class CanvasSelectionRenderer {
         });
     }
 
-    public static boolean isSelectionBoundsHit(TabletUiState state, int x, int y) {
+    public static boolean isSelectionBoundsHit(UiState state, int x, int y) {
         if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
@@ -56,7 +56,7 @@ public final class CanvasSelectionRenderer {
                 && y >= state.canvas.selectionBoundsTop && y <= state.canvas.selectionBoundsBottom;
     }
 
-    public static boolean isSelectionResizeHandleHit(TabletUiState state, int x, int y) {
+    public static boolean isSelectionResizeHandleHit(UiState state, int x, int y) {
         if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
@@ -66,7 +66,7 @@ public final class CanvasSelectionRenderer {
                 && y >= top && y <= state.canvas.selectionBoundsBottom;
     }
 
-    public static boolean isSelectionRotateHandleHit(TabletUiState state, int x, int y) {
+    public static boolean isSelectionRotateHandleHit(UiState state, int x, int y) {
         if (!state.canvas.selectionBoundsVisible) {
             return false;
         }
@@ -76,7 +76,7 @@ public final class CanvasSelectionRenderer {
                 && y >= top && y <= top + HANDLE_SIZE;
     }
 
-    public static void updateSelectionBounds(TabletUiState state, List<QuestCardLayout> cards) {
+    public static void updateSelectionBounds(UiState state, List<QuestCardLayout> cards) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
@@ -166,7 +166,7 @@ public final class CanvasSelectionRenderer {
 
     public static void drawSelectionForeground(
             GuiGraphics graphics,
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             int originX,
             int originY,
@@ -180,11 +180,11 @@ public final class CanvasSelectionRenderer {
         drawSelectionBounds(graphics, originX, originY, maxW, maxH, state);
     }
 
-    public static void renderAlignmentGuides(WidgetGroup canvasViewport, TabletUiState state) {
+    public static void renderAlignmentGuides(WidgetGroup canvasViewport, UiState state) {
         if (!state.root.canEdit) {
             return;
         }
-        int color = withAlpha(TabletColors.WARNING, 225);
+        int color = withAlpha(ThemeColors.WARNING, 225);
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -211,7 +211,7 @@ public final class CanvasSelectionRenderer {
             int originY,
             int maxW,
             int maxH,
-            TabletUiState state
+            UiState state
     ) {
         if (!state.canvas.boxSelecting) {
             return;
@@ -235,7 +235,7 @@ public final class CanvasSelectionRenderer {
             int originY,
             int maxW,
             int maxH,
-            TabletUiState state
+            UiState state
     ) {
         if (!state.root.canEdit || !state.canvas.selectionBoundsVisible || state.questDetails.pendingQuestTitleChangeId != null && !state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;

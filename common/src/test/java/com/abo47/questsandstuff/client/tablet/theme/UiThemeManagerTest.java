@@ -11,7 +11,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeJsonCodec;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,20 +34,20 @@ class UiThemeManagerTest {
     );
 
     private static final Map<String, Integer> DEFAULT_PALETTE = palette(
-            TabletColors.DEFAULT_SURFACE_BASE,
-            TabletColors.DEFAULT_SURFACE_PANEL,
-            TabletColors.DEFAULT_SURFACE_PANEL_ALT,
-            TabletColors.DEFAULT_BORDER_BASE,
-            TabletColors.DEFAULT_BORDER_ACCENT,
-            TabletColors.DEFAULT_TEXT_PRIMARY,
-            TabletColors.DEFAULT_TEXT_SECONDARY,
-            TabletColors.DEFAULT_TEXT_MUTED,
-            TabletColors.DEFAULT_SUCCESS,
-            TabletColors.DEFAULT_WARNING,
-            TabletColors.DEFAULT_ERROR,
-            TabletColors.DEFAULT_INTERACTIVE,
-            TabletColors.DEFAULT_SCROLL_TRACK,
-            TabletColors.DEFAULT_SCROLL_THUMB
+            ThemeColors.DEFAULT_SURFACE_BASE,
+            ThemeColors.DEFAULT_SURFACE_PANEL,
+            ThemeColors.DEFAULT_SURFACE_PANEL_ALT,
+            ThemeColors.DEFAULT_BORDER_BASE,
+            ThemeColors.DEFAULT_BORDER_ACCENT,
+            ThemeColors.DEFAULT_TEXT_PRIMARY,
+            ThemeColors.DEFAULT_TEXT_SECONDARY,
+            ThemeColors.DEFAULT_TEXT_MUTED,
+            ThemeColors.DEFAULT_SUCCESS,
+            ThemeColors.DEFAULT_WARNING,
+            ThemeColors.DEFAULT_ERROR,
+            ThemeColors.DEFAULT_INTERACTIVE,
+            ThemeColors.DEFAULT_SCROLL_TRACK,
+            ThemeColors.DEFAULT_SCROLL_THUMB
     );
 
     @TempDir
@@ -99,8 +99,8 @@ class UiThemeManagerTest {
 
         UiThemeManager.applyLoadedState(UiThemeJsonCodec.loadUiThemeState(theme));
 
-        assertEquals(0xFF010203, TabletColors.SURFACE_BASE);
-        assertEquals(TabletColors.DEFAULT_SURFACE_PANEL, TabletColors.SURFACE_PANEL);
+        assertEquals(0xFF010203, ThemeColors.SURFACE_BASE);
+        assertEquals(ThemeColors.DEFAULT_SURFACE_PANEL, ThemeColors.SURFACE_PANEL);
     }
 
     private static String customThemeJson() {
@@ -131,20 +131,20 @@ class UiThemeManagerTest {
 
     private static Map<String, Integer> currentPalette() {
         return palette(
-                TabletColors.SURFACE_BASE,
-                TabletColors.SURFACE_PANEL,
-                TabletColors.SURFACE_PANEL_ALT,
-                TabletColors.BORDER_BASE,
-                TabletColors.BORDER_ACCENT,
-                TabletColors.TEXT_PRIMARY,
-                TabletColors.TEXT_SECONDARY,
-                TabletColors.TEXT_MUTED,
-                TabletColors.SUCCESS,
-                TabletColors.WARNING,
-                TabletColors.ERROR,
-                TabletColors.INTERACTIVE,
-                TabletColors.SCROLL_TRACK,
-                TabletColors.SCROLL_THUMB
+                ThemeColors.SURFACE_BASE,
+                ThemeColors.SURFACE_PANEL,
+                ThemeColors.SURFACE_PANEL_ALT,
+                ThemeColors.BORDER_BASE,
+                ThemeColors.BORDER_ACCENT,
+                ThemeColors.TEXT_PRIMARY,
+                ThemeColors.TEXT_SECONDARY,
+                ThemeColors.TEXT_MUTED,
+                ThemeColors.SUCCESS,
+                ThemeColors.WARNING,
+                ThemeColors.ERROR,
+                ThemeColors.INTERACTIVE,
+                ThemeColors.SCROLL_TRACK,
+                ThemeColors.SCROLL_THUMB
         );
     }
 

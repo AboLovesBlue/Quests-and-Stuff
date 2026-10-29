@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
@@ -23,17 +23,17 @@ public final class RecipeViewerSelectionBridge {
     private RecipeViewerSelectionBridge() {
     }
 
-    public static boolean begin(Player player, TabletUiState state, String target, List<RecipeView> recipes, ItemStack stack, Runnable refresh) {
+    public static boolean begin(Player player, UiState state, String target, List<RecipeView> recipes, ItemStack stack, Runnable refresh) {
         return begin(player, state, target, recipes, stack, refresh, RecipeViewerSelectionMode.OUTPUT, null);
     }
 
-    public static boolean begin(Player player, TabletUiState state, String target, List<RecipeView> recipes, Runnable refresh) {
+    public static boolean begin(Player player, UiState state, String target, List<RecipeView> recipes, Runnable refresh) {
         return begin(player, state, target, recipes, ItemStack.EMPTY, refresh, RecipeViewerSelectionMode.OUTPUT, null);
     }
 
     public static boolean beginFromKeybind(
             Player player,
-            TabletUiState state,
+            UiState state,
             String target,
             List<RecipeView> recipes,
             ItemStack stack,
@@ -48,7 +48,7 @@ public final class RecipeViewerSelectionBridge {
 
     public static boolean beginFromKeybind(
             Player player,
-            TabletUiState state,
+            UiState state,
             String target,
             List<RecipeView> recipes,
             Runnable refresh,
@@ -62,7 +62,7 @@ public final class RecipeViewerSelectionBridge {
 
     private static boolean begin(
             Player player,
-            TabletUiState state,
+            UiState state,
             String target,
             List<RecipeView> recipes,
             ItemStack stack,
@@ -200,7 +200,7 @@ public final class RecipeViewerSelectionBridge {
 
     private record PendingSelection(
             Player player,
-            TabletUiState state,
+            UiState state,
             RecipeViewerSelectionUtils.Selection selection,
             Runnable refresh,
             Screen parentScreen

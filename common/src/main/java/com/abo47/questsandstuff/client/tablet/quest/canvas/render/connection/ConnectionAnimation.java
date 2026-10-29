@@ -9,14 +9,14 @@ import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.AnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 
 public final class ConnectionAnimation {
-    private static final long DURATION_MS = TabletAnimationTimings.CONNECTION_ANIM_MS;
+    private static final long DURATION_MS = AnimationTimings.CONNECTION_ANIM_MS;
     private static final AnimationState STOPPED = new AnimationState(false, 1.0f);
 
     private ConnectionAnimation() {
@@ -30,7 +30,7 @@ public final class ConnectionAnimation {
         return QuestConnectionMetadata.targetQuestId(connectionKey);
     }
 
-    public static void startIfNew(TabletUiState state, String targetQuestId, String sourceQuestId) {
+    public static void startIfNew(UiState state, String targetQuestId, String sourceQuestId) {
         String target = normalize(targetQuestId);
         String source = normalize(sourceQuestId);
         if (state == null || target.isBlank() || source.isBlank() || target.equals(source)) {
@@ -46,7 +46,7 @@ public final class ConnectionAnimation {
         state.canvas.canvasConnectionAnimationStarts.put(connectionKey(source, target), System.currentTimeMillis());
     }
 
-    public static boolean finishIfDone(TabletUiState state) {
+    public static boolean finishIfDone(UiState state) {
         if (state == null || state.canvas.canvasConnectionAnimationStarts.isEmpty()) {
             return false;
         }
@@ -67,7 +67,7 @@ public final class ConnectionAnimation {
         return changed;
     }
 
-    public static AnimationState current(TabletUiState state, String connectionKey, long now) {
+    public static AnimationState current(UiState state, String connectionKey, long now) {
         if (state == null || connectionKey == null || connectionKey.isBlank() || !QuestsAndStuffConfig.connectionAnimationsEnabled()) {
             return STOPPED;
         }

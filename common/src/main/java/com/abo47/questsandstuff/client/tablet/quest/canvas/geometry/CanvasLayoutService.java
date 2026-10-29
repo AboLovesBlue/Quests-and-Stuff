@@ -20,13 +20,13 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestMatch;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 public final class CanvasLayoutService {
     private static final int MIN_PAN_RENDER_OVERSCAN = 192;
@@ -34,7 +34,7 @@ public final class CanvasLayoutService {
     private CanvasLayoutService() {
     }
 
-    public static boolean jumpToBestMatch(TabletUiState state) {
+    public static boolean jumpToBestMatch(UiState state) {
         if (state.root.search.isBlank()) {
             return false;
         }
@@ -80,7 +80,7 @@ public final class CanvasLayoutService {
 
     public static List<QuestCardLayout> layoutVisibleCards(
             List<Map.Entry<String, CompoundTag>> quests,
-            TabletUiState state
+            UiState state
     ) {
         List<QuestCardLayout> visibleCards = new ArrayList<>();
         String selectedChapter = selectedChapterName(state);
@@ -124,7 +124,7 @@ public final class CanvasLayoutService {
                 && card.y() <= viewportH + marginY;
     }
 
-    public static void clampCanvasOffset(TabletUiState state, List<QuestCardLayout> cards, int contentW, int contentH) {
+    public static void clampCanvasOffset(UiState state, List<QuestCardLayout> cards, int contentW, int contentH) {
         List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapterName(state), List.of());
         List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapterName(state), List.of());
         if (cards.isEmpty() && images.isEmpty() && texts.isEmpty()) {
@@ -185,7 +185,7 @@ public final class CanvasLayoutService {
         CanvasCameraController.rememberCurrentGroup(state);
     }
 
-    private static void setCanvasWorldBounds(TabletUiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY) {
+    private static void setCanvasWorldBounds(UiState state, int minLogicalX, int minLogicalY, int maxLogicalX, int maxLogicalY) {
         int width = Math.max(1, maxLogicalX - minLogicalX);
         int height = Math.max(1, maxLogicalY - minLogicalY);
         state.canvas.minimapWorldMinX = minLogicalX;
@@ -198,7 +198,7 @@ public final class CanvasLayoutService {
         state.canvas.canvasNavigationHeight = height;
     }
 
-    private static void clampLockedCanvasOffset(TabletUiState state, int contentW, int contentH) {
+    private static void clampLockedCanvasOffset(UiState state, int contentW, int contentH) {
         float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         int scaledW = Math.max(contentW, Math.round(contentW * zoom));
         int scaledH = Math.max(contentH, Math.round(contentH * zoom));

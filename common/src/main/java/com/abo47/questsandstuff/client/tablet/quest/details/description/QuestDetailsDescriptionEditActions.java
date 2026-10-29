@@ -13,8 +13,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -25,11 +25,11 @@ final class QuestDetailsDescriptionEditActions {
     private QuestDetailsDescriptionEditActions() {
     }
 
-    static void addTextAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
+    static void addTextAt(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
         String id = nextDescriptionTextId(model);
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 16);
-        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), CanvasTextLayer.DEFAULT_W, CanvasTextLayer.DEFAULT_H, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
+        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), CanvasTextLayer.DEFAULT_W, CanvasTextLayer.DEFAULT_H, 0, "left", "normal", ThemeColors.TEXT_PRIMARY);
         text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
@@ -40,7 +40,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add text quest={} text={} pos={},{}", questId, id, x, y);
     }
 
-    static void addImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addImageAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionImageId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 40);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
@@ -48,7 +48,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add image pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void addGameImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addGameImageAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionImageId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 40);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
@@ -56,7 +56,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add game image pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void addEntityAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addEntityAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionEntityId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 32);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 32);
@@ -64,7 +64,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add entity pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void addItemAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addItemAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionItemId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 24);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
@@ -72,7 +72,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add item model pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void addBlockAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addBlockAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionBlockId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 24);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 24);
@@ -80,7 +80,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add block model pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
+    static void addRecipeCardAt(UiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionRecipeId(modelForQuest(questId));
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - CanvasRecipeCardActions.CARD_W / 2);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - CanvasRecipeCardActions.CARD_H / 2);
@@ -88,7 +88,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card pending quest={} image={} pos={},{}", questId, id, x, y);
     }
 
-    static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
+    static void fitTextToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         CanvasTextLayer text = model.text(id);
         if (text == null) {
             return;
@@ -99,7 +99,7 @@ final class QuestDetailsDescriptionEditActions {
         state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId(id);
     }
 
-    static void fitImageToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
+    static void fitImageToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         CanvasImageLayer image = model.image(id);
         if (image == null) {
             return;
@@ -110,7 +110,7 @@ final class QuestDetailsDescriptionEditActions {
         state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(id);
     }
 
-    static void fitSelectionToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+    static void fitSelectionToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model) {
         int contentW = QuestDetailsWindow.descriptionContentWidth(state);
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             CanvasTextLayer text = model.text(textId);
@@ -129,7 +129,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestDetailsDescriptionModel.save(player, questId, model);
     }
 
-    static void alignSelectionToCanvas(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, boolean horizontal) {
+    static void alignSelectionToCanvas(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, boolean horizontal) {
         int[] bounds = selectionBounds(state, model);
         if (bounds == null) {
             return;
@@ -174,7 +174,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestDetailsDescriptionModel.save(player, questId, model);
     }
 
-    static void moveSelectionLayers(TabletUiState state, QuestDetailsDescriptionModel model, boolean front) {
+    static void moveSelectionLayers(UiState state, QuestDetailsDescriptionModel model, boolean front) {
         List<String> selected = QuestDetailsDescriptionSelectionState.selectedLayerKeys(state, model);
         if (selected.isEmpty()) {
             return;
@@ -187,7 +187,7 @@ final class QuestDetailsDescriptionEditActions {
         }
     }
 
-    static void copyDescriptionSelection(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static void copyDescriptionSelection(UiState state, QuestDetailsDescriptionModel model) {
         List<CanvasImageLayer> copiedImages = new ArrayList<>();
         List<CanvasTextLayer> copiedTexts = new ArrayList<>();
         int minX = Integer.MAX_VALUE;
@@ -211,7 +211,7 @@ final class QuestDetailsDescriptionEditActions {
         state.clipboard.canvasClipboard.store(false, copiedImages, copiedTexts, minX == Integer.MAX_VALUE ? 0 : minX, minY == Integer.MAX_VALUE ? 0 : minY);
     }
 
-    static boolean copySelectedDescriptionToClipboard(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static boolean copySelectedDescriptionToClipboard(UiState state, QuestDetailsDescriptionModel model) {
         if (state == null || model == null || !QuestDetailsDescriptionSelectionState.hasSelection(state)) {
             return false;
         }
@@ -221,7 +221,7 @@ final class QuestDetailsDescriptionEditActions {
         return state.clipboard.canvasClipboard.hasCanvasLayers();
     }
 
-    static boolean selectAllDescription(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static boolean selectAllDescription(UiState state, QuestDetailsDescriptionModel model) {
         if (state == null || model == null || model.texts.isEmpty() && model.images.isEmpty()) {
             return false;
         }
@@ -238,7 +238,7 @@ final class QuestDetailsDescriptionEditActions {
         return true;
     }
 
-    static boolean deleteSelectedDescription(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+    static boolean deleteSelectedDescription(Player player, UiState state, String questId, QuestDetailsDescriptionModel model) {
         if (state == null || model == null || !QuestDetailsDescriptionSelectionState.hasSelection(state)) {
             return false;
         }
@@ -248,7 +248,7 @@ final class QuestDetailsDescriptionEditActions {
         return true;
     }
 
-    static void deleteDescriptionSelection(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static void deleteDescriptionSelection(UiState state, QuestDetailsDescriptionModel model) {
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {
             model.removeText(textId);
         }
@@ -258,7 +258,7 @@ final class QuestDetailsDescriptionEditActions {
         QuestDetailsDescriptionSelectionState.clear(state);
     }
 
-    private static int[] selectionBounds(TabletUiState state, QuestDetailsDescriptionModel model) {
+    private static int[] selectionBounds(UiState state, QuestDetailsDescriptionModel model) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;

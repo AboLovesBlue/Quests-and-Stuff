@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal.target;
 
 import net.minecraft.network.chat.Component;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
     public enum ModalIconPickerMode {
     USABLE_ITEMS("usable_items", "send-horizontal"),
@@ -91,7 +91,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
     }
 
     public static void normalizeForContext(
-            TabletUiState state,
+            UiState state,
             boolean entityPicker,
             boolean itemModelPicker,
             boolean supportsEntityIcons,
@@ -107,7 +107,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
         return BACKGROUND_CYCLE;
     }
 
-    public static void normalizeForBackground(TabletUiState state) {
+    public static void normalizeForBackground(UiState state) {
         if (state == null) {
             return;
         }
@@ -117,7 +117,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
         }
     }
 
-    public static void cycleBackground(TabletUiState state, int direction) {
+    public static void cycleBackground(UiState state, int direction) {
         if (state == null) {
             return;
         }
@@ -126,7 +126,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
         state.pickers.iconScroll = 0;
     }
 
-    public static void cycleModelItems(TabletUiState state, int direction) {
+    public static void cycleModelItems(UiState state, int direction) {
         if (state == null) {
             return;
         }
@@ -136,7 +136,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
     }
 
     public static void cycle(
-            TabletUiState state,
+            UiState state,
             boolean supportsEntityIcons,
             boolean supportsInventoryIcons,
             boolean useItemPicker,
@@ -151,15 +151,15 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
         state.pickers.iconScroll = 0;
     }
 
-    public static void reset(TabletUiState state) {
+    public static void reset(UiState state) {
         resetTo(state, ITEMS);
     }
 
-    public static void resetForTarget(TabletUiState state, String target) {
+    public static void resetForTarget(UiState state, String target) {
         resetTo(state, initialModeForTarget(target));
     }
 
-    public static void resetTo(TabletUiState state, ModalIconPickerMode mode) {
+    public static void resetTo(UiState state, ModalIconPickerMode mode) {
         if (state != null) {
             state.pickers.iconMode = safe(mode);
         }

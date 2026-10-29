@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public final class CanvasCameraController {
@@ -18,11 +18,11 @@ public final class CanvasCameraController {
     private CanvasCameraController() {
     }
 
-    public static void beforeCanvasRebuild(TabletUiState state) {
+    public static void beforeCanvasRebuild(UiState state) {
         rememberCurrentGroup(state);
     }
 
-    public static void afterCanvasLayout(TabletUiState state, String chapter) {
+    public static void afterCanvasLayout(UiState state, String chapter) {
         String normalizedGroup = normalizeChapter(chapter);
         state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         state.canvas.canvasLivePanX = 0;
@@ -45,7 +45,7 @@ public final class CanvasCameraController {
         }
     }
 
-    public static void rememberCurrentGroup(TabletUiState state) {
+    public static void rememberCurrentGroup(UiState state) {
         if (state == null || state.canvas.canvasContentW <= 0 || state.canvas.canvasContentH <= 0) {
             return;
         }
@@ -57,23 +57,23 @@ public final class CanvasCameraController {
         state.canvas.canvasCameraZoomsByGroup.put(chapter, CanvasRenderer.clampZoom(state.canvas.canvasZoom));
     }
 
-    public static CanvasPoint previewPanDelta(TabletUiState state, int requestedLivePanX, int requestedLivePanY) {
+    public static CanvasPoint previewPanDelta(UiState state, int requestedLivePanX, int requestedLivePanY) {
         CanvasPoint clamped = clampedOffset(state, state.canvas.canvasOffsetX + requestedLivePanX, state.canvas.canvasOffsetY + requestedLivePanY);
         return new CanvasPoint(clamped.x - state.canvas.canvasOffsetX, clamped.y - state.canvas.canvasOffsetY);
     }
 
-    public static void panByScreen(TabletUiState state, int dx, int dy, boolean persist) {
+    public static void panByScreen(UiState state, int dx, int dy, boolean persist) {
         setOffset(state, state.canvas.canvasOffsetX + dx, state.canvas.canvasOffsetY + dy, persist);
     }
 
-    public static void setOffset(TabletUiState state, int offsetX, int offsetY, boolean persist) {
+    public static void setOffset(UiState state, int offsetX, int offsetY, boolean persist) {
         CanvasPoint clamped = clampedOffset(state, offsetX, offsetY);
         state.canvas.canvasOffsetX = clamped.x;
         state.canvas.canvasOffsetY = clamped.y;
         finishCameraChange(state, persist);
     }
 
-    public static CanvasPoint clampedOffset(TabletUiState state, int offsetX, int offsetY) {
+    public static CanvasPoint clampedOffset(UiState state, int offsetX, int offsetY) {
         if (state == null) {
             return new CanvasPoint(offsetX, offsetY);
         }
@@ -101,7 +101,7 @@ public final class CanvasCameraController {
     }
 
     public static CanvasPoint clampedOffsetToWorldBounds(
-            TabletUiState state,
+            UiState state,
             int offsetX,
             int offsetY,
             int minLogicalX,
@@ -142,13 +142,13 @@ public final class CanvasCameraController {
         return new CanvasPoint(clampedX, clampedY);
     }
 
-    public static void clampCameraOffset(TabletUiState state) {
+    public static void clampCameraOffset(UiState state) {
         CanvasPoint clamped = clampedOffset(state, state.canvas.canvasOffsetX, state.canvas.canvasOffsetY);
         state.canvas.canvasOffsetX = clamped.x;
         state.canvas.canvasOffsetY = clamped.y;
     }
 
-    public static void zoomAt(TabletUiState state, Runnable refresh, int localX, int localY, double wheelDelta) {
+    public static void zoomAt(UiState state, Runnable refresh, int localX, int localY, double wheelDelta) {
         if (state == null || wheelDelta == 0.0D) {
             return;
         }
@@ -170,14 +170,14 @@ public final class CanvasCameraController {
         }
     }
 
-    public static void resetZoom(TabletUiState state, boolean persist) {
+    public static void resetZoom(UiState state, boolean persist) {
         CanvasDoublePoint center = currentCenter(state);
         state.canvas.canvasZoom = 1.0f;
         centerOnInternal(state, center.x(), center.y());
         finishCameraChange(state, persist);
     }
 
-    public static boolean consumePendingQuestFocus(TabletUiState state, List<QuestCardLayout> cards, String chapter) {
+    public static boolean consumePendingQuestFocus(UiState state, List<QuestCardLayout> cards, String chapter) {
         String questId = QuestIdentity.questId(state.canvas.pendingCameraQuestId);
         String pendingGroup = normalizeChapter(state.canvas.pendingCameraGroup);
         String selectedChapter = normalizeChapter(chapter);
@@ -197,38 +197,38 @@ public final class CanvasCameraController {
         return false;
     }
 
-    public static void centerOn(TabletUiState state, double logicalX, double logicalY, boolean persist) {
+    public static void centerOn(UiState state, double logicalX, double logicalY, boolean persist) {
         centerOnInternal(state, logicalX, logicalY);
         finishCameraChange(state, persist);
     }
 
-    public static double screenToLogicalX(TabletUiState state, int screenX, boolean includeLivePan) {
+    public static double screenToLogicalX(UiState state, int screenX, boolean includeLivePan) {
         int livePan = includeLivePan ? state.canvas.canvasLivePanX : 0;
         return (screenX - state.canvas.canvasContentX - state.canvas.canvasOffsetX - livePan) / CanvasRenderer.clampZoom(state.canvas.canvasZoom);
     }
 
-    public static double screenToLogicalY(TabletUiState state, int screenY, boolean includeLivePan) {
+    public static double screenToLogicalY(UiState state, int screenY, boolean includeLivePan) {
         int livePan = includeLivePan ? state.canvas.canvasLivePanY : 0;
         return (screenY - state.canvas.canvasContentY - state.canvas.canvasOffsetY - livePan) / CanvasRenderer.clampZoom(state.canvas.canvasZoom);
     }
 
-    private static void centerOnInternal(TabletUiState state, double logicalX, double logicalY) {
+    private static void centerOnInternal(UiState state, double logicalX, double logicalY) {
         float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
         state.canvas.canvasOffsetX = (state.canvas.canvasContentW / 2) - Math.round((float) (logicalX * zoom));
         state.canvas.canvasOffsetY = (state.canvas.canvasContentH / 2) - Math.round((float) (logicalY * zoom));
         clampCameraOffset(state);
     }
 
-    private static CanvasDoublePoint currentCenter(TabletUiState state) {
+    private static CanvasDoublePoint currentCenter(UiState state) {
         int screenX = state.canvas.canvasContentX + state.canvas.canvasContentW / 2;
         int screenY = state.canvas.canvasContentY + state.canvas.canvasContentH / 2;
         return new CanvasDoublePoint(screenToLogicalX(state, screenX, false), screenToLogicalY(state, screenY, false));
     }
 
-    private static void finishCameraChange(TabletUiState state, boolean persist) {
+    private static void finishCameraChange(UiState state, boolean persist) {
         rememberCurrentGroup(state);
         if (persist) {
-            TabletUiFactory.persistUiState(state);
+            UiFactory.persistUiState(state);
         }
     }
 

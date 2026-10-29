@@ -28,9 +28,9 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class QuestHudLayoutEditScreen extends Screen {
@@ -62,10 +62,10 @@ public final class QuestHudLayoutEditScreen extends Screen {
         int y = Math.max(8, height - 44);
         addRenderableWidget(new ThemedButton(startX, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.common.save"),
-                "save", TabletColors.SUCCESS, button -> dragHandler.saveAndClose()));
+                "save", ThemeColors.SUCCESS, button -> dragHandler.saveAndClose()));
         addRenderableWidget(new ThemedButton(startX + HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.hud.layout.reset"),
-                "refresh", TabletColors.WARNING, button -> {
+                "refresh", ThemeColors.WARNING, button -> {
             QuestHudLayoutManager.resetToDefaults();
             dragHandler.snapAllElementsToGrid(width, height);
             dragHandler.setSelected(null);
@@ -74,9 +74,9 @@ public final class QuestHudLayoutEditScreen extends Screen {
         }));
         addRenderableWidget(new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 2, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
                 Component.translatable("ui.questsandstuff.common.cancel"),
-                "close", TabletColors.ERROR, button -> dragHandler.cancelAndClose()));
+                "close", ThemeColors.ERROR, button -> dragHandler.cancelAndClose()));
         snapButton = new ThemedButton(startX + (HudConstants.EDIT_BUTTON_W + HudConstants.EDIT_BUTTON_GAP) * 3, y, HudConstants.EDIT_BUTTON_W, HudConstants.EDIT_BUTTON_H,
-                snapLabel(), "grid", TabletColors.INTERACTIVE, button -> {
+                snapLabel(), "grid", ThemeColors.INTERACTIVE, button -> {
             boolean enabled = !QuestHudLayoutManager.snapToGrid();
             QuestHudLayoutManager.setSnapToGrid(enabled);
             if (enabled) {
@@ -197,7 +197,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
         int menuH = ContextMenuPanel.heightFor(contextMenuActions, contextMenuActions.size());
         int menuX = Math.max(4, Math.min(mouseX, width - menuW - 4));
         int menuY = Math.max(4, Math.min(mouseY, height - menuH - 4));
-        contextMenuWidget = ContextMenuPanel.build(menuX, menuY, menuW, contextMenuActions, 0, contextMenuActions.size(), TabletColors.BORDER_ACCENT, null, null, width, height);
+        contextMenuWidget = ContextMenuPanel.build(menuX, menuY, menuW, contextMenuActions, 0, contextMenuActions.size(), ThemeColors.BORDER_ACCENT, null, null, width, height);
     }
 
     private void closeContextMenu() {
@@ -260,9 +260,9 @@ public final class QuestHudLayoutEditScreen extends Screen {
     }
 
     private void renderEditSurface(GuiGraphics graphics) {
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 86)).draw(graphics, 0, 0, 0, 0, width, height);
-        int lightLine = withAlpha(TabletColors.BORDER_BASE, 62);
-        int strongLine = withAlpha(TabletColors.BORDER_ACCENT, 78);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 86)).draw(graphics, 0, 0, 0, 0, width, height);
+        int lightLine = withAlpha(ThemeColors.BORDER_BASE, 62);
+        int strongLine = withAlpha(ThemeColors.BORDER_ACCENT, 78);
         for (int x = 0; x <= width; x += 16) {
             SurfaceFactory.fill(x % (16 * 4) == 0 ? strongLine : lightLine).draw(graphics, 0, 0, x, 0, 1, height);
         }
@@ -271,7 +271,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
         }
         Minecraft minecraft = Minecraft.getInstance();
         String title = getTitle().getString();
-        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(minecraft.font, title, width / 2 - minecraft.font.width(title) / 2, 10, withAlpha(ThemeColors.TEXT_PRIMARY, 230), false);
     }
 
     private void renderHudPreviews(GuiGraphics graphics, int mouseX, int mouseY) {
@@ -296,8 +296,8 @@ public final class QuestHudLayoutEditScreen extends Screen {
 
     private void drawResizeHandle(GuiGraphics graphics, QuestHudLayoutManager.HudBox box) {
         QuestHudLayoutManager.HudBox handle = dragHandler.resizeHandle(box);
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, handle.x(), handle.y(), handle.width(), handle.height());
-        drawRectOutline(graphics, handle.x(), handle.y(), handle.width(), handle.height(), TabletColors.SUCCESS);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, handle.x(), handle.y(), handle.width(), handle.height());
+        drawRectOutline(graphics, handle.x(), handle.y(), handle.width(), handle.height(), ThemeColors.SUCCESS);
     }
 
     private void drawSelectionSlot(GuiGraphics graphics, QuestHudLayoutManager.HudBox box, QuestHudLayoutManager.Element element) {
@@ -305,10 +305,10 @@ public final class QuestHudLayoutEditScreen extends Screen {
         int fillAlpha = Math.round(18.0f * opacity);
         int outlineAlpha = Math.round(185.0f * opacity);
         if (fillAlpha > 0) {
-            SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, fillAlpha)).draw(graphics, 0, 0, box.x(), box.y(), box.width(), box.height());
+            SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, fillAlpha)).draw(graphics, 0, 0, box.x(), box.y(), box.width(), box.height());
         }
         if (outlineAlpha > 0) {
-            drawRectOutline(graphics, box.x(), box.y(), box.width(), box.height(), withAlpha(TabletColors.SUCCESS, outlineAlpha));
+            drawRectOutline(graphics, box.x(), box.y(), box.width(), box.height(), withAlpha(ThemeColors.SUCCESS, outlineAlpha));
         }
     }
 
@@ -331,8 +331,8 @@ public final class QuestHudLayoutEditScreen extends Screen {
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             boolean hovered = isHovered();
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 210)).draw(graphics, 0, 0, getX(), getY(), getWidth(), getHeight());
-            drawRectOutline(graphics, getX(), getY(), getWidth(), getHeight(), hovered ? TabletColors.BORDER_ACCENT : TabletColors.subtleBorder());
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 210)).draw(graphics, 0, 0, getX(), getY(), getWidth(), getHeight());
+            drawRectOutline(graphics, getX(), getY(), getWidth(), getHeight(), hovered ? ThemeColors.BORDER_ACCENT : ThemeColors.subtleBorder());
             if (hovered) {
                 GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getX(), getY(), getWidth(), getHeight(), accentColor);
             }
@@ -345,7 +345,7 @@ public final class QuestHudLayoutEditScreen extends Screen {
             int contentW = (iconTexture != null ? iconSize + iconGap : 0) + textW;
             int contentX = getX() + (getWidth() - contentW) / 2;
             int centerY = getY() + getHeight() / 2;
-            int textColor = hovered ? accentColor : TabletColors.TEXT_PRIMARY;
+            int textColor = hovered ? accentColor : ThemeColors.TEXT_PRIMARY;
             if (iconTexture != null) {
                 iconTexture.draw(graphics, 0, 0, contentX, centerY - iconSize / 2, iconSize, iconSize);
                 contentX += iconSize + iconGap;

@@ -11,18 +11,18 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 final class EntityVariantApplyActions {
     private EntityVariantApplyActions() {
     }
 
-    static void apply(Player player, TabletUiState state, String target, String variantKey) {
+    static void apply(Player player, UiState state, String target, String variantKey) {
         apply(player, state, ModalTargetParser.parse(target), variantKey);
     }
 
-    static void apply(Player player, TabletUiState state, ModalTargetParser.Target parsed, String variantKey) {
+    static void apply(Player player, UiState state, ModalTargetParser.Target parsed, String variantKey) {
         if (applyQuestIcon(player, parsed, variantKey)) {
             return;
         }
@@ -67,7 +67,7 @@ final class EntityVariantApplyActions {
         return true;
     }
 
-    private static boolean applyChapterIcon(Player player, TabletUiState state, ModalTargetParser.Target parsed, String variantKey) {
+    private static boolean applyChapterIcon(Player player, UiState state, ModalTargetParser.Target parsed, String variantKey) {
         if (!parsed.hasAtLeast(2) || !parsed.isChapterIcon()) {
             return false;
         }

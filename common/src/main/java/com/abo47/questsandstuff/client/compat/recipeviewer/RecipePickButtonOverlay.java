@@ -14,7 +14,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
@@ -38,8 +38,8 @@ public final class RecipePickButtonOverlay {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         boolean hovered = contains(button, mouseX, mouseY);
-        int border = TabletColors.subtleBorder();
-        int fill = UiThemeTokens.withAlpha(TabletColors.SURFACE_PANEL_ALT, 218);
+        int border = ThemeColors.subtleBorder();
+        int fill = UiThemeTokens.withAlpha(ThemeColors.SURFACE_PANEL_ALT, 218);
         graphics.pose().pushPose();
         graphics.pose().translate(0.0F, 0.0F, 350.0F);
         try {

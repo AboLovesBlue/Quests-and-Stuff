@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.hit;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
@@ -14,7 +14,7 @@ public final class CanvasTextMenuPlacement {
     private CanvasTextMenuPlacement() {
     }
 
-    public static int[] canvasTextMenuBounds(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
+    public static int[] canvasTextMenuBounds(UiState state, CanvasTextLayer text, int viewportW, int viewportH, int toolCount) {
         int menuW = TextStyleButtons.menuWidthForAvailable(Math.max(1, viewportW) - TEXT_MENU_MARGIN * 2);
         int columns = TextStyleButtons.columnsForWidth(menuW);
         int menuH = TextStyleButtons.menuHeightForColumns(columns);
@@ -27,7 +27,7 @@ public final class CanvasTextMenuPlacement {
         return new int[]{x, y, menuW, menuH, buttonW, columns};
     }
 
-    private static int[] rotatedTextScreenBounds(TabletUiState state, CanvasTextLayer text) {
+    private static int[] rotatedTextScreenBounds(UiState state, CanvasTextLayer text) {
         return CanvasElementGeometry.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
     }
 

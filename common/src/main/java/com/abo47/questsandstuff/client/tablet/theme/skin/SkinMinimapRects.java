@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class SkinMinimapRects {
     private static final int RECT_FIELDS = 4;
@@ -13,17 +13,17 @@ final class SkinMinimapRects {
     private SkinMinimapRects() {
     }
 
-    static int[] bodyRect(TabletUiState state, CanvasViewport viewport) {
+    static int[] bodyRect(UiState state, CanvasViewport viewport) {
         return rect(state, viewport, state.canvas.minimapPanelX, state.canvas.minimapPanelY,
                 state.canvas.minimapPanelW, state.canvas.minimapPanelH);
     }
 
-    static int[] toggleRect(TabletUiState state, CanvasViewport viewport) {
+    static int[] toggleRect(UiState state, CanvasViewport viewport) {
         return rect(state, viewport, state.canvas.minimapToggleX, state.canvas.minimapToggleY,
                 state.canvas.minimapToggleW, state.canvas.minimapToggleH);
     }
 
-    private static int[] rect(TabletUiState state, CanvasViewport viewport, int offsetX, int offsetY, int w, int h) {
+    private static int[] rect(UiState state, CanvasViewport viewport, int offsetX, int offsetY, int w, int h) {
         if (viewport == null || w <= 0 || h <= 0) return null;
         int[] out = new int[RECT_FIELDS];
         out[X] = viewport.getPositionX() + offsetX;

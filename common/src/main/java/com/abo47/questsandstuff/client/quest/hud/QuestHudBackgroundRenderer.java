@@ -7,10 +7,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudBackgroundRenderer {
@@ -38,24 +38,24 @@ final class QuestHudBackgroundRenderer {
         String override = normalizeBackground(backgroundOverride);
         String background = override.isBlank() ? normalizeBackground(QuestHudLayoutManager.background(element)) : override;
         if (!background.isBlank()) {
-            IGuiTexture texture = TabletUiFactory.chapterBackgroundTexture(background);
+            IGuiTexture texture = UiFactory.chapterBackgroundTexture(background);
             if (texture != null && effectiveOpacity > 0.0f) {
                 resetTextureState(graphics);
                 graphics.setColor(1.0f, 1.0f, 1.0f, effectiveOpacity);
                 texture.draw(graphics, 0, 0, x, y, width, height);
                 resetTextureState(graphics);
-                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity))).draw(graphics, 0, 0, x, y, width, height);
+                SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, Math.round(44.0f * effectiveOpacity))).draw(graphics, 0, 0, x, y, width, height);
             }
         } else {
             int panelAlpha = Math.round(224.0f * effectiveOpacity);
             if (panelAlpha > 0) {
-                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL, panelAlpha)).draw(graphics, 0, 0, x, y, width, height);
+                SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL, panelAlpha)).draw(graphics, 0, 0, x, y, width, height);
             }
         }
         if (selected || QuestHudLayoutManager.showBorders(element)) {
             int borderAlpha = Math.round((selected ? 240.0f : 150.0f) * effectiveOpacity);
             if (borderAlpha > 0) {
-                drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? TabletColors.INTERACTIVE : TabletColors.BORDER_BASE, borderAlpha));
+                drawRectOutline(graphics, x, y, width, height, withAlpha(selected ? ThemeColors.INTERACTIVE : ThemeColors.BORDER_BASE, borderAlpha));
             }
         }
     }
@@ -79,19 +79,19 @@ final class QuestHudBackgroundRenderer {
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {
         if (background == null || background.isBlank()) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
-            drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
+            drawRectOutline(graphics, x, y, width, height, withAlpha(ThemeColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
             return;
         }
-        IGuiTexture texture = TabletUiFactory.assetThumbnailTexture(background);
+        IGuiTexture texture = UiFactory.assetThumbnailTexture(background);
         if (texture == null) {
-            texture = TabletUiFactory.chapterBackgroundTexture(background);
+            texture = UiFactory.chapterBackgroundTexture(background);
         }
         if (texture != null) {
             texture.draw(graphics, 0, 0, x, y, width, height);
         } else {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
         }
-        drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
+        drawRectOutline(graphics, x, y, width, height, withAlpha(ThemeColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
     }
 }

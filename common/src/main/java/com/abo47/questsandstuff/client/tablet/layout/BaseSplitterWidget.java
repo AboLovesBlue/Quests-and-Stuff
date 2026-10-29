@@ -9,22 +9,22 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.TabletClickSounds;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 public abstract class BaseSplitterWidget extends WidgetGroup {
-    protected final TabletUiState state;
+    protected final UiState state;
     protected final Runnable refresh;
     protected final String skinTargetKey;
 
-    public BaseSplitterWidget(int x, int y, int w, int h, TabletUiState state, Runnable refresh) {
+    public BaseSplitterWidget(int x, int y, int w, int h, UiState state, Runnable refresh) {
         this(x, y, w, h, state, refresh, null);
     }
 
-    public BaseSplitterWidget(int x, int y, int w, int h, TabletUiState state, Runnable refresh, String skinTargetKey) {
+    public BaseSplitterWidget(int x, int y, int w, int h, UiState state, Runnable refresh, String skinTargetKey) {
         super(x, y, w, h);
         this.state = state;
         this.refresh = refresh;
@@ -91,7 +91,7 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         boolean hovered = isSplitterDragging() || isMouseOverElement(mouseX, mouseY);
         boolean resizeHovered = hovered && !isSplitterLocked();
-        TabletResizeCursor.update(resizeHovered);
+        ResizeCursor.update(resizeHovered);
         int left = getPositionX();
         int top = getPositionY();
         int width = getSizeWidth();
@@ -102,9 +102,9 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         if (hasSkinOverride) {
             skinBg.draw(graphics, mouseX, mouseY, left - 1, top - 1, width + 2, height + 2);
         } else {
-            SurfaceFactory.fill(TabletColors.SURFACE_PANEL_ALT).draw(graphics, mouseX, mouseY, left, top, width, height);
-            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
-            SurfaceFactory.fill(TabletColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
+            SurfaceFactory.fill(ThemeColors.SURFACE_PANEL_ALT).draw(graphics, mouseX, mouseY, left, top, width, height);
+            SurfaceFactory.fill(ThemeColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top, width, 1);
+            SurfaceFactory.fill(ThemeColors.BORDER_BASE).draw(graphics, mouseX, mouseY, left, top + height - 1, width, 1);
         }
 
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
@@ -117,7 +117,7 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         }
         if (cancelDragOnClickLocked() && isSplitterLocked()) {
             setSplitterDragging(false);
-            TabletResizeCursor.update(false);
+            ResizeCursor.update(false);
             return true;
         }
         setSplitterDragging(true);
@@ -130,7 +130,7 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (isSplitterLocked()) {
-            TabletResizeCursor.update(false);
+            ResizeCursor.update(false);
             return true;
         }
         if (!isSplitterDragging()) {
@@ -172,7 +172,7 @@ public abstract class BaseSplitterWidget extends WidgetGroup {
         }
         setLeftPanelWidth(getLeftPanelWidth());
         onSplitterRelease();
-        TabletResizeCursor.update(false);
+        ResizeCursor.update(false);
         refresh.run();
         return true;
     }

@@ -13,21 +13,21 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.root.RootWidget;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class SkinEditRenderer {
-    private static final int DIM_COLOR = TabletColors.DIM_OVERLAY;
+    private static final int DIM_COLOR = ThemeColors.DIM_OVERLAY;
     private static final ColorRectTexture DIM_BG = new ColorRectTexture(DIM_COLOR);
-    private static final int GLOW_COLOR = TabletColors.INTERACTIVE;
-    private static final int SELECTED_GLOW_COLOR = TabletColors.SUCCESS;
+    private static final int GLOW_COLOR = ThemeColors.INTERACTIVE;
+    private static final int SELECTED_GLOW_COLOR = ThemeColors.SUCCESS;
 
     private SkinEditRenderer() {
     }
 
-    public static void draw(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, int mouseX, int mouseY) {
+    public static void draw(GuiGraphics graphics, RootWidget root, UiState state, int mouseX, int mouseY) {
         if (ModalStateQueries.anyOpen(state)) return;
         Minecraft mc = Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
@@ -68,7 +68,7 @@ public final class SkinEditRenderer {
         }
     }
 
-    private static void drawSelectionGlow(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, String key, int glowColor, int mouseX, int mouseY) {
+    private static void drawSelectionGlow(GuiGraphics graphics, RootWidget root, UiState state, String key, int glowColor, int mouseX, int mouseY) {
         if (SkinEditManager.isMinimapKey(key)) {
             drawMinimapGlow(graphics, root, state, key, glowColor, mouseX, mouseY);
             return;
@@ -82,7 +82,7 @@ public final class SkinEditRenderer {
         }
     }
 
-    private static void drawHoverGlow(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, int mouseX, int mouseY) {
+    private static void drawHoverGlow(GuiGraphics graphics, RootWidget root, UiState state, int mouseX, int mouseY) {
         if (SkinEditManager.isMinimapHit(state, root, mouseX, mouseY)) {
             drawMinimapGlow(graphics, root, state, SkinEditManager.minimapHitKey(state, root, mouseX, mouseY), GLOW_COLOR, mouseX, mouseY);
             return;
@@ -93,7 +93,7 @@ public final class SkinEditRenderer {
         }
     }
 
-    private static void drawMinimapGlow(GuiGraphics graphics, TabletRootWidget root, TabletUiState state, String key, int glowColor, int mouseX, int mouseY) {
+    private static void drawMinimapGlow(GuiGraphics graphics, RootWidget root, UiState state, String key, int glowColor, int mouseX, int mouseY) {
         int[] rect = SkinTargetKeys.MINIMAP_TOGGLE.equals(key)
                 ? SkinMinimapRects.toggleRect(state, viewport(root))
                 : SkinMinimapRects.bodyRect(state, viewport(root));
@@ -101,7 +101,7 @@ public final class SkinEditRenderer {
         GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, rect[0], rect[1], rect[2], rect[3], glowColor);
     }
 
-    private static String hoverKeyAt(TabletRootWidget root, TabletUiState state, int mouseX, int mouseY) {
+    private static String hoverKeyAt(RootWidget root, UiState state, int mouseX, int mouseY) {
         if (SkinEditManager.isMinimapHit(state, root, mouseX, mouseY)) {
             return SkinEditManager.minimapHitKey(state, root, mouseX, mouseY);
         }
@@ -118,6 +118,6 @@ public final class SkinEditRenderer {
     }
 
     private static CanvasViewport viewport(WidgetGroup root) {
-        return root instanceof TabletRootWidget trw ? trw.getCanvasViewport() : null;
+        return root instanceof RootWidget trw ? trw.getCanvasViewport() : null;
     }
 }

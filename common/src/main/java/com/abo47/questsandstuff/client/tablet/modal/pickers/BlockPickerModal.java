@@ -18,11 +18,11 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_MODEL;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
@@ -37,13 +37,13 @@ public final class BlockPickerModal {
         RegistryTilePicker.prewarm("block_items", BlockPickerModal::blockChoices);
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         return RegistryTilePicker.rebuild(modal, state, player, refresh, w, h, new RegistryTilePicker.Config(
-                TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_BLOCK),
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_BLOCKS),
+                TranslationKeys.text(QuestTranslationKeys.CHOOSE_BLOCK),
+                TranslationKeys.text(QuestTranslationKeys.NO_BLOCKS),
                 "block",
                 "block",
-                TabletColors.INTERACTIVE,
+                ThemeColors.INTERACTIVE,
                 new RegistryTilePicker.StateAccess(
                         () -> state.pickers.blockSearch,
                         value -> state.pickers.blockSearch = value,

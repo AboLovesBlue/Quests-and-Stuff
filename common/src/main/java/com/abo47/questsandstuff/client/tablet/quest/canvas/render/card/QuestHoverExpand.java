@@ -10,20 +10,20 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.AnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasInteractionGate;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class QuestHoverExpand extends WidgetGroup {
-    private static final long HOVER_MS = TabletAnimationTimings.HOVER_EXPAND_MS;
+    private static final long HOVER_MS = AnimationTimings.HOVER_EXPAND_MS;
     private static final int MAX_TRACKED = 256;
     private static final Map<String, HoverMotion> PROGRESS = new LinkedHashMap<>();
 
     private final String questId;
-    private final TabletUiState state;
+    private final UiState state;
 
-    public QuestHoverExpand(int x, int y, int w, int h, String questId, TabletUiState state) {
+    public QuestHoverExpand(int x, int y, int w, int h, String questId, UiState state) {
         super(x, y, w, h);
         this.questId = questId == null ? "" : questId;
         this.state = state;

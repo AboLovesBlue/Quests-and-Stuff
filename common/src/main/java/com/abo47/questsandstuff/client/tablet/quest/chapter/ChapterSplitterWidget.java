@@ -1,25 +1,25 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
 import com.abo47.questsandstuff.client.tablet.layout.BaseSplitterWidget;
-import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.layout.ResizeCursor;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.snapExpandedChapterWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_ICON;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_ICON_SNAP;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MAX;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_W_MIN;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.snapExpandedChapterWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_ICON;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_ICON_SNAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MAX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MIN;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterPanelCollapsed;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 public final class ChapterSplitterWidget extends BaseSplitterWidget {
     private static final int DRAG_THRESHOLD_PX = 3;
 
-    public ChapterSplitterWidget(TabletUiState state, Runnable refresh, int x) {
+    public ChapterSplitterWidget(UiState state, Runnable refresh, int x) {
         super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh, "quests_splitter");
     }
 
@@ -125,7 +125,7 @@ public final class ChapterSplitterWidget extends BaseSplitterWidget {
             state.chapterPanel.chapterPanelCollapsed = true;
         }
         persistUiState(state);
-        TabletResizeCursor.update(false);
+        ResizeCursor.update(false);
         refresh.run();
     }
 

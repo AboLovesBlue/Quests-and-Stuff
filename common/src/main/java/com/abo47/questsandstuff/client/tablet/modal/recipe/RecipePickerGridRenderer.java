@@ -19,12 +19,12 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
@@ -37,7 +37,7 @@ final class RecipePickerGridRenderer {
     private RecipePickerGridRenderer() {
     }
 
-    static void add(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
+    static void add(WidgetGroup modal, UiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
         RecipePickerMode mode = RecipePickerModeController.mode(state);
         switch (RecipePickerModeController.contentKind(mode)) {
             case INVENTORY -> addInventoryGrid(modal, state, player, refresh, gridX, gridY, gridW, gridH);
@@ -46,7 +46,7 @@ final class RecipePickerGridRenderer {
         }
     }
 
-    private static void addInventoryGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
+    private static void addInventoryGrid(WidgetGroup modal, UiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
         List<ItemStack> entries = ItemInventoryPickerModal.inventoryEntries(player, state.pickers.recipeSearch);
         TiledPickerPanel.add(
                 modal,
@@ -60,14 +60,14 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
+                TranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 scrollState(state),
                 null,
                 (surface, stack, index, x, y, tileW, tileH, layout) -> ItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> RecipePickerApplyActions.trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
         );
     }
 
-    private static void addFluidGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
+    private static void addFluidGrid(WidgetGroup modal, UiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
         List<String> entries = DisplayIconProvider.searchableFluidEntries(state.pickers.recipeSearch);
         TiledPickerPanel.add(
                 modal,
@@ -81,14 +81,14 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_FLUIDS),
+                TranslationKeys.text(QuestTranslationKeys.NO_FLUIDS),
                 scrollState(state),
                 null,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderFluidTile(surface, player, state, refresh, entry, x, y)
         );
     }
 
-    private static void addRecipeGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH, RecipePickerMode mode) {
+    private static void addRecipeGrid(WidgetGroup modal, UiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH, RecipePickerMode mode) {
         List<RecipePickerChoiceIndex.RecipeChoice> entries = RecipePickerChoiceIndex.recipes(state.pickers.recipeSearch, mode.showingTags(state.pickers.recipeSearch));
         TiledPickerPanel.add(
                 modal,
@@ -102,14 +102,14 @@ final class RecipePickerGridRenderer {
                 6,
                 6,
                 entries,
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_RECIPES),
+                TranslationKeys.text(QuestTranslationKeys.NO_RECIPES),
                 scrollState(state),
                 null,
                 (surface, entry, index, x, y, tileW, tileH, layout) -> renderTile(surface, player, state, refresh, entry, x, y)
         );
     }
 
-    private static ScrollState scrollState(TabletUiState state) {
+    private static ScrollState scrollState(UiState state) {
         return ScrollState.bind(
                 () -> state.pickers.recipeScroll,
                 value -> state.pickers.recipeScroll = value,
@@ -118,7 +118,7 @@ final class RecipePickerGridRenderer {
         );
     }
 
-    private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, RecipePickerChoiceIndex.RecipeChoice entry, int x, int y) {
+    private static void renderTile(WidgetGroup surface, Player player, UiState state, Runnable refresh, RecipePickerChoiceIndex.RecipeChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
             surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry.tag() ? "name_tag" : "recipe"));
@@ -128,13 +128,13 @@ final class RecipePickerGridRenderer {
         addHoverHit(surface, player, state, refresh, x, y, entry.value(), entry.tooltip(), entry.tag() ? "tag" : "output");
     }
 
-    private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
+    private static void renderFluidTile(WidgetGroup surface, Player player, UiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry));
         addHoverHit(surface, player, state, refresh, x, y, entry, ModalPanel.iconTooltip(entry), "fluid");
     }
 
-    private static void addHoverHit(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, int x, int y, String value, Component[] tooltip, String logKind) {
+    private static void addHoverHit(WidgetGroup surface, Player player, UiState state, Runnable refresh, int x, int y, String value, Component[] tooltip, String logKind) {
         ButtonWidget hit = new ButtonWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, SurfaceFactory.transparentFill(), click -> {
             if (value != null && !value.isBlank()) {
                 RecipePickerApplyActions.applyRecipePick(player, state, value, refresh);
@@ -150,12 +150,12 @@ final class RecipePickerGridRenderer {
             }
         };
         GlowShaderHelper.glowHit(hit, tooltip);
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);
     }
 
-    private static void applyInventoryRecipePick(Player player, TabletUiState state, ItemStack stack, Runnable refresh) {
+    private static void applyInventoryRecipePick(Player player, UiState state, ItemStack stack, Runnable refresh) {
         String pick = ItemStackIconCodec.iconFromStack(stack);
         if (!pick.isBlank()) {
             RecipePickerApplyActions.applyRecipePick(player, state, pick, refresh);

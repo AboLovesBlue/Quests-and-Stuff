@@ -16,25 +16,25 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.deleteAssetFile;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.renameAssetFile;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.deleteAssetFile;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.renameAssetFile;
 
 final class AssetPickerContextActions {
     private AssetPickerContextActions() {
     }
 
-    static void addAssetContextDismissLayer(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
-        int rootW = TabletStateQueries.rootWidth(state);
-        int rootH = TabletStateQueries.rootHeight(state);
+    static void addAssetContextDismissLayer(WidgetGroup modal, UiState state, Runnable refresh, int w, int h) {
+        int rootW = StateQueries.rootWidth(state);
+        int rootH = StateQueries.rootHeight(state);
         int modalX = ModalContextMenuPlacement.modalX(state, w);
         int modalY = ModalContextMenuPlacement.modalY(state, h);
         ButtonWidget dismiss = flatHitButton(-modalX, -modalY, rootW, rootH, click -> {
@@ -46,7 +46,7 @@ final class AssetPickerContextActions {
         modal.addWidget(dismiss);
     }
 
-    static void beginInlineRename(TabletUiState state, String relative) {
+    static void beginInlineRename(UiState state, String relative) {
         state.pickers.assetContextOpen = false;
         state.pickers.assetContextFile = relative == null ? "" : relative;
         state.pickers.assetRenameOpen = !state.pickers.assetContextFile.isBlank();
@@ -55,7 +55,7 @@ final class AssetPickerContextActions {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    static TextFieldWidget assetInlineRenameField(TabletUiState state, Runnable refresh, String relative, int x, int y, int w) {
+    static TextFieldWidget assetInlineRenameField(UiState state, Runnable refresh, String relative, int x, int y, int w) {
         final TextFieldWidget[] renameRef = new TextFieldWidget[1];
         TextFieldWidget rename = StyledTextFields.commitField(
                 x,
@@ -81,17 +81,17 @@ final class AssetPickerContextActions {
         rename.setClientSideWidget();
         rename.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? ModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
-        StyledTextFields.applyStandardStyle(rename, TabletColors.SURFACE_BASE, TabletColors.BORDER_ACCENT);
+        StyledTextFields.applyStandardStyle(rename, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_ACCENT);
         rename.setFocus(true);
         return rename;
     }
 
-    static void anchorAssetContextAtPointer(TabletUiState state, int modalW, int modalH) {
+    static void anchorAssetContextAtPointer(UiState state, int modalW, int modalH) {
         state.pickers.assetContextX = ModalContextMenuPlacement.localPointerX(state, modalW);
         state.pickers.assetContextY = ModalContextMenuPlacement.localPointerY(state, modalH);
     }
 
-    static void addContext(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH, int rightW, List<AssetLibrary.AssetEntry> assets) {
+    static void addContext(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH, int rightW, List<AssetLibrary.AssetEntry> assets) {
         AssetLibrary.AssetEntry contextEntry = assets.stream()
                 .filter(asset -> asset.relativePath().equals(state.pickers.assetContextFile))
                 .findFirst()
@@ -109,7 +109,7 @@ final class AssetPickerContextActions {
         state.pickers.assetContextMenuY = ctxY;
         state.pickers.assetContextMenuW = ctxW;
         state.pickers.assetContextMenuH = menuH;
-        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, TabletColors.BORDER_ACCENT, state, action -> {
+        modal.addWidget(ContextMenuPanel.build(ctxX, ctxY, ctxW, actions, 0, visibleRows, ThemeColors.BORDER_ACCENT, state, action -> {
             if (action.closeAfterClick()) {
                 state.pickers.assetContextOpen = false;
                 if (!state.pickers.assetRenameOpen) {
@@ -121,9 +121,9 @@ final class AssetPickerContextActions {
         }, modalW, modalH));
     }
 
-    static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
+    static List<ContextAction> assetContextActions(UiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
         ContextMenuSections sections = new ContextMenuSections();
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", ThemeColors.INTERACTIVE, () -> {
             if (isDir) {
                 state.pickers.assetBrowseDir = state.pickers.assetContextFile;
                 state.pickers.saveBrowseDirForMode();
@@ -135,7 +135,7 @@ final class AssetPickerContextActions {
             }
         }));
         if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", ThemeColors.INTERACTIVE, () ->
                     BlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
@@ -152,7 +152,7 @@ final class AssetPickerContextActions {
         return sections.build();
     }
 
-    static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {
+    static void commitAssetRename(UiState state, TextFieldWidget rename) {
         String oldRelative = state.pickers.assetContextFile;
         String parent = ModalPanel.parentRelativePath(oldRelative);
         String name = rename == null || rename.getCurrentString() == null ? state.pickers.assetRenameDraft : rename.getCurrentString().trim();

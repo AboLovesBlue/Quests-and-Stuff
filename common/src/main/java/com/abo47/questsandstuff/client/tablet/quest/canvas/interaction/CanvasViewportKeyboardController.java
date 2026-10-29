@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipb
 import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasViewportKeyboardController {
     private CanvasViewportKeyboardController() {
@@ -15,7 +15,7 @@ public final class CanvasViewportKeyboardController {
 
     public static boolean keyPressed(
             CanvasViewport viewport,
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             CanvasInlineTextEditor textEditor,
             int keyCode,
@@ -45,7 +45,7 @@ public final class CanvasViewportKeyboardController {
 
     public static boolean charTyped(
             CanvasViewport viewport,
-            TabletUiState state,
+            UiState state,
             CanvasInlineTextEditor textEditor,
             char codePoint,
             int modifiers

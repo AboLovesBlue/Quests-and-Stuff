@@ -17,7 +17,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportClickController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportInputController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportKeyboardController;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.layout.PanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
@@ -30,11 +30,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInline
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class CanvasViewport extends WidgetGroup {
-    private final TabletUiState state;
+    private final UiState state;
     private final Player player;
     private Runnable refresher = () -> {};
     private Runnable canvasRefresher = () -> {};
@@ -54,7 +54,7 @@ public final class CanvasViewport extends WidgetGroup {
     private final CanvasSelectionTransformController selectionTransforms;
     private boolean viewportBorderHidden;
 
-    public CanvasViewport(int x, int y, int width, int height, TabletUiState state, Player player) {
+    public CanvasViewport(int x, int y, int width, int height, UiState state, Player player) {
         super(x, y, width, height);
         this.state = state;
         this.player = player;
@@ -334,7 +334,7 @@ public final class CanvasViewport extends WidgetGroup {
         drawBackgroundTexture(graphics, mouseX, mouseY);
         CanvasViewportScissor.draw(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), () -> drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks));
         if (!viewportBorderHidden) {
-            TabletPanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, TabletColors.BORDER_BASE);
+            PanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, ThemeColors.BORDER_BASE);
         }
     }
 

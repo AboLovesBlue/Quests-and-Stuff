@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsDescriptionLayoutTest {
     @Test
     void descriptionColumnClampsRightEdgeAndStillAllowsDownwardGrowth() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsCanvasLocked = false;
         CanvasTextLayer text = new CanvasTextLayer("text", "Label", 180, 600, 60, 20, 0, "left", "normal", 0xFFFFFF);
 
@@ -24,7 +24,7 @@ class QuestDetailsDescriptionLayoutTest {
 
     @Test
     void descriptionColumnClampsBlockModelVisualFootprintOnLockedEdges() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsCanvasLocked = false;
         CanvasImageLayer rightBlock = new CanvasImageLayer("rightBlock", "block:minecraft:oak_planks", 150, 40, 100, 100, 0, 45, 0, 30);
         CanvasImageLayer leftTopBlock = new CanvasImageLayer("leftTopBlock", "block:minecraft:oak_planks", 0, 0, 100, 100, 0, 45, 0, 30);
@@ -43,7 +43,7 @@ class QuestDetailsDescriptionLayoutTest {
 
     @Test
     void descriptionColumnClampsLeftRightAndTopWithSameBoundsLogic() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsCanvasLocked = false;
         CanvasImageLayer rightOverflow = new CanvasImageLayer("right", "item:minecraft:stick", 180, 20, 60, 20, 0);
         CanvasImageLayer leftTopOverflow = new CanvasImageLayer("left", "item:minecraft:stick", -12, -8, 32, 32, 0);
@@ -59,7 +59,7 @@ class QuestDetailsDescriptionLayoutTest {
 
     @Test
     void descriptionColumnClampsTopToVisibleScrollEdge() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsCanvasLocked = false;
         state.questDetails.questDetailsDescScroll = 80;
         CanvasImageLayer aboveVisibleTop = new CanvasImageLayer("image", "item:minecraft:stick", 20, 40, 60, 20, 0);
@@ -76,7 +76,7 @@ class QuestDetailsDescriptionLayoutTest {
 
     @Test
     void descriptionScrollMaxIsZeroWhenElementsFit() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(new CanvasTextLayer("text", "Label", 20, 24, 60, 20, 0, "left", "normal", 0xFFFFFF));
 
@@ -87,7 +87,7 @@ class QuestDetailsDescriptionLayoutTest {
 
     @Test
     void descriptionScrollMaxAppearsWhenElementsExtendBelowViewport() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
         model.putText(new CanvasTextLayer("text", "Label", 20, 90, 60, 32, 0, "left", "normal", 0xFFFFFF));
 

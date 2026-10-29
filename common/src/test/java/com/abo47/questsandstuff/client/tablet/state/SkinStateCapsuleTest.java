@@ -10,26 +10,26 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SkinStateCapsuleTest {
     @Test
     void skinEditModeDefaultsToFalse() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         assertFalse(state.root.skinEditMode);
     }
 
     @Test
     void skinEditSelectedTargetDefaultsToEmpty() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         assertEquals("", state.root.skinEditSelectedTarget);
     }
 
     @Test
     void skinFillOverridesDefaultsToEmptyMap() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         assertNotNull(state.root.skinFillOverrides);
         assertTrue(state.root.skinFillOverrides.isEmpty());
     }
 
     @Test
     void skinEditModeCanBeToggled() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.skinEditMode = true;
         assertTrue(state.root.skinEditMode);
         state.root.skinEditMode = false;
@@ -38,7 +38,7 @@ class SkinStateCapsuleTest {
 
     @Test
     void skinEditSelectedTargetCanBeSet() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.skinEditSelectedTarget = "quests_canvas";
         assertEquals("quests_canvas", state.root.skinEditSelectedTarget);
         state.root.skinEditSelectedTarget = "";
@@ -47,7 +47,7 @@ class SkinStateCapsuleTest {
 
     @Test
     void skinFillOverridesStoresAndClears() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.skinFillOverrides.put("home_inner", "stretch|path/to/img.png");
         assertEquals(1, state.root.skinFillOverrides.size());
         assertEquals("stretch|path/to/img.png", state.root.skinFillOverrides.get("home_inner"));
@@ -61,7 +61,7 @@ class SkinStateCapsuleTest {
 
     @Test
     void skinFillOverridesAcceptsAppPrefixedKeys() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.skinFillOverrides.put("quests:home_inner", "stretch|a.png");
         state.root.skinFillOverrides.put("teams:home_inner", "stretch|b.png");
         assertEquals(2, state.root.skinFillOverrides.size());
@@ -71,7 +71,7 @@ class SkinStateCapsuleTest {
 
     @Test
     void skinFieldsAreIndependentOfOtherRootState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.skinEditMode = true;
         state.root.skinEditSelectedTarget = "quest_details_modal";
         state.root.skinFillOverrides.put("quest_details_modal", "tile|bg.png");

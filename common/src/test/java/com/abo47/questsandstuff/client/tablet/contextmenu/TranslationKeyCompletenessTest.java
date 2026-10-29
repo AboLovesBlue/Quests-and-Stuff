@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,8 +28,8 @@ class TranslationKeyCompletenessTest {
         for (String value : constantValues(QuestTranslationKeys.class)) {
             assertTrue(keys.contains(value), "Missing en_us key for QuestTranslationKeys value: " + value);
         }
-        for (String value : constantValues(TabletTranslationKeys.class)) {
-            assertTrue(keys.contains(value), "Missing en_us key for TabletTranslationKeys value: " + value);
+        for (String value : constantValues(TranslationKeys.class)) {
+            assertTrue(keys.contains(value), "Missing en_us key for TranslationKeys value: " + value);
         }
         for (ContextMenuSection section : ContextMenuSection.values()) {
             assertTrue(keys.contains(section.titleKey()), "Missing en_us key for section title: " + section.titleKey());

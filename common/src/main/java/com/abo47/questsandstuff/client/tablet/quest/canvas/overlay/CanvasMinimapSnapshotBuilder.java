@@ -16,8 +16,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -34,7 +34,7 @@ final class CanvasMinimapSnapshotBuilder {
     }
 
     static CanvasMinimapSnapshot snapshot(
-            TabletUiState state,
+            UiState state,
             String chapter,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
@@ -50,7 +50,7 @@ final class CanvasMinimapSnapshotBuilder {
     }
 
     private static List<CanvasMinimapRect> snapshotQuestBoxes(
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             CanvasMinimapGeometry.Projection projection,
             Map<String, CanvasMinimapRect> boxes,
@@ -79,7 +79,7 @@ final class CanvasMinimapSnapshotBuilder {
     }
 
     private static List<CanvasMinimapConnection> snapshotQuestConnections(
-            TabletUiState state,
+            UiState state,
             String chapter,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
@@ -137,7 +137,7 @@ final class CanvasMinimapSnapshotBuilder {
     }
 
     private static void snapshotExclusiveChoiceStage(
-            TabletUiState state,
+            UiState state,
             String chapter,
             CanvasMinimapGeometry.Projection projection,
             Map<String, CanvasMinimapRect> boxes,
@@ -160,7 +160,7 @@ final class CanvasMinimapSnapshotBuilder {
                     ec.w(),
                     ec.h(),
                     MIN_EC_SIZE,
-                    TabletColors.WARNING,
+                    ThemeColors.WARNING,
                     EXCLUSIVE_CHOICE_ALPHA,
                     ec.id(),
                     exclusiveChoiceTag
@@ -211,7 +211,7 @@ final class CanvasMinimapSnapshotBuilder {
         String tex = ec.connectionTextures().getOrDefault(otherId, "");
         connections.add(new CanvasMinimapConnection(
                 srcCX, srcCY, tgtCX, tgtCY,
-                ec.connectionColors().getOrDefault(otherId, TabletColors.TEXT_SECONDARY),
+                ec.connectionColors().getOrDefault(otherId, ThemeColors.TEXT_SECONDARY),
                 EXCLUSIVE_CHOICE_ALPHA, isExclusiveChoiceDirect(ec, otherId),
                 isExclusiveChoiceDirect(ec, otherId) || otherCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1]),
                 tex.isBlank() ? null : tex
@@ -240,21 +240,21 @@ final class CanvasMinimapSnapshotBuilder {
         return mode == null || !"grid".equals(mode);
     }
 
-    private static int questColor(TabletUiState state, QuestCardLayout card) {
+    private static int questColor(UiState state, QuestCardLayout card) {
         if (state.canvas.canvasSelection.questIds().contains(card.questId())) {
-            return TabletColors.WARNING;
+            return ThemeColors.WARNING;
         }
         CompoundTag tag = card.tag();
         if (tag.getBoolean("claimed") || tag.getBoolean("completed")) {
-            return TabletColors.SUCCESS;
+            return ThemeColors.SUCCESS;
         }
         if (tag.getBoolean("unlocked")) {
-            return TabletColors.INTERACTIVE;
+            return ThemeColors.INTERACTIVE;
         }
-        return TabletColors.TEXT_MUTED;
+        return ThemeColors.TEXT_MUTED;
     }
 
-    private static int cardAlpha(TabletUiState state, QuestCardLayout card) {
+    private static int cardAlpha(UiState state, QuestCardLayout card) {
         CompoundTag tag = card.tag();
         if (state.root.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
             return 115;
@@ -262,7 +262,7 @@ final class CanvasMinimapSnapshotBuilder {
         return 220;
     }
 
-    private static int visualCardAlpha(TabletUiState state, QuestCardLayout card) {
+    private static int visualCardAlpha(UiState state, QuestCardLayout card) {
         CompoundTag tag = card.tag();
         if (state.root.canEdit && tag.getBoolean("visual_hidden") && !tag.getBoolean("completed")) {
             return 130;

@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsDescriptionInteractionStateTest {
     @Test
     void beginPanningCapturesPointerAndCurrentScroll() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsDescScroll = 42;
 
         QuestDetailsDescriptionInteractionState.beginPanning(state, 10.4D, 25.6D);
@@ -27,7 +27,7 @@ class QuestDetailsDescriptionInteractionStateTest {
 
     @Test
     void beginBoxSelectionOwnsDragStateAndOptionalClear() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         AtomicInteger clears = new AtomicInteger();
 
         QuestDetailsDescriptionInteractionState.beginBoxSelection(state, 12, 34, false, clears::incrementAndGet);
@@ -48,7 +48,7 @@ class QuestDetailsDescriptionInteractionStateTest {
 
     @Test
     void additiveBoxSelectionDoesNotClearExistingSelection() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         AtomicInteger clears = new AtomicInteger();
 
         QuestDetailsDescriptionInteractionState.beginBoxSelection(state, 1, 2, true, clears::incrementAndGet);
@@ -59,7 +59,7 @@ class QuestDetailsDescriptionInteractionStateTest {
 
     @Test
     void recordTextClickDetectsDoubleClickWithinThreshold() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertFalse(QuestDetailsDescriptionInteractionState.recordTextClick(state, "text:a", 1_000L, 350L));
         assertTrue(QuestDetailsDescriptionInteractionState.recordTextClick(state, "text:a", 1_250L, 350L));
@@ -69,7 +69,7 @@ class QuestDetailsDescriptionInteractionStateTest {
 
     @Test
     void wheelScrollUsesDescriptionClamp() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.editorAvailable = true;
         state.questDetails.questDetailsEditMode = true;
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -105,7 +105,7 @@ final class ChapterMetadataState {
     }
 
     int chapterTextColor(String chapter) {
-        return chapterTextColor.getOrDefault(chapter, TabletColors.WHITE);
+        return chapterTextColor.getOrDefault(chapter, ThemeColors.WHITE);
     }
 
     String chapterTextStyle(String chapter) {
@@ -150,7 +150,7 @@ final class ChapterMetadataState {
             chapterBackgrounds.putIfAbsent(chapter, "default");
             chapterCanvasBackgrounds.putIfAbsent(chapter, "default");
             chapterTextAlign.putIfAbsent(chapter, "center");
-            chapterTextColor.putIfAbsent(chapter, TabletColors.WHITE);
+            chapterTextColor.putIfAbsent(chapter, ThemeColors.WHITE);
             chapterTextStyle.putIfAbsent(chapter, "normal");
             chapterTextSize.putIfAbsent(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
             chapterLockUntilUnlocked.putIfAbsent(chapter, false);

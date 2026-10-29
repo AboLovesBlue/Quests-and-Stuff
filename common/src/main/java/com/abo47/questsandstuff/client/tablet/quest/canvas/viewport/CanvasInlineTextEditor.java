@@ -15,8 +15,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
@@ -24,10 +24,10 @@ import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 public final class CanvasInlineTextEditor {
     private final WidgetGroup viewport;
-    private final TabletUiState state;
+    private final UiState state;
     private final Runnable refresh;
 
-    public CanvasInlineTextEditor(WidgetGroup viewport, TabletUiState state, Runnable refresh) {
+    public CanvasInlineTextEditor(WidgetGroup viewport, UiState state, Runnable refresh) {
         this.viewport = viewport;
         this.state = state;
         this.refresh = refresh == null ? () -> {
@@ -48,7 +48,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextMenuTarget);
+        CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, StateQueries.selectedChapterName(state), state.canvas.canvasTextMenuTarget);
         return CanvasRenderer.isCanvasTextOwnerHit(state, text, localX, localY);
     }
 
@@ -56,7 +56,7 @@ public final class CanvasInlineTextEditor {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return false;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasTextMenuTarget);
         if (text == null) {
             return false;
@@ -94,7 +94,7 @@ public final class CanvasInlineTextEditor {
         if (!CanvasTextEditSession.isMainCanvasEditing(state)) {
             return null;
         }
-        return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextEditTarget);
+        return CanvasLayerMutations.findCanvasText(state, StateQueries.selectedChapterName(state), state.canvas.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
@@ -247,7 +247,7 @@ public final class CanvasInlineTextEditor {
         if (!replacement.changed()) {
             return false;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         String id = state.canvas.canvasTextEditTarget;
         CanvasLayerMutations.updateCanvasText(state, chapter, id, text -> fitEditedText(CanvasTextRenderer.fitTextHeight(text.replaceTextRange(replacement.start(), replacement.end(), replacement.value()))));
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit replace id={} range={}..{} insert={} length={} cursor={}", id, replacement.start(), replacement.end(), replacement.value().length(), state.canvas.canvasTextEditDraft.length(), state.canvas.canvasTextEditCursor);

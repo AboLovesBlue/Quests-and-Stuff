@@ -26,11 +26,11 @@ import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasInteractionGate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.mojang.blaze3d.vertex.DefaultVertexFormat.POSITION_TEX_COLOR;
 
@@ -53,7 +53,7 @@ final class ConnectionPainter {
     private ConnectionPainter() {
     }
 
-    static void renderConnectionLines(WidgetGroup canvasViewport, TabletUiState state, List<ConnectionLine> lines) {
+    static void renderConnectionLines(WidgetGroup canvasViewport, UiState state, List<ConnectionLine> lines) {
         if (lines.isEmpty()) {
             return;
         }
@@ -74,7 +74,7 @@ final class ConnectionPainter {
         });
     }
 
-    static List<CanvasPoint> connectionPath(TabletUiState state, int originX, int originY, int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
+    static List<CanvasPoint> connectionPath(UiState state, int originX, int originY, int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
         if (direct) {
             return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
         }
@@ -116,7 +116,7 @@ final class ConnectionPainter {
             GuiGraphics graphics,
             int originX,
             int originY,
-            TabletUiState state,
+            UiState state,
             Widget view,
             ConnectionLine line,
             int mouseX,
@@ -138,8 +138,8 @@ final class ConnectionPainter {
 
         if (line.pending()) {
             int halfSize = CHEVRON_BASE_W;
-            SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
-            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(TabletColors.SUCCESS, PENDING_OUTLINE_ALPHA));
+            SurfaceFactory.fill(withAlpha(ThemeColors.SUCCESS, PENDING_FILL_ALPHA)).draw(graphics, 0, 0, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1);
+            drawRectOutline(graphics, startX - halfSize, startY - halfSize, halfSize * 2 + 1, halfSize * 2 + 1, withAlpha(ThemeColors.SUCCESS, PENDING_OUTLINE_ALPHA));
             return;
         }
 
@@ -207,26 +207,26 @@ final class ConnectionPainter {
         return mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
     }
 
-    private static boolean inSelection(TabletUiState state, String elementId) {
+    private static boolean inSelection(UiState state, String elementId) {
         return state.canvas.canvasSelection.questIds().contains(elementId)
                 || state.canvas.canvasSelection.exclusiveChoiceIds().contains(elementId);
     }
 
-    private static int selectionDragOffsetX(TabletUiState state, String elementId) {
+    private static int selectionDragOffsetX(UiState state, String elementId) {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
         return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsLeft, state.canvas.dragSelectionDeltaX);
     }
 
-    private static int selectionDragOffsetY(TabletUiState state, String elementId) {
+    private static int selectionDragOffsetY(UiState state, String elementId) {
         if (!state.canvas.draggingSelection || elementId == null || elementId.isBlank() || !inSelection(state, elementId)) {
             return 0;
         }
         return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
-    private static int snapScreenLocalToGrid(TabletUiState state, int localX, int cell) {
+    private static int snapScreenLocalToGrid(UiState state, int localX, int cell) {
         int relative = localX - state.canvas.canvasContentX - state.canvas.canvasOffsetX;
         int snapped = Math.round((float) relative / (float) cell) * cell;
         return state.canvas.canvasContentX + state.canvas.canvasOffsetX + snapped;

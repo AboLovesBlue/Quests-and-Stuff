@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CanvasSmartSnapperTest {
     @Test
     void mainCanvasAdapterUsesSharedObjectSnapGuides() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.objectSnapEnabled = true;
         state.canvas.canvasContentX = 10;
         state.canvas.canvasContentY = 20;

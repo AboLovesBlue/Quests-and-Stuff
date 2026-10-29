@@ -17,18 +17,18 @@ import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextTextureWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.controls.TextTextures;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.SmoothResourceTexture;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiActionColors;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
@@ -52,12 +52,12 @@ public final class ContextMenuRenderer {
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, boolean submenu, Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        addWindowsContextRow(menu, y, width, text, icon, UiActionColors.forAction(text, icon, TabletColors.INTERACTIVE), submenu, callback);
+        addWindowsContextRow(menu, y, width, text, icon, UiActionColors.forAction(text, icon, ThemeColors.INTERACTIVE), submenu, callback);
     }
 
     public static void addWindowsContextRow(WidgetGroup menu, int y, int width, String text, String icon, int iconColor, boolean submenu, Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
         WidgetGroup rowBg = new WidgetGroup(GRID_4, y, width, UiThemeTokens.CONTEXT_ROW_H);
-        rowBg.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 84)));
+        rowBg.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 84)));
         menu.addWidget(rowBg);
 
         int iconY = centeredY(y, UiThemeTokens.CONTEXT_ROW_H, CONTEXT_ICON_SIZE);
@@ -74,7 +74,7 @@ public final class ContextMenuRenderer {
 
         ButtonWidget hit = flatHitButton(GRID_4, y, width, UiThemeTokens.CONTEXT_ROW_H, callback);
         GlowShaderHelper.glowHit(hit);
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 95)));
         menu.addWidget(hit);
     }
 
@@ -91,23 +91,23 @@ public final class ContextMenuRenderer {
     }
 
     public static void drawVanillaPanel(GuiGraphics graphics, int x, int y, int width, int height, int borderColor) {
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 246)).draw(graphics, 0, 0, x, y, width, height);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 246)).draw(graphics, 0, 0, x, y, width, height);
         drawRectOutline(graphics, x, y, width, height, borderColor);
     }
 
     public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, boolean hovered) {
-        drawVanillaContextRow(graphics, menuX, rowY, rowWidth, text, icon, UiActionColors.forAction(text, icon, TabletColors.INTERACTIVE), hovered);
+        drawVanillaContextRow(graphics, menuX, rowY, rowWidth, text, icon, UiActionColors.forAction(text, icon, ThemeColors.INTERACTIVE), hovered);
     }
 
     public static void drawVanillaContextRow(GuiGraphics graphics, int menuX, int rowY, int rowWidth, String text, String icon, int iconColor, boolean hovered) {
         int rowX = menuX + OUTER_PAD;
         int rowH = rowHeight();
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 84)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 84)).draw(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
         if (hovered) {
             GlowShaderHelper.drawGlow(graphics, 0, 0, rowX, rowY, rowWidth, rowH);
         }
         drawVanillaIcon(graphics, menuX + ICON_X, centeredY(rowY, rowH, CONTEXT_ICON_SIZE), icon, iconColor);
-        drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, TabletColors.TEXT_PRIMARY);
+        drawScaledText(graphics, text == null ? "" : text, menuX + TEXT_X, rowY, rowH, ThemeColors.TEXT_PRIMARY);
     }
 
     public static void addContextIcon(WidgetGroup menu, int x, int y, String icon) {
@@ -122,18 +122,18 @@ public final class ContextMenuRenderer {
 
     public static void addSeparator(WidgetGroup menu, int y, int width) {
         WidgetGroup sep = new WidgetGroup(GRID_4, y + GRID_1, width, 1);
-        sep.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.BORDER_BASE, 120)));
+        sep.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.BORDER_BASE, 120)));
         menu.addWidget(sep);
     }
 
     public static void addSectionHeader(WidgetGroup menu, int y, int width, ContextMenuSection section) {
-        String title = TabletTranslationKeys.text(section.titleKey());
+        String title = TranslationKeys.text(section.titleKey());
         int pad = GRID_8;
         int headerH = UiThemeTokens.CONTEXT_ROW_H;
         int availableVisualW = Math.max(1, width - pad - GRID_4);
         int textureW = Math.max(1, Math.round(availableVisualW / TEXT_SCALE));
         int textureY = y + Math.max(0, (headerH - TEXT_LINE_H) / 2);
-        TextTextureWidget textWidget = TabletTextTextures.literal(pad, textureY, textureW, TEXT_LINE_H, title, TabletColors.TEXT_MUTED, TextTexture.TextType.LEFT_HIDE);
+        TextTextureWidget textWidget = TextTextures.literal(pad, textureY, textureW, TEXT_LINE_H, title, ThemeColors.TEXT_MUTED, TextTexture.TextType.LEFT_HIDE);
         patchTextLines(textWidget.getTextTexture(), title, textureW);
         float xCompensation = -((1.0f - TEXT_SCALE) * textureW) / 2.0f;
         float yCompensation = (y + UiThemeTokens.CONTEXT_ROW_H / 2.0f) - (textureY + TEXT_LINE_H / 2.0f);
@@ -195,7 +195,7 @@ public final class ContextMenuRenderer {
         int textureW = Math.max(1, Math.round(availableVisualW / TEXT_SCALE));
         String fullText = text == null ? "" : text;
         int textureY = rowY + Math.max(0, (UiThemeTokens.CONTEXT_ROW_H - TEXT_LINE_H) / 2);
-        TextTextureWidget textWidget = TabletTextTextures.literal(TEXT_X, textureY, textureW, TEXT_LINE_H, fullText, TabletColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        TextTextureWidget textWidget = TextTextures.literal(TEXT_X, textureY, textureW, TEXT_LINE_H, fullText, ThemeColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
         patchTextLines(textWidget.getTextTexture(), fullText, textureW);
         float xCompensation = -((1.0f - TEXT_SCALE) * textureW) / 2.0f;
         float yCompensation = (rowY + UiThemeTokens.CONTEXT_ROW_H / 2.0f) - (textureY + TEXT_LINE_H / 2.0f);

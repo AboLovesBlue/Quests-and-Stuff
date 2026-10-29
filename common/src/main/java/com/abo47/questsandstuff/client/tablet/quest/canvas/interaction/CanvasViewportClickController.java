@@ -25,11 +25,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootHitTest;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.root.RootHitTest;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -40,7 +40,7 @@ public final class CanvasViewportClickController {
 
     public static boolean mouseClicked(
             CanvasViewport canvasViewport,
-            TabletUiState state,
+            UiState state,
             Player player,
             Runnable refresher,
             List<QuestCardLayout> cards,
@@ -55,14 +55,14 @@ public final class CanvasViewportClickController {
         if (!canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
         }
-        if (TabletRootHitTest.isInsideChapterPanel(state,
-                TabletWidgetCoordinates.rootX(canvasViewport),
-                TabletWidgetCoordinates.rootY(canvasViewport),
+        if (RootHitTest.isInsideChapterPanel(state,
+                WidgetCoordinates.rootX(canvasViewport),
+                WidgetCoordinates.rootY(canvasViewport),
                 mouseX, mouseY)) {
             return false;
         }
-        int localX = TabletWidgetCoordinates.localX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
+        int localX = WidgetCoordinates.localX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = WidgetCoordinates.localY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
 
         if (state.canvas.blueprintPlacement.active()) {
             if (!state.root.canEdit) {
@@ -175,7 +175,7 @@ public final class CanvasViewportClickController {
             return true;
         }
 
-        QuestCardLayout hit = TabletUiFactory.hitTestCard(cards, localX, localY);
+        QuestCardLayout hit = UiFactory.hitTestCard(cards, localX, localY);
         CanvasImageLayer imageHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasImage(state, localX, localY) : null;
         if (imageHit == null && state.root.canEdit) {
             imageHit = CanvasRenderer.hitTestSelectedCanvasImageControls(state, localX, localY);
@@ -188,7 +188,7 @@ public final class CanvasViewportClickController {
         if (exclusiveChoiceHit == null && state.root.canEdit) {
             exclusiveChoiceHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
         }
-        String selectedChapter = TabletStateQueries.selectedChapterName(state);
+        String selectedChapter = StateQueries.selectedChapterName(state);
         List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
         List<CanvasTextLayer> canvasTexts = state.canvas.canvasTextsByChapter.getOrDefault(selectedChapter, List.of());
         List<CanvasExclusiveChoice> canvasExclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapter, List.of());
@@ -223,8 +223,8 @@ public final class CanvasViewportClickController {
                 state.canvas.canvasSelection.questIds().add(hit.questId());
                 state.chapterPanel.lastJumpQuest = hit.questId();
                 if (button == 0 && !ClientQuestStateFacade.questLockedPreview(hit.tag()) && !ClientQuestStateFacade.questHiddenPreview(hit.tag())) {
-                    int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
-                    int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
+                    int viewportScreenX = WidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+                    int viewportScreenY = WidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
                     QuestDetailsWindow.openAtSource(
                             state,
                             hit.questId(),
@@ -251,8 +251,8 @@ public final class CanvasViewportClickController {
         if (state.canvas.mouseMode == CanvasMouseMode.ADD_QUEST && button == 0) {
             if (hit == null) {
                 CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
-                int logicalX = TabletUiFactory.snapToGrid(state, anchor.x);
-                int logicalY = TabletUiFactory.snapToGrid(state, anchor.y);
+                int logicalX = UiFactory.snapToGrid(state, anchor.x);
+                int logicalY = UiFactory.snapToGrid(state, anchor.y);
                 CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
                         state,
                         logicalX,
@@ -260,7 +260,7 @@ public final class CanvasViewportClickController {
                         CanvasGeometry.slotLogicalWidth(state, 1.0f),
                         CanvasGeometry.slotLogicalHeight(state, 1.0f)
                 );
-                TabletUiFactory.addQuestAt(player, state, clamped.x, clamped.y, "");
+                UiFactory.addQuestAt(player, state, clamped.x, clamped.y, "");
                 refresher.run();
             }
             return true;

@@ -21,40 +21,40 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class QuestTaskSectionWidget {
     private QuestTaskSectionWidget() {
     }
 
-    static void renderTasks(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
+    static void renderTasks(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestTaskEntry> tasks = QuestTaskEntries.entries(quest.getCompound("tasks"), quest.getList("tasks_order", Tag.TAG_STRING));
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "tasks", tasks, QuestTaskListPanel.TITLE_H, 4, false);
-        section.addWidget(label(8, 6, QuestTranslationKeys.tasks(), TabletColors.TEXT_PRIMARY));
+        section.addWidget(label(8, 6, QuestTranslationKeys.tasks(), ThemeColors.TEXT_PRIMARY));
         addChangeIconButton(section, state, refresh, questId, "tasks", w);
         QuestTaskCardList.renderCards(section, state, player, refresh, questId, tasks, w, h, QuestTaskListPanel.TITLE_H, true);
         modal.addWidget(section);
     }
 
-    static void renderRewards(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
+    static void renderRewards(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         List<QuestTaskEntry> rewards = QuestTaskEntries.entries(quest.getCompound("rewards"), quest.getList("rewards_order", Tag.TAG_STRING));
         List<QuestTaskEntry> displayRewards = QuestTaskSelectableRewards.displayEntries(rewards, QuestDetailsEditController.canEdit(state));
         boolean rewardsClaimed = quest.getBoolean("claimed") || questId.equals(state.questDetails.questDetailsClaimedOverrideQuestId);
         WidgetGroup section = sectionWidget(state, player, refresh, questId, x, y, w, h, "rewards", displayRewards, QuestTaskListPanel.TITLE_H, 4, rewardsClaimed);
-        section.addWidget(label(8, 6, QuestTranslationKeys.rewards(), TabletColors.TEXT_PRIMARY));
+        section.addWidget(label(8, 6, QuestTranslationKeys.rewards(), ThemeColors.TEXT_PRIMARY));
         addChangeIconButton(section, state, refresh, questId, "rewards", w);
         QuestTaskCardList.renderCards(section, state, player, refresh, questId, displayRewards, w, h, QuestTaskListPanel.TITLE_H, false, rewardsClaimed);
         modal.addWidget(section);
     }
 
-    private static WidgetGroup sectionWidget(TabletUiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h, String kind, List<QuestTaskEntry> entries, int listY, int bottomPad, boolean rewardsClaimed) {
+    private static WidgetGroup sectionWidget(UiState state, Player player, Runnable refresh, String questId, int x, int y, int w, int h, String kind, List<QuestTaskEntry> entries, int listY, int bottomPad, boolean rewardsClaimed) {
         WidgetGroup section = new WidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
@@ -144,7 +144,7 @@ final class QuestTaskSectionWidget {
         return section;
     }
 
-    private static void addChangeIconButton(WidgetGroup section, TabletUiState state, Runnable refresh, String questId, String kind, int w) {
+    private static void addChangeIconButton(WidgetGroup section, UiState state, Runnable refresh, String questId, String kind, int w) {
         if (!QuestDetailsEditController.canEdit(state)) return;
         String selectedKind = state.questDetails.questDetailsSelectedTaskKind;
         String selectedId = state.questDetails.questDetailsSelectedTaskId;
@@ -156,14 +156,14 @@ final class QuestTaskSectionWidget {
                 1,
                 QuestTaskListPanel.HEADER_H - 2,
                 "icon",
-                TabletColors.INTERACTIVE,
+                ThemeColors.INTERACTIVE,
                 click -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestDetailsWindow.openIconPicker(state, target);
                     refresh.run();
                 }
         );
-        btn.tooltips(new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.CONTEXT_CHANGE_ICON)});
+        btn.tooltips(new Component[]{TranslationKeys.component(QuestTranslationKeys.CONTEXT_CHANGE_ICON)});
         section.addWidget(btn);
     }
 

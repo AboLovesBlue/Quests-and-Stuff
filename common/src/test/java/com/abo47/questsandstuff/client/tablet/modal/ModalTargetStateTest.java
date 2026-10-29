@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -17,7 +17,7 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 class ModalTargetStateTest {
     @Test
     void parsedTargetPrefersCapturedSessionTargetOverStaleField() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         RegistryPickerOpenActions.openRecipePicker(state, ModalTargets.taskRecipe("quest", "task", "recipe"));
         state.questDetails.questDetailsPickTarget = ModalTargets.taskBlock("stale", "task", "block");
 
@@ -34,7 +34,7 @@ class ModalTargetStateTest {
 
     @Test
     void targetFallsBackToLegacyFieldWhenNoSessionIsActive() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         ModalTargetParser.Target target = ModalTargetState.parsedTarget(
                 state,
@@ -48,7 +48,7 @@ class ModalTargetStateTest {
 
     @Test
     void targetSetPrefersCapturedSessionSetAndCleansFallbacks() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         AssetPickerOpenActions.openBatchQuestBackgroundPicker(state, List.of("one", "two"), "background", false);
         state.modal.modalQuestBackgroundTargets.clear();
         state.modal.modalQuestBackgroundTargets.add("stale");

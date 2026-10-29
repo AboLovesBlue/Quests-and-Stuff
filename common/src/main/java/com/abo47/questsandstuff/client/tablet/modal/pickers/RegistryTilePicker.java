@@ -21,11 +21,11 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
+import com.abo47.questsandstuff.client.tablet.controls.CycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 
@@ -33,7 +33,7 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.clo
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_1;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_16;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 
@@ -48,7 +48,7 @@ public final class RegistryTilePicker {
         cached(key, builder);
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, Config config) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h, Config config) {
         ModalShell.addTitleAndClose(modal, config.title(), w, state, refresh);
         int sidePad = 8;
         int headY = ModalShell.PICKER_HEADER_Y;
@@ -69,7 +69,7 @@ public final class RegistryTilePicker {
             QuestsAndStuffMod.debugLog("[QnS:UI] {} search mode={} query='{}'", config.logName(), modeName(access, config), access.search().get());
             refresh.run();
         }, focused -> access.focusSet().accept(focused));
-        TabletCycleButton.addIconModeButton(
+        CycleButton.addIconModeButton(
                 modal,
                 gridX,
                 headY,
@@ -153,7 +153,7 @@ public final class RegistryTilePicker {
         return cached;
     }
 
-    private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, Choice entry, int x, int y, Config config) {
+    private static void renderTile(WidgetGroup surface, Player player, UiState state, Runnable refresh, Choice entry, int x, int y, Config config) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
             surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, "box"));
@@ -183,7 +183,7 @@ public final class RegistryTilePicker {
     }
 
     public interface PickAction {
-        boolean pick(Player player, TabletUiState state, Choice entry);
+        boolean pick(Player player, UiState state, Choice entry);
     }
 
     public record StateAccess(

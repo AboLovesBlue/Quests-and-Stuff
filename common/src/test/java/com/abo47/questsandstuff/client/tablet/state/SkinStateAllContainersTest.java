@@ -54,7 +54,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void everyContainerCanBeSetAndCleared() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         for (String target : ALL_CONTAINER_TARGETS) {
             state.root.skinFillOverrides.put(target, SAMPLE_TEXTURE);
             assertEquals(SAMPLE_TEXTURE, state.root.skinFillOverrides.get(target),
@@ -70,7 +70,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void everyContainerCanBeSetAndClearedWithAppPrefix() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         for (String app : ALL_APPS) {
             for (String target : ALL_CONTAINER_TARGETS) {
                 String prefixedKey = app + ":" + target;
@@ -88,7 +88,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void allContainersCanBeSetTogetherThenClearedTogether() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         for (String target : ALL_CONTAINER_TARGETS) {
             state.root.skinFillOverrides.put(target, SAMPLE_TEXTURE);
@@ -105,7 +105,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void allContainersWithAppPrefixCanBeSetTogetherThenCleared() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         int expected = ALL_CONTAINER_TARGETS.size() * ALL_APPS.size();
 
         for (String app : ALL_APPS) {
@@ -127,7 +127,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void questsAppContainersDoNotLeakIntoTeamsAppViaAppPrefixFiltering() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.currentApp = "quests";
         String appPrefix = "quests:";
 
@@ -147,7 +147,7 @@ class SkinStateAllContainersTest {
 
     @Test
     void sameContainerTargetInDifferentAppsAreIndependent() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         state.root.skinFillOverrides.put("quests:quests_canvas", "stretch|quests_texture.png");
         state.root.skinFillOverrides.put("teams:quests_canvas", "tile|teams_texture.png");

@@ -10,7 +10,7 @@ import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController.ConnectionRef;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
@@ -18,7 +18,7 @@ public final class CanvasConnectionSelection {
     private CanvasConnectionSelection() {
     }
 
-    public static List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
+    public static List<ConnectionRef> selectedConnections(UiState state, String chapter) {
         if (state == null || chapter == null || chapter.isBlank() || state.canvas.canvasSelection.questIds().isEmpty()) {
             return List.of();
         }

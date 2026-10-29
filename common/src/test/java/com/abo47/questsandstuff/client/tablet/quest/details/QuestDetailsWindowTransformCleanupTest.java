@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsWindowTransformCleanupTest {
     @Test
     void closeClearsQuestDetailsTransformSessionBeforeAnimationFinishes() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsOpen = true;
         state.questDetails.questDetailsQuestId = "quest/a";
         state.questDetails.questDetailsTransformKind = "desc_image";

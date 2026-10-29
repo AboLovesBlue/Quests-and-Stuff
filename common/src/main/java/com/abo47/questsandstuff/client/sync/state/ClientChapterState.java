@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
@@ -115,7 +115,7 @@ public final class ClientChapterState {
         moveStringProp(CHAPTER_TEXT_ALIGN, source, target, "center");
         moveStringProp(CHAPTER_TEXT_STYLE, source, target, "normal");
         Integer color = CHAPTER_TEXT_COLOR.remove(source);
-        CHAPTER_TEXT_COLOR.put(target, color == null ? TabletColors.WHITE : color);
+        CHAPTER_TEXT_COLOR.put(target, color == null ? ThemeColors.WHITE : color);
         Integer textSize = CHAPTER_TEXT_SIZE.remove(source);
         CHAPTER_TEXT_SIZE.put(target, textSize == null ? CanvasTextLayer.DEFAULT_FONT_SIZE : textSize);
         Boolean lockUntilUnlocked = CHAPTER_LOCK_UNTIL_UNLOCKED.remove(source);
@@ -185,7 +185,7 @@ public final class ClientChapterState {
     }
 
     public static int chapterTextColor(String chapter) {
-        return CHAPTER_TEXT_COLOR.getOrDefault(normalizeChapter(chapter), TabletColors.WHITE);
+        return CHAPTER_TEXT_COLOR.getOrDefault(normalizeChapter(chapter), ThemeColors.WHITE);
     }
 
     public static String chapterTextStyle(String chapter) {
@@ -321,7 +321,7 @@ public final class ClientChapterState {
         CHAPTER_BACKGROUNDS.putIfAbsent(chapter, "default");
         CHAPTER_CANVAS_BACKGROUNDS.putIfAbsent(chapter, "default");
         CHAPTER_TEXT_ALIGN.putIfAbsent(chapter, "center");
-        CHAPTER_TEXT_COLOR.putIfAbsent(chapter, TabletColors.WHITE);
+        CHAPTER_TEXT_COLOR.putIfAbsent(chapter, ThemeColors.WHITE);
         CHAPTER_TEXT_STYLE.putIfAbsent(chapter, "normal");
         CHAPTER_TEXT_SIZE.putIfAbsent(chapter, CanvasTextLayer.DEFAULT_FONT_SIZE);
         CHAPTER_LOCK_UNTIL_UNLOCKED.putIfAbsent(chapter, false);

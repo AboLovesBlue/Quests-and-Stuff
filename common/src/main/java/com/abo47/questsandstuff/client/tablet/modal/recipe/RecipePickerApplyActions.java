@@ -19,7 +19,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes.RecipeView;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
@@ -32,7 +32,7 @@ final class RecipePickerApplyActions {
     private RecipePickerApplyActions() {
     }
 
-    static void applyRecipePick(Player player, TabletUiState state, String pick, Runnable refresh) {
+    static void applyRecipePick(Player player, UiState state, String pick, Runnable refresh) {
         String value = pick == null ? "" : pick.trim();
         if (value.isBlank()) {
             return;
@@ -68,7 +68,7 @@ final class RecipePickerApplyActions {
         refresh.run();
     }
 
-    static void addRecipeViewerKeyHandler(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh) {
+    static void addRecipeViewerKeyHandler(WidgetGroup modal, UiState state, Player player, Runnable refresh) {
         state.pickers.recipeHoveredPick = "";
         modal.addWidget(new WidgetGroup(0, 0, 0, 0) {
             @Override
@@ -83,7 +83,7 @@ final class RecipePickerApplyActions {
         });
     }
 
-    static void trackRecipeHover(TabletUiState state, String pick) {
+    static void trackRecipeHover(UiState state, String pick) {
         String value = pick == null ? "" : pick.trim();
         if (!value.isBlank()) {
             state.pickers.recipeHoveredPick = value;
@@ -101,7 +101,7 @@ final class RecipePickerApplyActions {
         return recipes.get(0).output().copy();
     }
 
-    private static boolean handleRecipeViewerSelectionShortcut(Player player, TabletUiState state, Runnable refresh, int keyCode, int scanCode) {
+    private static boolean handleRecipeViewerSelectionShortcut(Player player, UiState state, Runnable refresh, int keyCode, int scanCode) {
         if (state.pickers.recipeSearchFocused || !isRecipeCardTarget(state)) {
             return false;
         }
@@ -167,7 +167,7 @@ final class RecipePickerApplyActions {
         return target;
     }
 
-    private static boolean isRecipeCardTarget(TabletUiState state) {
+    private static boolean isRecipeCardTarget(UiState state) {
         ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         return parsed.isCanvasRecipeNew() || parsed.isCanvasRecipeChange() || parsed.isDescRecipe() || parsed.isDescRecipeNew();
     }

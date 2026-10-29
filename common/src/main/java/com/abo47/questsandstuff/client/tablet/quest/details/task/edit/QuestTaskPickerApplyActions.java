@@ -19,7 +19,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTask
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import com.google.gson.JsonObject;
 
@@ -27,7 +27,7 @@ public final class QuestTaskPickerApplyActions {
     private QuestTaskPickerApplyActions() {
     }
 
-    public static void applyIconPick(Player player, TabletUiState state, String entry) {
+    public static void applyIconPick(Player player, UiState state, String entry) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || entry == null || entry.isBlank()) {
             return;
@@ -105,7 +105,7 @@ public final class QuestTaskPickerApplyActions {
         state.questDetails.questDetailsPickTarget = "";
     }
 
-    public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+    public static void applyInventoryItemPick(Player player, UiState state, ItemStack stack) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || stack == null || stack.isEmpty()) {
             return;
@@ -175,7 +175,7 @@ public final class QuestTaskPickerApplyActions {
         }
     }
 
-    public static void applyBiomePick(Player player, TabletUiState state, String biome) {
+    public static void applyBiomePick(Player player, UiState state, String biome) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || biome == null || biome.isBlank()) {
             return;
@@ -189,7 +189,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
     }
 
-    public static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+    public static void applyAdvancementPick(Player player, UiState state, String advancement) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || advancement == null || advancement.isBlank()) {
             return;
@@ -203,7 +203,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
     }
 
-    public static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+    public static void applyRecipePick(Player player, UiState state, String recipe) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || recipe == null || recipe.isBlank()) {
             return;
@@ -218,7 +218,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe picked quest={} task={} recipe={}", parsed.questId(), parsed.entryId(), recipeTarget);
     }
 
-    public static void applyStructurePick(Player player, TabletUiState state, String structure) {
+    public static void applyStructurePick(Player player, UiState state, String structure) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || structure == null || structure.isBlank()) {
             return;
@@ -232,7 +232,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
     }
 
-    public static void applyBlockPick(Player player, TabletUiState state, String block) {
+    public static void applyBlockPick(Player player, UiState state, String block) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || block == null || block.isBlank()) {
             return;
@@ -247,7 +247,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
     }
 
-    public static void applyStatPick(Player player, TabletUiState state, String stat) {
+    public static void applyStatPick(Player player, UiState state, String stat) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || stat == null || stat.isBlank()) {
             return;
@@ -262,7 +262,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details stat picked quest={} task={} stat={}", parsed.questId(), parsed.entryId(), statTarget);
     }
 
-    public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+    public static void applyDimensionPick(Player player, UiState state, String dimension) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || dimension == null || dimension.isBlank()) {
             return;
@@ -279,7 +279,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details dimension picked quest={} task={} dimension={}", parsed.questId(), parsed.entryId(), dimension.trim());
     }
 
-    public static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+    public static void applyItemLockPick(Player player, UiState state, String entry) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || entry == null || entry.isBlank()) {
             return;
@@ -297,7 +297,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details item lock picked quest={} task={} entry={}", questId, taskId, entry);
     }
 
-    public static void removeItemLock(Player player, TabletUiState state, String questId, String taskId, String entry) {
+    public static void removeItemLock(Player player, UiState state, String questId, String taskId, String entry) {
         CompoundTag task = ClientQuestStateFacade.quest(questId).getCompound("tasks").getCompound(taskId);
         JsonObject json = QuestTaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
         QuestTaskLockJson.remove(json, entry);
@@ -305,7 +305,7 @@ public final class QuestTaskPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details item lock removed quest={} task={} entry={}", questId, taskId, entry);
     }
 
-    public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
+    public static void applyLootTablePick(Player player, UiState state, String lootTable) {
         ModalTargetParser.Target parsed = pickTarget(state);
         if (parsed.kind().isBlank() || lootTable == null || lootTable.isBlank()) {
             return;
@@ -347,7 +347,7 @@ public final class QuestTaskPickerApplyActions {
         return json;
     }
 
-    private static ModalTargetParser.Target pickTarget(TabletUiState state) {
+    private static ModalTargetParser.Target pickTarget(UiState state) {
         return ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
     }
 }

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.geometry;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 final class CanvasGridMath {
     static final int QUEST_CELL_MARGIN = 1;
@@ -10,7 +10,7 @@ final class CanvasGridMath {
     private CanvasGridMath() {
     }
 
-    static int snapToGrid(TabletUiState state, int value) {
+    static int snapToGrid(UiState state, int value) {
         if (!state.canvas.gridSnapLocked) {
             return value;
         }
@@ -60,45 +60,45 @@ final class CanvasGridMath {
         return Math.min(slotLogicalSize - visualLogicalSize, Math.max(QUEST_CELL_MARGIN, centered));
     }
 
-    static float snapScaleToGrid(TabletUiState state, float scale) {
+    static float snapScaleToGrid(UiState state, float scale) {
         float normalized = Math.max(0.5f, scale);
         if (!state.canvas.gridSnapLocked) {
             return normalized;
         }
         int grid = gridSize(state);
-        float targetVisible = Math.max(1.0f, TabletUiFactory.CARD_W * normalized);
+        float targetVisible = Math.max(1.0f, UiFactory.CARD_W * normalized);
         int cells = Math.max(1, Math.round((targetVisible + QUEST_CELL_MARGIN) / Math.max(1.0f, grid)));
-        float snapped = ((cells * grid) - QUEST_CELL_MARGIN) / (float) TabletUiFactory.CARD_W;
+        float snapped = ((cells * grid) - QUEST_CELL_MARGIN) / (float) UiFactory.CARD_W;
         return Math.max(0.5f, snapped);
     }
 
-    static int visualInsetX(TabletUiState state, float scale) {
+    static int visualInsetX(UiState state, float scale) {
         return visualInsetForSlot(slotLogicalWidth(state, scale), visualLogicalWidth(scale));
     }
 
-    static int visualInsetY(TabletUiState state, float scale) {
+    static int visualInsetY(UiState state, float scale) {
         return visualInsetForSlot(slotLogicalHeight(state, scale), visualLogicalHeight(scale));
     }
 
     static int visualLogicalWidth(float scale) {
-        return Math.max(1, Math.round(TabletUiFactory.CARD_W * Math.max(0.5f, scale)));
+        return Math.max(1, Math.round(UiFactory.CARD_W * Math.max(0.5f, scale)));
     }
 
     static int visualLogicalHeight(float scale) {
-        return Math.max(1, Math.round(TabletUiFactory.CARD_H * Math.max(0.5f, scale)));
+        return Math.max(1, Math.round(UiFactory.CARD_H * Math.max(0.5f, scale)));
     }
 
-    static int slotLogicalWidth(TabletUiState state, float scale) {
+    static int slotLogicalWidth(UiState state, float scale) {
         return slotSpanForVisualSize(visualLogicalWidth(scale));
     }
 
-    static int slotLogicalHeight(TabletUiState state, float scale) {
+    static int slotLogicalHeight(UiState state, float scale) {
         return slotSpanForVisualSize(visualLogicalHeight(scale));
     }
 
-    static int gridSize(TabletUiState state) {
-        int index = Math.max(0, Math.min(TabletUiFactory.GRID_SIZES.length - 1, state.canvas.gridSizeIndex));
-        return Math.max(1, TabletUiFactory.GRID_SIZES[index]);
+    static int gridSize(UiState state) {
+        int index = Math.max(0, Math.min(UiFactory.GRID_SIZES.length - 1, state.canvas.gridSizeIndex));
+        return Math.max(1, UiFactory.GRID_SIZES[index]);
     }
 
     private static int slotLogicalSpan(int visualLogicalSize) {

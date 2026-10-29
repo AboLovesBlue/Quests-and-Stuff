@@ -33,11 +33,11 @@ import net.minecraft.world.level.material.MapColor;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.layout.GridControls;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.ui.render.PlayerFaceTexture;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
@@ -46,9 +46,9 @@ import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimBatchPacket;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 public class ChunkMapWidget extends Widget {
-    private static final int GRID_COLOR = TabletColors.DEFAULT_GRID_COLOR;
+    private static final int GRID_COLOR = ThemeColors.DEFAULT_GRID_COLOR;
 
-    private final TabletUiState state;
+    private final UiState state;
 
     private DynamicTexture terrainTex;
     private ResourceLocation terrainTexLoc;
@@ -82,7 +82,7 @@ public class ChunkMapWidget extends Widget {
     private final Map<Long, UUID> gridTeams = new HashMap<>();
     private final Map<Long, String> gridClaimKeys = new HashMap<>();
 
-    public ChunkMapWidget(int x, int y, int w, int h, TabletUiState state) {
+    public ChunkMapWidget(int x, int y, int w, int h, UiState state) {
         super(x, y, w, h);
         this.state = state;
         setClientSideWidget();
@@ -279,7 +279,7 @@ public class ChunkMapWidget extends Widget {
         int rgb;
         if (!fluid.isEmpty()) {
             if (fluid.getType() == Fluids.LAVA) {
-                rgb = TabletColors.TERRAIN_LAVA;
+                rgb = ThemeColors.TERRAIN_LAVA;
             } else {
                 rgb = level.getBiome(pos).value().getWaterColor();
                 int depth = waterDepth(level, worldX, worldZ, y);
@@ -288,18 +288,18 @@ public class ChunkMapWidget extends Widget {
         } else {
             BlockState bs = level.getBlockState(pos);
             if (bs.is(Blocks.SNOW) || bs.is(Blocks.SNOW_BLOCK)) {
-                rgb = TabletColors.TERRAIN_SNOW;
+                rgb = ThemeColors.TERRAIN_SNOW;
             } else if (bs.is(Blocks.ICE) || bs.is(Blocks.PACKED_ICE) || bs.is(Blocks.FROSTED_ICE)) {
-                rgb = TabletColors.TERRAIN_ICE;
+                rgb = ThemeColors.TERRAIN_ICE;
             } else if (bs.is(Blocks.SAND) || bs.is(Blocks.SANDSTONE) || bs.is(Blocks.RED_SAND)) {
-                rgb = TabletColors.TERRAIN_SAND;
+                rgb = ThemeColors.TERRAIN_SAND;
             } else if (bs.is(Blocks.GRASS_BLOCK) || bs.is(Blocks.TALL_GRASS) || bs.is(Blocks.FERN)) {
                 rgb = level.getBiome(pos).value().getGrassColor(worldX, worldZ);
             } else if (bs.getBlock() instanceof LeavesBlock) {
                 rgb = level.getBiome(pos).value().getFoliageColor();
             } else {
                 MapColor mapColor = bs.getMapColor(level, pos);
-                rgb = mapColor != null ? mapColor.col : TabletColors.TERRAIN_DEFAULT_FALLBACK;
+                rgb = mapColor != null ? mapColor.col : ThemeColors.TERRAIN_DEFAULT_FALLBACK;
             }
         }
 
@@ -360,7 +360,7 @@ public class ChunkMapWidget extends Widget {
         int h = getSizeHeight();
         int baseX = getPositionX();
         int baseY = getPositionY();
-        graphics.fill(baseX, baseY, baseX + w, baseY + h, TabletColors.SURFACE_BASE);
+        graphics.fill(baseX, baseY, baseX + w, baseY + h, ThemeColors.SURFACE_BASE);
 
         var pose = graphics.pose().last().pose();
         var scissorMin = pose.transform(new Vector4f(baseX, baseY, 0, 1));
@@ -424,7 +424,7 @@ public class ChunkMapWidget extends Widget {
         }
 
         if (state.chunkClaimer.showGrid) {
-            int gridCol = TabletGridControls.gridAlpha(state.chunkClaimer.gridOpacityPercent, GRID_COLOR);
+            int gridCol = GridControls.gridAlpha(state.chunkClaimer.gridOpacityPercent, GRID_COLOR);
             for (int i = iLo; i <= iHi; i++) {
                 int dx = i - gw / 2;
                 for (int j = jLo; j <= jHi; j++) {
@@ -505,7 +505,7 @@ public class ChunkMapWidget extends Widget {
                 int fx = baseX + hpxLocal + (cell + 1) / 2;
                 int fy = baseY + hpyLocal + (cell + 1) / 2;
                 GlowShaderHelper.drawGlow(
-                        graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell + 1, cell + 1, TabletColors.BORDER_ACCENT);
+                        graphics, fx, fy, baseX + hpxLocal, baseY + hpyLocal, cell + 1, cell + 1, ThemeColors.BORDER_ACCENT);
                 int chunkX = cx + dx;
                 int chunkZ = cz + dz;
                 boolean claimedHere = ClientChunkClaimCache.INSTANCE.isClaimed(dim, chunkX, chunkZ);

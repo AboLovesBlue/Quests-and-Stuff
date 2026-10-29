@@ -13,9 +13,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -24,12 +24,12 @@ public final class CanvasViewportContextRouter {
     private CanvasViewportContextRouter() {
     }
 
-    public static void closeContextMenu(TabletUiState state) {
+    public static void closeContextMenu(UiState state) {
         ContextMenuController.close(state);
     }
 
     public static void openContextMenu(
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
@@ -40,7 +40,7 @@ public final class CanvasViewportContextRouter {
             CanvasTextLayer textHit,
             CanvasExclusiveChoice exclusiveChoiceHit
     ) {
-        ConnectionHit connectionHit = TabletUiFactory.hitTestConnection(state, cards, byQuestId, localX, localY);
+        ConnectionHit connectionHit = UiFactory.hitTestConnection(state, cards, byQuestId, localX, localY);
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
         int logicalX = anchor.x;
         int logicalY = anchor.y;
@@ -113,11 +113,11 @@ public final class CanvasViewportContextRouter {
         refresher.run();
     }
 
-    private static boolean connectionAboveHits(TabletUiState state, ConnectionHit connectionHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice exclusiveChoiceHit) {
+    private static boolean connectionAboveHits(UiState state, ConnectionHit connectionHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice exclusiveChoiceHit) {
         if (state == null || connectionHit == null) {
             return false;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         List<String> order = state.canvas.canvasLayerOrderByChapter.getOrDefault(chapter, List.of());
         String connectionLayerKey = CanvasLayerOrdering.connectionKey(CanvasRenderer.connectionKey(connectionHit.sourceQuestId(), connectionHit.targetQuestId()));
         int connectionIndex = order.indexOf(connectionLayerKey);

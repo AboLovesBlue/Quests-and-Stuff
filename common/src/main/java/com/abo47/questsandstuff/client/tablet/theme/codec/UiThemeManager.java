@@ -8,21 +8,21 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.animation.AnimationTimings;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 /**
- * Owns the process-global tablet theme. Existing render code reads `TabletColors`
+ * Owns the process-global tablet theme. Existing render code reads `ThemeColors`
  * statics directly, so all palette mutation is routed through this manager.
  */
 public final class UiThemeManager {
     private static final Gson GSON = GsonProvider.GSON;
     private static final Object LOCK = new Object();
-    private static final long RELOAD_CHECK_MS = TabletAnimationTimings.THEME_RELOAD_CHECK_MS;
+    private static final long RELOAD_CHECK_MS = AnimationTimings.THEME_RELOAD_CHECK_MS;
 
     public static final String ROLE_ICON_DEFAULT = "icon_default";
     public static final String ROLE_ICON_INTERACTIVE = "interactive";
@@ -191,26 +191,26 @@ public final class UiThemeManager {
 
     private static void applyUiPalette(UiThemeState state) {
         Map<String, Integer> uiColors = state.uiColors;
-        TabletColors.SURFACE_BASE = uiColors.getOrDefault(UI_SURFACE_BASE, TabletColors.DEFAULT_SURFACE_BASE);
-        TabletColors.SURFACE_PANEL = uiColors.getOrDefault(UI_SURFACE_PANEL, TabletColors.DEFAULT_SURFACE_PANEL);
-        TabletColors.SURFACE_PANEL_ALT = uiColors.getOrDefault(UI_SURFACE_PANEL_ALT, TabletColors.DEFAULT_SURFACE_PANEL_ALT);
-        TabletColors.BORDER_BASE = uiColors.getOrDefault(UI_BORDER_BASE, TabletColors.DEFAULT_BORDER_BASE);
-        TabletColors.BORDER_ACCENT = uiColors.getOrDefault(UI_BORDER_ACCENT, TabletColors.DEFAULT_BORDER_ACCENT);
-        TabletColors.TEXT_PRIMARY = uiColors.getOrDefault(UI_TEXT_PRIMARY, TabletColors.DEFAULT_TEXT_PRIMARY);
-        TabletColors.TEXT_SECONDARY = uiColors.getOrDefault(UI_TEXT_SECONDARY, TabletColors.DEFAULT_TEXT_SECONDARY);
-        TabletColors.TEXT_MUTED = uiColors.getOrDefault(UI_TEXT_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
-        TabletColors.SUCCESS = uiColors.getOrDefault(UI_SUCCESS, TabletColors.DEFAULT_SUCCESS);
-        TabletColors.WARNING = uiColors.getOrDefault(UI_WARNING, TabletColors.DEFAULT_WARNING);
-        TabletColors.ERROR = uiColors.getOrDefault(UI_ERROR, TabletColors.DEFAULT_ERROR);
-        TabletColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
-        TabletColors.GLOW = uiColors.getOrDefault(UI_GLOW, TabletColors.DEFAULT_GLOW);
-        TabletColors.SELECTION = uiColors.getOrDefault(UI_SELECTION, TabletColors.DEFAULT_SELECTION);
-        TabletColors.SCROLL_TRACK = uiColors.getOrDefault(UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
-        TabletColors.SCROLL_THUMB = uiColors.getOrDefault(UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
-        TabletColors.APP_QUESTS = uiColors.getOrDefault(UI_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
-        TabletColors.APP_TEAMS = uiColors.getOrDefault(UI_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
-        TabletColors.APP_CHUNKCLAIMER = uiColors.getOrDefault(UI_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
-        TabletColors.APP_SETTINGS = uiColors.getOrDefault(UI_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
+        ThemeColors.SURFACE_BASE = uiColors.getOrDefault(UI_SURFACE_BASE, ThemeColors.DEFAULT_SURFACE_BASE);
+        ThemeColors.SURFACE_PANEL = uiColors.getOrDefault(UI_SURFACE_PANEL, ThemeColors.DEFAULT_SURFACE_PANEL);
+        ThemeColors.SURFACE_PANEL_ALT = uiColors.getOrDefault(UI_SURFACE_PANEL_ALT, ThemeColors.DEFAULT_SURFACE_PANEL_ALT);
+        ThemeColors.BORDER_BASE = uiColors.getOrDefault(UI_BORDER_BASE, ThemeColors.DEFAULT_BORDER_BASE);
+        ThemeColors.BORDER_ACCENT = uiColors.getOrDefault(UI_BORDER_ACCENT, ThemeColors.DEFAULT_BORDER_ACCENT);
+        ThemeColors.TEXT_PRIMARY = uiColors.getOrDefault(UI_TEXT_PRIMARY, ThemeColors.DEFAULT_TEXT_PRIMARY);
+        ThemeColors.TEXT_SECONDARY = uiColors.getOrDefault(UI_TEXT_SECONDARY, ThemeColors.DEFAULT_TEXT_SECONDARY);
+        ThemeColors.TEXT_MUTED = uiColors.getOrDefault(UI_TEXT_MUTED, ThemeColors.DEFAULT_TEXT_MUTED);
+        ThemeColors.SUCCESS = uiColors.getOrDefault(UI_SUCCESS, ThemeColors.DEFAULT_SUCCESS);
+        ThemeColors.WARNING = uiColors.getOrDefault(UI_WARNING, ThemeColors.DEFAULT_WARNING);
+        ThemeColors.ERROR = uiColors.getOrDefault(UI_ERROR, ThemeColors.DEFAULT_ERROR);
+        ThemeColors.INTERACTIVE = uiColors.getOrDefault(UI_INTERACTIVE, ThemeColors.DEFAULT_INTERACTIVE);
+        ThemeColors.GLOW = uiColors.getOrDefault(UI_GLOW, ThemeColors.DEFAULT_GLOW);
+        ThemeColors.SELECTION = uiColors.getOrDefault(UI_SELECTION, ThemeColors.DEFAULT_SELECTION);
+        ThemeColors.SCROLL_TRACK = uiColors.getOrDefault(UI_SCROLL_TRACK, ThemeColors.DEFAULT_SCROLL_TRACK);
+        ThemeColors.SCROLL_THUMB = uiColors.getOrDefault(UI_SCROLL_THUMB, ThemeColors.DEFAULT_SCROLL_THUMB);
+        ThemeColors.APP_QUESTS = uiColors.getOrDefault(UI_APP_QUESTS, ThemeColors.DEFAULT_INTERACTIVE);
+        ThemeColors.APP_TEAMS = uiColors.getOrDefault(UI_APP_TEAMS, ThemeColors.DEFAULT_SUCCESS);
+        ThemeColors.APP_CHUNKCLAIMER = uiColors.getOrDefault(UI_APP_CHUNKCLAIMER, ThemeColors.DEFAULT_WARNING);
+        ThemeColors.APP_SETTINGS = uiColors.getOrDefault(UI_APP_SETTINGS, ThemeColors.DEFAULT_TEXT_MUTED);
     }
 
     public record ThemeInfo(String id, String label, int panel, int panelAlt, int accent, int success, int text) {

@@ -14,20 +14,20 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isCtrlDown;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 public final class QuestDetailsDescriptionTextEdit {
-    private final TabletUiState state;
+    private final UiState state;
     private final Runnable refresh;
     private final String questId;
     private final IntSupplier contentW;
     private final IntSupplier contentH;
 
-    QuestDetailsDescriptionTextEdit(TabletUiState state, Runnable refresh, String questId, IntSupplier contentW, IntSupplier contentH) {
+    QuestDetailsDescriptionTextEdit(UiState state, Runnable refresh, String questId, IntSupplier contentW, IntSupplier contentH) {
         this.state = state;
         this.refresh = refresh;
         this.questId = questId;

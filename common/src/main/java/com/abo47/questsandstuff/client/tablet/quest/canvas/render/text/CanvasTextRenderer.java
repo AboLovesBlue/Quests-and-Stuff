@@ -21,9 +21,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -33,7 +33,7 @@ public final class CanvasTextRenderer {
     private CanvasTextRenderer() {
     }
 
-    public static void renderCanvasText(WidgetGroup canvasViewport, TabletUiState state, CanvasTextLayer text) {
+    public static void renderCanvasText(WidgetGroup canvasViewport, UiState state, CanvasTextLayer text) {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -64,7 +64,7 @@ public final class CanvasTextRenderer {
         });
     }
 
-    public static int canvasTextCursorAt(TabletUiState state, CanvasTextLayer text, int x, int y) {
+    public static int canvasTextCursorAt(UiState state, CanvasTextLayer text, int x, int y) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
         double[] local = CanvasRenderer.canvasTextLocalScreenPoint(state, text, x, y);
         float scale = fontScale(text) * CanvasRenderer.clampZoom(state.canvas.canvasZoom);
@@ -80,7 +80,7 @@ public final class CanvasTextRenderer {
         return cursorAtLocalPoint(text, layoutW, layoutH, localX / scale, localY / scale);
     }
 
-    public static void drawTextLayer(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int width, int height, boolean inlineEditing) {
+    public static void drawTextLayer(GuiGraphics graphics, UiState state, CanvasTextLayer text, int width, int height, boolean inlineEditing) {
         drawCanvasTextLines(graphics, state, text, width, height, inlineEditing, 1.0f);
         if (inlineEditing) {
             drawCanvasTextCaret(graphics, state, text, width, height, 1.0f);
@@ -110,55 +110,55 @@ public final class CanvasTextRenderer {
         return Math.max(14, Math.round(layoutH * scale));
     }
 
-    public static int textSelectionStart(TabletUiState state) {
+    public static int textSelectionStart(UiState state) {
         return CanvasTextEditSession.selectionStart(state);
     }
 
-    public static int textSelectionEnd(TabletUiState state) {
+    public static int textSelectionEnd(UiState state) {
         return CanvasTextEditSession.selectionEnd(state);
     }
 
-    public static boolean hasTextSelection(TabletUiState state) {
+    public static boolean hasTextSelection(UiState state) {
         return CanvasTextEditSession.hasSelection(state);
     }
 
-    public static CanvasTextLayer applyTextStyleSelection(TabletUiState state, CanvasTextLayer text, String style) {
+    public static CanvasTextLayer applyTextStyleSelection(UiState state, CanvasTextLayer text, String style) {
         if (CanvasTextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.withStyleRange(textSelectionStart(state), textSelectionEnd(state), style);
         }
         return text.withStyle(style);
     }
 
-    public static CanvasTextLayer toggleTextStyleSelection(TabletUiState state, CanvasTextLayer text, String flag) {
+    public static CanvasTextLayer toggleTextStyleSelection(UiState state, CanvasTextLayer text, String flag) {
         if (CanvasTextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.toggleStyleFlagRange(textSelectionStart(state), textSelectionEnd(state), flag);
         }
         return text.withStyle(CanvasTextLayer.toggleStyleFlag(text.style(), flag));
     }
 
-    public static boolean isTextStyleFlagActive(TabletUiState state, CanvasTextLayer text, String flag) {
+    public static boolean isTextStyleFlagActive(UiState state, CanvasTextLayer text, String flag) {
         if (CanvasTextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.rangeHasStyleFlag(textSelectionStart(state), textSelectionEnd(state), flag);
         }
         return CanvasTextLayer.hasStyleFlag(activeTextStyle(state, text), flag);
     }
 
-    public static int activeTextColor(TabletUiState state, CanvasTextLayer text) {
+    public static int activeTextColor(UiState state, CanvasTextLayer text) {
         if (state == null || text == null || !CanvasTextEditSession.isEditingTarget(state, text.id()) || text.text().isEmpty()) {
-            return text == null ? TabletColors.TEXT_PRIMARY : text.color();
+            return text == null ? ThemeColors.TEXT_PRIMARY : text.color();
         }
         int index = activeTextIndex(state, text);
         return text.colorAt(index);
     }
 
-    public static CanvasTextLayer applyTextColorSelection(TabletUiState state, CanvasTextLayer text, int color) {
+    public static CanvasTextLayer applyTextColorSelection(UiState state, CanvasTextLayer text, int color) {
         if (CanvasTextEditSession.isEditingTarget(state, text.id()) && hasTextSelection(state)) {
             return text.withColorRange(textSelectionStart(state), textSelectionEnd(state), color);
         }
         return text.withColor(color);
     }
 
-    private static void drawCanvasTextLines(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h, boolean inlineEditing, float zoom) {
+    private static void drawCanvasTextLines(GuiGraphics graphics, UiState state, CanvasTextLayer text, int w, int h, boolean inlineEditing, float zoom) {
         var font = Minecraft.getInstance().font;
         float scale = fontScale(text) * zoom;
         int layoutW = layoutSize(w, scale);
@@ -176,7 +176,7 @@ public final class CanvasTextRenderer {
         graphics.pose().scale(scale, scale, 1.0f);
         for (TextGlyph glyph : layout.glyphs()) {
             if (selectionStart < selectionEnd && glyph.index() >= selectionStart && glyph.index() < selectionEnd) {
-                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - GRID_1, Math.max(1, glyph.width()), font.lineHeight + 2);
+                SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 95)).draw(graphics, 0, 0, glyph.x(), glyph.y() - GRID_1, Math.max(1, glyph.width()), font.lineHeight + 2);
             }
             String style = text.styleAt(glyph.index());
             int color = text.colorAt(glyph.index());
@@ -200,7 +200,7 @@ public final class CanvasTextRenderer {
         graphics.pose().popPose();
     }
 
-    private static void drawCanvasTextRun(GuiGraphics graphics, StringBuilder run, int x, int y, int color, String style, CanvasTextLayer text, boolean inlineEditing, TabletUiState state) {
+    private static void drawCanvasTextRun(GuiGraphics graphics, StringBuilder run, int x, int y, int color, String style, CanvasTextLayer text, boolean inlineEditing, UiState state) {
         if (run.length() == 0) {
             return;
         }
@@ -246,7 +246,7 @@ public final class CanvasTextRenderer {
         return component.copy().withStyle(formats.toArray(new ChatFormatting[0]));
     }
 
-    private static void drawCanvasTextCaret(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int w, int h, float zoom) {
+    private static void drawCanvasTextCaret(GuiGraphics graphics, UiState state, CanvasTextLayer text, int w, int h, float zoom) {
         if ((System.currentTimeMillis() / 500L) % 2L != 0L) {
             return;
         }
@@ -270,7 +270,7 @@ public final class CanvasTextRenderer {
         return Math.max(0.1f, text.fontSize() / (float) CanvasTextLayer.DEFAULT_FONT_SIZE);
     }
 
-    private static boolean isMainCanvasTextEditing(TabletUiState state, CanvasTextLayer text) {
+    private static boolean isMainCanvasTextEditing(UiState state, CanvasTextLayer text) {
         return CanvasTextEditSession.isMainCanvasEditing(state) && text.id().equals(state.canvas.canvasTextEditTarget);
     }
 
@@ -278,14 +278,14 @@ public final class CanvasTextRenderer {
         return Math.max(1, Math.round(screenSize / Math.max(0.1f, scale)));
     }
 
-    private static String activeTextStyle(TabletUiState state, CanvasTextLayer text) {
+    private static String activeTextStyle(UiState state, CanvasTextLayer text) {
         if (!CanvasTextEditSession.isEditingTarget(state, text.id()) || text.text().isEmpty()) {
             return text.style();
         }
         return text.styleAt(activeTextIndex(state, text));
     }
 
-    private static int activeTextIndex(TabletUiState state, CanvasTextLayer text) {
+    private static int activeTextIndex(UiState state, CanvasTextLayer text) {
         int cursor = Math.max(0, Math.min(CanvasTextEditSession.cursor(state), text.text().length()));
         return Math.max(0, Math.min(text.text().length() - 1, cursor == 0 ? 0 : cursor - 1));
     }

@@ -5,7 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
@@ -78,11 +78,11 @@ public final class QuestMiniCardRenderer {
 
     public static int hiddenOverlayColor(int alpha, int maxAlpha) {
         int safeMax = Math.max(0, Math.min(255, maxAlpha));
-        return withAlpha(TabletColors.SURFACE_BASE, Math.min(safeMax, Math.max(0, Math.min(255, alpha)) / 2));
+        return withAlpha(ThemeColors.SURFACE_BASE, Math.min(safeMax, Math.max(0, Math.min(255, alpha)) / 2));
     }
 
     public static int highlightColor(int alpha) {
-        return withAlpha(TabletColors.BORDER_ACCENT, Math.max(0, Math.min(255, alpha)));
+        return withAlpha(ThemeColors.BORDER_ACCENT, Math.max(0, Math.min(255, alpha)));
     }
 
     private static void drawHiddenOverlay(GuiGraphics graphics, int x, int y, int width, int height, int alpha, int maxAlpha) {

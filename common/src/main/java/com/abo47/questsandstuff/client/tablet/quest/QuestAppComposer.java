@@ -11,12 +11,12 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Bootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Lifecycle;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.controls.ScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.layout.PanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
@@ -26,45 +26,45 @@ import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanelInteract
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterSplitterWidget;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsLayerWidget;
-import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
+import com.abo47.questsandstuff.client.tablet.quest.tools.ToolsMenu;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuLayerWidget;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.root.RootWidget;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiPerfProfiler;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.clampGridSizeIndex;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_TOP_H_COMPACT;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.GRID_SIZES;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_GAP;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.PANEL_INSET;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.applyRootSize;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasPanelWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasPanelX;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.canvasViewportBounds;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterPanelCollapsed;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletRefresh;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletState;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.clampGridSizeIndex;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CANVAS_TOP_H_COMPACT;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CANVAS_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_PANEL_GUTTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.GRID_SIZES;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_GAP;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.PANEL_INSET;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.applyRootSize;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.canvasHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.canvasPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.canvasPanelX;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.canvasViewportBounds;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterPanelCollapsed;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletRefresh;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletState;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.rootHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.rootWidth;
 
 public final class QuestAppComposer {
     private QuestAppComposer() {
@@ -74,8 +74,8 @@ public final class QuestAppComposer {
     }
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
-        TabletUiState state = TabletBootstrap.prepare(player);
-        TabletLifecycle.restoreRememberedWindow(state);
+        UiState state = Bootstrap.prepare(player);
+        Lifecycle.restoreRememberedWindow(state);
         state.root.currentApp = TabletAppRegistry.APP_QUESTS;
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
@@ -84,7 +84,7 @@ public final class QuestAppComposer {
         int initialChapterH = chapterHeight(state);
         int initialCanvasH = canvasHeight(state);
 
-        TabletRootWidget root = new TabletRootWidget(0, 0, initialRootW, initialRootH, state);
+        RootWidget root = new RootWidget(0, 0, initialRootW, initialRootH, state);
         refreshRootBackground(root, state);
         int initialChapterW = chapterPanelWidth(state);
         int initialCanvasX = canvasPanelX(state);
@@ -105,8 +105,8 @@ public final class QuestAppComposer {
         final int chapterListGap = contentInset - 1;
         final int chapterListY = chapterTopY + chapterHeaderH + chapterListGap;
 
-        WidgetGroup chapterList = new TabletScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));
-        chapterList.setBackground(isChapterPanelCollapsed(state) ? SurfaceFactory.fill(TabletColors.SURFACE_BASE) : SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        WidgetGroup chapterList = new ScissoredWidgetGroup(chapterSideInset, chapterListY, Math.max(24, initialChapterW - chapterSideInset * 2), Math.max(1, initialChapterH - chapterListY - chapterBottomInset));
+        chapterList.setBackground(isChapterPanelCollapsed(state) ? SurfaceFactory.fill(ThemeColors.SURFACE_BASE) : SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
         WidgetGroup chapterMenuOverlay = new WidgetGroup(0, 0, initialRootW, initialRootH);
         WidgetGroup[] splitterRef = new WidgetGroup[1];
         Runnable[] refresh = new Runnable[1];
@@ -125,8 +125,8 @@ public final class QuestAppComposer {
                 IGuiTexture bg = getBackgroundTexture();
                 if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
                     bg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-                } else if (!TabletPanelChrome.hasPanelOverride(canvasPanel, state)) {
-                    SurfaceFactory.fill(TabletColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                } else if (!PanelChrome.hasPanelOverride(canvasPanel, state)) {
+                    SurfaceFactory.fill(ThemeColors.SURFACE_PANEL).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
             }
@@ -141,11 +141,11 @@ public final class QuestAppComposer {
 
         int HOME_BTN_SIZE = 10;
         ButtonWidget questHomeBtn = new ButtonWidget(0, 0, HOME_BTN_SIZE, HOME_BTN_SIZE,
-                SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()),
-                cd -> TabletLifecycle.openTabletUiHome(player));
+                SurfaceFactory.bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.subtleBorder()),
+                cd -> Lifecycle.openTabletUiHome(player));
         questHomeBtn.setClientSideWidget();
         GlowShaderHelper.glowHit(questHomeBtn);
-        questHomeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
+        questHomeBtn.setClickedTexture(SurfaceFactory.bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_ACCENT));
         root.addWidget(questHomeBtn);
         root.setHomeButton(questHomeBtn);
 
@@ -161,7 +161,7 @@ public final class QuestAppComposer {
                 ContextMenuController.close(state);
                 state.canvas.canvasSelection.questIds().clear();
             }
-            TabletBootstrap.keepSelectedChapterValid(state, true);
+            Bootstrap.keepSelectedChapterValid(state, true);
             int topH = CANVAS_TOP_H_COMPACT;
             int currentRootW = rootWidth(state);
             int currentRootH = rootHeight(state);
@@ -180,7 +180,7 @@ public final class QuestAppComposer {
             int dynamicListW = chapterCollapsed ? Math.max(18, chapterW - collapsedChapterInset * 2) : Math.max(24, chapterW - chapterSideInset * 2);
             int dynamicListH = Math.max(1, chapterCollapsed ? chapterH : chapterH - dynamicListY - chapterBottomInset);
 
-            chapterList.setBackground(chapterCollapsed ? SurfaceFactory.fill(TabletColors.SURFACE_BASE) : SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+            chapterList.setBackground(chapterCollapsed ? SurfaceFactory.fill(ThemeColors.SURFACE_BASE) : SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
             headers.refreshSurfaceFactory(state);
 
             chapterPanelRef[0].setSize(chapterW, chapterH);
@@ -231,15 +231,15 @@ public final class QuestAppComposer {
             int homeBtnX = currentRootW - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
             int homeBtnY = ROOT_PAD_Y + ((currentRootH - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
             questHomeBtn.setSelfPosition(homeBtnX, homeBtnY);
-            questHomeBtn.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()));
+            questHomeBtn.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.subtleBorder()));
 
             int headerX = viewportX;
             int headerW = viewportW;
             headers.layoutCanvas(state, headerX, headerW, topY, headerH, toolsW, topGap);
-            TabletToolsMenu.rebuild(toolsMenu, state, player, refresh[0], canvasX, headers.toolsX(), topY, headerH, toolsW);
-            TabletUiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
+            ToolsMenu.rebuild(toolsMenu, state, player, refresh[0], canvasX, headers.toolsX(), topY, headerH, toolsW);
+            UiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
             refreshChapterViews[0].run();
-            TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> ModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
+            UiPerfProfiler.profile("ui.rebuildChapterModal", () -> ModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
             if (!QuestDetailsWindow.isVisible(state)) {
                 refreshCanvas[0].run();
             }
@@ -261,12 +261,12 @@ public final class QuestAppComposer {
                 SkinAnchorRegistry.register("quests_canvas_background", viewportBgRef[0]);
             }
             SkinEditManager.reapplyOverrides(state, root);
-            canvasViewport.setViewportBorderHidden(TabletPanelChrome.shouldHideViewportBorder(canvasPanel, state));
+            canvasViewport.setViewportBorderHidden(PanelChrome.shouldHideViewportBorder(canvasPanel, state));
         };
-        refreshCanvas[0] = () -> TabletUiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
+        refreshCanvas[0] = () -> UiPerfProfiler.profile("ui.rebuildQuestCanvas", () -> CanvasRenderer.rebuildQuestCanvas(canvasViewport, state));
         refreshChapterViews[0] = () -> {
-            TabletUiPerfProfiler.profile("ui.rebuildChapterList", () -> ChapterPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
-            TabletUiPerfProfiler.profile("ui.rebuildChapterMenu", () -> ChapterPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
+            UiPerfProfiler.profile("ui.rebuildChapterList", () -> ChapterPanel.rebuildChapterList(chapterList, state, player, refresh[0]));
+            UiPerfProfiler.profile("ui.rebuildChapterMenu", () -> ChapterPanel.rebuildChapterMenu(chapterMenuOverlay, state, player, refresh[0]));
         };
         root.setRefresher(refresh[0]);
         canvasViewport.setRefresher(refresh[0]);
@@ -277,7 +277,7 @@ public final class QuestAppComposer {
         root.setFrontWindowLayer(questDetailsLayer);
         root.setCanvasViewport(canvasViewport);
 
-        root.setUndoRedoActions(TabletBootstrap.undoAction(state, player), TabletBootstrap.redoAction(state, player));
+        root.setUndoRedoActions(Bootstrap.undoAction(state, player), Bootstrap.redoAction(state, player));
         chapterPanel = new ChapterPanelInteractionWidget(CHAPTER_X, CHAPTER_Y, initialChapterW, initialChapterH, state, player, refresh[0], refreshChapterViews[0]);
         chapterPanel.addWidgets(chapterSearchField, chapterList);
         chapterPanelRef[0] = chapterPanel;
@@ -304,7 +304,7 @@ public final class QuestAppComposer {
         return root;
     }
 
-    private static void refreshRootBackground(TabletRootWidget root, TabletUiState state) {
-        TabletRootWidget.refreshRootBackground(root, state);
+    private static void refreshRootBackground(RootWidget root, UiState state) {
+        RootWidget.refreshRootBackground(root, state);
     }
 }

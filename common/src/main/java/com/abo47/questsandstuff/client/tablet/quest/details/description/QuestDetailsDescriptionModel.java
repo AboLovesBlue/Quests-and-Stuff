@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasLayerNbtCodec;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -102,7 +102,7 @@ public final class QuestDetailsDescriptionModel {
                 }
             } else if (!line.isBlank()) {
                 String id = "line_" + i;
-                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, CanvasTextLayer.FALLBACK_W, CanvasTextLayer.FALLBACK_H, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
+                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, CanvasTextLayer.FALLBACK_W, CanvasTextLayer.FALLBACK_H, 0, "left", "normal", ThemeColors.TEXT_PRIMARY);
                 model.putText(text);
                 model.ensureOrder(ORDER_TEXT + id);
                 fallbackY += CanvasTextLayer.FALLBACK_ROW_STEP;

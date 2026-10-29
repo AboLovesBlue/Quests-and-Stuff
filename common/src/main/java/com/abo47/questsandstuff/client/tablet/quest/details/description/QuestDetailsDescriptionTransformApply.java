@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -12,7 +12,7 @@ final class QuestDetailsDescriptionTransformApply {
     private QuestDetailsDescriptionTransformApply() {
     }
 
-    static void preview(TabletUiState state, QuestDetailsDescriptionModel model) {
+    static void preview(UiState state, QuestDetailsDescriptionModel model) {
         if ("desc_text".equals(state.questDetails.questDetailsTransformKind)) {
             CanvasTextLayer text = model.text(state.questDetails.questDetailsTransformId);
             if (text != null) {
@@ -43,7 +43,7 @@ final class QuestDetailsDescriptionTransformApply {
         }
     }
 
-    static CommitInfo commit(Player player, TabletUiState state, String questId, QuestDetailsDescriptionTransform transforms, QuestDetailsDescriptionModel model, int pointerX, int pointerY) {
+    static CommitInfo commit(Player player, UiState state, String questId, QuestDetailsDescriptionTransform transforms, QuestDetailsDescriptionModel model, int pointerX, int pointerY) {
         CommitInfo info = new CommitInfo(state.questDetails.questDetailsTransformKind, state.questDetails.questDetailsTransformId, state.questDetails.questDetailsTransformMode);
         transforms.applyTransform(model, pointerX, pointerY);
         CanvasTransformSessions.clearQuestDetailsSession(state);
@@ -51,7 +51,7 @@ final class QuestDetailsDescriptionTransformApply {
         return info;
     }
 
-    static void clearEditDragState(TabletUiState state) {
+    static void clearEditDragState(UiState state) {
         state.canvas.selectingCanvasTextRange = false;
         state.questDetails.questDetailsBoxSelecting = false;
         CanvasTransformSessions.clearQuestDetailsSession(state);

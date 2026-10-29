@@ -7,8 +7,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -18,7 +18,7 @@ final class CanvasRangeSelection {
     }
 
     static void rangeSelect(
-            TabletUiState state,
+            UiState state,
             Map<String, QuestCardLayout> byQuestId,
             CanvasLayerKind anchorKind,
             String anchorId,
@@ -35,7 +35,7 @@ final class CanvasRangeSelection {
         if (anchorKind == null) {
             return;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
         List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
@@ -78,7 +78,7 @@ final class CanvasRangeSelection {
         }
     }
 
-    private static void selectSingle(TabletUiState state, CanvasLayerKind kind, String id) {
+    private static void selectSingle(UiState state, CanvasLayerKind kind, String id) {
         switch (kind) {
             case QUEST -> state.canvas.canvasSelection.questIds().add(id);
             case IMAGE -> {

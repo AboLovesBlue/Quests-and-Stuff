@@ -13,9 +13,9 @@ import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
@@ -24,7 +24,7 @@ public final class SoundVolumeControls {
     private SoundVolumeControls() {
     }
 
-    public static TextFieldWidget add(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, int x, int y, int width, String soundId) {
+    public static TextFieldWidget add(WidgetGroup parent, UiState state, Player player, Runnable refresh, int x, int y, int width, String soundId) {
         return PercentSliderControls.add(
                 parent,
                 x,
@@ -41,11 +41,11 @@ public final class SoundVolumeControls {
                 },
                 () -> state.pickers.soundVolumeDragging,
                 dragging -> state.pickers.soundVolumeDragging = dragging,
-                new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.SOUND_LEVEL)}
+                new Component[]{TranslationKeys.component(QuestTranslationKeys.SOUND_LEVEL)}
         );
     }
 
-    private static void commit(Player player, TabletUiState state, String soundId) {
+    private static void commit(Player player, UiState state, String soundId) {
         String target = ModalTargetState.target(state, TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
         Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
         int volume = QuestDisplay.normalizeCompletionSoundVolume(state.pickers.soundVolumeDraft);

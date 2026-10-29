@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKey;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKind;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasSelectionSet {
     private final CanvasLayerSelection layers;
@@ -23,7 +23,7 @@ public final class CanvasSelectionSet {
         this.layers = layers == null ? new CanvasLayerSelection(Set.of()) : layers;
     }
 
-    public static CanvasSelectionSet current(TabletUiState state) {
+    public static CanvasSelectionSet current(UiState state) {
         Set<String> imageIds = new LinkedHashSet<>(state.canvas.canvasSelection.imageIds());
         if (!state.canvas.canvasSelection.primaryImageId().isBlank()) {
             imageIds.add(state.canvas.canvasSelection.primaryImageId());

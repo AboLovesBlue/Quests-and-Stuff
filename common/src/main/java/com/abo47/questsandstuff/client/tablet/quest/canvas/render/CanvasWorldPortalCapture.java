@@ -20,7 +20,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasWorldPortalCapture {
     private CanvasWorldPortalCapture() {
@@ -34,7 +34,7 @@ public final class CanvasWorldPortalCapture {
     private static int uiTargetW;
     private static int uiTargetH;
 
-    public static boolean shouldCapture(TabletUiState state) {
+    public static boolean shouldCapture(UiState state) {
         if (state == null || state.root == null || state.canvas == null) {
             return false;
         }
@@ -49,7 +49,7 @@ public final class CanvasWorldPortalCapture {
         return target != null;
     }
 
-    public static boolean shouldCaptureDetails(TabletUiState state) {
+    public static boolean shouldCaptureDetails(UiState state) {
         if (state == null || state.root == null || state.questDetails == null) {
             return false;
         }
@@ -64,7 +64,7 @@ public final class CanvasWorldPortalCapture {
         return uiTarget != null;
     }
 
-    public static void capture(TabletUiState state) {
+    public static void capture(UiState state) {
         if (!shouldCapture(state)) {
             return;
         }
@@ -83,7 +83,7 @@ public final class CanvasWorldPortalCapture {
         }
     }
 
-    public static void captureMainCanvas(TabletUiState state) {
+    public static void captureMainCanvas(UiState state) {
         if (!shouldCaptureDetails(state)) {
             return;
         }
@@ -156,11 +156,11 @@ public final class CanvasWorldPortalCapture {
         }
     }
 
-    public static void drawInto(GuiGraphics graphics, WidgetGroup viewport, TabletUiState state) {
+    public static void drawInto(GuiGraphics graphics, WidgetGroup viewport, UiState state) {
         drawTargetInto(graphics, viewport, target);
     }
 
-    public static void drawUiInto(GuiGraphics graphics, WidgetGroup viewport, TabletUiState state) {
+    public static void drawUiInto(GuiGraphics graphics, WidgetGroup viewport, UiState state) {
         drawTargetInto(graphics, viewport, uiTarget);
     }
 

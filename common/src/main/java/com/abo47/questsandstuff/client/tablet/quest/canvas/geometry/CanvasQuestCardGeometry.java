@@ -4,13 +4,13 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class CanvasQuestCardGeometry {
     private CanvasQuestCardGeometry() {
     }
 
-    static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, TabletUiState state, String selectedChapter) {
+    static QuestCardLayout layoutQuest(String questId, CompoundTag questTag, UiState state, String selectedChapter) {
         CanvasPoint override = state.canvas.transientQuestPositions.get(questId);
         CompoundTag groupsTag = questTag.getCompound("chapters");
         String resolvedChapter = selectedChapter == null ? "" : selectedChapter.trim();
@@ -62,11 +62,11 @@ final class CanvasQuestCardGeometry {
         );
     }
 
-    static CanvasPoint anchorForScreenVisualCenter(TabletUiState state, int screenX, int screenY, float scale) {
+    static CanvasPoint anchorForScreenVisualCenter(UiState state, int screenX, int screenY, float scale) {
         return anchorForVisualCenter(state, CanvasCoordinateMapper.screenToLogicalX(state, screenX), CanvasCoordinateMapper.screenToLogicalY(state, screenY), scale);
     }
 
-    static CanvasPoint anchorForVisualCenter(TabletUiState state, double logicalCenterX, double logicalCenterY, float scale) {
+    static CanvasPoint anchorForVisualCenter(UiState state, double logicalCenterX, double logicalCenterY, float scale) {
         int visualW = CanvasGridMath.visualLogicalWidth(scale);
         int visualH = CanvasGridMath.visualLogicalHeight(scale);
         int anchorX = (int) Math.round(logicalCenterX - CanvasGridMath.visualInsetForSlot(CanvasGridMath.slotLogicalWidth(state, scale), visualW) - visualW / 2.0);
@@ -74,7 +74,7 @@ final class CanvasQuestCardGeometry {
         return new CanvasPoint(anchorX, anchorY);
     }
 
-    private static int visualScreenSize(TabletUiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {
+    private static int visualScreenSize(UiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {
         int preferred = Math.max(1, Math.round(visualLogicalSize * CanvasCoordinateMapper.zoom(state)));
         int insideSlot = Math.max(1, slotScreenSize - CanvasGridMath.QUEST_CELL_MARGIN);
         if (visualLogicalSize + CanvasGridMath.QUEST_CELL_MARGIN >= slotLogicalSize) {
@@ -91,7 +91,7 @@ final class CanvasQuestCardGeometry {
         return Math.min(slotScreenSize - visualScreenSize, Math.max(1, centered));
     }
 
-    private static float scaleFromGroup(TabletUiState state, String questId, CompoundTag groupTag) {
+    private static float scaleFromGroup(UiState state, String questId, CompoundTag groupTag) {
         float scale = groupTag.contains("scale") ? groupTag.getFloat("scale") : 1.0f;
         Float transientScale = state.canvas.transientQuestScales.get(questId);
         if (transientScale != null && !Float.isNaN(transientScale) && !Float.isInfinite(transientScale)) {

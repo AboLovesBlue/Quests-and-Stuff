@@ -10,35 +10,35 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
+import com.abo47.questsandstuff.client.tablet.controls.IconTextButton;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 final class QuestAppHeaderControls {
     private final TextFieldWidget chapterSearchField;
     private final TextFieldWidget searchField;
-    private final TabletIconTextButton toolsButton;
-    private final TabletIconTextButton blueprintButton;
-    private final TabletIconTextButton claimAllButton;
-    private final TabletIconTextButton editorButton;
+    private final IconTextButton toolsButton;
+    private final IconTextButton blueprintButton;
+    private final IconTextButton claimAllButton;
+    private final IconTextButton editorButton;
     private int toolsX;
 
     private QuestAppHeaderControls(
             TextFieldWidget chapterSearchField,
             TextFieldWidget searchField,
-            TabletIconTextButton toolsButton,
-            TabletIconTextButton blueprintButton,
-            TabletIconTextButton claimAllButton,
-            TabletIconTextButton editorButton
+            IconTextButton toolsButton,
+            IconTextButton blueprintButton,
+            IconTextButton claimAllButton,
+            IconTextButton editorButton
     ) {
         this.chapterSearchField = chapterSearchField;
         this.searchField = searchField;
@@ -48,7 +48,7 @@ final class QuestAppHeaderControls {
         this.editorButton = editorButton;
     }
 
-    static QuestAppHeaderControls create(Player player, TabletUiState state, Runnable refresh, int chapterInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int canvasHeaderX, int topY, int headerH) {
+    static QuestAppHeaderControls create(Player player, UiState state, Runnable refresh, int chapterInset, int chapterTopY, int chapterHeaderH, int initialChapterW, int canvasHeaderX, int topY, int headerH) {
         TextFieldWidget chapterSearchField = StyledTextFields.search(
                 chapterInset,
                 chapterTopY,
@@ -82,12 +82,12 @@ final class QuestAppHeaderControls {
         );
 
         int toolsW = headerH;
-        TabletIconTextButton toolsButton = headerButton(0, 0, toolsW, headerH, "tools", TabletColors.INTERACTIVE, click -> {
+        IconTextButton toolsButton = headerButton(0, 0, toolsW, headerH, "tools", ThemeColors.INTERACTIVE, click -> {
             ToolMenuAnimation.toggleMain(state);
             refresh.run();
         });
 
-        TabletIconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", TabletColors.WARNING, click -> {
+        IconTextButton blueprintButton = headerButton(0, 0, toolsW, headerH, "scroll", ThemeColors.WARNING, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuController.close(state);
             state.chapterPanel.chapterMenuOpen = false;
@@ -96,7 +96,7 @@ final class QuestAppHeaderControls {
             QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] library opened from main header");
             refresh.run();
         });
-        TabletIconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", TabletColors.INTERACTIVE, click -> {
+        IconTextButton claimAllButton = headerButton(0, 0, toolsW, headerH, "claim_all", ThemeColors.INTERACTIVE, click -> {
             ToolMenuAnimation.closeMain(state);
             ContextMenuController.close(state);
             state.chapterPanel.chapterMenuOpen = false;
@@ -104,7 +104,7 @@ final class QuestAppHeaderControls {
             RewardClaimHandler.claimAll(player, "");
             refresh.run();
         });
-        TabletIconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", TabletColors.INTERACTIVE, click -> {
+        IconTextButton editorButton = headerButton(0, 0, toolsW, headerH, "editor", ThemeColors.INTERACTIVE, click -> {
             if (!state.root.editorAvailable) {
                 return;
             }
@@ -129,19 +129,19 @@ final class QuestAppHeaderControls {
         return searchField;
     }
 
-    TabletIconTextButton toolsButton() {
+    IconTextButton toolsButton() {
         return toolsButton;
     }
 
-    TabletIconTextButton blueprintButton() {
+    IconTextButton blueprintButton() {
         return blueprintButton;
     }
 
-    TabletIconTextButton claimAllButton() {
+    IconTextButton claimAllButton() {
         return claimAllButton;
     }
 
-    TabletIconTextButton editorButton() {
+    IconTextButton editorButton() {
         return editorButton;
     }
 
@@ -149,7 +149,7 @@ final class QuestAppHeaderControls {
         return toolsX;
     }
 
-    void syncFocus(TabletUiState state) {
+    void syncFocus(UiState state) {
         if (state.root.searchFocused) {
             searchField.setFocus(true);
         }
@@ -158,14 +158,14 @@ final class QuestAppHeaderControls {
         }
     }
 
-    void refreshSurfaceFactory(TabletUiState state) {
-        chapterSearchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
-        chapterSearchField.setTextColor(TabletColors.TEXT_PRIMARY);
-        searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
-        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
-        toolsButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
-        blueprintButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
-        claimAllButton.visuals(headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, TabletColors.INTERACTIVE));
+    void refreshSurfaceFactory(UiState state) {
+        chapterSearchField.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
+        chapterSearchField.setTextColor(ThemeColors.TEXT_PRIMARY);
+        searchField.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
+        searchField.setTextColor(ThemeColors.TEXT_PRIMARY);
+        toolsButton.visuals(headerVisuals(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, ThemeColors.INTERACTIVE));
+        blueprintButton.visuals(headerVisuals(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, ThemeColors.INTERACTIVE));
+        claimAllButton.visuals(headerVisuals(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, ThemeColors.INTERACTIVE));
         editorButton.visuals(editorVisuals(state.root.editMode));
     }
 
@@ -175,7 +175,7 @@ final class QuestAppHeaderControls {
         chapterSearchField.setSize(dynamicListW, chapterHeaderH);
     }
 
-    void layoutCanvas(TabletUiState state, int headerX, int headerW, int topY, int headerH, int toolsW, int topGap) {
+    void layoutCanvas(UiState state, int headerX, int headerW, int topY, int headerH, int toolsW, int topGap) {
         toolsX = headerX + headerW - toolsW;
         boolean showEditorToggle = state.root.editorAvailable;
         boolean showBlueprintButton = state.root.canEdit && state.root.editMode;
@@ -196,7 +196,7 @@ final class QuestAppHeaderControls {
         });
 
         layoutHeaderButton(claimAllButton, claimAllX, topY, toolsW, headerH, true, new Component[]{
-                TabletTranslationKeys.component(QuestTranslationKeys.CLAIM_ALL_REWARDS)
+                TranslationKeys.component(QuestTranslationKeys.CLAIM_ALL_REWARDS)
         });
 
         layoutHeaderButton(blueprintButton, blueprintX, topY, toolsW, headerH, showBlueprintButton, new Component[]{
@@ -217,29 +217,29 @@ final class QuestAppHeaderControls {
         canvasPanel.addWidget(toolsButton);
     }
 
-    private static TabletIconTextButton headerButton(int x, int y, int width, int height, String icon, int accentColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        return TabletIconTextButton.icon(x, y, width, height, icon, headerVisuals(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, accentColor), callback);
+    private static IconTextButton headerButton(int x, int y, int width, int height, String icon, int accentColor, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
+        return IconTextButton.icon(x, y, width, height, icon, headerVisuals(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, accentColor), callback);
     }
 
-    private static TabletIconTextButton.Visuals headerVisuals(int fill, int border, int accentColor) {
-        return new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(fill, border, accentColor),
-                TabletIconTextButton.State.of(withAlpha(accentColor, 66), TabletColors.BORDER_ACCENT, accentColor),
-                TabletIconTextButton.State.of(withAlpha(accentColor, 90), accentColor, TabletColors.TEXT_PRIMARY)
+    private static IconTextButton.Visuals headerVisuals(int fill, int border, int accentColor) {
+        return new IconTextButton.Visuals(
+                IconTextButton.State.of(fill, border, accentColor),
+                IconTextButton.State.of(withAlpha(accentColor, 66), ThemeColors.BORDER_ACCENT, accentColor),
+                IconTextButton.State.of(withAlpha(accentColor, 90), accentColor, ThemeColors.TEXT_PRIMARY)
         );
     }
 
-    private static TabletIconTextButton.Visuals editorVisuals(boolean editMode) {
-        int accent = editMode ? TabletColors.SUCCESS : TabletColors.ERROR;
-        return new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(TabletColors.SURFACE_PANEL_ALT, accent, accent),
-                TabletIconTextButton.State.of(TabletColors.hoverFill(accent), TabletColors.BORDER_ACCENT, accent),
-                TabletIconTextButton.State.of(TabletColors.pressedFill(accent), accent, TabletColors.TEXT_PRIMARY),
-                editMode ? TabletColors.SUCCESS : -1
+    private static IconTextButton.Visuals editorVisuals(boolean editMode) {
+        int accent = editMode ? ThemeColors.SUCCESS : ThemeColors.ERROR;
+        return new IconTextButton.Visuals(
+                IconTextButton.State.of(ThemeColors.SURFACE_PANEL_ALT, accent, accent),
+                IconTextButton.State.of(ThemeColors.hoverFill(accent), ThemeColors.BORDER_ACCENT, accent),
+                IconTextButton.State.of(ThemeColors.pressedFill(accent), accent, ThemeColors.TEXT_PRIMARY),
+                editMode ? ThemeColors.SUCCESS : -1
         );
     }
 
-    private static void layoutHeaderButton(TabletIconTextButton button, int x, int y, int width, int height, boolean visible, Component[] tooltips) {
+    private static void layoutHeaderButton(IconTextButton button, int x, int y, int width, int height, boolean visible, Component[] tooltips) {
         button.setSelfPosition(x, y);
         button.setSize(width, height);
         button.tooltips(tooltips);

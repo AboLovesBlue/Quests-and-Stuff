@@ -10,13 +10,13 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ACTION_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ACTION_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 public final class ActionButtons {
     private ActionButtons() {
@@ -27,7 +27,7 @@ public final class ActionButtons {
     }
 
     public static void iconAction(WidgetGroup parent, int x, int y, int width, int height, String icon, String text, int color, Component[] tooltips, Consumer<ClickData> callback) {
-        parent.addWidget(SurfaceFactory.panel(x, y, width, height, withAlpha(TabletColors.elevatedSurface(), 210), TabletColors.subtleBorder()));
+        parent.addWidget(SurfaceFactory.panel(x, y, width, height, withAlpha(ThemeColors.elevatedSurface(), 210), ThemeColors.subtleBorder()));
         int iconSize = Math.min(ACTION_ICON_SIZE, Math.max(8, height - 4));
         String safeText = text == null ? "" : text;
         int textWidth = Minecraft.getInstance().font.width(safeText);

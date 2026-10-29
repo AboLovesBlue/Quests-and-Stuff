@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -42,7 +42,7 @@ class CanvasMinimapGeometryTest {
 
     @Test
     void worldBoundsIncludeViewportAndQuestCards() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasZoom = 2.0f;
         state.canvas.canvasContentW = 100;
         state.canvas.canvasContentH = 80;
@@ -60,7 +60,7 @@ class CanvasMinimapGeometryTest {
 
     @Test
     void mapsMinimapClicksIntoWorldSpace() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.minimapX = 10;
         state.canvas.minimapY = 20;
         state.canvas.minimapW = 100;
@@ -102,7 +102,7 @@ class CanvasMinimapGeometryTest {
 
     @Test
     void minimapDragCoordinatesClampToWorldBounds() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.minimapX = 10;
         state.canvas.minimapY = 20;
         state.canvas.minimapW = 100;

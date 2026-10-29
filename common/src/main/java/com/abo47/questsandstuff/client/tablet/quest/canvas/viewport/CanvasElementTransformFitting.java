@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.ModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -21,7 +21,7 @@ final class CanvasElementTransformFitting {
     private CanvasElementTransformFitting() {
     }
 
-    static CanvasImageLayer applySmartSnapToImage(TabletUiState state, CanvasImageLayer image, List<QuestCardLayout> cards, String chapter) {
+    static CanvasImageLayer applySmartSnapToImage(UiState state, CanvasImageLayer image, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForImage(state, image),
@@ -50,7 +50,7 @@ final class CanvasElementTransformFitting {
         return image.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasExclusiveChoice applySmartSnapToExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec, List<QuestCardLayout> cards, String chapter) {
+    static CanvasExclusiveChoice applySmartSnapToExclusiveChoice(UiState state, CanvasExclusiveChoice ec, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForExclusiveChoice(state, ec),
@@ -73,7 +73,7 @@ final class CanvasElementTransformFitting {
         return ec.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasTextLayer applySmartSnapToText(TabletUiState state, CanvasTextLayer text, List<QuestCardLayout> cards, String chapter) {
+    static CanvasTextLayer applySmartSnapToText(UiState state, CanvasTextLayer text, List<QuestCardLayout> cards, String chapter) {
         CanvasSnapEngine.SnapResult snap = CanvasSmartSnapper.snap(
                 state,
                 CanvasSmartSnapper.boundsForText(state, text),
@@ -95,7 +95,7 @@ final class CanvasElementTransformFitting {
         return text.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasPoint constrainedSnapOffset(TabletUiState state, int offsetX, int offsetY, int rotation) {
+    static CanvasPoint constrainedSnapOffset(UiState state, int offsetX, int offsetY, int rotation) {
         String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         if (CanvasTransformGizmoAxis.AXIS_MOVE_FREE.equals(axis)) {
             return new CanvasPoint(offsetX, offsetY);
@@ -103,42 +103,42 @@ final class CanvasElementTransformFitting {
         return CanvasTransformEngine.axisDelta(offsetX, offsetY, rotation, axis, new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
     }
 
-    static void clearSnapGuides(TabletUiState state) {
+    static void clearSnapGuides(UiState state) {
         state.canvas.snapGuideXVisible = false;
         state.canvas.snapGuideYVisible = false;
     }
 
-    static CanvasImageLayer fittedImageIfGridLocked(TabletUiState state, CanvasImageLayer image) {
+    static CanvasImageLayer fittedImageIfGridLocked(UiState state, CanvasImageLayer image) {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedImage(state, image) : image;
     }
 
-    static CanvasTextLayer fittedTextIfGridLocked(TabletUiState state, CanvasTextLayer text) {
+    static CanvasTextLayer fittedTextIfGridLocked(UiState state, CanvasTextLayer text) {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
-    static CanvasExclusiveChoice fittedExclusiveChoiceIfGridLocked(TabletUiState state, CanvasExclusiveChoice ec) {
+    static CanvasExclusiveChoice fittedExclusiveChoiceIfGridLocked(UiState state, CanvasExclusiveChoice ec) {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedExclusiveChoice(state, ec) : ec;
     }
 
-    static CanvasImageLayer fitAndClampImage(TabletUiState state, CanvasImageLayer image) {
+    static CanvasImageLayer fitAndClampImage(UiState state, CanvasImageLayer image) {
         CanvasImageLayer fitted = fittedImageIfGridLocked(state, image);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), fitted.pivotX(), fitted.pivotY(), fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasTextLayer fitAndClampText(TabletUiState state, CanvasTextLayer text) {
+    static CanvasTextLayer fitAndClampText(UiState state, CanvasTextLayer text) {
         CanvasTextLayer fitted = fittedTextIfGridLocked(state, text);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), CanvasElementGeometry.defaultPivot(fitted.w()), CanvasElementGeometry.defaultPivot(fitted.h()), fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasExclusiveChoice fitAndClampExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+    static CanvasExclusiveChoice fitAndClampExclusiveChoice(UiState state, CanvasExclusiveChoice ec) {
         CanvasExclusiveChoice fitted = fittedExclusiveChoiceIfGridLocked(state, ec);
         CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, fitted.x(), fitted.y(), fitted.w(), fitted.h(), CanvasElementGeometry.defaultPivot(fitted.w()), CanvasElementGeometry.defaultPivot(fitted.h()), fitted.rotation());
         return fitted.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasImageLayer clampRotationPreviewImage(TabletUiState state, CanvasImageLayer image) {
+    static CanvasImageLayer clampRotationPreviewImage(UiState state, CanvasImageLayer image) {
         CanvasImageLayer preview = shouldFitRotatedPreview(state, image.rotation())
                 ? fittedImageIfGridLocked(state, image)
                 : image;
@@ -146,7 +146,7 @@ final class CanvasElementTransformFitting {
         return preview.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasTextLayer clampRotationPreviewText(TabletUiState state, CanvasTextLayer text) {
+    static CanvasTextLayer clampRotationPreviewText(UiState state, CanvasTextLayer text) {
         CanvasTextLayer preview = shouldFitRotatedPreview(state, text.rotation())
                 ? fittedTextIfGridLocked(state, text)
                 : text;
@@ -154,7 +154,7 @@ final class CanvasElementTransformFitting {
         return preview.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasExclusiveChoice clampRotationPreviewExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+    static CanvasExclusiveChoice clampRotationPreviewExclusiveChoice(UiState state, CanvasExclusiveChoice ec) {
         CanvasExclusiveChoice preview = shouldFitRotatedPreview(state, ec.rotation())
                 ? fittedExclusiveChoiceIfGridLocked(state, ec)
                 : ec;
@@ -162,7 +162,7 @@ final class CanvasElementTransformFitting {
         return preview.moveTo(clamped.x, clamped.y);
     }
 
-    private static boolean shouldFitRotatedPreview(TabletUiState state, int rotation) {
-        return state.canvas.gridSnapLocked && TabletModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
+    private static boolean shouldFitRotatedPreview(UiState state, int rotation) {
+        return state.canvas.gridSnapLocked && ModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
     }
 }

@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.text;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TextStyleSessionTest {
     @Test
     void mainCanvasStyleCloseDoesNotTouchQuestDetailsStyleState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextStyleSession.openMainCanvas(state, "canvas:text");
         CanvasTextStyleSession.openQuestDetails(state, "desc:text");
         CanvasTextStyleSession.setFontSizeTarget(state, CanvasTextStyleSession.Surface.MAIN_CANVAS, "canvas:text");
@@ -29,7 +29,7 @@ class TextStyleSessionTest {
 
     @Test
     void questDetailsStyleCloseResetsTargetFontFieldAndBounds() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CanvasTextStyleSession.openQuestDetails(state, "desc:text");
         CanvasTextStyleSession.setFontSizeTarget(state, CanvasTextStyleSession.Surface.QUEST_DETAILS, "desc:text");
         CanvasTextStyleSession.setQuestDetailsBounds(state, 1, 2, 3, 4);
@@ -47,7 +47,7 @@ class TextStyleSessionTest {
 
     @Test
     void fontSizeFieldOpenAggregatesChapterCanvasAndQuestDetailsFields() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertFalse(CanvasTextStyleSession.isAnyFontSizeFieldOpen(state));
 
@@ -63,7 +63,7 @@ class TextStyleSessionTest {
 
     @Test
     void recentQuestDetailsInteractionUsesProvidedClockWindow() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsTextStyleInteractionAtMs = 1_000L;
 
         assertTrue(CanvasTextStyleSession.recentlyHandledQuestDetailsClick(state, 1_200L, 350L));

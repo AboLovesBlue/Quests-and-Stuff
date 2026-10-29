@@ -18,10 +18,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskX
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
@@ -29,35 +29,35 @@ final class QuestTaskRewardMenuActions {
     private QuestTaskRewardMenuActions() {
     }
 
-    static void addSections(ContextMenuSections sections, TabletUiState state, Player player, String questId, String contextId) {
+    static void addSections(ContextMenuSections sections, UiState state, Player player, String questId, String contextId) {
         CompoundTag rewardTag = ClientQuestStateFacade.quest(questId)
                 .getCompound("rewards")
                 .getCompound(contextId);
         JsonObject rewardJson = QuestTaskMenuSupport.parseTaskJson(rewardTag.getString("json"));
         boolean selectable = QuestTaskSelectableRewards.isSelectable(rewardJson);
         if ("command".equals(QuestTaskJsonFactory.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestTaskEditActions.openExistingCommandRewardEditor(state, questId, contextId);
             }));
         }
         if (QuestTaskXpEditor.isXp(rewardJson)) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openXpPicker(state, questId, contextId, false);
             }));
         }
         if (!selectable) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.MAKE_SELECTABLE_REWARD), "selectable", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.MAKE_SELECTABLE_REWARD), "selectable", ThemeColors.INTERACTIVE, () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestTaskSelectableRewards.makeSelectable(player, questId, contextId);
             }));
         }
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_REWARD), "square_pen", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TranslationKeys.text(QuestTranslationKeys.CHANGE_REWARD), "square_pen", ThemeColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.openTypePicker(state, "reward_change", contextId);
         }));
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_REWARD), () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TranslationKeys.text(QuestTranslationKeys.RENAME_REWARD), () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestTaskEditActions.openTaskRenameEditor(state, questId, contextId, false);
         }));
@@ -74,7 +74,7 @@ final class QuestTaskRewardMenuActions {
         QuestTaskMenuSupport.addVisualActions(visualActions, state, questId, contextId, false);
         sections.addAll(ContextMenuSection.APPEARANCE, visualActions);
         String deleteKey = "quest_details_reward:" + questId + ":" + contextId;
-        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
             EditorQuestCommandClient.removeQuestReward(player, questId, contextId);
         }));
     }

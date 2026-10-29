@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasRotationMath;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
@@ -11,15 +11,15 @@ public final class CanvasElementGeometry {
     private CanvasElementGeometry() {
     }
 
-    public static Box screenBox(TabletUiState state, int x, int y, int width, int height) {
+    public static Box screenBox(UiState state, int x, int y, int width, int height) {
         return screenBoxAtPivot(state, x, y, width, height, width / 2, height / 2);
     }
 
-    public static Box screenBox(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
+    public static Box screenBox(UiState state, int x, int y, int width, int height, int rotationDegrees) {
         return screenBoxAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees);
     }
 
-    public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
+    public static Box screenBoxAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY) {
         int safeWidth = Math.max(1, width);
         int safeHeight = Math.max(1, height);
         ScreenAxis xAxis = screenAxis(state, x, safeWidth, pivotX, true);
@@ -36,7 +36,7 @@ public final class CanvasElementGeometry {
         );
     }
 
-    public static Box screenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static Box screenBoxAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         int rotation = CanvasRotationMath.normalizeDegrees(rotationDegrees);
         if (!CanvasGeometry.isCardinalTurn(rotation) || rotation == 0) {
             return screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY);
@@ -44,11 +44,11 @@ public final class CanvasElementGeometry {
         return cardinalScreenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotation);
     }
 
-    public static int[] screenBounds(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
+    public static int[] screenBounds(UiState state, int x, int y, int width, int height, int rotationDegrees) {
         return rotatedBounds(screenBox(state, x, y, width, height, rotationDegrees), rotationDegrees);
     }
 
-    public static int[] screenBoundsAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static int[] screenBoundsAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         return rotatedBounds(screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees), rotationDegrees);
     }
 
@@ -134,7 +134,7 @@ public final class CanvasElementGeometry {
         return new int[]{floorClean(minX), floorClean(minY), ceilClean(maxX), ceilClean(maxY)};
     }
 
-    private static ScreenAxis screenAxis(TabletUiState state, int start, int size, int pivot, boolean horizontal) {
+    private static ScreenAxis screenAxis(UiState state, int start, int size, int pivot, boolean horizontal) {
         int safeSize = Math.max(1, size);
         int safePivot = clamp(pivot, 0, safeSize);
         double effectivePivot = effectivePivot(safePivot, safeSize);
@@ -169,7 +169,7 @@ public final class CanvasElementGeometry {
         return new ScreenAxis(visualStart, visualScreenSize, visualPivot);
     }
 
-    private static Box cardinalScreenBoxAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    private static Box cardinalScreenBoxAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         int safeWidth = Math.max(1, width);
         int safeHeight = Math.max(1, height);
         int safePivotX = clamp(pivotX, 0, safeWidth);
@@ -238,15 +238,15 @@ public final class CanvasElementGeometry {
         return clamp((int) Math.round(safeScreenSize * (logicalPivot / safeLogicalSize)), 0, safeScreenSize);
     }
 
-    private static int screenCoordinate(TabletUiState state, int value, boolean horizontal) {
+    private static int screenCoordinate(UiState state, int value, boolean horizontal) {
         return horizontal ? CanvasGeometry.screenX(state, value) : CanvasGeometry.screenY(state, value);
     }
 
-    private static int screenCoordinate(TabletUiState state, double value, boolean horizontal) {
+    private static int screenCoordinate(UiState state, double value, boolean horizontal) {
         return horizontal ? CanvasGeometry.screenX(state, value) : CanvasGeometry.screenY(state, value);
     }
 
-    private static int visualScreenSize(TabletUiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {
+    private static int visualScreenSize(UiState state, int visualLogicalSize, int slotLogicalSize, int slotScreenSize) {
         int preferred = Math.max(1, Math.round(visualLogicalSize * CanvasRenderer.clampZoom(state.canvas.canvasZoom)));
         int insideSlot = Math.max(1, slotScreenSize - 1);
         if (visualLogicalSize + 1 >= slotLogicalSize) {

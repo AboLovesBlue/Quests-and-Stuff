@@ -2,19 +2,19 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.AnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 public final class CanvasMinimapController {
-    public static final long ANIMATION_MS = TabletAnimationTimings.MINIMAP_MS;
+    public static final long ANIMATION_MS = AnimationTimings.MINIMAP_MS;
 
     private CanvasMinimapController() {
     }
 
-    public static boolean handleClick(TabletUiState state, int localX, int localY) {
+    public static boolean handleClick(UiState state, int localX, int localY) {
         if (!QuestsAndStuffConfig.minimapEnabled()) {
             state.canvas.draggingMinimap = false;
             return false;
@@ -38,7 +38,7 @@ public final class CanvasMinimapController {
         return true;
     }
 
-    public static boolean handleDrag(TabletUiState state, int localX, int localY) {
+    public static boolean handleDrag(UiState state, int localX, int localY) {
         if (!QuestsAndStuffConfig.minimapEnabled()) {
             state.canvas.draggingMinimap = false;
             return false;
@@ -50,7 +50,7 @@ public final class CanvasMinimapController {
         return true;
     }
 
-    public static boolean finishDrag(TabletUiState state) {
+    public static boolean finishDrag(UiState state) {
         if (!QuestsAndStuffConfig.minimapEnabled()) {
             state.canvas.draggingMinimap = false;
             return false;
@@ -64,7 +64,7 @@ public final class CanvasMinimapController {
         return true;
     }
 
-    public static boolean isClosingAnimationRunning(TabletUiState state) {
+    public static boolean isClosingAnimationRunning(UiState state) {
         return state != null
                 && QuestsAndStuffConfig.minimapEnabled()
                 && QuestsAndStuffConfig.minimapAnimationsEnabled()
@@ -73,7 +73,7 @@ public final class CanvasMinimapController {
                 && !state.canvas.minimapAnimationFromCollapsed;
     }
 
-    public static boolean finishAnimationIfDone(TabletUiState state) {
+    public static boolean finishAnimationIfDone(UiState state) {
         if (state == null || state.canvas.minimapAnimationStartMs <= 0L) {
             return false;
         }
@@ -85,20 +85,20 @@ public final class CanvasMinimapController {
         return true;
     }
 
-    public static boolean isPanelHit(TabletUiState state, int localX, int localY) {
+    public static boolean isPanelHit(UiState state, int localX, int localY) {
         return QuestsAndStuffConfig.minimapEnabled()
                 && CanvasMinimapGeometry.hit(localX, localY, state.canvas.minimapPanelX, state.canvas.minimapPanelY, state.canvas.minimapPanelW, state.canvas.minimapPanelH);
     }
 
-    private static boolean isToggleHit(TabletUiState state, int localX, int localY) {
+    private static boolean isToggleHit(UiState state, int localX, int localY) {
         return CanvasMinimapGeometry.hit(localX, localY, state.canvas.minimapToggleX, state.canvas.minimapToggleY, state.canvas.minimapToggleW, state.canvas.minimapToggleH);
     }
 
-    private static boolean isMapHit(TabletUiState state, int localX, int localY) {
+    private static boolean isMapHit(UiState state, int localX, int localY) {
         return !state.canvas.minimapCollapsed && CanvasMinimapGeometry.hit(localX, localY, state.canvas.minimapX, state.canvas.minimapY, state.canvas.minimapW, state.canvas.minimapH);
     }
 
-    private static void startAnimation(TabletUiState state, boolean wasCollapsed) {
+    private static void startAnimation(UiState state, boolean wasCollapsed) {
         if (!QuestsAndStuffConfig.minimapAnimationsEnabled()) {
             state.canvas.minimapAnimationStartMs = 0L;
             state.canvas.minimapAnimationFromCollapsed = state.canvas.minimapCollapsed;
@@ -108,7 +108,7 @@ public final class CanvasMinimapController {
         state.canvas.minimapAnimationFromCollapsed = wasCollapsed;
     }
 
-    private static void centerCanvasOnMinimapPoint(TabletUiState state, int localX, int localY) {
+    private static void centerCanvasOnMinimapPoint(UiState state, int localX, int localY) {
         int worldX = CanvasMinimapGeometry.mapWorldX(state, localX);
         int worldY = CanvasMinimapGeometry.mapWorldY(state, localY);
         CanvasCameraController.centerOn(state, worldX, worldY, false);

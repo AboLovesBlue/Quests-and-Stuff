@@ -15,8 +15,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFi
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
@@ -27,7 +27,7 @@ public final class CanvasRecipeCardActions {
     private CanvasRecipeCardActions() {
     }
 
-    public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+    public static boolean applyRecipePick(Player player, UiState state, String recipe) {
         ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || recipe == null || recipe.isBlank()) {
             return false;
@@ -60,7 +60,7 @@ public final class CanvasRecipeCardActions {
         return true;
     }
 
-    private static boolean changeRecipe(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
+    private static boolean changeRecipe(UiState state, ModalTargetParser.Target parsed, String asset) {
         String chapter = parsed.part(1);
         String imageId = parsed.part(2);
         CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
@@ -73,13 +73,13 @@ public final class CanvasRecipeCardActions {
         return true;
     }
 
-    private static void addRecipeCard(TabletUiState state, String chapter, String asset) {
+    private static void addRecipeCard(UiState state, String chapter, String asset) {
         String id = StableIdAllocator.nextId("rcp", canvasImageIds(state, chapter));
         int x = state.canvas.canvasImageLogicalX - CARD_W / 2;
         int y = state.canvas.canvasImageLogicalY - CARD_H / 2;
         if (!state.canvas.gridSnapLocked) {
-            x = TabletUiFactory.snapToGrid(state, x);
-            y = TabletUiFactory.snapToGrid(state, y);
+            x = UiFactory.snapToGrid(state, x);
+            y = UiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, CARD_W, CARD_H);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, CARD_W, CARD_H, 0);
@@ -94,7 +94,7 @@ public final class CanvasRecipeCardActions {
         state.canvas.mouseMode = CanvasMouseMode.SELECT_MOVE;
     }
 
-    private static void selectOnlyImage(TabletUiState state, String id) {
+    private static void selectOnlyImage(UiState state, String id) {
         state.canvas.canvasSelection.setPrimaryImageId(id);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().add(id);
@@ -105,7 +105,7 @@ public final class CanvasRecipeCardActions {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    private static List<String> canvasImageIds(TabletUiState state, String chapter) {
+    private static List<String> canvasImageIds(UiState state, String chapter) {
         List<String> ids = new ArrayList<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());

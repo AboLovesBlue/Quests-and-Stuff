@@ -15,14 +15,14 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWindowController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
+import com.abo47.questsandstuff.client.tablet.root.RootWindowController;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.ModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 final class QuestDetailsDescriptionEventRouter {
-    private final TabletUiState state;
+    private final UiState state;
     private final Player player;
     private final Runnable refresh;
     private final String questId;
@@ -33,7 +33,7 @@ final class QuestDetailsDescriptionEventRouter {
     private final Surface surface;
 
     QuestDetailsDescriptionEventRouter(
-            TabletUiState state,
+            UiState state,
             Player player,
             Runnable refresh,
             String questId,
@@ -155,13 +155,13 @@ final class QuestDetailsDescriptionEventRouter {
         boolean rotateHit = !groupHit && (clickedGizmoMode == CanvasTransformMode.ROTATE || hitTest.inRotateHandle(hitRect, lx, visibleY));
         boolean shiftMoveHit = clickedGizmoMode == CanvasTransformMode.MOVE && shiftMoveHit(model, hit);
         if (!resizeHit && !rotateHit && !shiftMoveHit) {
-            if (TabletModifierKeys.ctrlDown()) {
+            if (ModifierKeys.ctrlDown()) {
                 toggleSelection(hit);
                 CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
-            if (TabletModifierKeys.shiftDown()) {
+            if (ModifierKeys.shiftDown()) {
                 rangeSelect(model, hit);
                 CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
@@ -306,7 +306,7 @@ final class QuestDetailsDescriptionEventRouter {
             return false;
         }
         if (editingText != null && textEdit.hitTextEditor(editingText, lx, visibleY)) {
-            textEdit.updateCursor(model, editingText.id(), lx, visibleY, !TabletModifierKeys.shiftDown());
+            textEdit.updateCursor(model, editingText.id(), lx, visibleY, !ModifierKeys.shiftDown());
             CanvasTextEditSession.startRangeSelection(state);
             surface.focus(true);
             refresh.run();
@@ -372,7 +372,7 @@ final class QuestDetailsDescriptionEventRouter {
     }
 
     private boolean shiftMoveHit(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit) {
-        if (!TabletModifierKeys.shiftDown() || !"desc_image".equals(hit.kind())) {
+        if (!ModifierKeys.shiftDown() || !"desc_image".equals(hit.kind())) {
             return false;
         }
         CanvasImageLayer image = model.image(hit.id());

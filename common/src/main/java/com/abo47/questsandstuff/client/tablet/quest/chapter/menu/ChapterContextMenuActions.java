@@ -19,14 +19,14 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class ChapterContextMenuActions {
     private ChapterContextMenuActions() {
     }
 
-    public static void rename(TabletUiState state, String target, Runnable refresh) {
+    public static void rename(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -36,16 +36,16 @@ public final class ChapterContextMenuActions {
         state.chapterPanel.chapterDraftName = target;
         state.root.selectedChapter = target;
         state.chapterPanel.chapterDraft = target;
-        TabletUiFactory.persistUiState(state);
+        UiFactory.persistUiState(state);
         refresh.run();
     }
 
-    public static void addChapter(TabletUiState state, Runnable refresh) {
+    public static void addChapter(UiState state, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
         String drafted = EditorChapterCommandClient.uniqueChapterName(tr("ui.questsandstuff.chapter.default_name"), "");
-        state.canvas.pendingChapterRename = TabletUiFactory.DRAFT_CHAPTER;
+        state.canvas.pendingChapterRename = UiFactory.DRAFT_CHAPTER;
         state.chapterPanel.chapterDraftName = drafted;
         state.chapterPanel.chapterDraft = drafted;
         state.chapterPanel.chapterMenuOpen = false;
@@ -53,7 +53,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void delete(Player player, TabletUiState state, String target) {
+    public static void delete(Player player, UiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -62,11 +62,11 @@ public final class ChapterContextMenuActions {
             state.root.selectedChapter = ClientQuestStateFacade.chapterOrder().isEmpty() ? "" : ClientQuestStateFacade.chapterOrder().get(0);
             state.chapterPanel.chapterDraft = state.root.selectedChapter;
         }
-        TabletUiFactory.persistUiState(state);
+        UiFactory.persistUiState(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter delete target={}", target);
     }
 
-    public static void changeIcon(TabletUiState state, String target, Runnable refresh) {
+    public static void changeIcon(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -75,7 +75,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeAssetIcon(TabletUiState state, String target, Runnable refresh) {
+    public static void changeAssetIcon(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -84,7 +84,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeVariant(TabletUiState state, String target, Runnable refresh) {
+    public static void changeVariant(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -94,7 +94,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void editMotion(TabletUiState state, String target, Runnable refresh) {
+    public static void editMotion(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -104,7 +104,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeIcon(Player player, TabletUiState state, String target) {
+    public static void removeIcon(Player player, UiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -112,7 +112,7 @@ public final class ChapterContextMenuActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_icon target={}", target);
     }
 
-    public static void changeBackground(TabletUiState state, String target, Runnable refresh) {
+    public static void changeBackground(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -121,7 +121,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeGameBackground(TabletUiState state, String target, Runnable refresh) {
+    public static void changeGameBackground(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -130,7 +130,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeBackground(Player player, TabletUiState state, String target) {
+    public static void removeBackground(Player player, UiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -138,7 +138,7 @@ public final class ChapterContextMenuActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_background target={}", target);
     }
 
-    public static void changeCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
+    public static void changeCompletionHudBackground(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -152,7 +152,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeGameCompletionHudBackground(TabletUiState state, String target, Runnable refresh) {
+    public static void changeGameCompletionHudBackground(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -165,7 +165,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeCompletionSoundGame(TabletUiState state, String target, Runnable refresh) {
+    public static void changeCompletionSoundGame(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -179,7 +179,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeCompletionSoundCustom(TabletUiState state, String target, Runnable refresh) {
+    public static void changeCompletionSoundCustom(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -193,7 +193,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeConnectionTexture(TabletUiState state, String target, Runnable refresh) {
+    public static void changeConnectionTexture(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -211,7 +211,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void changeGameConnectionTexture(TabletUiState state, String target, Runnable refresh) {
+    public static void changeGameConnectionTexture(UiState state, String target, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -229,7 +229,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void removeConnectionTexture(Player player, TabletUiState state, String target) {
+    public static void removeConnectionTexture(Player player, UiState state, String target) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -272,7 +272,7 @@ public final class ChapterContextMenuActions {
         return quest == null ? "" : quest.getString(field);
     }
 
-    public static void setLockUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
+    public static void setLockUntilUnlocked(Player player, UiState state, String target, boolean enabled, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -282,7 +282,7 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void setHideUntilUnlocked(Player player, TabletUiState state, String target, boolean enabled, Runnable refresh) {
+    public static void setHideUntilUnlocked(Player player, UiState state, String target, boolean enabled, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
@@ -292,14 +292,14 @@ public final class ChapterContextMenuActions {
         refresh.run();
     }
 
-    public static void textStyle(TabletUiState state, String target, Runnable refresh) {
+    public static void textStyle(UiState state, String target, Runnable refresh) {
         state.chapterPanel.chapterTextMenuOpen = true;
         state.chapterPanel.chapterTextMenuTarget = target;
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
 
-    public static void move(Player player, TabletUiState state, String target, int offset, Runnable refresh) {
+    public static void move(Player player, UiState state, String target, int offset, Runnable refresh) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }

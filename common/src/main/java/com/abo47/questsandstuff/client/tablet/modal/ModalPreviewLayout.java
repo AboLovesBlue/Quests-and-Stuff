@@ -2,10 +2,10 @@ package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 
 public final class ModalPreviewLayout {
     public static final int PREVIEW_X = 8;
@@ -28,7 +28,7 @@ public final class ModalPreviewLayout {
     }
 
     public static WidgetGroup previewPanel(Metrics metrics) {
-        return panel(PREVIEW_X, metrics.bodyY(), metrics.leftW(), metrics.bodyH(), withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
+        return panel(PREVIEW_X, metrics.bodyY(), metrics.leftW(), metrics.bodyH(), withAlpha(ThemeColors.SURFACE_PANEL_ALT, 120), ThemeColors.BORDER_BASE);
     }
 
     public record Metrics(int leftW, int rightX, int rightW, int bodyY, int bodyH) {

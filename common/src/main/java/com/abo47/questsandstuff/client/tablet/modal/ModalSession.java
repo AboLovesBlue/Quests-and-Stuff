@@ -5,7 +5,7 @@ import java.util.EnumMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 
 public final class ModalSession {
@@ -31,7 +31,7 @@ public final class ModalSession {
         return safeType == ModalWindowManager.ModalType.NONE ? NONE : new ModalSession(safeType);
     }
 
-    public static ModalSession capture(ModalWindowManager.ModalType type, TabletUiState state) {
+    public static ModalSession capture(ModalWindowManager.ModalType type, UiState state) {
         ModalSession session = open(type);
         if (session.active()) {
             session.captureTargets(state);
@@ -92,7 +92,7 @@ public final class ModalSession {
         picker.setDragging(dragging);
     }
 
-    public void captureTargets(TabletUiState state) {
+    public void captureTargets(UiState state) {
         if (state == null || !active()) {
             return;
         }
@@ -123,7 +123,7 @@ public final class ModalSession {
         setTargetSet(TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
     }
 
-    public void capturePickerState(TabletUiState state) {
+    public void capturePickerState(UiState state) {
         if (state == null || !active()) {
             return;
         }

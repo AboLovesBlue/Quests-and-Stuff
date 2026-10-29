@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTask
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import com.google.gson.JsonObject;
 
@@ -22,24 +22,24 @@ public final class QuestTaskRewardEditActions {
     private QuestTaskRewardEditActions() {
     }
 
-    public static void beginRewardAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
+    public static void beginRewardAdd(Player player, UiState state, String questId, CompoundTag quest, String typePath) {
         QuestTaskTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
         String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
         String id = QuestTaskJsonFactory.nextId(quest.getCompound("rewards"), "reward_" + typePath);
         beginReward(player, state, questId, id, type, typePath, choice, true);
     }
 
-    public static void beginRewardChange(Player player, TabletUiState state, String questId, String id, String typePath) {
+    public static void beginRewardChange(Player player, UiState state, String questId, String id, String typePath) {
         QuestTaskTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
         String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
         beginReward(player, state, questId, id, type, typePath, choice, false);
     }
 
-    public static void openCommandRewardEditor(TabletUiState state, String questId, String id, String command, String title, String icon) {
+    public static void openCommandRewardEditor(UiState state, String questId, String id, String command, String title, String icon) {
         QuestDetailsTransientManager.openCommandRewardEditor(state, questId, id, command, title, icon);
     }
 
-    public static void openExistingCommandRewardEditor(TabletUiState state, String questId, String id) {
+    public static void openExistingCommandRewardEditor(UiState state, String questId, String id) {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag reward = quest.getCompound("rewards").getCompound(id);
         JsonObject json = QuestTaskJsonFactory.readRewardForEdit(questId, id, reward.getString("json"));
@@ -63,7 +63,7 @@ public final class QuestTaskRewardEditActions {
         }
     }
 
-    private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestTaskTypeChoice choice, boolean add) {
+    private static void beginReward(Player player, UiState state, String questId, String id, String type, String typePath, QuestTaskTypeChoice choice, boolean add) {
         QuestTaskEditFlow flow = choice == null ? QuestTaskEditFlow.DIRECT_JSON : choice.editFlow();
         if (flow == QuestTaskEditFlow.ITEM_SOURCE_PICKER) {
             QuestDetailsTransientManager.openItemSourcePicker(state, ModalTargets.rewardItem(questId, id, type));

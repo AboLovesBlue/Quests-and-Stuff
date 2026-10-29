@@ -15,20 +15,20 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 
 public final class SettingsOptionRowRenderer {
@@ -40,7 +40,7 @@ public final class SettingsOptionRowRenderer {
     private SettingsOptionRowRenderer() {
     }
 
-    public static void render(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
+    public static void render(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, UiState state) {
         if (option.kind() == SettingsOptionKind.THEME) {
             renderThemeOptionRow(list, option, rowY, rowW, refresh, skinEditMode, state);
             return;
@@ -56,22 +56,22 @@ public final class SettingsOptionRowRenderer {
         boolean enabled = option.enabled();
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        int fill = enabled ? TabletColors.elevatedSurface() : TabletColors.SURFACE_PANEL_ALT;
-        int border = enabled ? TabletColors.SUCCESS : TabletColors.BORDER_BASE;
+        int fill = enabled ? ThemeColors.elevatedSurface() : ThemeColors.SURFACE_PANEL_ALT;
+        int border = enabled ? ThemeColors.SUCCESS : ThemeColors.BORDER_BASE;
         WidgetGroup card = panel(0, rowY, cardW, rowH, fill, border);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
         if (enabled) {
             list.addWidget(new ImageWidget(0, rowY, cardW, rowH,
-                    SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 40))));
+                    SurfaceFactory.fill(withAlpha(ThemeColors.SUCCESS, 40))));
         }
 
         Component[] tooltips = tooltips(option);
         int switchX = Math.max(104, cardW - ToggleSwitchWidget.DEFAULT_WIDTH - SWITCH_GAP);
         int textW = Math.max(16, switchX - 14);
         int crop = Math.max(14, textW / 6);
-        int titleColor = enabled ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY;
+        int titleColor = enabled ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_SECONDARY;
         list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), titleColor));
         list.addWidget(new ToggleSwitchWidget(
                 option.id(),
@@ -87,15 +87,15 @@ public final class SettingsOptionRowRenderer {
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(0, rowY, cardW, rowH, click -> toggle(option, refresh));
             GlowShaderHelper.glowHit(hit, tooltips);
-            hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)));
+            hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 64)));
             list.addWidget(hit);
         }
     }
 
-    private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, TabletUiState state) {
+    private static void renderActionOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, boolean skinEditMode, UiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        WidgetGroup card = panel(0, rowY, cardW, rowH, TabletColors.elevatedSurface(), TabletColors.BORDER_BASE);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, ThemeColors.elevatedSurface(), ThemeColors.BORDER_BASE);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
         list.addWidget(hoverFill(0, rowY, cardW, rowH));
@@ -108,19 +108,19 @@ public final class SettingsOptionRowRenderer {
         }
         int textW = Math.max(16, iconX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
+        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), ThemeColors.TEXT_PRIMARY));
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(0, rowY, cardW, rowH, click -> option.runAction());
             GlowShaderHelper.glowHit(hit, tooltips);
-            hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
+            hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 82)));
             list.addWidget(hit);
         }
     }
 
-    private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
+    private static void renderNumberOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, UiState state) {
         int rowH = ROW_H - ROW_INSET;
         int cardW = rowW;
-        WidgetGroup card = panel(0, rowY, cardW, rowH, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
+        WidgetGroup card = panel(0, rowY, cardW, rowH, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
         list.addWidget(card);
         applyCardSkin(list, state, card, 0, rowY, cardW, rowH);
 
@@ -130,7 +130,7 @@ public final class SettingsOptionRowRenderer {
         int fieldX = Math.max(104, cardW - fieldW - unitW - SWITCH_GAP);
         int textW = Math.max(16, fieldX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_SECONDARY));
+        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), ThemeColors.TEXT_SECONDARY));
 
         final String[] live = { Integer.toString(option.intValue()) };
         Runnable commit = () -> {
@@ -158,26 +158,26 @@ public final class SettingsOptionRowRenderer {
                     },
                     commit
             );
-            StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+            StyledTextFields.applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
             field.setClientSideWidget();
             field.setNumbersOnly(option.min(), option.max());
             field.setMaxStringLength(option.maxLength());
             field.setHoverTooltips(tooltips);
             list.addWidget(field);
         } else {
-            list.addWidget(label(fieldX, rowY + 7, Integer.toString(option.intValue()), TabletColors.TEXT_SECONDARY));
+            list.addWidget(label(fieldX, rowY + 7, Integer.toString(option.intValue()), ThemeColors.TEXT_SECONDARY));
         }
-        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, ModalPanel.tr(option.unitKey()), TabletColors.TEXT_MUTED));
+        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, ModalPanel.tr(option.unitKey()), ThemeColors.TEXT_MUTED));
     }
 
-    private static void renderThemeOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {
+    private static void renderThemeOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, UiState state) {
         UiThemeManager.ThemeInfo theme = option.themeInfo();
         boolean active = theme.id().equals(UiThemeManager.activeThemeName());
         int x = 0;
         int h = ROW_H - ROW_INSET;
         int w = Math.max(1, rowW);
-        int fill = active ? withAlpha(theme.success(), 66) : TabletColors.SURFACE_PANEL_ALT;
-        int border = active ? theme.success() : TabletColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : ThemeColors.SURFACE_PANEL_ALT;
+        int border = active ? theme.success() : ThemeColors.BORDER_BASE;
         WidgetGroup card = panel(x, rowY, w, h, fill, border);
         list.addWidget(card);
         applyCardSkin(list, state, card, x, rowY, w, h);
@@ -186,12 +186,12 @@ public final class SettingsOptionRowRenderer {
         int swatchX = GRID_8;
         int swatchH = 12;
         int swatchY = rowMid - swatchH / 2;
-        list.addWidget(panel(swatchX, swatchY, 10, swatchH, theme.panel(), TabletColors.BORDER_BASE));
-        list.addWidget(panel(swatchX + GRID_12, swatchY, 10, swatchH, theme.panelAlt(), TabletColors.BORDER_BASE));
-        list.addWidget(panel(swatchX + GRID_24, swatchY, 10, swatchH, theme.accent(), TabletColors.BORDER_BASE));
-        list.addWidget(panel(swatchX + 36, swatchY, 10, swatchH, theme.success(), TabletColors.BORDER_BASE));
+        list.addWidget(panel(swatchX, swatchY, 10, swatchH, theme.panel(), ThemeColors.BORDER_BASE));
+        list.addWidget(panel(swatchX + GRID_12, swatchY, 10, swatchH, theme.panelAlt(), ThemeColors.BORDER_BASE));
+        list.addWidget(panel(swatchX + GRID_24, swatchY, 10, swatchH, theme.accent(), ThemeColors.BORDER_BASE));
+        list.addWidget(panel(swatchX + 36, swatchY, 10, swatchH, theme.success(), ThemeColors.BORDER_BASE));
         int labelX = swatchX + 36 + GRID_16;
-        list.addWidget(label(labelX, rowMid - 4, theme.label(), active ? TabletColors.TEXT_PRIMARY : theme.text()));
+        list.addWidget(label(labelX, rowMid - 4, theme.label(), active ? ThemeColors.TEXT_PRIMARY : theme.text()));
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(x, rowY, w, h, click -> {
                 if (UiThemeManager.setActiveTheme(theme.id())) {
@@ -265,14 +265,14 @@ public final class SettingsOptionRowRenderer {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 if (isMouseOverElement(mouseX, mouseY)) {
-                    SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_PANEL_ALT, 26)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                    SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 26)).draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 }
             }
         };
         return fill;
     }
 
-    private static void applyCardSkin(WidgetGroup list, TabletUiState state, WidgetGroup card, int x, int y, int w, int h) {
+    private static void applyCardSkin(WidgetGroup list, UiState state, WidgetGroup card, int x, int y, int w, int h) {
         SkinAnchorRegistry.registerShared("settings_option_cards", card);
         String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_option_cards");
         if (rawOverride == null) {

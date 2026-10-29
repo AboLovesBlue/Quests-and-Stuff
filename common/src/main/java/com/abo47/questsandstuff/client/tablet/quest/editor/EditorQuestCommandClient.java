@@ -11,9 +11,9 @@ import net.minecraft.world.entity.player.Player;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorAddQuestPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorRemoveQuestPacket;
@@ -185,11 +185,11 @@ public final class EditorQuestCommandClient {
                 });
     }
 
-    public static String predictNextQuestId(TabletUiState state) {
+    public static String predictNextQuestId(UiState state) {
         return QuestNaming.nextQuestId(EditorChapterCommandClient.selectedChapterName(state), ClientQuestStateFacade.questIds());
     }
 
-    public static void addQuestAt(Player player, TabletUiState state, int logicalX, int logicalY, String title) {
+    public static void addQuestAt(Player player, UiState state, int logicalX, int logicalY, String title) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         if (chapter.isBlank()) {
             return;
@@ -215,7 +215,7 @@ public final class EditorQuestCommandClient {
         state.chapterPanel.lastJumpQuest = predictedId;
     }
 
-    public static void beginQuestTitleChange(TabletUiState state, String questId) {
+    public static void beginQuestTitleChange(UiState state, String questId) {
         if (questId == null || questId.isBlank()) {
             return;
         }
@@ -228,7 +228,7 @@ public final class EditorQuestCommandClient {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest title change begin id={} title={}", questId, state.questDetails.questTitleDraft);
     }
 
-    public static void cancelQuestTitleChange(TabletUiState state) {
+    public static void cancelQuestTitleChange(UiState state) {
         if (state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return;
         }
@@ -237,7 +237,7 @@ public final class EditorQuestCommandClient {
         state.questDetails.questTitleDraft = "";
     }
 
-    public static boolean commitQuestTitleChange(Player player, TabletUiState state) {
+    public static boolean commitQuestTitleChange(Player player, UiState state) {
         String questId = state.questDetails.pendingQuestTitleChangeId;
         if (questId.isBlank()) {
             return false;
@@ -388,10 +388,10 @@ public final class EditorQuestCommandClient {
         return targets;
     }
 
-    private static int[] findNearestFreeCell(TabletUiState state, String chapter, int startX, int startY) {
+    private static int[] findNearestFreeCell(UiState state, String chapter, int startX, int startY) {
         int step = CanvasGeometry.gridSize(state);
-        int x = TabletUiFactory.snapToGrid(state, startX);
-        int y = TabletUiFactory.snapToGrid(state, startY);
+        int x = UiFactory.snapToGrid(state, startX);
+        int y = UiFactory.snapToGrid(state, startY);
         if (!isOccupied(chapter, x, y)) {
             return new int[]{x, y};
         }

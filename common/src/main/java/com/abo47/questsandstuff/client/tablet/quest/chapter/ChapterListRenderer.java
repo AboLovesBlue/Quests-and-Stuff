@@ -8,50 +8,50 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.widget.Layout;
 
 final class ChapterListRenderer {
     private ChapterListRenderer() {
     }
 
-    static void rebuild(WidgetGroup list, TabletUiState state, Player player, Runnable refresh) {
+    static void rebuild(WidgetGroup list, UiState state, Player player, Runnable refresh) {
         list.clearAllWidgets();
         List<String> groups = ClientQuestStateFacade.chapterOrder();
         int listH = list.getSize().height;
         int listW = list.getSize().width;
-        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || listW <= TabletLayout.CHAPTER_LIST_COLLAPSED_W;
+        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || listW <= Layout.CHAPTER_LIST_COLLAPSED_W;
         int listOriginX = list.getSelfPositionX();
         int listOriginY = list.getSelfPositionY();
         int baseCardX = 4;
         int rowStartY = collapsed ? 0 : 8;
-        if (groups.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
+        if (groups.isEmpty() && !UiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
             ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
             if (!collapsed) {
-                list.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none"), TabletColors.TEXT_MUTED));
+                list.addWidget(UiFactory.label(8, 8, ChapterRenameActions.tr("ui.questsandstuff.chapter.none"), ThemeColors.TEXT_MUTED));
             }
             return;
         }
 
         int trackY = 4;
         int trackH = listH - 8;
-        int rowStep = collapsed ? TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP : TabletUiFactory.CHAPTER_CARD_H + TabletUiFactory.CHAPTER_CARD_GAP;
+        int rowStep = collapsed ? UiFactory.CHAPTER_COLLAPSED_ROW_STEP : UiFactory.CHAPTER_CARD_H + UiFactory.CHAPTER_CARD_GAP;
         List<String> chapters = ChapterListMetrics.filteredGroups(groups, state.chapterPanel.chapterSearch, state.root.canEdit);
 
-        if (chapters.isEmpty() && !TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
+        if (chapters.isEmpty() && !UiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
             ChapterListMetrics.rememberEmpty(state, listOriginX, listOriginY, listW, listH, baseCardX, rowStartY);
             if (!collapsed) {
                 String emptyKey = state.chapterPanel.chapterSearch == null || state.chapterPanel.chapterSearch.isBlank()
                         ? "ui.questsandstuff.chapter.none"
                         : "ui.questsandstuff.chapter.none_matching";
-                list.addWidget(TabletUiFactory.label(8, 8, ChapterRenameActions.tr(emptyKey), TabletColors.TEXT_MUTED));
+                list.addWidget(UiFactory.label(8, 8, ChapterRenameActions.tr(emptyKey), ThemeColors.TEXT_MUTED));
             }
             return;
         }
 
-        int baseRows = chapters.size() + (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename) ? 1 : 0);
+        int baseRows = chapters.size() + (UiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename) ? 1 : 0);
         int totalHeight = (collapsed ? 0 : 16) + baseRows * rowStep;
         state.chapterPanel.chapterScrollMax = Math.max(0, totalHeight - (listH - 8));
         state.chapterPanel.chapterScroll = ScrollMath.clamp(state.chapterPanel.chapterScroll, state.chapterPanel.chapterScrollMax);
@@ -73,7 +73,7 @@ final class ChapterListRenderer {
             }
 
             String chapter = chapters.get(groupIndex);
-            if (y >= listH || y + TabletUiFactory.CHAPTER_CARD_H <= 0) {
+            if (y >= listH || y + UiFactory.CHAPTER_CARD_H <= 0) {
                 y += rowStep;
                 continue;
             }
@@ -90,8 +90,8 @@ final class ChapterListRenderer {
             y = ChapterRowRenderer.addGhostIfVisible(list, state.chapterPanel.chapterDragName, layout.cardX(), y, layout.cardW(), listH, rowStep);
         }
 
-        if (TabletUiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
-            if (y < listH && y + TabletUiFactory.CHAPTER_CARD_H > 0) {
+        if (UiFactory.DRAFT_CHAPTER.equals(state.canvas.pendingChapterRename)) {
+            if (y < listH && y + UiFactory.CHAPTER_CARD_H > 0) {
                 ChapterRowRenderer.addDraftRow(list, state, player, refresh, y, layout);
             }
         }

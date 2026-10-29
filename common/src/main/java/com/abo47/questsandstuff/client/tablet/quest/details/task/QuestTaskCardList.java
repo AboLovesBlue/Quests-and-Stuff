@@ -13,14 +13,14 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewpo
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 
 final class QuestTaskCardList {
     private QuestTaskCardList() {
     }
 
-    static boolean isTaskScrollDragging(TabletUiState state, String kind) {
+    static boolean isTaskScrollDragging(UiState state, String kind) {
         return "tasks".equals(kind) ? state.questDetails.questDetailsTaskScrollDragging : state.questDetails.questDetailsRewardScrollDragging;
     }
 
@@ -28,11 +28,11 @@ final class QuestTaskCardList {
         return Math.max(0, sectionW - DragScrollBarWidget.RESERVED_WIDTH / 2);
     }
 
-    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks) {
+    static void renderCards(WidgetGroup section, UiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks) {
         renderCards(section, state, player, refresh, questId, entries, w, h, listY, tasks, false);
     }
 
-    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks, boolean rewardsClaimed) {
+    static void renderCards(WidgetGroup section, UiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks, boolean rewardsClaimed) {
         int visibleH = Math.max(1, h - listY - 4);
         int maxStart = scrollMax(entries, visibleH);
         if (tasks) {
@@ -87,7 +87,7 @@ final class QuestTaskCardList {
         return null;
     }
 
-    private static WidgetGroup clippedList(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom) {
+    private static WidgetGroup clippedList(int x, int y, int w, int h, UiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public boolean isMouseOverElement(double mouseX, double mouseY) {
@@ -157,7 +157,7 @@ final class QuestTaskCardList {
         return Math.max(0, contentH - visibleH);
     }
 
-    private static void renderScrollbar(WidgetGroup section, TabletUiState state, Runnable refresh, boolean tasks, int w, int y, int h, int maxStart) {
+    private static void renderScrollbar(WidgetGroup section, UiState state, Runnable refresh, boolean tasks, int w, int y, int h, int maxStart) {
         if (maxStart <= 0) {
             return;
         }
@@ -190,7 +190,7 @@ final class QuestTaskCardList {
         ));
     }
 
-    static QuestTaskEntry hitEntry(TabletUiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
+    static QuestTaskEntry hitEntry(UiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
         if (localY < listY || localY > listBottom || entries.isEmpty()) {
             return null;
         }

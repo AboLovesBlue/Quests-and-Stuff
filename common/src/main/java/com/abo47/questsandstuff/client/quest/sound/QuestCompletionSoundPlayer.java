@@ -11,7 +11,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 public final class QuestCompletionSoundPlayer {
@@ -107,7 +107,7 @@ public final class QuestCompletionSoundPlayer {
         if (relative.isBlank()) {
             return Optional.empty();
         }
-        Path root = TabletUiFactory.ASSETS_ROOT_DIR.toAbsolutePath().normalize();
+        Path root = UiFactory.ASSETS_ROOT_DIR.toAbsolutePath().normalize();
         Path path = root.resolve(relative).normalize();
         if (!path.startsWith(root) || !Files.isRegularFile(path) || !FileSoundInstance.canPlay(path)) {
             return Optional.empty();

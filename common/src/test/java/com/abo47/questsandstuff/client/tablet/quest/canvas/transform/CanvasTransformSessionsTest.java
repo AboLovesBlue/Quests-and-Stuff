@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class CanvasTransformSessionsTest {
     @Test
     void mainCanvasSessionClearsFlagsPreviewsAndStartSnapshotsWithoutClearingSelection() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         seedMainCanvasTransform(state);
         state.canvas.canvasSelection.setPrimaryImageId("image/a");
         state.canvas.canvasSelection.imageIds().add("image/a");
@@ -51,7 +51,7 @@ public class CanvasTransformSessionsTest {
 
     @Test
     void questDetailsSessionClearsDetailsFieldsAndKeepsMainPreviewsScoped() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         seedMainCanvasTransform(state);
         seedQuestDetailsTransform(state);
 
@@ -71,7 +71,7 @@ public class CanvasTransformSessionsTest {
 
     @Test
     void previewClearsAreSurfaceScoped() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.transientCanvasImages.put("image:a", image("image:a"));
         state.canvas.transientCanvasTexts.put("text:a", text("text:a"));
         state.questDetails.questDetailsTransientImages.put("image:b", image("image:b"));
@@ -92,7 +92,7 @@ public class CanvasTransformSessionsTest {
 
     @Test
     void elementBeginAndUpdateClearStaleSnapshotsBeforeCreatingPreview() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.selectedChapter = "main";
         state.canvas.canvasZoom = 1.0f;
         state.canvas.canvasContentW = 512;
@@ -118,7 +118,7 @@ public class CanvasTransformSessionsTest {
 
     @Test
     void selectionTransformCommitClearUsesMainCanvasSessionCleanup() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         seedMainCanvasTransform(state);
 
         new CanvasSelectionTransformController(state, new CanvasElementTransformController(state)).clear();
@@ -132,7 +132,7 @@ public class CanvasTransformSessionsTest {
         assertGuidesCleared(state);
     }
 
-    private static void seedMainCanvasTransform(TabletUiState state) {
+    private static void seedMainCanvasTransform(UiState state) {
         state.canvas.draggingSelection = true;
         state.canvas.resizingSelection = true;
         state.canvas.rotatingSelection = true;
@@ -150,7 +150,7 @@ public class CanvasTransformSessionsTest {
         seedSharedSnapshots(state);
     }
 
-    private static void seedQuestDetailsTransform(TabletUiState state) {
+    private static void seedQuestDetailsTransform(UiState state) {
         state.questDetails.questDetailsTransformKind = "desc_image";
         state.questDetails.questDetailsTransformId = "image:b";
         state.questDetails.questDetailsTransformMode = "move";
@@ -174,7 +174,7 @@ public class CanvasTransformSessionsTest {
         seedSharedSnapshots(state);
     }
 
-    private static void seedSharedSnapshots(TabletUiState state) {
+    private static void seedSharedSnapshots(UiState state) {
         state.canvas.dragStartPositions.put("quest/a", new CanvasPoint(1, 2));
         state.canvas.dragStartImagePositions.put("image:a", new CanvasPoint(3, 4));
         state.canvas.dragStartTextPositions.put("text:a", new CanvasPoint(5, 6));
@@ -195,7 +195,7 @@ public class CanvasTransformSessionsTest {
         state.canvas.snapGuideY = 120;
     }
 
-    private static void assertSharedSnapshotsCleared(TabletUiState state) {
+    private static void assertSharedSnapshotsCleared(UiState state) {
         assertTrue(state.canvas.dragStartPositions.isEmpty());
         assertTrue(state.canvas.dragStartImagePositions.isEmpty());
         assertTrue(state.canvas.dragStartTextPositions.isEmpty());
@@ -212,7 +212,7 @@ public class CanvasTransformSessionsTest {
         assertEquals(0, state.canvas.dragSelectionDeltaY);
     }
 
-    private static void assertGuidesCleared(TabletUiState state) {
+    private static void assertGuidesCleared(UiState state) {
         assertFalse(state.canvas.snapGuideXVisible);
         assertFalse(state.canvas.snapGuideYVisible);
         assertEquals(0, state.canvas.snapGuideX);

@@ -8,11 +8,11 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
@@ -25,7 +25,7 @@ public final class QuestTaskLootTableRewardEditor {
         return "loot_table".equals(path) || "loot".equals(path);
     }
 
-    public static void render(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int rightX) {
+    public static void render(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int rightX) {
         renderSummary(parent, entry.json(), x, y, Math.max(18, rightX - x));
     }
 
@@ -37,14 +37,14 @@ public final class QuestTaskLootTableRewardEditor {
         String lootTable = lootTable(json);
         String naturalName = displayName(lootTable);
         String title = QuestTaskJsonFactory.asString(json, "title", "");
-        String lootTableLabel = TabletTranslationKeys.text(QuestTranslationKeys.TYPE_LOOT_TABLE);
+        String lootTableLabel = TranslationKeys.text(QuestTranslationKeys.TYPE_LOOT_TABLE);
         if (title.isBlank() || "Loot table".equalsIgnoreCase(title) || lootTableLabel.equalsIgnoreCase(title)) {
             title = naturalName;
         }
         if (title.isBlank()) {
-            title = TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE);
+            title = TranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE);
         }
-        QuestTaskInlineFields.renderDisplayText(parent, x, y, w, title, TabletColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
+        QuestTaskInlineFields.renderDisplayText(parent, x, y, w, title, ThemeColors.TEXT_PRIMARY, TextTexture.TextType.LEFT_HIDE);
     }
 
     private static String lootTable(JsonObject json) {

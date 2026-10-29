@@ -25,13 +25,13 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintStore;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.client.tablet.modal.sound.SoundPreviewPlayerWidget;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTileText;
@@ -51,12 +51,12 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.clo
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_COMPLETION_SOUND;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.BLUEPRINT;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetDimensions;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetThumbnailTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.searchAssetEntries;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.assetDimensions;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.assetThumbnailTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.searchAssetEntries;
 
 public final class AssetPickerModal {
     private static final int HEADER_BUTTON_SIZE = BUTTON_18;
@@ -72,7 +72,7 @@ public final class AssetPickerModal {
     private AssetPickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         boolean soundPicker = !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget).isBlank()
                 || !ModalTargetState.targetSet(state, QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets).isEmpty();
         boolean connectionTexturePicker = !state.modal.modalConnectionTextureTarget.isBlank()
@@ -111,8 +111,8 @@ public final class AssetPickerModal {
         state.pickers.assetPickerMode = currentMode;
         String dir = state.pickers.assetBrowseDir == null ? "" : state.pickers.assetBrowseDir;
         modal.addWidget(ChromeFactory.iconButton(headerChainButtonX(w, blueprintPicker ? 3 : 1), HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "folder", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
-            AssetLibrary.ensureAssetsDirs(TabletUiFactory.ASSETS_ROOT_DIR);
-            Path folder = AssetLibrary.resolveDirectory(TabletUiFactory.ASSETS_ROOT_DIR, dir);
+            AssetLibrary.ensureAssetsDirs(UiFactory.ASSETS_ROOT_DIR);
+            Path folder = AssetLibrary.resolveDirectory(UiFactory.ASSETS_ROOT_DIR, dir);
             if (folder != null) {
                 Util.getPlatform().openFile(folder.toFile());
             }
@@ -133,10 +133,10 @@ public final class AssetPickerModal {
         int previewH = libraryLayout.bodyH();
         WidgetGroup preview = ModalPreviewLayout.previewPanel(libraryLayout);
         String selected = state.pickers.assetSelected == null ? "" : state.pickers.assetSelected;
-        preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, 8, crop(dir.isBlank() ? "/" : "/" + dir, 22), ThemeColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 20, selected.isBlank()
                 ? ModalPanel.tr(blueprintPicker ? "ui.questsandstuff.blueprints.none_selected" : soundPicker ? "ui.questsandstuff.sound.none_selected" : "ui.questsandstuff.asset.none_selected")
-                : crop(selected, 22), TabletColors.TEXT_SECONDARY));
+                : crop(selected, 22), ThemeColors.TEXT_SECONDARY));
         AssetLibrary.AssetKind selectedKind = selected.isBlank() ? AssetLibrary.AssetKind.UNKNOWN : AssetLibrary.assetKind(selected);
         AssetLibrary.AssetDimensions dims = selectedKind.hasImageThumbnail() ? assetDimensions(selected) : null;
         if (soundPicker || selectedKind == AssetLibrary.AssetKind.SOUND) {
@@ -152,14 +152,14 @@ public final class AssetPickerModal {
             CanvasBlueprint blueprint = CanvasBlueprintStore.read(selected);
             preview.addWidget(label(8, 32, blueprint.isEmpty()
                     ? ModalPanel.tr("ui.questsandstuff.common.none_short")
-                    : ModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), TabletColors.TEXT_MUTED));
+                    : ModalPanel.tr("ui.questsandstuff.blueprints.item_count", blueprint.contentCount()), ThemeColors.TEXT_MUTED));
             if (!blueprint.isEmpty()) {
                 int previewW = leftW - 16;
                 int previewAreaH = Math.max(24, h - 100);
                 preview.addWidget(CanvasBlueprintMiniRenderer.previewWidget(8, 48, previewW, previewAreaH, blueprint));
             }
         } else {
-            preview.addWidget(label(8, 32, dims == null ? ModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), TabletColors.TEXT_MUTED));
+            preview.addWidget(label(8, 32, dims == null ? ModalPanel.tr("ui.questsandstuff.common.none_short") : dims.width() + "x" + dims.height(), ThemeColors.TEXT_MUTED));
             AssetPickerPreviewControls.addQuestBackgroundOptions(preview, state, refresh, leftW, previewH);
             AssetPickerPreviewControls.addHudBackgroundOptions(preview, state, refresh, leftW, previewH);
             AssetPickerPreviewControls.addConnectionTextureControls(preview, state, player, refresh, leftW, previewH);
@@ -238,7 +238,7 @@ public final class AssetPickerModal {
             boolean renaming = state.pickers.assetRenameOpen && relative.equals(state.pickers.assetContextFile) && !entry.directory();
             WidgetGroup tile = new WidgetGroup(x, y, cellW, cellH);
             if (relative.equals(selected)) {
-                tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 54)));
+                tile.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 54)));
             }
             int labelH = 14;
             int iconAreaH = Math.max(24, cellH - labelH - 8);
@@ -250,7 +250,7 @@ public final class AssetPickerModal {
                 if (folderIcon != null) {
                     tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
                 } else {
-                    tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", TabletColors.TEXT_MUTED));
+                    tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, cellW, "[dir]", ThemeColors.TEXT_MUTED));
                 }
             } else if (entry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
                 CanvasBlueprint blueprint = CanvasBlueprintStore.read(relative);
@@ -285,7 +285,7 @@ public final class AssetPickerModal {
             if (renaming) {
                 tile.addWidget(AssetPickerContextActions.assetInlineRenameField(state, refresh, relative, 2, cellH - labelH - 1, cellW - 4));
             } else {
-                tile.addWidget(PickerTileText.centeredLabel(2, cellH - labelH, cellW - 4, entry.name(), TabletColors.TEXT_SECONDARY));
+                tile.addWidget(PickerTileText.centeredLabel(2, cellH - labelH, cellW - 4, entry.name(), ThemeColors.TEXT_SECONDARY));
             }
             surface.addWidget(tile);
             if (renaming) {
@@ -332,7 +332,7 @@ public final class AssetPickerModal {
         return search;
     }
 
-    public static boolean handleKeyPressed(TabletUiState state, Runnable refresh, int keyCode) {
+    public static boolean handleKeyPressed(UiState state, Runnable refresh, int keyCode) {
         if (!ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER) || keyCode != GLFW.GLFW_KEY_F3 || state.pickers.assetSelected == null || state.pickers.assetSelected.isBlank()) {
             return false;
         }
@@ -341,7 +341,7 @@ public final class AssetPickerModal {
         return true;
     }
 
-    private static void addBlueprintHeaderActions(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
+    private static void addBlueprintHeaderActions(WidgetGroup modal, UiState state, Runnable refresh, int w) {
         int importX = headerChainButtonX(w, 1);
         int exportX = headerChainButtonX(w, 2);
         modal.addWidget(ChromeFactory.iconButton(exportX, HEADER_BUTTON_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "file-up", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_INTERACTIVE), click -> {
@@ -362,7 +362,7 @@ public final class AssetPickerModal {
         return modalW - HEADER_CLOSE_ANCHOR_RIGHT_PAD + HEADER_CLOSE_RENDER_X_OFFSET;
     }
 
-    private static boolean isBlueprintPicker(TabletUiState state) {
+    private static boolean isBlueprintPicker(UiState state) {
         return !ModalTargetState.target(state, BLUEPRINT, state.modal.modalBlueprintTarget).isBlank();
     }
 

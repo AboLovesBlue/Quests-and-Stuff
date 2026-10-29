@@ -16,12 +16,12 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterBackgroundTexture;
 
 public final class QuestCardBackgroundRenderer {
     public static final ResourceLocation DEFAULT_QUEST_BACKGROUND_TEXTURE = ResourceLocation.tryBuild("questsandstuff", "textures/gui/quest_backgrounds/default_quest_bg.png");
@@ -109,35 +109,35 @@ public final class QuestCardBackgroundRenderer {
 
     public static int defaultTint(CompoundTag tag, int alpha) {
         if (ClientQuestStateFacade.questLockedPreview(tag)) {
-            return withAlpha(TabletColors.TEXT_SECONDARY, alpha);
+            return withAlpha(ThemeColors.TEXT_SECONDARY, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.CLAIMED)) {
-            return withAlpha(TabletColors.WARNING, alpha);
+            return withAlpha(ThemeColors.WARNING, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.COMPLETED)) {
-            return withAlpha(TabletColors.SUCCESS, alpha);
+            return withAlpha(ThemeColors.SUCCESS, alpha);
         }
         return tag != null && tag.getBoolean(SyncKeys.Quest.UNLOCKED)
-                ? withAlpha(TabletColors.INTERACTIVE, alpha)
-                : withAlpha(TabletColors.TEXT_SECONDARY, alpha);
+                ? withAlpha(ThemeColors.INTERACTIVE, alpha)
+                : withAlpha(ThemeColors.TEXT_SECONDARY, alpha);
     }
 
     public static int defaultTint(QuestDisplay display, boolean gated, int alpha) {
         QuestDisplay safeDisplay = display == null ? QuestDisplay.DEFAULT : display;
-        return withAlpha(safeDisplay.visualHidden() || gated ? TabletColors.TEXT_SECONDARY : TabletColors.INTERACTIVE, alpha);
+        return withAlpha(safeDisplay.visualHidden() || gated ? ThemeColors.TEXT_SECONDARY : ThemeColors.INTERACTIVE, alpha);
     }
 
     public static int statusFilter(CompoundTag tag, int alpha) {
         if (ClientQuestStateFacade.questLockedPreview(tag)) {
-            return scaledAlpha(TabletColors.SURFACE_BASE, 138, alpha);
+            return scaledAlpha(ThemeColors.SURFACE_BASE, 138, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.CLAIMED)) {
-            return scaledAlpha(TabletColors.WARNING, 94, alpha);
+            return scaledAlpha(ThemeColors.WARNING, 94, alpha);
         }
         if (tag != null && tag.getBoolean(SyncKeys.Quest.COMPLETED)) {
-            return scaledAlpha(TabletColors.SUCCESS, 82, alpha);
+            return scaledAlpha(ThemeColors.SUCCESS, 82, alpha);
         }
-        return TabletColors.TRANSPARENT;
+        return ThemeColors.TRANSPARENT;
     }
 
     public static float questProgress(CompoundTag tag) {
@@ -170,7 +170,7 @@ public final class QuestCardBackgroundRenderer {
     }
 
     public static int progressFillColor(int alpha) {
-        return withAlpha(TabletColors.SUCCESS, Math.max(0, Math.min(255, alpha)));
+        return withAlpha(ThemeColors.SUCCESS, Math.max(0, Math.min(255, alpha)));
     }
 
     private static ResourceTexture defaultTexture(int tint) {

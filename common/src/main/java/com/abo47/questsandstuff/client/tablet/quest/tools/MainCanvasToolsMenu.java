@@ -8,29 +8,29 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
-import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
+import com.abo47.questsandstuff.client.tablet.layout.ResizeCursor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyCanvasBgOpacityPercent;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.applyGridOpacityPercent;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.applyCanvasBgOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.applyGridOpacityPercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.cyclePercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CANVAS_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterPanelWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CANVAS_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterPanelWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 final class CanvasToolsMenu {
     private CanvasToolsMenu() {
     }
 
-    static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {
+    static void rebuild(WidgetGroup toolsMenu, UiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {
         toolsMenu.clearAllWidgets();
         boolean visible = ToolMenuAnimation.mainVisible(state);
         toolsMenu.setVisible(visible);
@@ -45,7 +45,7 @@ final class CanvasToolsMenu {
         final int toolGap = 1;
         final boolean editTools = state.root.canEdit;
         final int toolCount = editTools ? 10 : 3;
-        final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
+        final int toolButtonBorder = withAlpha(ThemeColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = canvasX + toolsX - 1;
@@ -53,7 +53,7 @@ final class CanvasToolsMenu {
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
         menu.setActive(ToolMenuAnimation.mainInteractive(state));
 
-        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(TabletColors.SURFACE_BASE, 244), TabletColors.BORDER_ACCENT));
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ThemeColors.SURFACE_BASE, 244), ThemeColors.BORDER_ACCENT));
 
         int slotX = menuPad;
         int y = menuPad;
@@ -83,7 +83,7 @@ final class CanvasToolsMenu {
         rememberBounds(state, menuX, menuY, menuW, menuH);
     }
 
-    private static void addEditRows(ToolMenuRows rows, TabletUiState state, Player player, Runnable refresh) {
+    private static void addEditRows(ToolMenuRows rows, UiState state, Player player, Runnable refresh) {
         CanvasToolRows.grid(rows, state.canvas.gridEnabled, () -> {
                     state.canvas.gridEnabled = !state.canvas.gridEnabled;
                     persistUiState(state);
@@ -163,7 +163,7 @@ final class CanvasToolsMenu {
                     state.chapterPanel.chapterSplitterLocked = !state.chapterPanel.chapterSplitterLocked;
                     if (state.chapterPanel.chapterSplitterLocked) {
                         state.canvas.draggingChapterSplitter = false;
-                        TabletResizeCursor.update(false);
+                        ResizeCursor.update(false);
                     }
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] tool splitter-lock enabled={} width={}", state.chapterPanel.chapterSplitterLocked, chapterPanelWidth(state));
@@ -174,11 +174,11 @@ final class CanvasToolsMenu {
     private static void addRewardRows(ToolMenuRows rows, Runnable refresh) {
         boolean autoClaim = QuestsAndStuffConfig.autoClaimRewardsEnabled();
         rows.toggle("auto_claim",
-                autoClaim ? TabletColors.SUCCESS : TabletColors.ERROR,
+                autoClaim ? ThemeColors.SUCCESS : ThemeColors.ERROR,
                 autoClaim,
                 new Component[]{
-                        TabletTranslationKeys.component(QuestTranslationKeys.AUTO_CLAIM_REWARDS),
-                        TabletTranslationKeys.component(autoClaim ? TabletTranslationKeys.COMMON_ENABLED : TabletTranslationKeys.COMMON_DISABLED)
+                        TranslationKeys.component(QuestTranslationKeys.AUTO_CLAIM_REWARDS),
+                        TranslationKeys.component(autoClaim ? TranslationKeys.COMMON_ENABLED : TranslationKeys.COMMON_DISABLED)
                 },
                 () -> {
                     boolean next = !QuestsAndStuffConfig.autoClaimRewardsEnabled();
@@ -188,9 +188,9 @@ final class CanvasToolsMenu {
                 });
     }
 
-    private static void addReadOnlyRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
+    private static void addReadOnlyRows(ToolMenuRows rows, UiState state, Runnable refresh) {
         rows.toggle(state.chapterPanel.chapterSplitterLocked ? "lock_separator" : "unlock_separator",
-                state.chapterPanel.chapterSplitterLocked ? TabletColors.ERROR : TabletColors.SUCCESS,
+                state.chapterPanel.chapterSplitterLocked ? ThemeColors.ERROR : ThemeColors.SUCCESS,
                 !state.chapterPanel.chapterSplitterLocked,
                 new Component[]{
                         Component.translatable("ui.questsandstuff.tools.lock_separator"),
@@ -200,21 +200,21 @@ final class CanvasToolsMenu {
                     state.chapterPanel.chapterSplitterLocked = !state.chapterPanel.chapterSplitterLocked;
                     if (state.chapterPanel.chapterSplitterLocked) {
                         state.canvas.draggingChapterSplitter = false;
-                        TabletResizeCursor.update(false);
+                        ResizeCursor.update(false);
                     }
                     persistUiState(state);
                     refresh.run();
                 });
     }
 
-    private static void rememberBounds(TabletUiState state, int menuX, int menuY, int menuW, int menuH) {
+    private static void rememberBounds(UiState state, int menuX, int menuY, int menuW, int menuH) {
         state.canvas.toolsMenuX = menuX;
         state.canvas.toolsMenuY = menuY;
         state.canvas.toolsMenuW = menuW;
         state.canvas.toolsMenuH = menuH;
     }
 
-    private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {
+    private static void addAnimatedMenu(WidgetGroup toolsMenu, UiState state, WidgetGroup menu) {
         if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
             toolsMenu.addWidget(menu);
             return;

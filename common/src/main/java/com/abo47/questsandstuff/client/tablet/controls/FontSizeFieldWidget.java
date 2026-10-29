@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -90,8 +90,8 @@ public final class FontSizeFieldWidget extends TextFieldWidget {
         StyledTextFields.applyIntegerValidator(this, MIN, MAX);
         setTextResponder(this::handleChanged);
         setCurrentString(Integer.toString(this.currentValue));
-        setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.INTERACTIVE, 150), TabletColors.BORDER_ACCENT));
-        setTextColor(TabletColors.TEXT_PRIMARY);
+        setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.INTERACTIVE, 150), ThemeColors.BORDER_ACCENT));
+        setTextColor(ThemeColors.TEXT_PRIMARY);
         updateTooltip();
     }
 

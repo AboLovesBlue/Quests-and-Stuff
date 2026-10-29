@@ -10,19 +10,19 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamActionPacket;
 import com.abo47.questsandstuff.network.team.C2STeamCreatePacket;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class TeamsConfirmModal {
     private static final int PAD = 8;
@@ -33,7 +33,7 @@ final class TeamsConfirmModal {
     private TeamsConfirmModal() {
     }
 
-    static void rebuild(WidgetGroup layer, TabletUiState state, Runnable refresh, int layerW, int layerH) {
+    static void rebuild(WidgetGroup layer, UiState state, Runnable refresh, int layerW, int layerH) {
         if (!state.teams.confirmModalOpen) {
             return;
         }
@@ -51,24 +51,24 @@ final class TeamsConfirmModal {
         int py = Math.max(24, (layerH - h) / 2);
 
         WidgetGroup panel = SurfaceFactory.panel(px, py, w, h,
-                withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT);
+                withAlpha(ThemeColors.SURFACE_BASE, 246), ThemeColors.BORDER_ACCENT);
 
         panel.addWidget(label(PAD, 10,
                 I18n.get(state.teams.confirmTitleKey),
-                TabletColors.TEXT_PRIMARY));
+                ThemeColors.TEXT_PRIMARY));
 
         panel.addWidget(label(PAD, 28,
                 I18n.get(state.teams.confirmMessageKey),
-                TabletColors.TEXT_MUTED));
+                ThemeColors.TEXT_MUTED));
 
         ActionButtons.iconAction(panel, PAD, BUTTON_Y, BUTTON_W, BUTTON_H,
-                "close", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_CANCEL), TabletColors.ERROR, null, click -> {
+                "close", TranslationKeys.text(TranslationKeys.COMMON_CANCEL), ThemeColors.ERROR, null, click -> {
             state.teams.confirmModalOpen = false;
             refresh.run();
         });
 
         ActionButtons.iconAction(panel, w - PAD - BUTTON_W, BUTTON_Y, BUTTON_W, BUTTON_H,
-                "manual_check", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_CONFIRM), TabletColors.SUCCESS, null, click -> {
+                "manual_check", TranslationKeys.text(TranslationKeys.COMMON_CONFIRM), ThemeColors.SUCCESS, null, click -> {
             state.teams.confirmModalOpen = false;
             UUID localUuid = Minecraft.getInstance().player == null
                     ? UUID.randomUUID() : Minecraft.getInstance().player.getUUID();

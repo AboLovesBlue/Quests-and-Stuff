@@ -6,11 +6,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeomet
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.assetDimensions;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.assetDimensions;
 
 final class QuestDetailsDescriptionLayout {
     private static final int READ_ONLY_CONTENT_PAD = 16;
@@ -21,7 +21,7 @@ final class QuestDetailsDescriptionLayout {
     private QuestDetailsDescriptionLayout() {
     }
 
-    static int clampDescriptionScroll(TabletUiState state, QuestDetailsDescriptionModel model, int viewportH, int scroll) {
+    static int clampDescriptionScroll(UiState state, QuestDetailsDescriptionModel model, int viewportH, int scroll) {
         int maxScroll = descriptionScrollMax(model, viewportH);
         int current = Math.max(0, Math.min(maxScroll, scroll));
         int[] bounds = elementVerticalBounds(model);
@@ -60,14 +60,14 @@ final class QuestDetailsDescriptionLayout {
         return Math.max(12, Math.min(safeViewportH, Math.round((float) safeViewportH * ((float) safeViewportH / (float) (safeViewportH + safeScrollMax)))));
     }
 
-    static int[] gridFit(TabletUiState state, int w, int h) {
+    static int[] gridFit(UiState state, int w, int h) {
         int cell = Math.max(1, CanvasGeometry.gridSize(state));
         int fitW = Math.max(cell + 1, ((Math.max(cell, w - 1)) / cell) * cell + 1);
         int fitH = Math.max(cell + 1, ((Math.max(cell, h - 1)) / cell) * cell + 1);
         return new int[]{Math.min(w, fitW), Math.min(h, fitH)};
     }
 
-    static int snap(TabletUiState state, int value) {
+    static int snap(UiState state, int value) {
         if (!state.questDetails.questDetailsGridSnapLocked) {
             return value;
         }
@@ -75,25 +75,25 @@ final class QuestDetailsDescriptionLayout {
         return Math.round((float) value / (float) step) * step;
     }
 
-    static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
+    static CanvasTextLayer fittedText(UiState state, CanvasTextLayer text) {
         return CanvasElementGridFit.fittedText(text, CanvasGeometry.gridSize(state), CanvasElementGridFit::nonNegativeClamp);
     }
 
-    static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
+    static CanvasImageLayer fittedImage(UiState state, CanvasImageLayer image) {
         return CanvasElementGridFit.fittedImage(image, CanvasGeometry.gridSize(state), CanvasElementGridFit::nonNegativeClamp);
     }
 
-    static CanvasTextLayer fitAndClampText(TabletUiState state, CanvasTextLayer text, int contentW) {
+    static CanvasTextLayer fitAndClampText(UiState state, CanvasTextLayer text, int contentW) {
         CanvasTextLayer fitted = state.questDetails.questDetailsGridSnapLocked ? fittedText(state, text) : text;
         return clampTextToColumn(state, fitted, contentW);
     }
 
-    static CanvasImageLayer fitAndClampImage(TabletUiState state, CanvasImageLayer image, int contentW) {
+    static CanvasImageLayer fitAndClampImage(UiState state, CanvasImageLayer image, int contentW) {
         CanvasImageLayer fitted = state.questDetails.questDetailsGridSnapLocked ? fittedImage(state, image) : image;
         return clampImageToColumn(state, fitted, contentW);
     }
 
-    static CanvasTextLayer clampTextToColumn(TabletUiState state, CanvasTextLayer text, int contentW) {
+    static CanvasTextLayer clampTextToColumn(UiState state, CanvasTextLayer text, int contentW) {
         int cappedW = Math.min(text.w(), Math.max(CanvasTextLayer.MIN_W, contentW));
         CanvasTextLayer sized = text.resizeTo(cappedW, text.h());
         CanvasPoint clamped = clampAnchorToColumn(
@@ -110,20 +110,20 @@ final class QuestDetailsDescriptionLayout {
         return sized.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasImageLayer clampImageToColumn(TabletUiState state, CanvasImageLayer image, int contentW) {
+    static CanvasImageLayer clampImageToColumn(UiState state, CanvasImageLayer image, int contentW) {
         int cappedW = Math.min(image.w(), Math.max(8, contentW));
         CanvasImageLayer sized = image.resizeTo(cappedW, image.h());
         CanvasPoint clamped = clampImageAnchorToColumn(state, sized, contentW);
         return sized.moveTo(clamped.x, clamped.y);
     }
 
-    static CanvasPoint clampImageAnchorToColumn(TabletUiState state, CanvasImageLayer image, int contentW) {
+    static CanvasPoint clampImageAnchorToColumn(UiState state, CanvasImageLayer image, int contentW) {
         int[] bounds = imageBoundsForColumnClamp(image);
         return clampAnchorToColumnBounds(state, image.x(), image.y(), bounds, contentW);
     }
 
     static CanvasPoint clampAnchorToColumn(
-            TabletUiState state,
+            UiState state,
             int x,
             int y,
             int width,
@@ -144,7 +144,7 @@ final class QuestDetailsDescriptionLayout {
         return CanvasElementGeometry.logicalBoundsAtPivot(image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
     }
 
-    private static CanvasPoint clampAnchorToColumnBounds(TabletUiState state, int x, int y, int[] bounds, int contentW) {
+    private static CanvasPoint clampAnchorToColumnBounds(UiState state, int x, int y, int[] bounds, int contentW) {
         int targetLeft = clampBoundsStart(bounds[0], bounds[2], visibleLeftEdge(), Math.max(1, contentW));
         int targetTop = clampBoundsStart(bounds[1], bounds[3], visibleTopEdge(state), UNBOUNDED_EDGE);
         return new CanvasPoint(x + targetLeft - bounds[0], y + targetTop - bounds[1]);
@@ -154,7 +154,7 @@ final class QuestDetailsDescriptionLayout {
         return LOCKED_EDGE_INSET;
     }
 
-    static int visibleTopEdge(TabletUiState state) {
+    static int visibleTopEdge(UiState state) {
         int scrollTop = state == null ? 0 : Math.max(0, state.questDetails.questDetailsDescScroll);
         return scrollTop + LOCKED_EDGE_INSET;
     }

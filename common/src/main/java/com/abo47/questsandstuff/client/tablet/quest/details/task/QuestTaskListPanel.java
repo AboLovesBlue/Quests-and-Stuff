@@ -19,25 +19,25 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.Que
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.menus.QuestTaskMenus;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 import com.google.gson.JsonObject;
 
 public final class QuestTaskListPanel {
-    public static final int HEADER_SECTION_GAP = TabletUiFactory.PANEL_INSET - 1;
-    public static final int SECTION_GAP = TabletUiFactory.PANEL_INSET + 1;
+    public static final int HEADER_SECTION_GAP = UiFactory.PANEL_INSET - 1;
+    public static final int SECTION_GAP = UiFactory.PANEL_INSET + 1;
     public static final int TITLE_H = 18;
-    public static final int CARD_H = TabletUiFactory.CHAPTER_CARD_H;
-    public static final int CARD_GAP = TabletUiFactory.CHAPTER_CARD_GAP;
-    public static final int LIST_PAD = TabletUiFactory.PANEL_INSET;
-    public static final int ICON = TabletUiFactory.CONTENT_ICON_SIZE;
-    public static final int HEADER_H = TabletUiFactory.HEADER_H;
+    public static final int CARD_H = UiFactory.CHAPTER_CARD_H;
+    public static final int CARD_GAP = UiFactory.CHAPTER_CARD_GAP;
+    public static final int LIST_PAD = UiFactory.PANEL_INSET;
+    public static final int ICON = UiFactory.CONTENT_ICON_SIZE;
+    public static final int HEADER_H = UiFactory.HEADER_H;
 
     private QuestTaskListPanel() {
     }
 
-    public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
+    public static void rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         QuestTaskActionWidgets.renderProgress(modal, state, player, refresh, questId, quest, x, y, w, HEADER_H);
         int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - HEADER_SECTION_GAP);
@@ -46,7 +46,7 @@ public final class QuestTaskListPanel {
         QuestTaskSectionWidget.renderRewards(modal, state, player, refresh, questId, quest, x, sectionsY + sectionH + SECTION_GAP, w, sectionsH - sectionH - SECTION_GAP);
     }
 
-    public static boolean isCardHit(TabletUiState state, double mouseX, double mouseY) {
+    public static boolean isCardHit(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen) {
             return false;
         }
@@ -60,8 +60,8 @@ public final class QuestTaskListPanel {
         }
 
         int leftW = QuestDetailsWindow.leftPanelWidth(state);
-        int x = state.questDetails.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
-        int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int x = state.questDetails.questDetailsScreenX + UiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetails.questDetailsScreenY + UiFactory.CHAPTER_Y + leftPanelContentY();
         int w = leftPanelContentW(leftW);
         int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
@@ -77,7 +77,7 @@ public final class QuestTaskListPanel {
         return isSectionCardHit(state, displayRewards, false, x, sectionsY + sectionH + SECTION_GAP, w, sectionsH - sectionH - SECTION_GAP, mouseX, mouseY);
     }
 
-    public static ItemStack hoveredViewerStack(TabletUiState state, double mouseX, double mouseY) {
+    public static ItemStack hoveredViewerStack(UiState state, double mouseX, double mouseY) {
         if (state == null || !state.questDetails.questDetailsOpen) {
             return ItemStack.EMPTY;
         }
@@ -90,8 +90,8 @@ public final class QuestTaskListPanel {
             return ItemStack.EMPTY;
         }
 
-        int x = state.questDetails.questDetailsScreenX + TabletUiFactory.CHAPTER_X + leftPanelContentX();
-        int y = state.questDetails.questDetailsScreenY + TabletUiFactory.CHAPTER_Y + leftPanelContentY();
+        int x = state.questDetails.questDetailsScreenX + UiFactory.CHAPTER_X + leftPanelContentX();
+        int y = state.questDetails.questDetailsScreenY + UiFactory.CHAPTER_Y + leftPanelContentY();
         int h = leftPanelContentH();
         int sectionsY = y + HEADER_H + HEADER_SECTION_GAP;
         int sectionsH = Math.max(1, h - HEADER_H - HEADER_SECTION_GAP);
@@ -107,7 +107,7 @@ public final class QuestTaskListPanel {
         return hoveredSectionViewerStack(state, displayRewards, false, x, sectionsY + sectionH + SECTION_GAP, sectionsH - sectionH - SECTION_GAP, mouseX, mouseY);
     }
 
-    public static boolean handleRecipeViewerShortcut(TabletUiState state, int keyCode, int scanCode, double mouseX, double mouseY) {
+    public static boolean handleRecipeViewerShortcut(UiState state, int keyCode, int scanCode, double mouseX, double mouseY) {
         if (!RecipeViewerIntegrations.hasAvailableViewer()) {
             return false;
         }
@@ -118,83 +118,83 @@ public final class QuestTaskListPanel {
         return RecipeViewerIntegrations.handleKeybind(stack, keyCode, scanCode);
     }
 
-    public static boolean clearSelection(TabletUiState state, String reason) {
+    public static boolean clearSelection(UiState state, String reason) {
         return QuestTaskListInteractions.clearSelection(state, reason);
     }
 
-    public static void renderTypePicker(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
+    public static void renderTypePicker(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
         QuestTaskMenus.renderTypePicker(modal, state, player, refresh, questId, quest, modalW, modalH);
     }
 
-    public static void applyIconPick(Player player, TabletUiState state, String entry) {
+    public static void applyIconPick(Player player, UiState state, String entry) {
         QuestTaskEditActions.applyIconPick(player, state, entry);
     }
 
-    public static void applyBiomePick(Player player, TabletUiState state, String biome) {
+    public static void applyBiomePick(Player player, UiState state, String biome) {
         QuestTaskEditActions.applyBiomePick(player, state, biome);
     }
 
-    public static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
+    public static void applyAdvancementPick(Player player, UiState state, String advancement) {
         QuestTaskEditActions.applyAdvancementPick(player, state, advancement);
     }
 
-    public static void applyRecipePick(Player player, TabletUiState state, String recipe) {
+    public static void applyRecipePick(Player player, UiState state, String recipe) {
         QuestTaskEditActions.applyRecipePick(player, state, recipe);
     }
 
-    public static void applyStructurePick(Player player, TabletUiState state, String structure) {
+    public static void applyStructurePick(Player player, UiState state, String structure) {
         QuestTaskEditActions.applyStructurePick(player, state, structure);
     }
 
-    public static void applyBlockPick(Player player, TabletUiState state, String block) {
+    public static void applyBlockPick(Player player, UiState state, String block) {
         QuestTaskEditActions.applyBlockPick(player, state, block);
     }
 
-    public static void applyStatPick(Player player, TabletUiState state, String stat) {
+    public static void applyStatPick(Player player, UiState state, String stat) {
         QuestTaskEditActions.applyStatPick(player, state, stat);
     }
 
-    public static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
+    public static void applyDimensionPick(Player player, UiState state, String dimension) {
         QuestTaskEditActions.applyDimensionPick(player, state, dimension);
     }
 
-    public static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
+    public static void applyLootTablePick(Player player, UiState state, String lootTable) {
         QuestTaskEditActions.applyLootTablePick(player, state, lootTable);
     }
 
-    public static void applyItemLockPick(Player player, TabletUiState state, String entry) {
+    public static void applyItemLockPick(Player player, UiState state, String entry) {
         QuestTaskEditActions.applyItemLockPick(player, state, entry);
     }
 
-    public static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
+    public static void applyInventoryItemPick(Player player, UiState state, ItemStack stack) {
         QuestTaskEditActions.applyInventoryItemPick(player, state, stack);
     }
 
-    public static void renderContextMenu(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {
+    public static void renderContextMenu(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId) {
         QuestTaskMenus.renderContextMenu(modal, state, player, refresh, questId);
     }
 
-    public static boolean handleRenameKey(Player player, TabletUiState state, int keyCode, boolean draftUnchanged) {
+    public static boolean handleRenameKey(Player player, UiState state, int keyCode, boolean draftUnchanged) {
         return QuestTaskInlineFields.handleRenameKey(player, state, keyCode, draftUnchanged);
     }
 
-    public static boolean handleRenameChar(TabletUiState state, char c, boolean draftUnchanged) {
+    public static boolean handleRenameChar(UiState state, char c, boolean draftUnchanged) {
         return QuestTaskInlineFields.handleRenameChar(state, c, draftUnchanged);
     }
 
-    public static void openTaskRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+    public static void openTaskRenameEditor(UiState state, String questId, String id, boolean task) {
         QuestTaskInlineFields.openTaskRenameEditor(state, questId, id, task);
     }
 
-    public static boolean deleteSelectedTask(Player player, TabletUiState state, String questId) {
+    public static boolean deleteSelectedTask(Player player, UiState state, String questId) {
         return QuestTaskListInteractions.deleteSelected(player, state, questId);
     }
 
-    public static boolean moveSelectedTask(Player player, TabletUiState state, String questId, int offset) {
+    public static boolean moveSelectedTask(Player player, UiState state, String questId, int offset) {
         return QuestTaskListInteractions.moveSelected(player, state, questId, offset);
     }
 
-    private static boolean isSectionCardHit(TabletUiState state, List<QuestTaskEntry> entries, boolean tasks, int x, int y, int w, int h, double mouseX, double mouseY) {
+    private static boolean isSectionCardHit(UiState state, List<QuestTaskEntry> entries, boolean tasks, int x, int y, int w, int h, double mouseX, double mouseY) {
         if (entries.isEmpty() || h <= TITLE_H + 4) {
             return false;
         }
@@ -223,7 +223,7 @@ public final class QuestTaskListPanel {
     }
 
     static int leftPanelContentX() {
-        return TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
+        return UiFactory.CHAPTER_PANEL_GUTTER_X;
     }
 
     public static int leftPanelContentY() {
@@ -231,14 +231,14 @@ public final class QuestTaskListPanel {
     }
 
     static int leftPanelContentW(int leftW) {
-        return Math.max(1, leftW - TabletUiFactory.CHAPTER_PANEL_GUTTER_X * 2);
+        return Math.max(1, leftW - UiFactory.CHAPTER_PANEL_GUTTER_X * 2);
     }
 
     public static int leftPanelContentH() {
-        return Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET - TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM);
+        return Math.max(1, UiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET - UiFactory.CHAPTER_PANEL_GUTTER_BOTTOM);
     }
 
-    private static ItemStack hoveredSectionViewerStack(TabletUiState state, List<QuestTaskEntry> entries, boolean tasks, int x, int y, int h, double mouseX, double mouseY) {
+    private static ItemStack hoveredSectionViewerStack(UiState state, List<QuestTaskEntry> entries, boolean tasks, int x, int y, int h, double mouseX, double mouseY) {
         if (entries.isEmpty() || h <= TITLE_H + 4) {
             return ItemStack.EMPTY;
         }

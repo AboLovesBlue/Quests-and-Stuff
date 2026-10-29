@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.AssetKind;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public record SkinFillOverride(String mode, String path, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
     private static final String SEP = "|";
@@ -130,9 +130,9 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
     }
 
     private IGuiTexture createTileTexture() {
-        ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.tileTextureLocation(UiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
-        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(UiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         int tileW = dims.width();
         int tileH = dims.height();
@@ -144,9 +144,9 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
         if (kind == AssetKind.GIF) {
             return createFullTexture();
         }
-        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.staticTextureLocation(UiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
-        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(UiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         return new CenterCropTexture(id, dims.width(), dims.height());
     }
@@ -156,9 +156,9 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
         if (kind == AssetKind.GIF) {
             return createFullTexture();
         }
-        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.staticTextureLocation(UiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
-        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(UiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         return new DynamicClippingTexture(id, dims.width(), dims.height(), leftEdge, rightEdge, topEdge, bottomEdge);
     }
@@ -168,17 +168,17 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
         if (kind == AssetKind.GIF) {
             return createFullTexture();
         }
-        ResourceLocation id = AssetLibrary.staticTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.staticTextureLocation(UiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
-        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(UiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         return new HorizontalRepeatTexture(id, dims.width(), dims.height(), leftEdge, rightEdge);
     }
 
     private IGuiTexture createTileSizeTexture() {
-        ResourceLocation id = AssetLibrary.tileTextureLocation(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        ResourceLocation id = AssetLibrary.tileTextureLocation(UiFactory.ASSETS_ROOT_DIR, path);
         if (id == null) return null;
-        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        AssetLibrary.AssetDimensions dims = AssetLibrary.assetDimensions(UiFactory.ASSETS_ROOT_DIR, path);
         if (dims == null) return null;
         int tileW = leftEdge > 0 ? leftEdge : dims.width();
         int tileH = rightEdge > 0 ? rightEdge : dims.height();
@@ -188,8 +188,8 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
     private IGuiTexture createFullTexture() {
         AssetKind kind = AssetLibrary.assetKind(path);
         if (kind == AssetKind.GIF) {
-            return AssetLibrary.chapterBackgroundTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
+            return AssetLibrary.chapterBackgroundTexture(UiFactory.ASSETS_ROOT_DIR, path);
         }
-        return AssetLibrary.assetThumbnailTexture(TabletUiFactory.ASSETS_ROOT_DIR, path);
+        return AssetLibrary.assetThumbnailTexture(UiFactory.ASSETS_ROOT_DIR, path);
     }
 }

@@ -1,47 +1,47 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasTransformGizmoHit {
     private CanvasTransformGizmoHit() {
     }
 
-    public static boolean controlHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
+    public static boolean controlHit(UiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return modeAt(state, x, y, width, height, rotationDegrees, 0, 0, hitX, hitY) != null;
     }
 
-    public static boolean controlHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static boolean controlHit(UiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         return controlHitAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY);
     }
 
-    public static boolean controlHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static boolean controlHitAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         return modeAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY) != null;
     }
 
-    public static CanvasTransformMode modeAt(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
+    public static CanvasTransformMode modeAt(UiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return modeAt(state, x, y, width, height, rotationDegrees, 0, 0, hitX, hitY);
     }
 
-    public static CanvasTransformMode modeAt(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static CanvasTransformMode modeAt(UiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         return modeAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY);
     }
 
-    public static CanvasTransformMode modeAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static CanvasTransformMode modeAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         Hit hit = hitAt(state, x, y, width, height, pivotX, pivotY, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY);
         return hit == null ? null : hit.mode();
     }
 
-    public static String axisAt(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static String axisAt(UiState state, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         return axisAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY);
     }
 
-    public static String axisAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    public static String axisAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         Hit hit = hitAt(state, x, y, width, height, pivotX, pivotY, rotationDegrees, yawDegrees, pitchDegrees, hitX, hitY);
         return hit == null ? "" : hit.axis();
     }
 
-    static Hit hitAt(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
+    static Hit hitAt(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees, int hitX, int hitY) {
         CanvasTransformGizmo.Geometry geometry = CanvasTransformGizmo.geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return null;
@@ -77,11 +77,11 @@ public final class CanvasTransformGizmoHit {
         return null;
     }
 
-    public static boolean boundsHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
+    public static boolean boundsHit(UiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return boundsHitAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, hitX, hitY);
     }
 
-    public static boolean boundsHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
+    public static boolean boundsHitAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
         CanvasTransformGizmo.Geometry geometry = CanvasTransformGizmo.geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasTransformGizmo.LocalPoint point = CanvasTransformGizmo.toLocalPoint(geometry, rotationDegrees, hitX, hitY);
         return point.x() >= geometry.left() - CanvasTransformGizmo.HIT_PAD

@@ -7,13 +7,13 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.controls.ScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.TileGridLayout;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 public final class TiledPickerPanel {
     private TiledPickerPanel() {
@@ -47,7 +47,7 @@ public final class TiledPickerPanel {
                 renderer.render(tiles, entries.get(i), i, current.tileX(visibleIndex), current.tileY(visibleIndex), current.tileW(), current.tileH(), current);
             }
         };
-        WidgetGroup surface = new TabletScissoredWidgetGroup(x, y, w, h) {
+        WidgetGroup surface = new ScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
                 if (!isMouseOverElement(mouseX, mouseY) || layout.maxStart() <= 0) {
@@ -64,11 +64,11 @@ public final class TiledPickerPanel {
                 return true;
             }
         };
-        surface.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 190), TabletColors.subtleBorder()));
+        surface.setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.elevatedSurface(), 190), ThemeColors.subtleBorder()));
         parent.addWidget(surface);
 
         if (entries.isEmpty()) {
-            surface.addWidget(label(Math.max(4, padX), Math.max(4, padY), emptyText, TabletColors.TEXT_MUTED));
+            surface.addWidget(label(Math.max(4, padX), Math.max(4, padY), emptyText, ThemeColors.TEXT_MUTED));
             return layout;
         }
 

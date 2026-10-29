@@ -11,18 +11,18 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runPrerequisiteAction;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runRemoveQuestAction;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.runPrerequisiteAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.runRemoveQuestAction;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 public final class CanvasContextDeleteController {
     private CanvasContextDeleteController() {
     }
 
-    public static boolean canDeleteContext(TabletUiState state) {
+    public static boolean canDeleteContext(UiState state) {
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.CONNECTION) {
             return !state.contextMenu.contextConnectionSource.isBlank() && !state.contextMenu.contextConnectionTarget.isBlank();
         }
@@ -44,7 +44,7 @@ public final class CanvasContextDeleteController {
         return false;
     }
 
-    public static String deleteConfirmKey(TabletUiState state) {
+    public static String deleteConfirmKey(UiState state) {
         return state.contextMenu.contextMenuTarget.name()
                 + "|" + state.contextMenu.contextQuestId
                 + "|" + state.contextMenu.contextConnectionSource
@@ -58,7 +58,7 @@ public final class CanvasContextDeleteController {
                 + "|" + String.join(",", CanvasSelectionActions.selectedExclusiveChoiceIds(state));
     }
 
-    public static void runDeleteAction(Player player, TabletUiState state) {
+    public static void runDeleteAction(Player player, UiState state) {
         String chapter = selectedChapterName(state);
         if (state.contextMenu.contextMenuTarget == ContextMenuTarget.SELECTION) {
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {

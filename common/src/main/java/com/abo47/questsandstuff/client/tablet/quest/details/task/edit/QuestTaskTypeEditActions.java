@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTask
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import com.google.gson.JsonObject;
 
@@ -20,20 +20,20 @@ public final class QuestTaskTypeEditActions {
     private QuestTaskTypeEditActions() {
     }
 
-    public static void beginTaskAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
+    public static void beginTaskAdd(Player player, UiState state, String questId, CompoundTag quest, String typePath) {
         QuestTaskTypeChoice choice = QuestTaskTypeCatalog.taskChoice(typePath);
         String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
         String id = QuestTaskJsonFactory.nextId(quest.getCompound("tasks"), "task_" + typePath);
         beginTask(player, state, questId, id, type, typePath, choice, true);
     }
 
-    public static void beginTaskChange(Player player, TabletUiState state, String questId, String id, String typePath) {
+    public static void beginTaskChange(Player player, UiState state, String questId, String id, String typePath) {
         QuestTaskTypeChoice choice = QuestTaskTypeCatalog.taskChoice(typePath);
         String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
         beginTask(player, state, questId, id, type, typePath, choice, false);
     }
 
-    private static void beginTask(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestTaskTypeChoice choice, boolean add) {
+    private static void beginTask(Player player, UiState state, String questId, String id, String type, String typePath, QuestTaskTypeChoice choice, boolean add) {
         QuestTaskEditFlow flow = choice == null ? QuestTaskEditFlow.DIRECT_JSON : choice.editFlow();
         if (flow == QuestTaskEditFlow.ITEM_SOURCE_PICKER) {
             QuestDetailsTransientManager.openItemSourcePicker(state, ModalTargets.taskItem(questId, id, type));

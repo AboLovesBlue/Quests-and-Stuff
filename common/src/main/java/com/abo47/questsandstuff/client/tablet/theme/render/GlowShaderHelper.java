@@ -15,7 +15,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class GlowShaderHelper {
     private static final ResourceLocation GLOW_SHADER = new ResourceLocation("questsandstuff", "glow");
@@ -29,7 +29,7 @@ public final class GlowShaderHelper {
 
     // IGuiTexture that draws the glow shader in the theme-driven GLOW color.
     public static IGuiTexture hoverGlow() {
-        return hoverGlow(TabletColors.GLOW);
+        return hoverGlow(ThemeColors.GLOW);
     }
 
     // IGuiTexture that draws the glow shader in a custom ARGB color.
@@ -53,7 +53,7 @@ public final class GlowShaderHelper {
 
     // Draw the glow shader over the given area in the theme-driven GLOW color.
     public static void drawGlow(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h) {
-        drawGlow(graphics, mouseX, mouseY, x, y, w, h, TabletColors.GLOW);
+        drawGlow(graphics, mouseX, mouseY, x, y, w, h, ThemeColors.GLOW);
     }
 
     // Draw the glow shader over the given area in a custom ARGB color.

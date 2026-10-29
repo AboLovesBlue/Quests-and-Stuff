@@ -8,7 +8,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -16,13 +16,13 @@ public final class QuestDetailsDescriptionSelection {
     private static final int SELECTION_PAD = 4;
     private static final int HANDLE_SIZE = 5;
 
-    private final TabletUiState state;
+    private final UiState state;
     private final IntSupplier contentX;
     private final IntSupplier contentY;
     private final IntSupplier contentW;
     private final IntSupplier contentH;
 
-    QuestDetailsDescriptionSelection(TabletUiState state, IntSupplier contentX, IntSupplier contentY, IntSupplier contentW, IntSupplier contentH) {
+    QuestDetailsDescriptionSelection(UiState state, IntSupplier contentX, IntSupplier contentY, IntSupplier contentW, IntSupplier contentH) {
         this.state = state;
         this.contentX = contentX;
         this.contentY = contentY;

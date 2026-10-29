@@ -13,9 +13,9 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 record EntityVariantPickerModel(
@@ -31,7 +31,7 @@ record EntityVariantPickerModel(
         List<EntityVariantCatalog.VariantEntry> variants,
         List<EntityVariantTile> tiles
 ) {
-    static EntityVariantPickerModel create(TabletUiState state) {
+    static EntityVariantPickerModel create(UiState state) {
         String target = ModalTargetState.target(state, ModalSession.TargetSlot.ENTITY_VARIANT, state.pickers.entityVariantTarget);
         String asset = currentAsset(state, target);
         String entityId = EntityPreviewRenderer.entityId(asset);
@@ -66,7 +66,7 @@ record EntityVariantPickerModel(
     }
 
     String emptyText() {
-        return TabletTranslationKeys.text(browsingFolder || !foldered ? QuestTranslationKeys.NO_VARIANTS : QuestTranslationKeys.NO_BIOME_FOLDERS);
+        return TranslationKeys.text(browsingFolder || !foldered ? QuestTranslationKeys.NO_VARIANTS : QuestTranslationKeys.NO_BIOME_FOLDERS);
     }
 
     private static List<EntityVariantTile> tiles(boolean foldered, boolean browsingFolder, List<EntityVariantCatalog.VariantFolder> folders, List<EntityVariantCatalog.VariantEntry> variants) {
@@ -83,7 +83,7 @@ record EntityVariantPickerModel(
         return List.copyOf(tiles);
     }
 
-    private static String activeFolder(TabletUiState state, String entityId) {
+    private static String activeFolder(UiState state, String entityId) {
         String folder = state.pickers.entityVariantFolder == null ? "" : state.pickers.entityVariantFolder.trim().toLowerCase(Locale.ROOT);
         if (folder.isBlank()) {
             return "";
@@ -98,7 +98,7 @@ record EntityVariantPickerModel(
         return "";
     }
 
-    private static String selectedVariant(TabletUiState state, String entityId, String asset, List<EntityVariantCatalog.VariantEntry> variants) {
+    private static String selectedVariant(UiState state, String entityId, String asset, List<EntityVariantCatalog.VariantEntry> variants) {
         String selected = EntityVariantCatalog.normalizeVariantKey(entityId, state.pickers.entityVariantSelected);
         if (selected.isBlank()) {
             selected = EntityVariantCatalog.normalizeVariantKey(entityId, EntityPreviewRenderer.entityVariant(asset));
@@ -110,7 +110,7 @@ record EntityVariantPickerModel(
         return selected;
     }
 
-    private static String currentAsset(TabletUiState state, String target) {
+    private static String currentAsset(UiState state, String target) {
         ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
         if (parsed.hasAtLeast(3) && parsed.isCanvasImage()) {
             CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, parsed.questId(), parsed.entryId());

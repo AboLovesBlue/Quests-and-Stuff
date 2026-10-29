@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -19,7 +19,7 @@ final class CanvasSelectionBounds {
     }
 
     static CanvasSnapEngine.Bounds currentSelectionBounds(
-            TabletUiState state,
+            UiState state,
             CanvasElementTransformController elementTransforms,
             Map<String, QuestCardLayout> byQuestId,
             String chapter
@@ -73,7 +73,7 @@ final class CanvasSelectionBounds {
         return new CanvasSnapEngine.Bounds(minX, minY, maxX, maxY);
     }
 
-    static CanvasPoint clampSelectionDelta(TabletUiState state, int dx, int dy) {
+    static CanvasPoint clampSelectionDelta(UiState state, int dx, int dy) {
         if (!hasDragStartBounds(state)) {
             return new CanvasPoint(dx, dy);
         }
@@ -120,7 +120,7 @@ final class CanvasSelectionBounds {
         return new CanvasPoint(dx, dy);
     }
 
-    static CanvasSnapEngine.Bounds translatedDragStartBounds(TabletUiState state, int dx, int dy) {
+    static CanvasSnapEngine.Bounds translatedDragStartBounds(UiState state, int dx, int dy) {
         if (!hasDragStartBounds(state)) {
             return CanvasSnapEngine.Bounds.invalid();
         }
@@ -132,21 +132,21 @@ final class CanvasSelectionBounds {
         );
     }
 
-    static boolean hasDragStartBounds(TabletUiState state) {
+    static boolean hasDragStartBounds(UiState state) {
         return state.canvas.dragStartBoundsRight > state.canvas.dragStartBoundsLeft && state.canvas.dragStartBoundsBottom > state.canvas.dragStartBoundsTop;
     }
 
-    static int toLogicalX(TabletUiState state, int localX) {
+    static int toLogicalX(UiState state, int localX) {
         return CanvasGeometry.screenToNearestLogicalX(state, localX);
     }
 
-    static int toLogicalY(TabletUiState state, int localY) {
+    static int toLogicalY(UiState state, int localY) {
         return CanvasGeometry.screenToNearestLogicalY(state, localY);
     }
 
     static float scaleForQuest(String questId, Map<String, QuestCardLayout> byQuestId) {
         QuestCardLayout card = byQuestId.get(questId);
-        if (card == null || TabletUiFactory.CARD_W <= 0) {
+        if (card == null || UiFactory.CARD_W <= 0) {
             return 1.0f;
         }
         return Math.max(0.5f, card.scale());

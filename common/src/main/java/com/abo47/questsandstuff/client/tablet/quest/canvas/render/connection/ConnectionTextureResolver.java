@@ -7,7 +7,7 @@ import java.nio.file.Path;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
@@ -27,7 +27,7 @@ final class ConnectionTextureResolver {
         Integer cached = TEX_WIDTH_CACHE.get(textureStr);
         if (cached != null) return cached;
         try {
-            Path assetsRoot = TabletUiFactory.ASSETS_ROOT_DIR;
+            Path assetsRoot = UiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 TEX_WIDTH_CACHE.put(textureStr, ad.width());
@@ -44,7 +44,7 @@ final class ConnectionTextureResolver {
         int[] cached = TEX_DIM_CACHE.get(textureStr);
         if (cached != null) return cached.length > 0 ? cached : null;
         try {
-            Path assetsRoot = TabletUiFactory.ASSETS_ROOT_DIR;
+            Path assetsRoot = UiFactory.ASSETS_ROOT_DIR;
             AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
             if (ad != null) {
                 int[] dims = new int[]{ad.width(), ad.height()};
@@ -68,7 +68,7 @@ final class ConnectionTextureResolver {
         if (AssetLibrary.gameItemStack(textureStr) != null) {
             return null;
         }
-        Path assetsRoot = TabletUiFactory.ASSETS_ROOT_DIR;
+        Path assetsRoot = UiFactory.ASSETS_ROOT_DIR;
         try {
             AssetLibrary.ensureAssetsDirs(assetsRoot);
             IGuiTexture guiTexture = AssetLibrary.chapterBackgroundTexture(assetsRoot, textureStr);

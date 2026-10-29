@@ -22,10 +22,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDispla
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
@@ -35,7 +35,7 @@ public final class QuestTaskXpEditor {
     private QuestTaskXpEditor() {
     }
 
-    public static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
+    public static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH) {
         QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.xpPicker() || !QuestDetailsEditController.canEdit(state)) {
             return;
@@ -48,7 +48,7 @@ public final class QuestTaskXpEditor {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int x = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
         int y = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, 0, rowCount, ThemeColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -56,7 +56,7 @@ public final class QuestTaskXpEditor {
         return "xp".equals(QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", "")));
     }
 
-    private static List<ContextAction> taskActions(Player player, TabletUiState state) {
+    private static List<ContextAction> taskActions(Player player, UiState state) {
         ContextMenuSections sections = new ContextMenuSections();
         addTaskAction(sections, player, state, QuestTranslationKeys.XP_POINTS_AUTOMATIC, "points", "automatic");
         addTaskAction(sections, player, state, QuestTranslationKeys.XP_POINTS_MANUAL, "points", "manual");
@@ -67,26 +67,26 @@ public final class QuestTaskXpEditor {
         return sections.build();
     }
 
-    private static List<ContextAction> rewardActions(Player player, TabletUiState state) {
+    private static List<ContextAction> rewardActions(Player player, UiState state) {
         ContextMenuSections sections = new ContextMenuSections();
         addRewardAction(sections, player, state, QuestTranslationKeys.XP_POINTS, "points");
         addRewardAction(sections, player, state, QuestTranslationKeys.XP_LEVELS, "level");
         return sections.build();
     }
 
-    private static void addTaskAction(ContextMenuSections sections, Player player, TabletUiState state, String labelKey, String mode, String collection) {
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
+    private static void addTaskAction(ContextMenuSections sections, Player player, UiState state, String labelKey, String mode, String collection) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(labelKey), "xp", ThemeColors.INTERACTIVE, () -> {
             commitTask(player, state, mode, collection);
         }));
     }
 
-    private static void addRewardAction(ContextMenuSections sections, Player player, TabletUiState state, String labelKey, String mode) {
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(labelKey), "xp", TabletColors.INTERACTIVE, () -> {
+    private static void addRewardAction(ContextMenuSections sections, Player player, UiState state, String labelKey, String mode) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(labelKey), "xp", ThemeColors.INTERACTIVE, () -> {
             commitReward(player, state, mode);
         }));
     }
 
-    private static void commitTask(Player player, TabletUiState state, String mode, String collection) {
+    private static void commitTask(Player player, UiState state, String mode, String collection) {
         QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         String questId = picker.xpQuestId();
         String id = picker.xpEntryId();
@@ -99,7 +99,7 @@ public final class QuestTaskXpEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details xp task saved quest={} task={} mode={} collection={}", questId, id, mode, collection);
     }
 
-    private static void commitReward(Player player, TabletUiState state, String mode) {
+    private static void commitReward(Player player, UiState state, String mode) {
         QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         String questId = picker.xpQuestId();
         String id = picker.xpEntryId();

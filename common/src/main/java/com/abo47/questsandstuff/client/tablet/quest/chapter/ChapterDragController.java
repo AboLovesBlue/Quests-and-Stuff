@@ -5,17 +5,17 @@ import net.minecraft.world.entity.player.Player;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class ChapterDragController {
     private ChapterDragController() {
     }
 
-    public static boolean handleDrag(TabletUiState state, Player player, Runnable refresh, int rootY, double mouseX, double mouseY, int button) {
+    public static boolean handleDrag(UiState state, Player player, Runnable refresh, int rootY, double mouseX, double mouseY, int button) {
         if (state.chapterPanel.chapterDragActive) {
-            int localY = (int) Math.round(mouseY - rootY - TabletUiFactory.CHAPTER_Y);
-            int nextTarget = TabletUiFactory.chapterInsertIndexAtY(localY, state);
+            int localY = (int) Math.round(mouseY - rootY - UiFactory.CHAPTER_Y);
+            int nextTarget = UiFactory.chapterInsertIndexAtY(localY, state);
             if (nextTarget != state.chapterPanel.chapterDragTargetIndex) {
                 state.chapterPanel.chapterDragTargetIndex = nextTarget;
                 QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag preview moving={} targetIndex={}", state.chapterPanel.chapterDragName, nextTarget);
@@ -29,8 +29,8 @@ public final class ChapterDragController {
             }
             state.chapterPanel.chapterDragPending = false;
             state.chapterPanel.chapterDragActive = true;
-            int localY = (int) Math.round(mouseY - rootY - TabletUiFactory.CHAPTER_Y);
-            state.chapterPanel.chapterDragTargetIndex = TabletUiFactory.chapterInsertIndexAtY(localY, state);
+            int localY = (int) Math.round(mouseY - rootY - UiFactory.CHAPTER_Y);
+            state.chapterPanel.chapterDragTargetIndex = UiFactory.chapterInsertIndexAtY(localY, state);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterPanel.chapterDragName, state.chapterPanel.chapterDragTargetIndex);
             refresh.run();
             return true;
@@ -38,7 +38,7 @@ public final class ChapterDragController {
         return false;
     }
 
-    public static boolean finish(TabletUiState state, Player player, Runnable refresh) {
+    public static boolean finish(UiState state, Player player, Runnable refresh) {
         if (state.chapterPanel.chapterDragActive) {
             finishActive(state, player);
             refresh.run();
@@ -54,7 +54,7 @@ public final class ChapterDragController {
         return false;
     }
 
-    private static void finishActive(TabletUiState state, Player player) {
+    private static void finishActive(UiState state, Player player) {
         String moving = state.chapterPanel.chapterDragName;
         int target = Math.max(0, state.chapterPanel.chapterDragTargetIndex);
         state.chapterPanel.chapterDragActive = false;
@@ -69,9 +69,9 @@ public final class ChapterDragController {
         target = CardDragSortUtil.targetIndexAfterDrop(fromIndex, target, size);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag drop moving={} fromIndex={} targetIndex={}", moving, fromIndex, target);
         if (fromIndex >= 0 && target >= 0 && target != fromIndex) {
-            TabletUiFactory.runChapterAction(player, state, "move_to", moving, "", target);
+            UiFactory.runChapterAction(player, state, "move_to", moving, "", target);
         }
         state.root.selectedChapter = moving;
-        TabletUiFactory.persistUiState(state);
+        UiFactory.persistUiState(state);
     }
 }

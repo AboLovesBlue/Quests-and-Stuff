@@ -14,30 +14,30 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.layout.GridControls;
+import com.abo47.questsandstuff.client.tablet.layout.PanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasWorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
-import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.quest.tools.ToolsMenu;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_PANEL_GUTTER_BOTTOM;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_PANEL_GUTTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_Y;
 
 final class QuestDetailsWindowLayout {
     private QuestDetailsWindowLayout() {
     }
 
-    static void rebuild(WidgetGroup layer, TabletUiState state, Player player, Runnable refresh) {
+    static void rebuild(WidgetGroup layer, UiState state, Player player, Runnable refresh) {
         layer.clearAllWidgets();
         boolean visible = QuestDetailsWindow.isVisible(state);
         layer.setVisible(visible);
@@ -99,12 +99,12 @@ final class QuestDetailsWindowLayout {
                     }
                     int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
                     if (percent > 0) {
-                        CanvasBackgroundOpacity.drawFill(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), TabletColors.SURFACE_PANEL, percent);
+                        CanvasBackgroundOpacity.drawFill(graphics, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), ThemeColors.SURFACE_PANEL, percent);
                     }
                 }
                 drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-                if (!TabletPanelChrome.shouldHideViewportBorder(canvasPanel, state)) {
-                    TabletPanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, TabletColors.BORDER_BASE);
+                if (!PanelChrome.shouldHideViewportBorder(canvasPanel, state)) {
+                    PanelChrome.drawRectOutline(graphics, getPositionX() - 1, getPositionY() - 1, getSizeWidth() + 2, getSizeHeight() + 2, ThemeColors.BORDER_BASE);
                 }
             }
         };
@@ -117,7 +117,7 @@ final class QuestDetailsWindowLayout {
                 if (alpha <= 0) {
                     return;
                 }
-                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha))
+                SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, alpha))
                         .draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         };
@@ -144,18 +144,18 @@ final class QuestDetailsWindowLayout {
         QuestDetailsDescriptionPanel.rebuild(viewportBg, state, player, refresh, questId, quest, 0, 0, viewport[2], viewport[3]);
         QuestTaskListPanel.renderContextMenu(modal, state, player, refresh, questId);
         QuestTaskListPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
-        TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
+        ToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
     }
 
-    static void syncScreenOrigin(WidgetGroup layer, TabletUiState state) {
+    static void syncScreenOrigin(WidgetGroup layer, UiState state) {
         if (layer == null || state == null || !QuestDetailsWindow.isVisible(state)) {
             return;
         }
-        state.questDetails.questDetailsScreenX = TabletWidgetCoordinates.screenX(layer, state.questDetails.questDetailsX);
-        state.questDetails.questDetailsScreenY = TabletWidgetCoordinates.screenY(layer, state.questDetails.questDetailsY);
+        state.questDetails.questDetailsScreenX = WidgetCoordinates.screenX(layer, state.questDetails.questDetailsX);
+        state.questDetails.questDetailsScreenY = WidgetCoordinates.screenY(layer, state.questDetails.questDetailsY);
     }
 
-    private static void rememberFrame(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame) {
+    private static void rememberFrame(WidgetGroup layer, UiState state, QuestDetailsWindowFrame frame) {
         state.questDetails.questDetailsX = frame.x();
         state.questDetails.questDetailsY = frame.y();
         state.questDetails.questDetailsW = frame.w();
@@ -163,7 +163,7 @@ final class QuestDetailsWindowLayout {
         syncScreenOrigin(layer, state);
     }
 
-    private static WidgetGroup addModal(WidgetGroup layer, TabletUiState state, QuestDetailsWindowFrame frame, int canvasX, int[] viewport) {
+    private static WidgetGroup addModal(WidgetGroup layer, UiState state, QuestDetailsWindowFrame frame, int canvasX, int[] viewport) {
         WidgetGroup modal = new WidgetGroup(frame.x(), frame.y(), frame.w(), frame.h()) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -178,7 +178,7 @@ final class QuestDetailsWindowLayout {
         return modal;
     }
 
-    private static int dimAlpha(TabletUiState state) {
+    private static int dimAlpha(UiState state) {
         if (!QuestsAndStuffConfig.questWindowAnimationsEnabled()) {
             return 70;
         }
@@ -187,7 +187,7 @@ final class QuestDetailsWindowLayout {
         return Math.round(70 * amount);
     }
 
-    private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
+    private static SourceOriginRevealWidget.SourceRect sourceRect(UiState state) {
         if (!state.questDetails.questDetailsAnimationHasSource) {
             return null;
         }
@@ -199,7 +199,7 @@ final class QuestDetailsWindowLayout {
         );
     }
 
-    private static WidgetGroup addTaskPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW, int frameH) {
+    private static WidgetGroup addTaskPanel(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int leftW, int frameH) {
         WidgetGroup taskPanel = SplitPanelLayout.leftPanel(0, 0, leftW, frameH, state);
         modal.addWidget(taskPanel);
         int contentX = CHAPTER_PANEL_GUTTER_X;
@@ -221,12 +221,12 @@ final class QuestDetailsWindowLayout {
         return taskPanel;
     }
 
-    private static WidgetGroup canvasPanel(TabletUiState state, int canvasX, int canvasY, int canvasW, int canvasH, int[] viewport) {
+    private static WidgetGroup canvasPanel(UiState state, int canvasX, int canvasY, int canvasW, int canvasH, int[] viewport) {
         return SplitPanelLayout.rightPanel(canvasX, canvasY, canvasW, canvasH,
                 viewport[0], viewport[1], viewport[2], viewport[3],
                 QuestDetailsEditController.canEdit(state), false,
                 state.questDetails.questDetailsGridOpacityPercent,
-                TabletGridControls.defaultGridColor(state),
+                GridControls.defaultGridColor(state),
                 state);
     }
 

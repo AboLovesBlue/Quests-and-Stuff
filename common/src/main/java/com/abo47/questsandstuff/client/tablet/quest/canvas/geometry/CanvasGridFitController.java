@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -21,12 +21,12 @@ public final class CanvasGridFitController {
     private CanvasGridFitController() {
     }
 
-    public static boolean canFitImageToGrid(TabletUiState state, String chapter, String imageId) {
+    public static boolean canFitImageToGrid(UiState state, String chapter, String imageId) {
         CanvasImageLayer image = findImage(state, chapter, imageId);
         return image != null && !image.equals(fittedImage(state, image));
     }
 
-    public static boolean fitImageToGrid(TabletUiState state, String chapter, String imageId) {
+    public static boolean fitImageToGrid(UiState state, String chapter, String imageId) {
         CanvasImageLayer image = findImage(state, chapter, imageId);
         if (image == null) {
             return false;
@@ -45,12 +45,12 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitTextToGrid(TabletUiState state, String chapter, String textId) {
+    public static boolean canFitTextToGrid(UiState state, String chapter, String textId) {
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
         return text != null && !text.equals(fittedText(state, text));
     }
 
-    public static boolean fitTextToGrid(TabletUiState state, String chapter, String textId) {
+    public static boolean fitTextToGrid(UiState state, String chapter, String textId) {
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
         if (text == null) {
             return false;
@@ -69,11 +69,11 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitQuestToGrid(TabletUiState state, QuestCardLayout card) {
+    public static boolean canFitQuestToGrid(UiState state, QuestCardLayout card) {
         return card != null && !fittedQuest(state, card).equals(new FittedQuest(card.logicalX(), card.logicalY(), card.scale()));
     }
 
-    public static boolean fitQuestToGrid(Player player, TabletUiState state, QuestCardLayout card) {
+    public static boolean fitQuestToGrid(Player player, UiState state, QuestCardLayout card) {
         if (card == null || card.questId() == null || card.questId().isBlank()) {
             return false;
         }
@@ -98,7 +98,7 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static boolean canFitSelectionToGrid(TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
+    public static boolean canFitSelectionToGrid(UiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
         if (state == null || chapter == null || chapter.isBlank()) {
             return false;
         }
@@ -126,7 +126,7 @@ public final class CanvasGridFitController {
         return false;
     }
 
-    public static boolean fitSelectionToGrid(Player player, TabletUiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
+    public static boolean fitSelectionToGrid(Player player, UiState state, String chapter, Map<String, QuestCardLayout> byQuestId) {
         if (state == null || chapter == null || chapter.isBlank()) {
             return false;
         }
@@ -194,12 +194,12 @@ public final class CanvasGridFitController {
         return changed;
     }
 
-    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String chapter, String exclusiveChoiceId) {
+    public static boolean canFitExclusiveChoiceToGrid(UiState state, String chapter, String exclusiveChoiceId) {
         CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, exclusiveChoiceId);
         return ec != null && !ec.equals(fittedExclusiveChoice(state, ec));
     }
 
-    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String chapter, String exclusiveChoiceId) {
+    public static boolean fitExclusiveChoiceToGrid(UiState state, String chapter, String exclusiveChoiceId) {
         CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, exclusiveChoiceId);
         if (ec == null) {
             return false;
@@ -220,19 +220,19 @@ public final class CanvasGridFitController {
         return true;
     }
 
-    public static CanvasImageLayer fittedImage(TabletUiState state, CanvasImageLayer image) {
+    public static CanvasImageLayer fittedImage(UiState state, CanvasImageLayer image) {
         return CanvasElementGridFit.fittedImage(image, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
-    public static CanvasTextLayer fittedText(TabletUiState state, CanvasTextLayer text) {
+    public static CanvasTextLayer fittedText(UiState state, CanvasTextLayer text) {
         return CanvasElementGridFit.fittedText(text, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
-    public static CanvasExclusiveChoice fittedExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec) {
+    public static CanvasExclusiveChoice fittedExclusiveChoice(UiState state, CanvasExclusiveChoice ec) {
         return CanvasElementGridFit.fittedExclusiveChoice(ec, CanvasGeometry.gridSize(state), (x, y, width, height, pivotX, pivotY, rotation) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, width, height, pivotX, pivotY, rotation));
     }
 
-    private static FittedQuest fittedQuest(TabletUiState state, QuestCardLayout card) {
+    private static FittedQuest fittedQuest(UiState state, QuestCardLayout card) {
         int grid = CanvasGeometry.gridSize(state);
         boolean oldSnap = state.canvas.gridSnapLocked;
         state.canvas.gridSnapLocked = true;
@@ -254,7 +254,7 @@ public final class CanvasGridFitController {
         return new FittedQuest(clamped.x, clamped.y, scale);
     }
 
-    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+    private static CanvasExclusiveChoice findExclusiveChoice(UiState state, String chapter, String exclusiveChoiceId) {
         if (chapter == null || chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return null;
         }
@@ -264,7 +264,7 @@ public final class CanvasGridFitController {
                 .orElse(null);
     }
 
-    private static CanvasImageLayer findImage(TabletUiState state, String chapter, String imageId) {
+    private static CanvasImageLayer findImage(UiState state, String chapter, String imageId) {
         if (chapter == null || chapter.isBlank() || imageId == null || imageId.isBlank()) {
             return null;
         }

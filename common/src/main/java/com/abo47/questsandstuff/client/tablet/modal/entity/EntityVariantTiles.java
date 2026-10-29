@@ -21,20 +21,20 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 
 final class EntityVariantTiles {
@@ -49,10 +49,10 @@ final class EntityVariantTiles {
     private EntityVariantTiles() {
     }
 
-    static void addPreview(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int h) {
-        WidgetGroup preview = panel(PAD, 22, ModalPreviewLayout.LEFT_W, h - 48, withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
-        preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), TabletColors.TEXT_SECONDARY));
-        preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), TabletColors.TEXT_PRIMARY));
+    static void addPreview(WidgetGroup modal, Player player, UiState state, Runnable refresh, EntityVariantPickerModel model, int h) {
+        WidgetGroup preview = panel(PAD, 22, ModalPreviewLayout.LEFT_W, h - 48, withAlpha(ThemeColors.SURFACE_PANEL_ALT, 120), ThemeColors.BORDER_BASE);
+        preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), ThemeColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), ThemeColors.TEXT_PRIMARY));
         preview.addWidget(new WidgetGroup(10, 42, ModalPreviewLayout.LEFT_W - 20, Math.max(48, h - 98)) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -76,7 +76,7 @@ final class EntityVariantTiles {
         modal.addWidget(ChromeFactory.iconButton(x, y, w, h, "back", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> action.run()));
     }
 
-    static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
+    static void addTiles(WidgetGroup modal, Player player, UiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
         int rightW = w - ModalPreviewLayout.RIGHT_X - ModalPreviewLayout.PREVIEW_X;
         int listH = h - 48;
         TileMetrics metrics = tileMetrics(rightW, listH, model.tiles().size());
@@ -114,7 +114,7 @@ final class EntityVariantTiles {
         return new TileMetrics(tileW, tileH);
     }
 
-    private static void addTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantTile tileEntry, int tileX, int tileY, int tileW, int tileH) {
+    private static void addTile(WidgetGroup surface, Player player, UiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantTile tileEntry, int tileX, int tileY, int tileW, int tileH) {
         if (tileEntry.folder()) {
             addFolderTile(surface, state, refresh, model, tileEntry.folderEntry(), tileX, tileY, tileW, tileH);
             return;
@@ -122,7 +122,7 @@ final class EntityVariantTiles {
         addVariantTile(surface, player, state, refresh, model, tileEntry.variantEntry(), tileX, tileY, tileW, tileH);
     }
 
-    private static void addFolderTile(WidgetGroup surface, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantFolder folder, int tileX, int tileY, int tileW, int tileH) {
+    private static void addFolderTile(WidgetGroup surface, UiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantFolder folder, int tileX, int tileY, int tileW, int tileH) {
         boolean active = folder.key().equals(EntityVariantCatalog.variantFolderFor(model.entityId(), model.selected()));
         surface.addWidget(folderTile(folder, active, tileX, tileY, tileW, tileH));
         addTileHit(surface, tileX, tileY, tileW, tileH, click -> {
@@ -136,7 +136,7 @@ final class EntityVariantTiles {
         });
     }
 
-    private static void addVariantTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantEntry entry, int tileX, int tileY, int tileW, int tileH) {
+    private static void addVariantTile(WidgetGroup surface, Player player, UiState state, Runnable refresh, EntityVariantPickerModel model, EntityVariantCatalog.VariantEntry entry, int tileX, int tileY, int tileW, int tileH) {
         boolean active = entry.key().equals(model.selected());
         surface.addWidget(variantTile(model.entityId(), entry, active, tileX, tileY, tileW, tileH, model.activeFolder()));
         addTileHit(surface, tileX, tileY, tileW, tileH, click -> {
@@ -153,14 +153,14 @@ final class EntityVariantTiles {
     private static void addTileHit(WidgetGroup surface, int tileX, int tileY, int tileW, int tileH, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> onClick) {
         ButtonWidget hit = flatHitButton(tileX, tileY, tileW, tileH, onClick);
         GlowShaderHelper.glowHit(hit);
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 90)));
         surface.addWidget(hit);
     }
 
     private static WidgetGroup folderTile(EntityVariantCatalog.VariantFolder folder, boolean active, int x, int y, int tileW, int tileH) {
         WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
         if (active) {
-            tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 86)));
+            tile.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 86)));
         }
         int labelH = 14;
         int iconAreaH = Math.max(24, tileH - labelH - 8);
@@ -171,16 +171,16 @@ final class EntityVariantTiles {
         if (folderIcon != null) {
             tile.addWidget(new ImageWidget(iconX, iconY, iconSize, iconSize, folderIcon));
         } else {
-            tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, tileW, "[dir]", TabletColors.TEXT_MUTED));
+            tile.addWidget(PickerTileText.centeredLabel(0, iconY + iconSize / 2 - 4, tileW, "[dir]", ThemeColors.TEXT_MUTED));
         }
-        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, folder.label(), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, folder.label(), active ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_SECONDARY));
         return tile;
     }
 
     private static WidgetGroup variantTile(String entityId, EntityVariantCatalog.VariantEntry entry, boolean active, int x, int y, int tileW, int tileH, String folderKey) {
         WidgetGroup tile = new WidgetGroup(x, y, tileW, tileH);
         if (active) {
-            tile.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 86)));
+            tile.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 86)));
         }
         int labelH = 14;
         int previewH = Math.max(28, tileH - labelH - 8);
@@ -201,7 +201,7 @@ final class EntityVariantTiles {
                 );
             }
         });
-        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, tileLabel(entityId, entry, folderKey), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY));
+        tile.addWidget(PickerTileText.centeredLabel(2, tileH - labelH, tileW - 4, tileLabel(entityId, entry, folderKey), active ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_SECONDARY));
         return tile;
     }
 

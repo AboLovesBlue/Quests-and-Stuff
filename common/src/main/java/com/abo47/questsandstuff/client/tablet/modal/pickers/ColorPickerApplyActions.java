@@ -4,7 +4,7 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.layout.GridControls;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
@@ -14,20 +14,20 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.Con
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.ColorPickerApplyActions;
 
 public final class ColorPickerApplyActions {
     private ColorPickerApplyActions() {
     }
 
-    public static int currentValue(TabletUiState state, String target) {
+    public static int currentValue(UiState state, String target) {
         return currentValue(state, ModalTargetParser.parse(target));
     }
 
-    public static int currentValue(TabletUiState state, ModalTargetParser.Target target) {
+    public static int currentValue(UiState state, ModalTargetParser.Target target) {
         if (state.pickers.colorDraft != 0) {
             return state.pickers.colorDraft;
         }
@@ -42,15 +42,15 @@ public final class ColorPickerApplyActions {
                 var first = edges.get(0);
                 return CanvasRenderer.connectionColor(state, connectionSelection, first.prerequisiteId(), first.questId());
             }
-            return TabletColors.TEXT_SECONDARY;
+            return ThemeColors.TEXT_SECONDARY;
         }
         String[] canvasText = canvasTextColorTarget(target);
         if (canvasText != null) {
             var text = CanvasLayerMutations.findCanvasText(state, canvasText[0], canvasText[1]);
-            return text == null ? TabletColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
+            return text == null ? ThemeColors.TEXT_PRIMARY : CanvasRenderer.activeTextColor(state, text);
         }
         if (target.isGridColor()) {
-            return TabletGridControls.defaultGridColor(state);
+            return GridControls.defaultGridColor(state);
         }
         if (target.isQuestDescText()) {
             if (target.hasAtLeast(3)) {
@@ -60,16 +60,16 @@ public final class ColorPickerApplyActions {
                     return CanvasRenderer.activeTextColor(state, text);
                 }
             }
-            return state.pickers.colorDraft == 0 ? TabletColors.TEXT_PRIMARY : state.pickers.colorDraft;
+            return state.pickers.colorDraft == 0 ? ThemeColors.TEXT_PRIMARY : state.pickers.colorDraft;
         }
         return ClientQuestStateFacade.chapterTextColor(target.raw());
     }
 
-    public static void apply(Player player, TabletUiState state, String target, int color) {
+    public static void apply(Player player, UiState state, String target, int color) {
         apply(player, state, ModalTargetParser.parse(target), color);
     }
 
-    public static void apply(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
+    public static void apply(Player player, UiState state, ModalTargetParser.Target target, int color) {
         String[] connection = connectionColorTarget(target);
         if (connection != null) {
             String chapter = connection[0];
@@ -119,8 +119,8 @@ public final class ColorPickerApplyActions {
             return;
         }
         if (target.isGridColor()) {
-            TabletGridControls.applyGridColor(state, color);
-            TabletUiFactory.persistUiState(state);
+            GridControls.applyGridColor(state, color);
+            UiFactory.persistUiState(state);
             state.pickers.colorPickerTarget = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] grid color picked color={}", color);
             return;
@@ -133,7 +133,7 @@ public final class ColorPickerApplyActions {
         if (target.raw().isBlank()) {
             return;
         }
-        TabletUiFactory.runChapterAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
+        UiFactory.runChapterAction(player, state, "set_text_color", target.raw(), String.valueOf(color), 0);
     }
 
     private static String[] connectionColorTarget(ModalTargetParser.Target target) {

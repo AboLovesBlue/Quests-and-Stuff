@@ -7,7 +7,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 
@@ -15,7 +15,7 @@ public final class ModalPickerStates {
     private ModalPickerStates() {
     }
 
-    public static SearchScrollState forType(TabletUiState state, ModalWindowManager.ModalType type) {
+    public static SearchScrollState forType(UiState state, ModalWindowManager.ModalType type) {
         if (type == null) {
             throw new IllegalArgumentException("Modal type is required");
         }
@@ -39,7 +39,7 @@ public final class ModalPickerStates {
         };
     }
 
-    public static SearchScrollState itemLock(TabletUiState state) {
+    public static SearchScrollState itemLock(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ITEM_LOCK_PICKER,
@@ -54,7 +54,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState icon(TabletUiState state) {
+    public static SearchScrollState icon(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ICON_PICKER,
@@ -69,7 +69,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState asset(TabletUiState state) {
+    public static SearchScrollState asset(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ASSET_PICKER,
@@ -84,7 +84,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState biome(TabletUiState state) {
+    public static SearchScrollState biome(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.BIOME_PICKER,
@@ -99,7 +99,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState advancement(TabletUiState state) {
+    public static SearchScrollState advancement(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ADVANCEMENT_PICKER,
@@ -114,7 +114,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState recipe(TabletUiState state) {
+    public static SearchScrollState recipe(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.RECIPE_PICKER,
@@ -129,7 +129,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState structure(TabletUiState state) {
+    public static SearchScrollState structure(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.STRUCTURE_PICKER,
@@ -144,7 +144,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState block(TabletUiState state) {
+    public static SearchScrollState block(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.BLOCK_PICKER,
@@ -159,7 +159,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState stat(TabletUiState state) {
+    public static SearchScrollState stat(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.STAT_PICKER,
@@ -174,7 +174,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState dimension(TabletUiState state) {
+    public static SearchScrollState dimension(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.DIMENSION_PICKER,
@@ -189,7 +189,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState lootTable(TabletUiState state) {
+    public static SearchScrollState lootTable(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
@@ -204,7 +204,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState itemInventory(TabletUiState state) {
+    public static SearchScrollState itemInventory(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER,
@@ -219,7 +219,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState sound(TabletUiState state) {
+    public static SearchScrollState sound(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.SOUND_PICKER,
@@ -234,7 +234,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState entityVariant(TabletUiState state) {
+    public static SearchScrollState entityVariant(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER,
@@ -249,7 +249,7 @@ public final class ModalPickerStates {
         );
     }
 
-    public static SearchScrollState prerequisitesManager(TabletUiState state) {
+    public static SearchScrollState prerequisitesManager(UiState state) {
         return bind(
                 state,
                 ModalWindowManager.ModalType.PREREQUISITES_MANAGER,
@@ -265,7 +265,7 @@ public final class ModalPickerStates {
     }
 
     private static SearchScrollState bind(
-            TabletUiState state,
+            UiState state,
             ModalWindowManager.ModalType type,
             Supplier<String> searchSupplier,
             Consumer<String> searchConsumer,
@@ -312,7 +312,7 @@ public final class ModalPickerStates {
         );
     }
 
-    private static ModalSession activeSession(TabletUiState state, ModalWindowManager.ModalType type) {
+    private static ModalSession activeSession(UiState state, ModalWindowManager.ModalType type) {
         if (state == null || state.modal.modalSession == null || !state.modal.modalSession.active() || state.modal.modalSession.type() != type) {
             return null;
         }

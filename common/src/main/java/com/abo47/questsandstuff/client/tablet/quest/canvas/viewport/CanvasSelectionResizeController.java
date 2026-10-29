@@ -16,9 +16,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -26,9 +26,9 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 final class CanvasSelectionResizeController {
-    private final TabletUiState state;
+    private final UiState state;
 
-    CanvasSelectionResizeController(TabletUiState state) {
+    CanvasSelectionResizeController(UiState state) {
         this.state = state;
     }
 
@@ -55,10 +55,10 @@ final class CanvasSelectionResizeController {
             state.canvas.resizeStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             state.canvas.resizeStartScales.put(questId, CanvasSelectionBounds.scaleForQuest(questId, byQuestId));
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, StateQueries.selectedChapterName(state), byQuestId);
         state.canvas.resizeStartImageLayers.putAll(snapshot.images());
         state.canvas.resizeStartTextLayers.putAll(snapshot.texts());
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.resizeStartExclusiveChoiceLayers.put(ec.id(), ec);
@@ -78,8 +78,8 @@ final class CanvasSelectionResizeController {
         if (minX == Integer.MAX_VALUE) {
             state.canvas.resizeStartLeft = 0;
             state.canvas.resizeStartTop = 0;
-            state.canvas.resizeStartRight = TabletUiFactory.CARD_W;
-            state.canvas.resizeStartBottom = TabletUiFactory.CARD_H;
+            state.canvas.resizeStartRight = UiFactory.CARD_W;
+            state.canvas.resizeStartBottom = UiFactory.CARD_H;
             return;
         }
         state.canvas.resizeStartLeft = minX;

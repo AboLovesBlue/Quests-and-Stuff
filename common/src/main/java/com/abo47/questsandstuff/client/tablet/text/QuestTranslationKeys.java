@@ -190,22 +190,22 @@ public final class QuestTranslationKeys {
     }
 
     public static String task() {
-        return TabletTranslationKeys.text(TASK);
+        return TranslationKeys.text(TASK);
     }
 
     public static String tasks() {
-        return TabletTranslationKeys.text(TASKS);
+        return TranslationKeys.text(TASKS);
     }
 
     public static String reward() {
-        return TabletTranslationKeys.text(REWARD);
+        return TranslationKeys.text(REWARD);
     }
 
     public static String rewards() {
-        return TabletTranslationKeys.text(REWARDS);
+        return TranslationKeys.text(REWARDS);
     }
 
     public static String text(String key, Object... args) {
-        return TabletTranslationKeys.text(key, args);
+        return TranslationKeys.text(key, args);
     }
 }

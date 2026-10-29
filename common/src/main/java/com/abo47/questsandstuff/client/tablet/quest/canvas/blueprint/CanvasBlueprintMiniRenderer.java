@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 
 public final class CanvasBlueprintMiniRenderer {
@@ -53,7 +53,7 @@ public final class CanvasBlueprintMiniRenderer {
         return values == null || values.isEmpty() ? Set.of() : Set.copyOf(values);
     }
 
-    public static WidgetGroup placementGhost(CanvasViewport canvasViewport, TabletUiState state) {
+    public static WidgetGroup placementGhost(CanvasViewport canvasViewport, UiState state) {
         return new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

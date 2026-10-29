@@ -12,12 +12,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class AnchoredMenuRevealWidget extends WidgetGroup {
-    private static final long MENU_MS = TabletAnimationTimings.MENU_MS;
+    private static final long MENU_MS = AnimationTimings.MENU_MS;
     private static final int SLIDE_PX = 4;
     private static final int SHADOW_ALPHA = 72;
     private static final int SOFT_SHADOW_ALPHA = 34;
@@ -114,10 +114,10 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = frame.visibleHeight();
         if (softAlpha > 0) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 3, y + 4, w, h);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 3, y + 4, w, h);
         }
         if (hardAlpha > 0) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 1, y + 2, w, h);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 1, y + 2, w, h);
         }
     }
 
@@ -128,7 +128,7 @@ public final class AnchoredMenuRevealWidget extends WidgetGroup {
         }
         int x = getPositionX();
         int y = getPositionY();
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, x, y, getSizeWidth(), getSizeHeight());
     }
 
     private boolean enableClip(GuiGraphics graphics, int left, int top, int right, int bottom) {

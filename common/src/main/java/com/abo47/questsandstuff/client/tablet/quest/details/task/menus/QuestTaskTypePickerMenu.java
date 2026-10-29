@@ -19,16 +19,16 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeChoice;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalog;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 final class QuestTaskTypePickerMenu {
     private QuestTaskTypePickerMenu() {
     }
 
-    static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
+    static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
         QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.typePicker() || !QuestDetailsEditController.canEdit(state)) {
             return;
@@ -42,7 +42,7 @@ final class QuestTaskTypePickerMenu {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
         int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ThemeColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
@@ -51,7 +51,7 @@ final class QuestTaskTypePickerMenu {
             boolean rewards,
             boolean change,
             Player player,
-            TabletUiState state,
+            UiState state,
             String questId,
             CompoundTag quest,
             String targetId
@@ -81,7 +81,7 @@ final class QuestTaskTypePickerMenu {
             boolean rewards,
             boolean change,
             Player player,
-            TabletUiState state,
+            UiState state,
             String questId,
             CompoundTag quest,
             String targetId
@@ -94,7 +94,7 @@ final class QuestTaskTypePickerMenu {
             }
         }
         if (!children.isEmpty()) {
-            sections.add(section, ContextActionFactory.submenu(TabletTranslationKeys.text(labelKey), icon, TabletColors.INTERACTIVE, children));
+            sections.add(section, ContextActionFactory.submenu(TranslationKeys.text(labelKey), icon, ThemeColors.INTERACTIVE, children));
         }
     }
 
@@ -112,12 +112,12 @@ final class QuestTaskTypePickerMenu {
             boolean rewards,
             boolean change,
             Player player,
-            TabletUiState state,
+            UiState state,
             String questId,
             CompoundTag quest,
             String targetId
     ) {
-        return ContextActionFactory.action(choice.label(), choice.icon(), TabletColors.INTERACTIVE, () -> {
+        return ContextActionFactory.action(choice.label(), choice.icon(), ThemeColors.INTERACTIVE, () -> {
             QuestDetailsTransientManager.closeTypePicker(state);
             QuestDetailsTransientManager.closeContext(state);
             if (rewards) {

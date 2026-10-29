@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.MathUtils;
 import com.abo47.questsandstuff.util.naming.SafeNames;
@@ -88,7 +88,7 @@ public final class StyledTextFields {
 
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                setTextColor(TabletColors.TEXT_PRIMARY);
+                setTextColor(ThemeColors.TEXT_PRIMARY);
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
@@ -96,7 +96,7 @@ public final class StyledTextFields {
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
         field.setValidator(SearchNormalizer::normalizeUserSearch);
-        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         return field;
     }
 
@@ -171,7 +171,7 @@ public final class StyledTextFields {
     public static void applyStandardStyle(TextFieldWidget field, int fillColor, int borderColor) {
         field.setBordered(false);
         field.setBackground(SurfaceFactory.bordered(fillColor, borderColor));
-        field.setTextColor(TabletColors.TEXT_PRIMARY);
+        field.setTextColor(ThemeColors.TEXT_PRIMARY);
     }
 
     public static TextFieldWidget textField(
@@ -186,14 +186,14 @@ public final class StyledTextFields {
         TextFieldWidget field = new CursorPreservingTextField(x, y, width, height, textSupplier, responder) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                setTextColor(TabletColors.TEXT_PRIMARY);
+                setTextColor(ThemeColors.TEXT_PRIMARY);
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
             }
         };
         field.setClientSideWidget();
         field.setCurrentString(currentText(textSupplier));
         field.setMaxStringLength(maxLength);
-        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         return field;
     }
 
@@ -221,8 +221,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                TabletColors.SURFACE_BASE,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_BASE,
+                ThemeColors.BORDER_BASE
         );
         return applyResourceLocationValidator(field);
     }
@@ -251,8 +251,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                TabletColors.SURFACE_BASE,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_BASE,
+                ThemeColors.BORDER_BASE
         );
         return applyCompoundTagValidator(field);
     }
@@ -337,8 +337,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 focusResponder,
-                TabletColors.SURFACE_PANEL_ALT,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_PANEL_ALT,
+                ThemeColors.BORDER_BASE
         );
         return applyIntegerValidator(field, min, max);
     }
@@ -370,8 +370,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                TabletColors.SURFACE_PANEL_ALT,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_PANEL_ALT,
+                ThemeColors.BORDER_BASE
         );
         return applyFloatValidator(field, min, max);
     }
@@ -399,8 +399,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                TabletColors.SURFACE_PANEL_ALT,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_PANEL_ALT,
+                ThemeColors.BORDER_BASE
         );
         return applyPercentageValidator(field);
     }
@@ -429,8 +429,8 @@ public final class StyledTextFields {
                 cancel,
                 blur,
                 null,
-                TabletColors.SURFACE_BASE,
-                TabletColors.BORDER_BASE
+                ThemeColors.SURFACE_BASE,
+                ThemeColors.BORDER_BASE
         );
         return applyIdentifierValidator(field);
     }
@@ -460,7 +460,7 @@ public final class StyledTextFields {
         field.setClientSideWidget();
         field.setMaxStringLength(9);
         field.setValidator(SearchNormalizer::normalizeHexInput);
-        applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         return field;
     }
 

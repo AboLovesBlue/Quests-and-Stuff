@@ -23,7 +23,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestMini
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
@@ -32,7 +32,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextStyleSpan;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterBackgroundTexture;
 
 final class CanvasBlueprintMiniPainter {
     private static final int GRID_CONNECTION_STEP = 16;
@@ -145,7 +145,7 @@ final class CanvasBlueprintMiniPainter {
             }
             boolean direct = !"grid".equals(definition.connectionModes().get(prerequisiteId));
             boolean highlighted = highlightedConnectionKeys.contains(connectionKey(prerequisiteId, sourceId));
-            int color = highlighted ? TabletColors.BORDER_ACCENT : definition.connectionColors().getOrDefault(prerequisiteId, TabletColors.TEXT_SECONDARY);
+            int color = highlighted ? ThemeColors.BORDER_ACCENT : definition.connectionColors().getOrDefault(prerequisiteId, ThemeColors.TEXT_SECONDARY);
             int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
             String texture = definition.connectionTextures().getOrDefault(prerequisiteId, "");
             List<CanvasPoint> path = connectionPath(sourceBox, targetBox, direct);
@@ -182,7 +182,7 @@ final class CanvasBlueprintMiniPainter {
 
     private static void drawOneExclusiveChoiceConnection(GuiGraphics graphics, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, String otherId, CanvasBlueprintMiniGeometry.BlueprintRect sourceBox, CanvasBlueprintMiniGeometry.BlueprintRect targetBox, String key, int alpha) {
         boolean highlighted = highlightedConnectionKeys.contains(key);
-        int color = highlighted ? TabletColors.BORDER_ACCENT : target.connectionColors().getOrDefault(otherId, TabletColors.TEXT_SECONDARY);
+        int color = highlighted ? ThemeColors.BORDER_ACCENT : target.connectionColors().getOrDefault(otherId, ThemeColors.TEXT_SECONDARY);
         int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
         boolean direct = !"grid".equals(target.connectionModes().get(otherId));
         String texture = target.connectionTextures().getOrDefault(otherId, "");
@@ -303,6 +303,6 @@ final class CanvasBlueprintMiniPainter {
     private static void drawCenteredTextPlaceholder(GuiGraphics graphics, int x, int y, int w, int h) {
         int cx = x + w / 2;
         int cy = y + h / 2;
-        SurfaceFactory.fill(withAlpha(TabletColors.TEXT_MUTED, 100)).draw(graphics, 0, 0, cx - 12, cy - 1, 24, 2);
+        SurfaceFactory.fill(withAlpha(ThemeColors.TEXT_MUTED, 100)).draw(graphics, 0, 0, cx - 12, cy - 1, 24, 2);
     }
 }

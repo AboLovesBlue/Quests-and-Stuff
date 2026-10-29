@@ -20,10 +20,10 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditAc
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskXpEditor;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskLockJson;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
@@ -31,12 +31,12 @@ final class QuestTaskMenuActions {
     private QuestTaskMenuActions() {
     }
 
-    static void addSections(ContextMenuSections sections, TabletUiState state, Player player, String questId, String contextId) {
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TabletTranslationKeys.text(QuestTranslationKeys.CHANGE_TASK), "square_pen", TabletColors.INTERACTIVE, () -> {
+    static void addSections(ContextMenuSections sections, UiState state, Player player, String questId, String contextId) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TranslationKeys.text(QuestTranslationKeys.CHANGE_TASK), "square_pen", ThemeColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.openTypePicker(state, "task_change", contextId);
         }));
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TabletTranslationKeys.text(QuestTranslationKeys.RENAME_TASK), () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TranslationKeys.text(QuestTranslationKeys.RENAME_TASK), () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestTaskEditActions.openTaskRenameEditor(state, questId, contextId, true);
         }));
@@ -45,7 +45,7 @@ final class QuestTaskMenuActions {
                 .getCompound(contextId);
         JsonObject taskJson = QuestTaskMenuSupport.parseTaskJson(taskTag.getString("json"));
         if (QuestTaskXpEditor.isXp(taskJson)) {
-            sections.add(ContextMenuSection.PRIMARY, QuestTaskMenuSupport.editSubmenu(List.of(ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
+            sections.add(ContextMenuSection.PRIMARY, QuestTaskMenuSupport.editSubmenu(List.of(ContextActionFactory.rename(TranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openXpPicker(state, questId, contextId, true);
             }))));
@@ -64,16 +64,16 @@ final class QuestTaskMenuActions {
         QuestTaskMenuSupport.addVisualActions(visualActions, state, questId, contextId, true);
         sections.addAll(ContextMenuSection.APPEARANCE, visualActions);
         String deleteKey = "quest_details_task:" + questId + ":" + contextId;
-        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
             EditorQuestCommandClient.removeQuestTask(player, questId, contextId);
         }));
     }
 
-    private static void addLockSections(ContextMenuSections sections, TabletUiState state, Player player, String questId, String taskId, JsonObject taskJson) {
-        int lockAccent = TabletColors.LOCKED;
+    private static void addLockSections(ContextMenuSections sections, UiState state, Player player, String questId, String taskId, JsonObject taskJson) {
+        int lockAccent = ThemeColors.LOCKED;
         List<ContextAction> lockActions = new ArrayList<>();
         lockActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text(QuestTranslationKeys.ADD_ITEM_LOCK),
+                TranslationKeys.text(QuestTranslationKeys.ADD_ITEM_LOCK),
                 "lock",
                 lockAccent,
                 () -> {
@@ -82,7 +82,7 @@ final class QuestTaskMenuActions {
                 }));
         for (String lock : QuestTaskLockJson.locks(taskJson)) {
             lockActions.add(ContextActionFactory.action(
-                    TabletTranslationKeys.text(QuestTranslationKeys.REMOVE_ITEM_LOCK, lock),
+                    TranslationKeys.text(QuestTranslationKeys.REMOVE_ITEM_LOCK, lock),
                     "delete",
                     ActionTone.DANGER,
                     () -> {
@@ -91,7 +91,7 @@ final class QuestTaskMenuActions {
                     }));
         }
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(
-                TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ITEM_LOCKS),
+                TranslationKeys.text(QuestTranslationKeys.CONTEXT_ITEM_LOCKS),
                 "lock",
                 lockAccent,
                 lockActions));

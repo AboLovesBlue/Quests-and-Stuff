@@ -15,20 +15,20 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasLayoutService;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 final class ConnectionLayout {
     private ConnectionLayout() {
     }
 
     static List<ConnectionLine> prerequisiteAndPendingConnectionLines(
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
             int viewportW,
@@ -40,7 +40,7 @@ final class ConnectionLayout {
     }
 
     static List<ConnectionLine> prerequisiteConnectionLines(
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
             int viewportW,
@@ -110,7 +110,7 @@ final class ConnectionLayout {
     }
 
     static List<String> prerequisiteConnectionLayerKeys(
-            TabletUiState state,
+            UiState state,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
             int viewportW,
@@ -125,7 +125,7 @@ final class ConnectionLayout {
     }
 
     static List<ConnectionLine> pendingConnectionLines(
-            TabletUiState state,
+            UiState state,
             Map<String, QuestCardLayout> byQuestId,
             int viewportW,
             int viewportH
@@ -159,7 +159,7 @@ final class ConnectionLayout {
                         source.centerY(),
                         false,
                         true,
-                        TabletColors.TEXT_SECONDARY,
+                        ThemeColors.TEXT_SECONDARY,
                         false,
                         245, "", 0
                 ));
@@ -168,7 +168,7 @@ final class ConnectionLayout {
         return lines;
     }
 
-    private static void addExclusiveChoiceConnectionLine(List<ConnectionLine> lines, Set<String> rendered, TabletUiState state, String chapter,
+    private static void addExclusiveChoiceConnectionLine(List<ConnectionLine> lines, Set<String> rendered, UiState state, String chapter,
             String exclusiveChoiceId, String questId, QuestCardLayout quest, boolean exclusiveChoiceSource, int viewportW, int viewportH,
             int exclusiveChoiceBoxLeft, int exclusiveChoiceBoxTop, int exclusiveChoiceScreenW, int exclusiveChoiceScreenH, int exclusiveChoiceCenterX, int exclusiveChoiceCenterY) {
         String fromId = exclusiveChoiceSource ? exclusiveChoiceId : questId;

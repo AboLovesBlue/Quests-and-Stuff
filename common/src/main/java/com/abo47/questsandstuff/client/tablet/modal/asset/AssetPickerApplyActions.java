@@ -27,12 +27,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.Con
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.client.tablet.visual.VisualRef;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.command.EditorCommandPayloads;
@@ -46,16 +46,16 @@ public final class AssetPickerApplyActions {
     private AssetPickerApplyActions() {
     }
 
-    public static void run(Player player, TabletUiState state, String background) {
+    public static void run(Player player, UiState state, String background) {
         state.pickers.saveBrowseDirForMode();
         String assetIconTarget = ModalTargetState.target(state, ModalSession.TargetSlot.ASSET_ICON, state.modal.modalAssetIconTarget);
         if (!assetIconTarget.isBlank()) {
             String icon = VisualRef.assetRef(background);
             ModalTargetParser.Target parsed = ModalTargetParser.parse(assetIconTarget);
             if (parsed.isQuestIcon()) {
-                TabletUiFactory.runQuestIconAction(player, parsed.questId(), icon);
+                UiFactory.runQuestIconAction(player, parsed.questId(), icon);
             } else if (parsed.isChapterIcon()) {
-                TabletUiFactory.runChapterAction(player, state, "set_icon", parsed.questId(), icon, 0);
+                UiFactory.runChapterAction(player, state, "set_icon", parsed.questId(), icon, 0);
             } else {
                 state.questDetails.questDetailsPickTarget = assetIconTarget;
                 QuestDetailsWindow.applyIconPick(player, state, icon);
@@ -129,7 +129,7 @@ public final class AssetPickerApplyActions {
         }
         String skinFillTarget = state.modal.skinEditFillTarget;
         if (!skinFillTarget.isBlank()) {
-            SkinEditManager.setFillModeFromAssetPicker(state, skinFillTarget, background, TabletUiFactory::refreshActiveTablet);
+            SkinEditManager.setFillModeFromAssetPicker(state, skinFillTarget, background, UiFactory::refreshActiveTablet);
             state.modal.skinEditFillTarget = "";
             state.pickers.assetBrowseDir = "";
             QuestsAndStuffMod.debugLog("[QnS:UI] skin fill override target={} asset={}", skinFillTarget, background);
@@ -172,7 +172,7 @@ public final class AssetPickerApplyActions {
             int left = o != null ? o.leftEdge() : 0;
             int right = o != null ? o.rightEdge() : 0;
             SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
-            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, newOverride.encode(), 0);
+            UiFactory.runChapterAction(player, state, "set_canvas_background", canvasTarget, newOverride.encode(), 0);
             return;
         }
         String connectionTextureTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
@@ -282,11 +282,11 @@ public final class AssetPickerApplyActions {
             int left = o != null ? o.leftEdge() : 0;
             int right = o != null ? o.rightEdge() : 0;
             SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
-            TabletUiFactory.runChapterAction(player, state, "set_background", chapterTarget, newOverride.encode(), 0);
+            UiFactory.runChapterAction(player, state, "set_background", chapterTarget, newOverride.encode(), 0);
         }
     }
 
-    private static void addCanvasImage(TabletUiState state, String chapter, String asset) {
+    private static void addCanvasImage(UiState state, String chapter, String asset) {
         String id = StableIdAllocator.nextId("img", canvasImageIds(state, chapter));
         int[] imageSize = canvasImageSpawnSize(state, asset);
         int imageW = imageSize[0];
@@ -294,8 +294,8 @@ public final class AssetPickerApplyActions {
         int x = state.canvas.canvasImageLogicalX - imageW / 2;
         int y = state.canvas.canvasImageLogicalY - imageH / 2;
         if (!state.canvas.gridSnapLocked) {
-            x = TabletUiFactory.snapToGrid(state, x);
-            y = TabletUiFactory.snapToGrid(state, y);
+            x = UiFactory.snapToGrid(state, x);
+            y = UiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, imageW, imageH);
         CanvasImageLayer image = new CanvasImageLayer(id, asset, clamped.x, clamped.y, imageW, imageH, 0);
@@ -314,7 +314,7 @@ public final class AssetPickerApplyActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas image added chapter={} id={} asset={} pos={},{} size={}x{}", chapter, id, asset, clamped.x, clamped.y, imageW, imageH);
     }
 
-    private static List<String> canvasImageIds(TabletUiState state, String chapter) {
+    private static List<String> canvasImageIds(UiState state, String chapter) {
         List<String> ids = new ArrayList<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());
@@ -322,8 +322,8 @@ public final class AssetPickerApplyActions {
         return ids;
     }
 
-    private static int[] canvasImageSpawnSize(TabletUiState state, String asset) {
-        var dimensions = TabletUiFactory.assetDimensions(asset);
+    private static int[] canvasImageSpawnSize(UiState state, String asset) {
+        var dimensions = UiFactory.assetDimensions(asset);
         if (dimensions == null || dimensions.width() <= 0 || dimensions.height() <= 0) {
             return new int[]{96, 64};
         }

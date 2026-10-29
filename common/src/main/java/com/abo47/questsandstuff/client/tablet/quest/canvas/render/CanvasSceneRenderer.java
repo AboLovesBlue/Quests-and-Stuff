@@ -18,7 +18,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.layout.GridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
@@ -33,17 +33,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 final class CanvasSceneRenderer {
     private static final ResourceTexture EXCLUSIVE_CHOICE_TEXTURE = QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE;
@@ -63,14 +63,14 @@ final class CanvasSceneRenderer {
         canvasViewport.setBackground(SurfaceFactory.transparentFill());
     }
 
-    static void renderGridOverlay(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+    static void renderGridOverlay(WidgetGroup canvasViewport, UiState state, int contentX, int contentY, int contentW, int contentH) {
         if (contentW <= 0 || contentH <= 0) {
             return;
         }
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int lineColor = TabletGridControls.gridAlpha(state.canvas.gridOpacityPercent, TabletGridControls.defaultGridColor(state));
+                int lineColor = GridControls.gridAlpha(state.canvas.gridOpacityPercent, GridControls.defaultGridColor(state));
                 int cell = CanvasGeometry.gridSize(state);
                 int originX = getPositionX();
                 int originY = getPositionY();
@@ -102,7 +102,7 @@ final class CanvasSceneRenderer {
         });
     }
 
-    static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
+    static void renderCanvasSurfaceFactory(WidgetGroup canvasViewport, UiState state, int contentX, int contentY, int contentW, int contentH, int viewportW, int viewportH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
         IGuiTexture canvasBackground = BackgroundModes.createTexture(ClientQuestStateFacade.chapterCanvasBackground(selectedChapterName(state)));
@@ -120,7 +120,7 @@ final class CanvasSceneRenderer {
                 if (percent == 0) {
                     return;
                 }
-                int fill = CanvasBackgroundOpacity.color(TabletColors.SURFACE_BASE, percent);
+                int fill = CanvasBackgroundOpacity.color(ThemeColors.SURFACE_BASE, percent);
                 if ((fill >>> 24) == 0) {
                     return;
                 }
@@ -146,7 +146,7 @@ final class CanvasSceneRenderer {
 
     static void renderCanvasElements(
             WidgetGroup canvasViewport,
-            TabletUiState state,
+            UiState state,
             Player player,
             Runnable refresh,
             List<QuestCardLayout> visibleCards,
@@ -224,7 +224,7 @@ final class CanvasSceneRenderer {
         }
     }
 
-    private static void renderCanvasImage(WidgetGroup canvasViewport, TabletUiState state, CanvasImageLayer image) {
+    private static void renderCanvasImage(WidgetGroup canvasViewport, UiState state, CanvasImageLayer image) {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
@@ -252,7 +252,7 @@ final class CanvasSceneRenderer {
 
     private static void renderCanvasExclusiveChoice(
             WidgetGroup canvasViewport,
-            TabletUiState state,
+            UiState state,
             CanvasExclusiveChoice ec
     ) {
         WidgetGroup exclusiveChoiceLayer = new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {

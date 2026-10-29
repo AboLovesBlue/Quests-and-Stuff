@@ -12,15 +12,15 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class EntityIconControls {
     private EntityIconControls() {
     }
 
-    public static void openIconPicker(TabletUiState state, IconPickerTarget target) {
+    public static void openIconPicker(UiState state, IconPickerTarget target) {
         if (!target.quest().isBlank()) {
             IconPickerOpenActions.openQuestIconPicker(state, target.quest());
             return;
@@ -28,8 +28,8 @@ public final class EntityIconControls {
         IconPickerOpenActions.openChapterIconPicker(state, target.chapter());
     }
 
-    public static void addChangeIconHit(WidgetGroup parent, TabletUiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
-        var hit = TabletUiFactory.flatHitButton(x, y, size, size, click -> {
+    public static void addChangeIconHit(WidgetGroup parent, UiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
+        var hit = UiFactory.flatHitButton(x, y, size, size, click -> {
             ContextMenuController.clearDeleteConfirm(state);
             openPicker.run();
             refresh.run();
@@ -41,7 +41,7 @@ public final class EntityIconControls {
     public static void addEntityVariantAndMotionActions(
             ContextMenuSections sections,
             ContextMenuSection section,
-            TabletUiState state,
+            UiState state,
             String icon,
             String variantTarget,
             Runnable closeOwner,
@@ -76,7 +76,7 @@ public final class EntityIconControls {
         return EntityPreviewRenderer.isEntityAsset(icon);
     }
 
-    public static void openVariantPicker(TabletUiState state, String target, String icon) {
+    public static void openVariantPicker(UiState state, String target, String icon) {
         RegistryPickerOpenActions.openEntityVariantPicker(state, target, icon);
     }
 
@@ -84,12 +84,12 @@ public final class EntityIconControls {
         return GlowShaderHelper.hoverGlow();
     }
 
-    public static String pendingRemoveIconLabel(TabletUiState state, String key, String fallback) {
-        return TabletUiFactory.pendingDeleteLabel(state, key, fallback);
+    public static String pendingRemoveIconLabel(UiState state, String key, String fallback) {
+        return UiFactory.pendingDeleteLabel(state, key, fallback);
     }
 
-    public static boolean confirmRemoveIcon(TabletUiState state, String key) {
-        return TabletUiFactory.confirmDeleteClick(state, key);
+    public static boolean confirmRemoveIcon(UiState state, String key) {
+        return UiFactory.confirmDeleteClick(state, key);
     }
 
     public record IconPickerTarget(String chapter, String quest) {

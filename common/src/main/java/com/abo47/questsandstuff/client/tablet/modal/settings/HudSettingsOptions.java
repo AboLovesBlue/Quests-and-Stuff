@@ -7,13 +7,13 @@ import net.minecraft.client.Minecraft;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class HudSettingsOptions {
     private HudSettingsOptions() {
     }
 
-    static List<SettingsOptionDescriptor> options(TabletUiState state) {
+    static List<SettingsOptionDescriptor> options(UiState state) {
         return List.of(
                 new SettingsOptionDescriptor(
                         "editHudLayout",

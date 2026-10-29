@@ -1,12 +1,12 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.transform;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasTransformSessions {
     private CanvasTransformSessions() {
     }
 
-    public static void clearMainCanvasSession(TabletUiState state) {
+    public static void clearMainCanvasSession(UiState state) {
         if (state == null) {
             return;
         }
@@ -72,7 +72,7 @@ public final class CanvasTransformSessions {
         clearSnapGuides(state);
     }
 
-    public static void clearQuestDetailsSession(TabletUiState state) {
+    public static void clearQuestDetailsSession(UiState state) {
         if (state == null) {
             return;
         }
@@ -100,7 +100,7 @@ public final class CanvasTransformSessions {
         clearSnapGuides(state);
     }
 
-    public static void clearMainCanvasPreviews(TabletUiState state) {
+    public static void clearMainCanvasPreviews(UiState state) {
         if (state == null) {
             return;
         }
@@ -109,7 +109,7 @@ public final class CanvasTransformSessions {
         state.canvas.transientCanvasExclusiveChoices.clear();
     }
 
-    public static void clearQuestDetailsPreviews(TabletUiState state) {
+    public static void clearQuestDetailsPreviews(UiState state) {
         if (state == null) {
             return;
         }
@@ -117,7 +117,7 @@ public final class CanvasTransformSessions {
         state.questDetails.questDetailsTransientTexts.clear();
     }
 
-    public static void clearSnapGuides(TabletUiState state) {
+    public static void clearSnapGuides(UiState state) {
         if (state == null) {
             return;
         }
@@ -127,7 +127,7 @@ public final class CanvasTransformSessions {
         state.canvas.snapGuideY = 0;
     }
 
-    private static void clearSharedLayerTransformSnapshots(TabletUiState state) {
+    private static void clearSharedLayerTransformSnapshots(UiState state) {
         state.canvas.dragStartPositions.clear();
         state.canvas.dragStartImagePositions.clear();
         state.canvas.dragStartTextPositions.clear();

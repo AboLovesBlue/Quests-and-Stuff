@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,7 +40,7 @@ public final class UiThemeJsonCodec {
             if (colorsJson != null) {
                 for (Map.Entry<String, JsonElement> entry : colorsJson.entrySet()) {
                     String role = normalizeRole(entry.getKey());
-                    int fallback = colors.getOrDefault(role, TabletColors.DEFAULT_TEXT_SECONDARY);
+                    int fallback = colors.getOrDefault(role, ThemeColors.DEFAULT_TEXT_SECONDARY);
                     colors.put(role, parseColor(entry.getValue(), fallback, themePath, "colors." + entry.getKey()));
                     String uiKey = normalizeUiColorKey(entry.getKey());
                     if (uiColors.containsKey(uiKey)) {
@@ -64,7 +64,7 @@ public final class UiThemeJsonCodec {
                 }
             }
             if (!hasSelection) {
-                uiColors.put(UiThemeManager.UI_SELECTION, uiColors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_SELECTION));
+                uiColors.put(UiThemeManager.UI_SELECTION, uiColors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, ThemeColors.DEFAULT_SELECTION));
             }
             if (!hasScrollTrack && uiColors.containsKey(UiThemeManager.UI_BORDER_BASE)) {
                 int derived = uiColors.get(UiThemeManager.UI_BORDER_BASE);
@@ -138,11 +138,11 @@ public final class UiThemeJsonCodec {
         return new UiThemeManager.ThemeInfo(
                 id,
                 label.isBlank() ? prettifyThemeName(id) : label,
-                colors.getOrDefault(UiThemeManager.UI_SURFACE_PANEL, TabletColors.DEFAULT_SURFACE_PANEL),
-                colors.getOrDefault(UiThemeManager.UI_SURFACE_PANEL_ALT, TabletColors.DEFAULT_SURFACE_PANEL_ALT),
-                colors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_BORDER_ACCENT),
-                colors.getOrDefault(UiThemeManager.UI_SUCCESS, TabletColors.DEFAULT_SUCCESS),
-                colors.getOrDefault(UiThemeManager.UI_TEXT_PRIMARY, TabletColors.DEFAULT_TEXT_PRIMARY)
+                colors.getOrDefault(UiThemeManager.UI_SURFACE_PANEL, ThemeColors.DEFAULT_SURFACE_PANEL),
+                colors.getOrDefault(UiThemeManager.UI_SURFACE_PANEL_ALT, ThemeColors.DEFAULT_SURFACE_PANEL_ALT),
+                colors.getOrDefault(UiThemeManager.UI_BORDER_ACCENT, ThemeColors.DEFAULT_BORDER_ACCENT),
+                colors.getOrDefault(UiThemeManager.UI_SUCCESS, ThemeColors.DEFAULT_SUCCESS),
+                colors.getOrDefault(UiThemeManager.UI_TEXT_PRIMARY, ThemeColors.DEFAULT_TEXT_PRIMARY)
         );
     }
 

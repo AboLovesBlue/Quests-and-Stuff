@@ -7,13 +7,13 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.controls.ScissoredWidgetGroup;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 public final class PickerListPanel {
     private PickerListPanel() {
@@ -77,7 +77,7 @@ public final class PickerListPanel {
         int rowW = showScroll ? w - hPad * 2 - DragScrollBarWidget.RESERVED_WIDTH : w - hPad * 2;
         int rowX = hPad;
 
-        WidgetGroup list = new TabletScissoredWidgetGroup(x, y, w, h) {
+        WidgetGroup list = new ScissoredWidgetGroup(x, y, w, h) {
             @Override
             public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
                 if (!isMouseOverElement(mouseX, mouseY) || maxStart <= 0) {
@@ -91,11 +91,11 @@ public final class PickerListPanel {
                 return true;
             }
         };
-        list.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.elevatedSurface(), 190), TabletColors.subtleBorder()));
+        list.setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.elevatedSurface(), 190), ThemeColors.subtleBorder()));
         modal.addWidget(list);
 
         if (entries.isEmpty()) {
-            list.addWidget(label(rowX, vPad, emptyText, TabletColors.TEXT_MUTED));
+            list.addWidget(label(rowX, vPad, emptyText, ThemeColors.TEXT_MUTED));
             return list;
         }
 

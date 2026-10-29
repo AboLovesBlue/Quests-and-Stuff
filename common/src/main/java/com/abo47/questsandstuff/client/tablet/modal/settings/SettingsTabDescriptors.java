@@ -6,7 +6,7 @@ import java.util.List;
 import net.minecraft.client.resources.language.I18n;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 
 public final class SettingsTabDescriptors {
@@ -39,7 +39,7 @@ public final class SettingsTabDescriptors {
         return descriptor(tab).id();
     }
 
-    static SettingsTabDescriptor active(TabletUiState state) {
+    static SettingsTabDescriptor active(UiState state) {
         return descriptor(state.settings.currentTab);
     }
 
@@ -52,7 +52,7 @@ public final class SettingsTabDescriptors {
         return TABS.get(0);
     }
 
-    public static List<SettingsOptionDescriptor> search(TabletUiState state, String query) {
+    public static List<SettingsOptionDescriptor> search(UiState state, String query) {
         String q = SearchFilter.normalizeUserInput(query);
         List<SettingsOptionDescriptor> matches = new ArrayList<>();
         for (SettingsTabDescriptor tab : TABS) {

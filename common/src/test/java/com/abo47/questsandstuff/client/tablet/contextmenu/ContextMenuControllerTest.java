@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ContextMenuControllerTest {
     @Test
     void openCanvasResetsSessionAndTargets() {
-        TabletUiState state = dirtyState();
+        UiState state = dirtyState();
 
         ContextMenuController.openCanvas(state, 10, 12, 100, 120, 98, 118);
 
@@ -39,7 +39,7 @@ class ContextMenuControllerTest {
 
     @Test
     void targetHelpersKeepOnlyOneCanvasTarget() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         ContextMenuController.targetQuest(state, "quest_a");
         ContextMenuController.targetImage(state, "image_a");
@@ -56,7 +56,7 @@ class ContextMenuControllerTest {
 
     @Test
     void closeClearsRuntimeMenuState() {
-        TabletUiState state = dirtyState();
+        UiState state = dirtyState();
 
         ContextMenuController.close(state);
 
@@ -73,7 +73,7 @@ class ContextMenuControllerTest {
 
     @Test
     void layoutClampsScrollAndStopsDraggingWhenNoScrollRange() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.contextMenu.contextMenuScroll = 8;
         state.contextMenu.contextMenuScrollDragging = true;
 
@@ -88,7 +88,7 @@ class ContextMenuControllerTest {
 
     @Test
     void deleteConfirmArmsThenConfirms() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertFalse(ContextMenuController.confirmDeleteClick(state, "quest"));
         assertEquals("quest", state.contextMenu.contextDeleteConfirmKey);
@@ -98,8 +98,8 @@ class ContextMenuControllerTest {
         assertEquals("", state.contextMenu.contextDeleteConfirmKey);
     }
 
-    private static TabletUiState dirtyState() {
-        TabletUiState state = new TabletUiState();
+    private static UiState dirtyState() {
+        UiState state = new UiState();
         state.contextMenu.contextMenuOpen = true;
         state.contextMenu.contextMenuRows = 5;
         state.contextMenu.contextMenuScroll = 3;

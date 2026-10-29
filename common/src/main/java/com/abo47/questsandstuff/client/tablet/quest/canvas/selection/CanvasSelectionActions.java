@@ -18,8 +18,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -28,19 +28,19 @@ public final class CanvasSelectionActions {
     private CanvasSelectionActions() {
     }
 
-    public static boolean isImageSelected(TabletUiState state, String imageId) {
+    public static boolean isImageSelected(UiState state, String imageId) {
         return imageId != null && (imageId.equals(state.canvas.canvasSelection.primaryImageId()) || state.canvas.canvasSelection.imageIds().contains(imageId));
     }
 
-    public static boolean isTextSelected(TabletUiState state, String textId) {
+    public static boolean isTextSelected(UiState state, String textId) {
         return textId != null && (textId.equals(state.canvas.canvasSelection.primaryTextId()) || state.canvas.canvasSelection.textIds().contains(textId));
     }
 
-    public static boolean isExclusiveChoiceSelected(TabletUiState state, String exclusiveChoiceId) {
+    public static boolean isExclusiveChoiceSelected(UiState state, String exclusiveChoiceId) {
         return exclusiveChoiceId != null && (exclusiveChoiceId.equals(state.canvas.canvasSelection.primaryExclusiveChoiceId()) || state.canvas.canvasSelection.exclusiveChoiceIds().contains(exclusiveChoiceId));
     }
 
-    public static Set<String> selectedImageIds(TabletUiState state) {
+    public static Set<String> selectedImageIds(UiState state) {
         Set<String> images = new LinkedHashSet<>(state.canvas.canvasSelection.imageIds());
         if (!state.canvas.canvasSelection.primaryImageId().isBlank()) {
             images.add(state.canvas.canvasSelection.primaryImageId());
@@ -48,7 +48,7 @@ public final class CanvasSelectionActions {
         return images;
     }
 
-    public static Set<String> selectedTextIds(TabletUiState state) {
+    public static Set<String> selectedTextIds(UiState state) {
         Set<String> texts = new LinkedHashSet<>(state.canvas.canvasSelection.textIds());
         if (!state.canvas.canvasSelection.primaryTextId().isBlank()) {
             texts.add(state.canvas.canvasSelection.primaryTextId());
@@ -56,7 +56,7 @@ public final class CanvasSelectionActions {
         return texts;
     }
 
-    public static Set<String> selectedExclusiveChoiceIds(TabletUiState state) {
+    public static Set<String> selectedExclusiveChoiceIds(UiState state) {
         Set<String> ecs = new LinkedHashSet<>(state.canvas.canvasSelection.exclusiveChoiceIds());
         if (!state.canvas.canvasSelection.primaryExclusiveChoiceId().isBlank()) {
             ecs.add(state.canvas.canvasSelection.primaryExclusiveChoiceId());
@@ -64,11 +64,11 @@ public final class CanvasSelectionActions {
         return ecs;
     }
 
-    public static int totalCanvasSelectionCount(TabletUiState state) {
+    public static int totalCanvasSelectionCount(UiState state) {
         return CanvasSelectionSet.current(state).size();
     }
 
-    public static void clearCanvasSelection(TabletUiState state) {
+    public static void clearCanvasSelection(UiState state) {
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.setPrimaryImageId("");
         state.canvas.canvasSelection.setPrimaryTextId("");
@@ -79,11 +79,11 @@ public final class CanvasSelectionActions {
         CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
-    public static boolean alignSelectedToCanvasCenter(Player player, TabletUiState state, boolean verticalCenterLine) {
+    public static boolean alignSelectedToCanvasCenter(Player player, UiState state, boolean verticalCenterLine) {
         if (state == null || totalCanvasSelectionCount(state) <= 0) {
             return false;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         if (chapter.isBlank()) {
             return false;
         }
@@ -157,7 +157,7 @@ public final class CanvasSelectionActions {
         return changed;
     }
 
-    private static SelectionBounds selectedBounds(TabletUiState state, String chapter) {
+    private static SelectionBounds selectedBounds(UiState state, String chapter) {
         SelectionBounds bounds = new SelectionBounds();
         for (String questId : state.canvas.canvasSelection.questIds()) {
             if (!ClientQuestStateFacade.containsQuest(questId)) {
@@ -197,7 +197,7 @@ public final class CanvasSelectionActions {
         return bounds;
     }
 
-    private static int centeredOffset(TabletUiState state, SelectionBounds bounds, boolean verticalCenterLine) {
+    private static int centeredOffset(UiState state, SelectionBounds bounds, boolean verticalCenterLine) {
         double target = verticalCenterLine ? state.canvas.canvasContentW / 2.0 : state.canvas.canvasContentH / 2.0;
         double center = verticalCenterLine ? bounds.centerX() : bounds.centerY();
         int offset = (int) Math.round(target - center);
@@ -219,28 +219,28 @@ public final class CanvasSelectionActions {
         return offset;
     }
 
-    private static CanvasPoint movedQuestPosition(TabletUiState state, QuestCardLayout card, int offset, boolean verticalCenterLine) {
+    private static CanvasPoint movedQuestPosition(UiState state, QuestCardLayout card, int offset, boolean verticalCenterLine) {
         int x = verticalCenterLine ? card.logicalX() + offset : card.logicalX();
         int y = verticalCenterLine ? card.logicalY() : card.logicalY() + offset;
         return CanvasGeometry.clampAnchorToCanvas(state, x, y, card.slotLogicalWidth(), card.slotLogicalHeight());
     }
 
-    private static CanvasImageLayer movedImage(TabletUiState state, CanvasImageLayer image, int offset, boolean verticalCenterLine) {
+    private static CanvasImageLayer movedImage(UiState state, CanvasImageLayer image, int offset, boolean verticalCenterLine) {
         CanvasPoint clamped = movedElementPosition(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), offset, verticalCenterLine);
         return image.moveTo(clamped.x, clamped.y);
     }
 
-    private static CanvasTextLayer movedText(TabletUiState state, CanvasTextLayer text, int offset, boolean verticalCenterLine) {
+    private static CanvasTextLayer movedText(UiState state, CanvasTextLayer text, int offset, boolean verticalCenterLine) {
         CanvasPoint clamped = movedElementPosition(state, text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation(), offset, verticalCenterLine);
         return new CanvasTextLayer(text.id(), text.text(), clamped.x, clamped.y, text.w(), text.h(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
     }
 
-    private static CanvasExclusiveChoice movedExclusiveChoice(TabletUiState state, CanvasExclusiveChoice ec, int offset, boolean verticalCenterLine) {
+    private static CanvasExclusiveChoice movedExclusiveChoice(UiState state, CanvasExclusiveChoice ec, int offset, boolean verticalCenterLine) {
         CanvasPoint clamped = movedElementPosition(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), offset, verticalCenterLine);
         return new CanvasExclusiveChoice(ec.id(), clamped.x, clamped.y, ec.w(), ec.h(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections());
     }
 
-    private static CanvasPoint movedElementPosition(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotation, int offset, boolean verticalCenterLine) {
+    private static CanvasPoint movedElementPosition(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotation, int offset, boolean verticalCenterLine) {
         int movedX = verticalCenterLine ? x + offset : x;
         int movedY = verticalCenterLine ? y : y + offset;
         return CanvasGeometry.clampRotatedAnchorToCanvas(state, movedX, movedY, width, height, pivotX, pivotY, rotation);

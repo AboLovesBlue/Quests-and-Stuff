@@ -13,7 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
@@ -26,11 +26,11 @@ final class QuestDetailsDescriptionPickActions {
     private QuestDetailsDescriptionPickActions() {
     }
 
-    static void applyAssetPick(Player player, TabletUiState state, String asset) {
+    static void applyAssetPick(Player player, UiState state, String asset) {
         applyAssetPick(player, state, ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_ASSET_PICK, state.questDetails.questDetailsAssetPickTarget), asset);
     }
 
-    static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target parsed, String asset) {
+    static void applyAssetPick(Player player, UiState state, ModalTargetParser.Target parsed, String asset) {
         if (parsed.kind().isBlank() || asset == null || asset.isBlank()) {
             return;
         }
@@ -69,7 +69,7 @@ final class QuestDetailsDescriptionPickActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details asset picked quest={} target={} asset={}", questId, parsed.kind(), asset);
     }
 
-    static boolean applyIconPick(Player player, TabletUiState state, String entry) {
+    static boolean applyIconPick(Player player, UiState state, String entry) {
         ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || entry == null || entry.isBlank()
                 || (!parsed.isDescEntity() && !parsed.isDescEntityNew() && !parsed.isDescItem() && !parsed.isDescItemNew())) {
@@ -115,7 +115,7 @@ final class QuestDetailsDescriptionPickActions {
         return true;
     }
 
-    static boolean applyBlockPick(Player player, TabletUiState state, String block) {
+    static boolean applyBlockPick(Player player, UiState state, String block) {
         ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || block == null || block.isBlank() || (!parsed.isDescBlock() && !parsed.isDescBlockNew())) {
             return false;
@@ -157,7 +157,7 @@ final class QuestDetailsDescriptionPickActions {
         return true;
     }
 
-    static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+    static boolean applyRecipePick(Player player, UiState state, String recipe) {
         ModalTargetParser.Target parsed = ModalTargetState.parsedTarget(state, ModalSession.TargetSlot.QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         if (parsed.kind().isBlank() || recipe == null || recipe.isBlank() || (!parsed.isDescRecipe() && !parsed.isDescRecipeNew())) {
             return false;
@@ -204,7 +204,7 @@ final class QuestDetailsDescriptionPickActions {
         return image == null ? "" : image.asset();
     }
 
-    static void applyEntityVariantPick(Player player, TabletUiState state, String questId, String imageId, String variantKey) {
+    static void applyEntityVariantPick(Player player, UiState state, String questId, String imageId, String variantKey) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         if (image == null || !EntityPreviewRenderer.isEntityAsset(image.asset())) {
@@ -216,7 +216,7 @@ final class QuestDetailsDescriptionPickActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details entity variant picked quest={} image={} variant={}", questId, imageId, variantKey);
     }
 
-    private static boolean applyItemPick(Player player, TabletUiState state, String entry, ModalTargetParser.Target parsed) {
+    private static boolean applyItemPick(Player player, UiState state, String entry, ModalTargetParser.Target parsed) {
         String asset = ModelAssetPreviewRenderer.itemAssetForPick(entry);
         if (asset.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details item model pick ignored target={} item={}", parsed.kind(), entry);
@@ -250,11 +250,11 @@ final class QuestDetailsDescriptionPickActions {
         return true;
     }
 
-    static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+    static void applyTextColor(Player player, UiState state, String target, int color) {
         applyTextColor(player, state, ModalTargetParser.parse(target), color);
     }
 
-    static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target parsed, int color) {
+    static void applyTextColor(Player player, UiState state, ModalTargetParser.Target parsed, int color) {
         String questId = state.questDetails.questDetailsTextColorQuestId;
         String textId = state.questDetails.questDetailsTextColorTextId;
         if ((questId == null || questId.isBlank() || textId == null || textId.isBlank()) && parsed.isQuestDescText()) {
@@ -291,7 +291,7 @@ final class QuestDetailsDescriptionPickActions {
         }
     }
 
-    private static CanvasImageLayer fittedNewImage(TabletUiState state, CanvasImageLayer image) {
+    private static CanvasImageLayer fittedNewImage(UiState state, CanvasImageLayer image) {
         return QuestDetailsDescriptionLayout.fitAndClampImage(state, image, QuestDetailsWindow.descriptionContentWidth(state));
     }
 }

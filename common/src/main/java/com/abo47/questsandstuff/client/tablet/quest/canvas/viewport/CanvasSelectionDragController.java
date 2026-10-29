@@ -13,17 +13,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.selection.Canv
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 final class CanvasSelectionDragController {
-    private final TabletUiState state;
+    private final UiState state;
     private final CanvasElementTransformController elementTransforms;
 
-    CanvasSelectionDragController(TabletUiState state, CanvasElementTransformController elementTransforms) {
+    CanvasSelectionDragController(UiState state, CanvasElementTransformController elementTransforms) {
         this.state = state;
         this.elementTransforms = elementTransforms;
     }
@@ -45,7 +45,7 @@ final class CanvasSelectionDragController {
                 state.canvas.dragStartPositions.put(questId, new CanvasPoint(card.logicalX(), card.logicalY()));
             }
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
                 state.canvas.dragStartImagePositions.put(image.id(), new CanvasPoint(image.x(), image.y()));
@@ -114,7 +114,7 @@ final class CanvasSelectionDragController {
             populateTransientQuestPositions(dx, dy);
         }
         state.canvas.transientQuestScales.clear();
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartImagePositions.entrySet()) {
             CanvasImageLayer image = elementTransforms.findImage(chapter, entry.getKey());
             if (image != null) {
@@ -150,7 +150,7 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasSnapEngine.SnapResult smartSnapSelectionDelta(int dx, int dy, List<QuestCardLayout> cards) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         return CanvasSmartSnapper.snap(
                 state,
                 CanvasSelectionBounds.translatedDragStartBounds(state, dx, dy),

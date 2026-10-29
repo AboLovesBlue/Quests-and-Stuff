@@ -12,7 +12,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 public final class VerticalRevealWidget extends WidgetGroup {
-    private static final long SHEET_OPEN_MS = TabletAnimationTimings.SHEET_OPEN_MS;
+    private static final long SHEET_OPEN_MS = AnimationTimings.SHEET_OPEN_MS;
 
     private final long fallbackStartMs = System.currentTimeMillis();
     private final LongSupplier startMsSupplier;

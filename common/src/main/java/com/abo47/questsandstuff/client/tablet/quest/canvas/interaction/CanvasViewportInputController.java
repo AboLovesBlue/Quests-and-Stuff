@@ -22,10 +22,10 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinima
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportZoom;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 
 public final class CanvasViewportInputController {
     private CanvasViewportInputController() {
@@ -33,7 +33,7 @@ public final class CanvasViewportInputController {
 
     public static boolean mouseDragged(
             CanvasViewport viewport,
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             List<QuestCardLayout> cards,
             Map<String, QuestCardLayout> byQuestId,
@@ -49,8 +49,8 @@ public final class CanvasViewportInputController {
         if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
+        int localX = WidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = WidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
 
         if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -149,7 +149,7 @@ public final class CanvasViewportInputController {
 
     public static boolean mouseReleased(
             CanvasViewport viewport,
-            TabletUiState state,
+            UiState state,
             Player player,
             Runnable refresher,
             List<QuestCardLayout> cards,
@@ -162,8 +162,8 @@ public final class CanvasViewportInputController {
         if (!state.questDetails.pendingQuestTitleChangeId.isBlank()) {
             return viewport.callSuperMouseReleased(mouseX, mouseY, button);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
+        int localX = WidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = WidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
         if (state.contextMenu.contextMenuOpen && state.contextMenu.contextMenuScrollDragging) {
             viewport.callSuperMouseReleased(mouseX, mouseY, button);
             if (state.contextMenu.contextMenuScrollDragging) {
@@ -198,7 +198,7 @@ public final class CanvasViewportInputController {
         }
 
         if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
-            String chapter = TabletStateQueries.selectedChapterName(state);
+            String chapter = StateQueries.selectedChapterName(state);
             String imageId = state.canvas.canvasSelection.primaryImageId();
             return commitElementTransform(state, refresher, () -> {
                 CanvasLayerMutations.commitTransientCanvasImage(state, chapter, imageId);
@@ -206,7 +206,7 @@ public final class CanvasViewportInputController {
             });
         }
         if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
-            String chapter = TabletStateQueries.selectedChapterName(state);
+            String chapter = StateQueries.selectedChapterName(state);
             String textId = state.canvas.canvasSelection.primaryTextId();
             return commitElementTransform(state, refresher, () -> {
                 CanvasLayerMutations.commitTransientCanvasText(state, chapter, textId);
@@ -215,7 +215,7 @@ public final class CanvasViewportInputController {
         }
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
-            String chapter = TabletStateQueries.selectedChapterName(state);
+            String chapter = StateQueries.selectedChapterName(state);
             String exclusiveChoiceId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
             return commitElementTransform(state, refresher, () -> {
                 CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
@@ -232,9 +232,9 @@ public final class CanvasViewportInputController {
                 selectionTransforms.populateDragPositions();
             }
             if (!state.canvas.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
+                UiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            String chapter = TabletStateQueries.selectedChapterName(state);
+            String chapter = StateQueries.selectedChapterName(state);
             CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, chapter);
             for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
                 CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
@@ -263,12 +263,12 @@ public final class CanvasViewportInputController {
         if (state.canvas.resizingSelection) {
             state.canvas.resizingSelection = false;
             if (!state.canvas.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
+                UiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
             if (!state.canvas.transientQuestScales.isEmpty()) {
                 EditorCanvasCommandClient.runCanvasScaleAction(player, state, state.canvas.transientQuestScales);
             }
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedChapterName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, StateQueries.selectedChapterName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -278,9 +278,9 @@ public final class CanvasViewportInputController {
         if (state.canvas.rotatingSelection) {
             state.canvas.rotatingSelection = false;
             if (!state.canvas.transientQuestPositions.isEmpty()) {
-                TabletUiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
+                UiFactory.runCanvasMoveAction(player, state, state.canvas.transientQuestPositions);
             }
-            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, TabletStateQueries.selectedChapterName(state));
+            CanvasLayerMutations.commitSelectedTransientCanvasLayers(state, StateQueries.selectedChapterName(state));
             persistSelectedCanvasLayers(state);
             selectionTransforms.clear();
             refresher.run();
@@ -297,15 +297,15 @@ public final class CanvasViewportInputController {
         return viewport.callSuperMouseReleased(mouseX, mouseY, button);
     }
 
-    private static boolean commitElementTransform(TabletUiState state, Runnable refresher, Runnable commitAndPersist) {
+    private static boolean commitElementTransform(UiState state, Runnable refresher, Runnable commitAndPersist) {
         commitAndPersist.run();
         CanvasTransformSessions.clearMainCanvasSession(state);
         refresher.run();
         return true;
     }
 
-    private static void persistSelectedCanvasLayers(TabletUiState state) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+    private static void persistSelectedCanvasLayers(UiState state) {
+        String chapter = StateQueries.selectedChapterName(state);
         for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
             CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
         }
@@ -319,7 +319,7 @@ public final class CanvasViewportInputController {
 
     public static boolean mouseWheelMove(
             CanvasViewport viewport,
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             CanvasInlineTextEditor textEditor,
             double mouseX,
@@ -329,8 +329,8 @@ public final class CanvasViewportInputController {
         if (!viewport.isMouseOverElement(mouseX, mouseY)) {
             return viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
         }
-        int localX = TabletWidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
-        int localY = TabletWidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
+        int localX = WidgetCoordinates.localX(viewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX, mouseX);
+        int localY = WidgetCoordinates.localY(viewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY, mouseY);
         if (EntityMotionEditor.isMainCanvasOpen(state) && EntityMotionEditor.isMainCanvasHit(state, localX, localY)) {
             viewport.callSuperMouseWheelMove(mouseX, mouseY, wheelDelta);
             refresher.run();

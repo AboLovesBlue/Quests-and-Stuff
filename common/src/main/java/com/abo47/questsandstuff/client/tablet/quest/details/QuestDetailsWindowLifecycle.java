@@ -16,21 +16,21 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTrans
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class QuestDetailsWindowLifecycle {
     private QuestDetailsWindowLifecycle() {
     }
 
-    static void open(TabletUiState state, String questId) {
+    static void open(UiState state, String questId) {
         open(state, questId, false, 0, 0, 0, 0);
     }
 
-    static void openAtSource(TabletUiState state, String questId, int sourceX, int sourceY, int sourceW, int sourceH) {
+    static void openAtSource(UiState state, String questId, int sourceX, int sourceY, int sourceW, int sourceH) {
         open(state, questId, true, sourceX, sourceY, sourceW, sourceH);
     }
 
-    private static void open(TabletUiState state, String questId, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
+    private static void open(UiState state, String questId, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
@@ -58,7 +58,7 @@ final class QuestDetailsWindowLifecycle {
                 state.questDetails.questDetailsAnimationSourceH);
     }
 
-    static void swapQuest(TabletUiState state, String questId) {
+    static void swapQuest(UiState state, String questId) {
         if (state == null || questId == null || questId.isBlank()) {
             return;
         }
@@ -78,7 +78,7 @@ final class QuestDetailsWindowLifecycle {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details swap quest={}", state.questDetails.questDetailsQuestId);
     }
 
-    static void close(TabletUiState state) {
+    static void close(UiState state) {
         if (state == null || state.questDetails.questDetailsClosing || !state.questDetails.questDetailsOpen) {
             return;
         }
@@ -100,7 +100,7 @@ final class QuestDetailsWindowLifecycle {
                 state.questDetails.questDetailsAnimationSourceH);
     }
 
-    static boolean finishCloseIfDone(TabletUiState state) {
+    static boolean finishCloseIfDone(UiState state) {
         if (state == null || !state.questDetails.questDetailsClosing) {
             return false;
         }
@@ -114,7 +114,7 @@ final class QuestDetailsWindowLifecycle {
         return true;
     }
 
-    static void finishClose(TabletUiState state) {
+    static void finishClose(UiState state) {
         if (state == null) {
             return;
         }
@@ -126,7 +126,7 @@ final class QuestDetailsWindowLifecycle {
         clearOpenAnimation(state);
     }
 
-    private static void applyCloseTransientState(TabletUiState state, String closingQuestId) {
+    private static void applyCloseTransientState(UiState state, String closingQuestId) {
         state.questDetails.questDetailsScreenX = state.questDetails.questDetailsX;
         state.questDetails.questDetailsScreenY = state.questDetails.questDetailsY;
         QuestDetailsTransientManager.closeFloatingPopups(state);
@@ -155,7 +155,7 @@ final class QuestDetailsWindowLifecycle {
         }
     }
 
-    static void openAdjacentQuest(TabletUiState state, String questId, int direction) {
+    static void openAdjacentQuest(UiState state, String questId, int direction) {
         List<String> ids = new ArrayList<>(ClientQuestStateFacade.questIds());
         if (ids.isEmpty()) {
             return;
@@ -174,7 +174,7 @@ final class QuestDetailsWindowLifecycle {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details navigate from={} to={} direction={}", questId, ids.get(next), direction);
     }
 
-    private static void resetOpenTransientState(TabletUiState state) {
+    private static void resetOpenTransientState(UiState state) {
         QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
         CanvasTextStyleSession.closeQuestDetails(state);
@@ -202,7 +202,7 @@ final class QuestDetailsWindowLifecycle {
         CanvasTransformSessions.clearQuestDetailsSession(state);
     }
 
-    private static void startOpenAnimation(TabletUiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
+    private static void startOpenAnimation(UiState state, boolean hasSource, int sourceX, int sourceY, int sourceW, int sourceH) {
         boolean validSource = hasSource && sourceW > 0 && sourceH > 0;
         state.questDetails.questDetailsAnimationStartMs = System.currentTimeMillis();
         state.questDetails.questDetailsAnimationHasSource = validSource;
@@ -212,7 +212,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsAnimationSourceH = validSource ? sourceH : 0;
     }
 
-    private static void clearOpenAnimation(TabletUiState state) {
+    private static void clearOpenAnimation(UiState state) {
         state.questDetails.questDetailsAnimationStartMs = 0L;
         state.questDetails.questDetailsAnimationHasSource = false;
         state.questDetails.questDetailsAnimationSourceX = 0;
@@ -221,7 +221,7 @@ final class QuestDetailsWindowLifecycle {
         state.questDetails.questDetailsAnimationSourceH = 0;
     }
 
-    private static void clearSelectionState(TabletUiState state) {
+    private static void clearSelectionState(UiState state) {
         state.questDetails.questDetailsSelectedTaskKind = "";
         state.questDetails.questDetailsSelectedTaskId = "";
         state.questDetails.questDetailsSelectableRewardChoices.clear();
@@ -235,7 +235,7 @@ final class QuestDetailsWindowLifecycle {
         state.canvas.canvasSelection.imageIds().clear();
     }
 
-    private static int nextOpenableQuestIndex(TabletUiState state, List<String> ids, int current, int direction) {
+    private static int nextOpenableQuestIndex(UiState state, List<String> ids, int current, int direction) {
         if (direction == 0) {
             return -1;
         }
@@ -247,7 +247,7 @@ final class QuestDetailsWindowLifecycle {
         return -1;
     }
 
-    private static boolean canOpenQuestDetails(TabletUiState state, String questId) {
+    private static boolean canOpenQuestDetails(UiState state, String questId) {
         if (state == null || questId == null || questId.isBlank()) {
             return false;
         }

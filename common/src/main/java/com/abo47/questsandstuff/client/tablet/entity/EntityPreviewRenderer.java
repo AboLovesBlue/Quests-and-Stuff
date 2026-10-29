@@ -32,7 +32,7 @@ import net.minecraft.world.level.Level;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiPerfProfiler;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 public final class EntityPreviewRenderer {
@@ -258,7 +258,7 @@ public final class EntityPreviewRenderer {
         prepareEntityForRender(entity, speed > 0);
         double scale = renderScale(entity, width, height, fill, maxScale);
         float animPartialTicks = speed > 0 ? animationPartialTicks : 0.0F;
-        TabletUiPerfProfiler.profile("ui.renderEntityPreview", () -> renderEntityInInventory(graphics, centerX, centerY, scale, entity, yaw, pitch, animPartialTicks));
+        UiPerfProfiler.profile("ui.renderEntityPreview", () -> renderEntityInInventory(graphics, centerX, centerY, scale, entity, yaw, pitch, animPartialTicks));
         return true;
     }
 

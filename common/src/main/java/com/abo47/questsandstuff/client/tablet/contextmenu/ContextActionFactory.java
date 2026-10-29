@@ -2,12 +2,12 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import java.util.List;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.confirmDeleteClick;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.pendingDeleteLabel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.confirmDeleteClick;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.pendingDeleteLabel;
 
 public final class ContextActionFactory {
     private ContextActionFactory() {
@@ -26,30 +26,30 @@ public final class ContextActionFactory {
     }
 
     public static ContextAction changeIcon(Runnable action) {
-        return promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, action);
+        return promoted(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_ICON), "icon", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction changeVariant(Runnable action) {
-        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_VARIANT), "variant", ActionTone.PRIMARY, action);
+        return action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_VARIANT), "variant", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction editMotion(Runnable action) {
-        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION), "motion", ActionTone.PRIMARY, action);
+        return action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION), "motion", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction moveUp(Runnable action) {
-        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_UP), "up", ActionTone.PRIMARY, action);
+        return action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_UP), "up", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction moveDown(Runnable action) {
-        return action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_DOWN), "down", ActionTone.PRIMARY, action);
+        return action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_MOVE_DOWN), "down", ActionTone.PRIMARY, action);
     }
 
     public static ContextAction copy(Runnable action) {
-        return promoted(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_COPY), "copy", ActionTone.PRIMARY, action);
+        return promoted(TranslationKeys.text(QuestTranslationKeys.CONTEXT_COPY), "copy", ActionTone.PRIMARY, action);
     }
 
-    public static ContextAction delete(TabletUiState state, String key, String label, Runnable deleteAction) {
+    public static ContextAction delete(UiState state, String key, String label, Runnable deleteAction) {
         boolean confirming = ContextMenuController.isDeleteConfirming(state, key);
         return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ActionTone.DANGER, confirming, true, () -> {
             if (confirmDeleteClick(state, key)) {
@@ -58,7 +58,7 @@ public final class ContextActionFactory {
         });
     }
 
-    public static ContextAction warningDelete(TabletUiState state, String key, String label, Runnable deleteAction) {
+    public static ContextAction warningDelete(UiState state, String key, String label, Runnable deleteAction) {
         boolean confirming = ContextMenuController.isDeleteConfirming(state, key);
         return new ContextAction(pendingDeleteLabel(state, key, label), "delete", ActionTone.WARNING, confirming, () -> {
             if (confirmDeleteClick(state, key)) {

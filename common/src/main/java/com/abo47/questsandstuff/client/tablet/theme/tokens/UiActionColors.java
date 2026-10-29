@@ -10,16 +10,16 @@ public final class UiActionColors {
         String key = normalize(icon);
         String text = normalize(label);
         if (negative(key, text)) {
-            return TabletColors.ERROR;
+            return ThemeColors.ERROR;
         }
         if (warning(key, text)) {
-            return TabletColors.WARNING;
+            return ThemeColors.WARNING;
         }
         if (positive(key, text)) {
-            return TabletColors.SUCCESS;
+            return ThemeColors.SUCCESS;
         }
         if (interactive(key, text)) {
-            return TabletColors.INTERACTIVE;
+            return ThemeColors.INTERACTIVE;
         }
         return fallback;
     }

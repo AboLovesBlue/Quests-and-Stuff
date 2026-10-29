@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
-import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
+import com.abo47.questsandstuff.client.tablet.layout.GridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
@@ -18,10 +18,10 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTex
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -33,19 +33,19 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     private QuestDetailsDescriptionCanvasRenderer() {
     }
 
-    public static void drawContent(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+    public static void drawContent(GuiGraphics graphics, int mouseX, int mouseY, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         drawDescriptionBackground(graphics, state, model, contentX, contentY, contentW, contentH);
         drawGrid(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
         drawElements(graphics, state, model, contentX, contentY, contentW, contentH);
         drawGuides(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
     }
 
-    private static void drawGrid(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawGrid(GuiGraphics graphics, int mouseX, int mouseY, UiState state, int contentX, int contentY, int contentW, int contentH) {
         if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
-        int color = TabletGridControls.gridAlpha(state.questDetails.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
+        int color = GridControls.gridAlpha(state.questDetails.questDetailsGridOpacityPercent, GridControls.defaultGridColor(state));
         int spanW = contentW;
         int spanH = contentH;
         int paintW = spanW + 1;
@@ -61,7 +61,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         line.draw(graphics, mouseX, mouseY, contentX + spanW, contentY, 1, paintH);
     }
 
-    private static void drawDescriptionBackground(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawDescriptionBackground(GuiGraphics graphics, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         int paintW = contentW + 1;
         int paintH = contentH + 1;
         int opacityPercent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
@@ -73,10 +73,10 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             // Custom canvas background is drawn exactly once by QuestDetailsDescriptionCanvas.drawBackgroundTexture.
             return;
         }
-        CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, TabletColors.SURFACE_BASE, opacityPercent);
+        CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, ThemeColors.SURFACE_BASE, opacityPercent);
     }
 
-    private static void drawElements(GuiGraphics graphics, TabletUiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawElements(GuiGraphics graphics, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
         for (String key : model.order) {
             if (key.startsWith(ORDER_IMAGE)) {
                 CanvasImageLayer image = model.image(key.substring(ORDER_IMAGE.length()));
@@ -92,11 +92,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
     }
 
-    private static void drawGuides(GuiGraphics graphics, int mouseX, int mouseY, TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawGuides(GuiGraphics graphics, int mouseX, int mouseY, UiState state, int contentX, int contentY, int contentW, int contentH) {
         if (!QuestDetailsEditController.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
             return;
         }
-        int color = withAlpha(TabletColors.WARNING, 225);
+        int color = withAlpha(ThemeColors.WARNING, 225);
         IGuiTexture guide = SurfaceFactory.fill(color);
         if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX <= contentW) {
             int x = contentX + state.canvas.snapGuideX;
@@ -108,7 +108,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
     }
 
-    private static void drawImage(GuiGraphics graphics, TabletUiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawImage(GuiGraphics graphics, UiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
         CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
         withSelectionGeometry(state, contentW, contentH, () -> {
             drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH);
@@ -124,7 +124,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         });
     }
 
-    private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
+    private static void drawText(GuiGraphics graphics, UiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
         boolean inlineEditing = CanvasTextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
@@ -141,7 +141,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         });
     }
 
-    private static void drawImageAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasImageLayer drawImage, int contentX, int contentY, int contentH) {
+    private static void drawImageAtGeometry(GuiGraphics graphics, UiState state, CanvasImageLayer drawImage, int contentX, int contentY, int contentH) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
         int y = (int) Math.round(box.centerY() + box.top());
         if (y > contentH || y + box.height() < 0) {
@@ -150,7 +150,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         CanvasImageLayerRenderer.drawAtPivot(graphics, 0, 0, drawImage, contentX + box.centerX(), contentY + box.centerY(), box.width(), box.height(), -box.left(), -box.top());
     }
 
-    private static void drawTextAtGeometry(GuiGraphics graphics, TabletUiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {
+    private static void drawTextAtGeometry(GuiGraphics graphics, UiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, geometryText.x(), geometryText.y(), geometryText.w(), geometryText.h(), geometryText.rotation());
         int y = (int) Math.round(box.centerY() + box.top());
         if (y > contentH || y + box.height() < 0) {
@@ -163,11 +163,11 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         graphics.pose().popPose();
     }
 
-    private static void drawSelection(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int x, int y, int w, int h, int rotation) {
+    private static void drawSelection(GuiGraphics graphics, UiState state, int contentX, int contentY, int contentW, int contentH, int x, int y, int w, int h, int rotation) {
         withSelectionGeometry(state, contentW, contentH, () -> QuestElementSelectionSlot.draw(graphics, state, contentX, contentY, x, y, w, h, rotation));
     }
 
-    private static void drawImageSelection(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH, CanvasImageLayer image) {
+    private static void drawImageSelection(GuiGraphics graphics, UiState state, int contentX, int contentY, int contentW, int contentH, CanvasImageLayer image) {
         withSelectionGeometry(state, contentW, contentH, () -> {
             if (CanvasTransformGizmoAxis.supports(image.asset())) {
                 CanvasTransformGizmo.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
@@ -177,7 +177,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         });
     }
 
-    private static void withSelectionGeometry(TabletUiState state, int contentW, int contentH, Runnable draw) {
+    private static void withSelectionGeometry(UiState state, int contentW, int contentH, Runnable draw) {
         int oldContentX = state.canvas.canvasContentX;
         int oldContentY = state.canvas.canvasContentY;
         int oldContentW = state.canvas.canvasContentW;
@@ -208,15 +208,15 @@ public final class QuestDetailsDescriptionCanvasRenderer {
         }
     }
 
-    private static boolean isSelectedText(TabletUiState state, String id) {
+    private static boolean isSelectedText(UiState state, String id) {
         return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryTextId()) || state.questDetails.questDetailsDescriptionSelection.textIds().contains(id);
     }
 
-    private static boolean isSelectedImage(TabletUiState state, String id) {
+    private static boolean isSelectedImage(UiState state, String id) {
         return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
-    private static int selectedCount(TabletUiState state) {
+    private static int selectedCount(UiState state) {
         return QuestDetailsDescriptionSelectionState.selectionSet(state).size();
     }
 }

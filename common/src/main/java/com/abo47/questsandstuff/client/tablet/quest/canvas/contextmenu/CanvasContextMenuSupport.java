@@ -21,12 +21,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTEXT_ROW_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CONTEXT_ROW_H;
 
 public final class CanvasContextMenuSupport {
     private CanvasContextMenuSupport() {
@@ -36,7 +36,7 @@ public final class CanvasContextMenuSupport {
         return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
-    public static int contextMenuWidth(TabletUiState state) {
+    public static int contextMenuWidth(UiState state) {
         return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuRenderer.CONTEXT_MENU_WIDTH;
     }
 
@@ -49,7 +49,7 @@ public final class CanvasContextMenuSupport {
         return Math.max(3, Math.min(10, usable / CONTEXT_ROW_H));
     }
 
-    public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
+    public static boolean isContextMenuHit(UiState state, int x, int y) {
         int w = contextMenuWidth(state);
         int h = state.contextMenu.contextMenuHeightPx > 0 ? state.contextMenu.contextMenuHeightPx : contextMenuHeight(Math.max(1, state.contextMenu.contextMenuRows));
         return x >= state.contextMenu.contextMenuX && y >= state.contextMenu.contextMenuY
@@ -57,7 +57,7 @@ public final class CanvasContextMenuSupport {
                 && y <= state.contextMenu.contextMenuY + h;
     }
 
-    public static boolean clickContextMenu(CanvasViewport canvasViewport, TabletUiState state, int x, int y) {
+    public static boolean clickContextMenu(CanvasViewport canvasViewport, UiState state, int x, int y) {
         if (!ContextMenuController.isOpen(state) || !isContextMenuHit(state, x, y)) {
             return false;
         }
@@ -106,7 +106,7 @@ public final class CanvasContextMenuSupport {
         return true;
     }
 
-    private static boolean handlePromotedClick(List<ContextAction> promoted, int relX, int relY, int menuW, TabletUiState state) {
+    private static boolean handlePromotedClick(List<ContextAction> promoted, int relX, int relY, int menuW, UiState state) {
         if (promoted.isEmpty() || relY < 4 || relY >= 4 + ContextMenuPanel.PROMOTED_BAR_H) {
             return false;
         }
@@ -131,19 +131,19 @@ public final class CanvasContextMenuSupport {
         return true;
     }
 
-    public static void scrollContextMenu(TabletUiState state, double wheelDelta) {
+    public static void scrollContextMenu(UiState state, double wheelDelta) {
         ContextMenuController.scrollByWheel(state, wheelDelta);
     }
 
-    public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {
+    public static boolean canCopyContext(CanvasViewport canvasViewport, UiState state) {
         return CanvasClipboardCopy.canCopyContext(canvasViewport, state);
     }
 
-    public static void copyContextToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
+    public static void copyContextToClipboard(CanvasViewport canvasViewport, UiState state) {
         CanvasClipboardCopy.copyContextToClipboard(canvasViewport, state);
     }
 
-    public static void pasteClipboard(Player player, TabletUiState state) {
+    public static void pasteClipboard(Player player, UiState state) {
         CanvasClipboardPaste.pasteAtContext(player, state);
     }
 
@@ -159,7 +159,7 @@ public final class CanvasContextMenuSupport {
         return false;
     }
 
-    public static boolean canMoveLayer(CanvasViewport canvasViewport, TabletUiState state, String chapter, String key, boolean front) {
+    public static boolean canMoveLayer(CanvasViewport canvasViewport, UiState state, String chapter, String key, boolean front) {
         if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return false;
         }

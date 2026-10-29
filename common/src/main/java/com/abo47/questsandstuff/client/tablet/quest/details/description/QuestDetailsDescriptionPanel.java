@@ -9,15 +9,15 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class QuestDetailsDescriptionPanel {
     private QuestDetailsDescriptionPanel() {
     }
 
-    public static void rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
+    public static void rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int x, int y, int w, int h) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(quest);
         QuestDetailsDescriptionMenus.keepTextStyleOpenForActiveEdit(state, model);
         int[] fit = QuestDetailsDescriptionLayout.gridFit(state, w, h);
@@ -27,7 +27,7 @@ public final class QuestDetailsDescriptionPanel {
         String bg = model.canvasBackground();
         boolean hasBuiltinBg = bg != null && !bg.equals("default") && !bg.isBlank();
         state.questDetails.questDetailsCanvasCustomBg = hasBuiltinBg;
-        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.transparentFill() : SurfaceFactory.transparentBorder(TabletColors.BORDER_BASE));
+        canvas.setBackground(hasBuiltinBg ? SurfaceFactory.transparentFill() : SurfaceFactory.transparentBorder(ThemeColors.BORDER_BASE));
         renderScrollbar(canvas, state, model, refresh, questId, fit[0], viewportH);
         modal.addWidget(canvas);
         QuestDetailsDescriptionMenus.renderStyleMenu(modal, state, player, refresh, questId, model, x, y, fit[0], fit[1]);
@@ -36,19 +36,19 @@ public final class QuestDetailsDescriptionPanel {
         EntityMotionEditor.renderQuestDetails(modal, state, player, refresh);
     }
 
-    public static void applyAssetPick(Player player, TabletUiState state, String asset) {
+    public static void applyAssetPick(Player player, UiState state, String asset) {
         QuestDetailsDescriptionPickActions.applyAssetPick(player, state, asset);
     }
 
-    public static void applyAssetPick(Player player, TabletUiState state, ModalTargetParser.Target target, String asset) {
+    public static void applyAssetPick(Player player, UiState state, ModalTargetParser.Target target, String asset) {
         QuestDetailsDescriptionPickActions.applyAssetPick(player, state, target, asset);
     }
 
-    public static boolean applyIconPick(Player player, TabletUiState state, String entry) {
+    public static boolean applyIconPick(Player player, UiState state, String entry) {
         return QuestDetailsDescriptionPickActions.applyIconPick(player, state, entry);
     }
 
-    private static void renderScrollbar(WidgetGroup canvas, TabletUiState state, QuestDetailsDescriptionModel model, Runnable refresh, String questId, int canvasW, int viewportH) {
+    private static void renderScrollbar(WidgetGroup canvas, UiState state, QuestDetailsDescriptionModel model, Runnable refresh, String questId, int canvasW, int viewportH) {
         int scrollMax = QuestDetailsDescriptionLayout.descriptionScrollMax(model, viewportH);
         if (scrollMax <= 0) {
             state.questDetails.questDetailsDescScrollDragging = false;
@@ -76,11 +76,11 @@ public final class QuestDetailsDescriptionPanel {
         ));
     }
 
-    public static boolean applyBlockPick(Player player, TabletUiState state, String block) {
+    public static boolean applyBlockPick(Player player, UiState state, String block) {
         return QuestDetailsDescriptionPickActions.applyBlockPick(player, state, block);
     }
 
-    public static boolean applyRecipePick(Player player, TabletUiState state, String recipe) {
+    public static boolean applyRecipePick(Player player, UiState state, String recipe) {
         return QuestDetailsDescriptionPickActions.applyRecipePick(player, state, recipe);
     }
 
@@ -88,83 +88,83 @@ public final class QuestDetailsDescriptionPanel {
         return QuestDetailsDescriptionPickActions.imageAsset(questId, imageId);
     }
 
-    public static void applyEntityVariantPick(Player player, TabletUiState state, String questId, String imageId, String variantKey) {
+    public static void applyEntityVariantPick(Player player, UiState state, String questId, String imageId, String variantKey) {
         QuestDetailsDescriptionPickActions.applyEntityVariantPick(player, state, questId, imageId, variantKey);
     }
 
-    public static void applyTextColor(Player player, TabletUiState state, String target, int color) {
+    public static void applyTextColor(Player player, UiState state, String target, int color) {
         QuestDetailsDescriptionPickActions.applyTextColor(player, state, target, color);
     }
 
-    public static void applyTextColor(Player player, TabletUiState state, ModalTargetParser.Target target, int color) {
+    public static void applyTextColor(Player player, UiState state, ModalTargetParser.Target target, int color) {
         QuestDetailsDescriptionPickActions.applyTextColor(player, state, target, color);
     }
 
-    public static void addTextAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
+    public static void addTextAt(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addTextAt(player, state, questId, model, panelX, panelY);
     }
 
-    public static void addImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addImageAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addImageAt(state, questId, panelX, panelY);
     }
 
-    public static void addGameImageAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addGameImageAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addGameImageAt(state, questId, panelX, panelY);
     }
 
-    public static void addEntityAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addEntityAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addEntityAt(state, questId, panelX, panelY);
     }
 
-    public static void addItemAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addItemAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addItemAt(state, questId, panelX, panelY);
     }
 
-    public static void addBlockAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addBlockAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addBlockAt(state, questId, panelX, panelY);
     }
 
-    public static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
+    public static void addRecipeCardAt(UiState state, String questId, int panelX, int panelY) {
         QuestDetailsDescriptionEditActions.addRecipeCardAt(state, questId, panelX, panelY);
     }
 
-    public static void fitTextToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
+    public static void fitTextToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         QuestDetailsDescriptionEditActions.fitTextToGrid(player, state, questId, model, id);
     }
 
-    public static void fitImageToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, String id) {
+    public static void fitImageToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, String id) {
         QuestDetailsDescriptionEditActions.fitImageToGrid(player, state, questId, model, id);
     }
 
-    public static void fitSelectionToGrid(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+    public static void fitSelectionToGrid(Player player, UiState state, String questId, QuestDetailsDescriptionModel model) {
         QuestDetailsDescriptionEditActions.fitSelectionToGrid(player, state, questId, model);
     }
 
-    public static void alignSelectionToCanvas(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, boolean horizontal) {
+    public static void alignSelectionToCanvas(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH, boolean horizontal) {
         QuestDetailsDescriptionEditActions.alignSelectionToCanvas(player, state, questId, model, viewportW, viewportH, horizontal);
     }
 
-    public static void moveSelectionLayers(TabletUiState state, QuestDetailsDescriptionModel model, boolean front) {
+    public static void moveSelectionLayers(UiState state, QuestDetailsDescriptionModel model, boolean front) {
         QuestDetailsDescriptionEditActions.moveSelectionLayers(state, model, front);
     }
 
-    public static void copyDescriptionSelection(TabletUiState state, QuestDetailsDescriptionModel model) {
+    public static void copyDescriptionSelection(UiState state, QuestDetailsDescriptionModel model) {
         QuestDetailsDescriptionEditActions.copyDescriptionSelection(state, model);
     }
 
-    public static boolean copySelectedDescriptionToClipboard(TabletUiState state, QuestDetailsDescriptionModel model) {
+    public static boolean copySelectedDescriptionToClipboard(UiState state, QuestDetailsDescriptionModel model) {
         return QuestDetailsDescriptionEditActions.copySelectedDescriptionToClipboard(state, model);
     }
 
-    public static boolean selectAllDescription(TabletUiState state, QuestDetailsDescriptionModel model) {
+    public static boolean selectAllDescription(UiState state, QuestDetailsDescriptionModel model) {
         return QuestDetailsDescriptionEditActions.selectAllDescription(state, model);
     }
 
-    public static boolean deleteSelectedDescription(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model) {
+    public static boolean deleteSelectedDescription(Player player, UiState state, String questId, QuestDetailsDescriptionModel model) {
         return QuestDetailsDescriptionEditActions.deleteSelectedDescription(player, state, questId, model);
     }
 
-    public static void deleteDescriptionSelection(TabletUiState state, QuestDetailsDescriptionModel model) {
+    public static void deleteDescriptionSelection(UiState state, QuestDetailsDescriptionModel model) {
         QuestDetailsDescriptionEditActions.deleteDescriptionSelection(state, model);
     }
 }

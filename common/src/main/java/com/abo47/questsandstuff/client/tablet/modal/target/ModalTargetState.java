@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 
 public final class ModalTargetState {
@@ -15,16 +15,16 @@ public final class ModalTargetState {
     private ModalTargetState() {
     }
 
-    public static String target(TabletUiState state, ModalSession.TargetSlot slot, String fallback) {
+    public static String target(UiState state, ModalSession.TargetSlot slot, String fallback) {
         String sessionTarget = state == null || state.modal.modalSession == null ? "" : state.modal.modalSession.target(slot);
         return clean(sessionTarget.isBlank() ? fallback : sessionTarget);
     }
 
-    public static ModalTargetParser.Target parsedTarget(TabletUiState state, ModalSession.TargetSlot slot, String fallback) {
+    public static ModalTargetParser.Target parsedTarget(UiState state, ModalSession.TargetSlot slot, String fallback) {
         return ModalTargetParser.parse(target(state, slot, fallback));
     }
 
-    public static Set<String> targetSet(TabletUiState state, ModalSession.TargetSetSlot slot, Set<String> fallback) {
+    public static Set<String> targetSet(UiState state, ModalSession.TargetSetSlot slot, Set<String> fallback) {
         Set<String> sessionTargets = state == null || state.modal.modalSession == null ? Set.of() : state.modal.modalSession.targetSet(slot);
         if (!sessionTargets.isEmpty()) {
             return sessionTargets;

@@ -29,14 +29,14 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestHove
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 final class CanvasSceneQuestCardPainter {
     private CanvasSceneQuestCardPainter() {
@@ -44,7 +44,7 @@ final class CanvasSceneQuestCardPainter {
 
     static void renderQuestCard(
             WidgetGroup canvasViewport,
-            TabletUiState state,
+            UiState state,
             Player player,
             Runnable refresh,
             QuestCardLayout card,
@@ -127,7 +127,7 @@ final class CanvasSceneQuestCardPainter {
         );
     }
 
-    private static void renderQuestRenameField(WidgetGroup canvasViewport, TabletUiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {
+    private static void renderQuestRenameField(WidgetGroup canvasViewport, UiState state, Player player, Runnable refresh, QuestCardLayout card, int viewportW, int viewportH) {
         int fieldW = Math.max(64, Math.min(124, Math.max(card.width() + 28, card.width() * 2)));
         int fieldH = 16;
         int x = Math.max(4, Math.min(card.centerX() - fieldW / 2, Math.max(4, viewportW - fieldW - 4)));
@@ -148,29 +148,29 @@ final class CanvasSceneQuestCardPainter {
         field.setCurrentString(state.questDetails.questTitleDraft == null ? "" : state.questDetails.questTitleDraft);
         field.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         field.setBordered(false);
-        field.setTextColor(TabletColors.TEXT_PRIMARY);
-        field.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT));
+        field.setTextColor(ThemeColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.SURFACE_BASE, 246), ThemeColors.BORDER_ACCENT));
         field.setFocus(true);
         canvasViewport.addWidget(field);
     }
 
-    private static void renderHiddenEditState(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
+    private static void renderHiddenEditState(WidgetGroup canvasViewport, UiState state, QuestCardLayout card) {
         if (!state.root.canEdit || card.tag().getBoolean("completed")) {
             return;
         }
         boolean hidden = card.tag().getBoolean("visual_hidden") && !card.tag().getBoolean("unlocked");
         if (hidden) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 190));
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ThemeColors.SURFACE_BASE, 190));
         }
     }
 
     private static void renderLockedPreviewState(WidgetGroup canvasViewport, QuestCardLayout card) {
         if (ClientQuestStateFacade.questLockedPreview(card.tag())) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ThemeColors.SURFACE_BASE, 150));
         }
     }
 
-    private static void renderExclusiveChoiceConnectionLockedPreview(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
+    private static void renderExclusiveChoiceConnectionLockedPreview(WidgetGroup canvasViewport, UiState state, QuestCardLayout card) {
         if (state.root.canEdit) {
             return;
         }
@@ -178,24 +178,24 @@ final class CanvasSceneQuestCardPainter {
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
             if (drawExclusiveChoice.connectionQuestIds().contains(card.questId()) && !drawExclusiveChoice.prerequisiteQuestIds().isEmpty()) {
-                addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
+                addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ThemeColors.SURFACE_BASE, 150));
                 return;
             }
         }
     }
 
-    private static void renderSearchState(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
+    private static void renderSearchState(WidgetGroup canvasViewport, UiState state, QuestCardLayout card) {
         String query = state.root.search == null ? "" : state.root.search.trim();
         if (query.isBlank()) {
             return;
         }
         boolean matches = CanvasRenderer.matchesSearchOnly(card.tag(), query);
         if (!matches) {
-            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
+            addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(ThemeColors.SURFACE_BASE, 150));
             return;
         }
         WidgetGroup highlight = new WidgetGroup(card.x() - 2, card.y() - 2, card.width() + 4, card.height() + 4);
-        highlight.setBackground(SurfaceFactory.transparentBorder(TabletColors.WARNING));
+        highlight.setBackground(SurfaceFactory.transparentBorder(ThemeColors.WARNING));
         canvasViewport.addWidget(highlight);
     }
 
@@ -218,7 +218,7 @@ final class CanvasSceneQuestCardPainter {
         canvasViewport.addWidget(new DisplayIconWidget(iconX, iconY, iconSize, iconSize, icon));
     }
 
-    private static void addQuestTooltipHit(WidgetGroup canvasViewport, QuestCardLayout card, TabletUiState state) {
+    private static void addQuestTooltipHit(WidgetGroup canvasViewport, QuestCardLayout card, UiState state) {
         CompoundTag tag = card.tag();
         String title = tag.getString("title");
         if (title == null || title.isBlank()) {

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 class ModalOpenActionsTest {
     @Test
     void assetPickerOpenPreservesSelectedValueAndResetsSearchSession() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.assetSearch = "old query";
         state.pickers.assetSearchFocused = true;
         state.pickers.assetGridScroll = 32;
@@ -45,7 +45,7 @@ class ModalOpenActionsTest {
 
     @Test
     void recipePickerOpenAssignsTargetCoordinatesAndResetsModeState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.recipeSearch = "stone";
         state.pickers.recipeSearchFocused = true;
         state.pickers.recipeScroll = 44;
@@ -72,7 +72,7 @@ class ModalOpenActionsTest {
 
     @Test
     void questDetailsIconPickerUsesUsableItemsModeForItemUseTargets() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.iconSearch = "old";
         state.pickers.iconSearchFocused = true;
         state.pickers.iconScroll = 12;
@@ -95,7 +95,7 @@ class ModalOpenActionsTest {
 
     @Test
     void canvasEntityIconPickerStartsInEntityMode() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.iconMode = ModalIconPickerMode.FLUIDS;
 
         IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
@@ -111,7 +111,7 @@ class ModalOpenActionsTest {
 
     @Test
     void questBackgroundPickerClearsStaleTargetsAndCapturesSessionPayload() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsAssetPickTarget = "old_details";
         state.modal.modalCanvasImageTarget = "old_image";
         state.modal.modalQuestCompletionSoundTargets.add("old_sound");
@@ -130,7 +130,7 @@ class ModalOpenActionsTest {
 
     @Test
     void gameSoundPickerClearsAssetTargetsAndCapturesSessionPayload() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsAssetPickTarget = "old_asset";
         state.modal.modalCanvasBackgroundTarget = "old_canvas";
         state.pickers.assetSelected = "sounds/old.ogg";
@@ -148,7 +148,7 @@ class ModalOpenActionsTest {
 
     @Test
     void openingModalClearsActiveTransformSessions() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.draggingCanvasImage = true;
         state.canvas.transientCanvasImages.put("image:a", image("image:a"));
         state.canvas.transientQuestPositions.put("quest/a", new CanvasPoint(10, 20));

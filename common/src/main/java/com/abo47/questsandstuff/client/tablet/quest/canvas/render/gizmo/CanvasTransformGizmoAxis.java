@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasTransformGizmoAxis {
     public static final String AXIS_YAW = "yaw";
@@ -24,11 +24,11 @@ public final class CanvasTransformGizmoAxis {
         return EntityPreviewRenderer.isEntityAsset(asset) || ModelAssetPreviewRenderer.isBlockModelAsset(asset);
     }
 
-    public static CanvasTransformMode activeMode(TabletUiState state) {
+    public static CanvasTransformMode activeMode(UiState state) {
         return CanvasTransformMode.fromId(state == null ? "" : state.canvas.transformGizmoMode);
     }
 
-    public static void setMode(TabletUiState state, CanvasTransformMode mode) {
+    public static void setMode(UiState state, CanvasTransformMode mode) {
         if (state != null && mode != null) {
             boolean changed = !mode.id.equals(state.canvas.transformGizmoMode);
             state.canvas.transformGizmoMode = mode.id;

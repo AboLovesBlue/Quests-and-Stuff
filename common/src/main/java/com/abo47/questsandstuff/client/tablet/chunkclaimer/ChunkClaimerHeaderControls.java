@@ -10,18 +10,18 @@ import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.controls.IconTextButton;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.cyclePercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.toolPercentStep;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.dynamicLabel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.dynamicLabel;
 
 public final class ChunkClaimerHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
@@ -48,11 +48,11 @@ public final class ChunkClaimerHeaderControls {
         this.opacityBtn = opacityBtn;
     }
 
-    static ChunkClaimerHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
+    static ChunkClaimerHeaderControls create(UiState state, Runnable refresh, int headerY, int bodyW) {
         int countW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * BUTTON_COUNT);
 
         LabelWidget countLabel = dynamicLabel(HEADER_INSET, headerY + (HEADER_H - 12) / 2,
-                ChunkClaimerHeaderControls::countText, TabletColors.TEXT_SECONDARY);
+                ChunkClaimerHeaderControls::countText, ThemeColors.TEXT_SECONDARY);
         countLabel.setSize(countW, 12);
 
         int btnAreaStartX = HEADER_INSET + countW;
@@ -86,10 +86,10 @@ public final class ChunkClaimerHeaderControls {
         return current;
     }
 
-    private static ButtonWidget createOpacityButton(int x, int y, TabletUiState state, Runnable refresh) {
-        TabletIconTextButton.Visuals visuals = visualsFor(true);
-        TabletIconTextButton[] ref = new TabletIconTextButton[1];
-        ref[0] = TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, "opacity", visuals,
+    private static ButtonWidget createOpacityButton(int x, int y, UiState state, Runnable refresh) {
+        IconTextButton.Visuals visuals = visualsFor(true);
+        IconTextButton[] ref = new IconTextButton[1];
+        ref[0] = IconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, "opacity", visuals,
                 click -> {
                     int next = cyclePercent(state.chunkClaimer.gridOpacityPercent, toolPercentStep(), click.button == 1);
                     state.chunkClaimer.gridOpacityPercent = next;
@@ -137,7 +137,7 @@ public final class ChunkClaimerHeaderControls {
 
     public static void onSync() {
         if (current == null) return;
-        var state = TabletUiFactory.getActiveTabletState();
+        var state = UiFactory.getActiveTabletState();
         if (state != null && "chunkclaimer".equals(state.root.currentApp)) {
             previewClaimedDelta = 0;
             previewForcedDelta = 0;
@@ -198,11 +198,11 @@ public final class ChunkClaimerHeaderControls {
     }
 
     private static ButtonWidget toggleButton(int x, int y, String icon, String tooltipKey, String shiftKey,
-                                             TabletUiState state, Runnable refresh,
+                                             UiState state, Runnable refresh,
                                              BooleanSupplier armed, Consumer<Boolean> setArmed) {
-        TabletIconTextButton.Visuals visuals = visualsFor(armed.getAsBoolean());
-        TabletIconTextButton[] ref = new TabletIconTextButton[1];
-        ref[0] = TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals,
+        IconTextButton.Visuals visuals = visualsFor(armed.getAsBoolean());
+        IconTextButton[] ref = new IconTextButton[1];
+        ref[0] = IconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals,
                 click -> {
                     setArmed.accept(!armed.getAsBoolean());
                     ref[0].visuals(visualsFor(armed.getAsBoolean()));
@@ -217,14 +217,14 @@ public final class ChunkClaimerHeaderControls {
         return ref[0];
     }
 
-    private static TabletIconTextButton.Visuals visualsFor(boolean armed) {
-        int accent = armed ? TabletColors.SUCCESS : TabletColors.ERROR;
-        TabletIconTextButton.State idle = TabletIconTextButton.State.of(
-                TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, accent);
-        TabletIconTextButton.State hover = TabletIconTextButton.State.of(
-                withAlpha(accent, 66), TabletColors.BORDER_ACCENT, accent);
-        TabletIconTextButton.State pressed = TabletIconTextButton.State.of(
-                withAlpha(accent, 90), accent, TabletColors.TEXT_PRIMARY);
-        return new TabletIconTextButton.Visuals(idle, hover, pressed, armed ? accent : -1);
+    private static IconTextButton.Visuals visualsFor(boolean armed) {
+        int accent = armed ? ThemeColors.SUCCESS : ThemeColors.ERROR;
+        IconTextButton.State idle = IconTextButton.State.of(
+                ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, accent);
+        IconTextButton.State hover = IconTextButton.State.of(
+                withAlpha(accent, 66), ThemeColors.BORDER_ACCENT, accent);
+        IconTextButton.State pressed = IconTextButton.State.of(
+                withAlpha(accent, 90), accent, ThemeColors.TEXT_PRIMARY);
+        return new IconTextButton.Visuals(idle, hover, pressed, armed ? accent : -1);
     }
 }

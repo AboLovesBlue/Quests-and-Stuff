@@ -3,14 +3,14 @@ package com.abo47.questsandstuff.client.tablet.modal.settings;
 import java.util.List;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletScreenManager;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.bootstrap.ScreenManager;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class CanvasSettingsOptions {
     private CanvasSettingsOptions() {
     }
 
-    static List<SettingsOptionDescriptor> options(TabletUiState state) {
+    static List<SettingsOptionDescriptor> options(UiState state) {
         return List.of(
                 new SettingsOptionDescriptor(
                         "fullScreenMode",
@@ -69,8 +69,8 @@ final class CanvasSettingsOptions {
         );
     }
 
-    private static void setFullScreenMode(TabletUiState state, boolean enabled) {
+    private static void setFullScreenMode(UiState state, boolean enabled) {
         QuestsAndStuffConfig.setFullScreenModeEnabled(enabled);
-        TabletScreenManager.applyTabletLayoutMode(state);
+        ScreenManager.applyTabletLayoutMode(state);
     }
 }

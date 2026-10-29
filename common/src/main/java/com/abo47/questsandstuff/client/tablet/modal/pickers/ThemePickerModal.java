@@ -13,16 +13,16 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 
 public final class ThemePickerModal {
@@ -37,7 +37,7 @@ public final class ThemePickerModal {
     private ThemePickerModal() {
     }
 
-    public static void rebuild(WidgetGroup modal, TabletUiState state, Runnable refresh, int w, int h) {
+    public static void rebuild(WidgetGroup modal, UiState state, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, "Themes", w, state, refresh);
 
         int listX = PAD;
@@ -47,7 +47,7 @@ public final class ThemePickerModal {
         addThemeList(modal, state, refresh, listX, listY, listW, listH, "No themes found");
     }
 
-    public static void addThemeList(WidgetGroup modal, TabletUiState state, Runnable refresh, int listX, int listY, int listW, int listH, String emptyText) {
+    public static void addThemeList(WidgetGroup modal, UiState state, Runnable refresh, int listX, int listY, int listW, int listH, String emptyText) {
         List<UiThemeManager.ThemeInfo> themes = UiThemeManager.availableThemes();
         String active = UiThemeManager.activeThemeName();
         TiledPickerPanel.add(
@@ -74,7 +74,7 @@ public final class ThemePickerModal {
         );
     }
 
-    public static void addSettingsThemeList(WidgetGroup modal, TabletUiState state, Runnable refresh, int listX, int listY, int listW, int listH, String emptyText) {
+    public static void addSettingsThemeList(WidgetGroup modal, UiState state, Runnable refresh, int listX, int listY, int listW, int listH, String emptyText) {
         List<UiThemeManager.ThemeInfo> themes = UiThemeManager.availableThemes();
         String active = UiThemeManager.activeThemeName();
         PickerListPanel.add(
@@ -98,9 +98,9 @@ public final class ThemePickerModal {
         );
     }
 
-    private static void addThemeRow(WidgetGroup list, TabletUiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int x, int y, int w) {
-        int fill = active ? withAlpha(theme.success(), 66) : TabletColors.SURFACE_PANEL_ALT;
-        int border = active ? theme.success() : TabletColors.BORDER_BASE;
+    private static void addThemeRow(WidgetGroup list, UiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int x, int y, int w) {
+        int fill = active ? withAlpha(theme.success(), 66) : ThemeColors.SURFACE_PANEL_ALT;
+        int border = active ? theme.success() : ThemeColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, ROW_H, fill, border));
 
         int swatchX = x + GRID_6;
@@ -110,7 +110,7 @@ public final class ThemePickerModal {
         addSwatch(list, swatchX + 36, y + GRID_6, theme.success());
 
         LabelWidget name = new LabelWidget(x + 54, y + GRID_8, theme.label());
-        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
+        name.setColor(active ? ThemeColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, ROW_H, click -> {
@@ -123,12 +123,12 @@ public final class ThemePickerModal {
         list.addWidget(hit);
     }
 
-    private static void addSettingsThemeRow(WidgetGroup list, TabletUiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int y, int rowW) {
+    private static void addSettingsThemeRow(WidgetGroup list, UiState state, Runnable refresh, UiThemeManager.ThemeInfo theme, boolean active, int y, int rowW) {
         int x = SETTINGS_ROW_INSET;
         int h = SETTINGS_ROW_H - SETTINGS_ROW_INSET;
         int w = Math.max(1, rowW - SETTINGS_ROW_INSET * 2);
-        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
-        int border = active ? theme.success() : TabletColors.BORDER_BASE;
+        int fill = active ? withAlpha(theme.success(), 66) : withAlpha(ThemeColors.SURFACE_PANEL_ALT, 180);
+        int border = active ? theme.success() : ThemeColors.BORDER_BASE;
         list.addWidget(panel(x, y, w, h, fill, border));
 
         int swatchX = x + GRID_8;
@@ -141,7 +141,7 @@ public final class ThemePickerModal {
         int labelX = x + 58;
         int labelW = Math.max(16, w - 70);
         LabelWidget name = new LabelWidget(labelX, y + GRID_10, SearchFilter.crop(theme.label(), Math.max(12, labelW / 6)));
-        name.setColor(active ? TabletColors.TEXT_PRIMARY : theme.text());
+        name.setColor(active ? ThemeColors.TEXT_PRIMARY : theme.text());
         list.addWidget(name);
 
         ButtonWidget hit = flatHitButton(x, y, w, h, click -> {
@@ -156,7 +156,7 @@ public final class ThemePickerModal {
     }
 
     private static void addSwatch(WidgetGroup parent, int x, int y, int color) {
-        parent.addWidget(panel(x, y, 10, 14, color, TabletColors.BORDER_BASE));
+        parent.addWidget(panel(x, y, 10, 14, color, ThemeColors.BORDER_BASE));
     }
 
 }

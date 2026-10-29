@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -24,23 +24,23 @@ public final class CanvasLayerOrdering {
     private CanvasLayerOrdering() {
     }
 
-    public static void moveQuestLayer(TabletUiState state, String chapter, String questId, boolean front) {
+    public static void moveQuestLayer(UiState state, String chapter, String questId, boolean front) {
         moveLayer(state, chapter, questKey(questId), front);
     }
 
-    public static void moveImageLayer(TabletUiState state, String chapter, String imageId, boolean front) {
+    public static void moveImageLayer(UiState state, String chapter, String imageId, boolean front) {
         moveLayer(state, chapter, imageKey(imageId), front);
     }
 
-    public static void moveTextLayer(TabletUiState state, String chapter, String textId, boolean front) {
+    public static void moveTextLayer(UiState state, String chapter, String textId, boolean front) {
         moveLayer(state, chapter, textKey(textId), front);
     }
 
-    public static void moveConnectionLayer(TabletUiState state, String chapter, String connectionId, boolean front) {
+    public static void moveConnectionLayer(UiState state, String chapter, String connectionId, boolean front) {
         moveLayer(state, chapter, connectionKey(connectionId), front);
     }
 
-    public static void moveLayers(TabletUiState state, String chapter, List<String> keys, boolean front) {
+    public static void moveLayers(UiState state, String chapter, List<String> keys, boolean front) {
         if (chapter == null || chapter.isBlank() || keys == null || keys.isEmpty()) {
             return;
         }
@@ -76,7 +76,7 @@ public final class CanvasLayerOrdering {
     }
 
     public static List<String> normalize(
-            TabletUiState state,
+            UiState state,
             String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
@@ -138,7 +138,7 @@ public final class CanvasLayerOrdering {
     }
 
     public static CanvasLayerOrder normalizedOrder(
-            TabletUiState state,
+            UiState state,
             String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
@@ -149,7 +149,7 @@ public final class CanvasLayerOrdering {
     }
 
     public static CanvasLayerOrder normalizedOrder(
-            TabletUiState state,
+            UiState state,
             String chapter,
             List<QuestCardLayout> cards,
             List<CanvasImageLayer> images,
@@ -172,11 +172,11 @@ public final class CanvasLayerOrdering {
         return order(orderKeys).resolveElementHit(quest, image, text, exclusiveChoice);
     }
 
-    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String exclusiveChoiceId, boolean front) {
+    public static void moveExclusiveChoiceLayer(UiState state, String chapter, String exclusiveChoiceId, boolean front) {
         moveLayer(state, chapter, exclusiveChoiceKey(exclusiveChoiceId), front);
     }
 
-    public static void ensurePresent(TabletUiState state, String chapter, String key) {
+    public static void ensurePresent(UiState state, String chapter, String key) {
         if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
@@ -187,7 +187,7 @@ public final class CanvasLayerOrdering {
         }
     }
 
-    public static void remove(TabletUiState state, String chapter, String key) {
+    public static void remove(UiState state, String chapter, String key) {
         if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }
@@ -242,7 +242,7 @@ public final class CanvasLayerOrdering {
         return CanvasLayerKey.connection(connectionId).orderKey();
     }
 
-    private static void moveLayer(TabletUiState state, String chapter, String key, boolean front) {
+    private static void moveLayer(UiState state, String chapter, String key, boolean front) {
         if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
             return;
         }

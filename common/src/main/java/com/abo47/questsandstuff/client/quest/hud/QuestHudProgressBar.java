@@ -6,9 +6,9 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.texture.ProgressTexture;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 final class QuestHudProgressBar {
@@ -23,8 +23,8 @@ final class QuestHudProgressBar {
         int w = Math.max(1, width);
         int h = Math.max(1, height);
         float safeProgress = Math.max(0.0f, Math.min(1.0f, progress));
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, Math.min(178, safeAlpha))).draw(graphics, 0, 0, x, y, w, h);
-        drawRectOutline(graphics, x, y, w, h, withAlpha(TabletColors.BORDER_BASE, Math.min(130, safeAlpha)));
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, Math.min(178, safeAlpha))).draw(graphics, 0, 0, x, y, w, h);
+        drawRectOutline(graphics, x, y, w, h, withAlpha(ThemeColors.BORDER_BASE, Math.min(130, safeAlpha)));
         ProgressTexture texture = new ProgressTexture(
                 IGuiTexture.EMPTY,
                 SurfaceFactory.fill(withAlpha(fillColor, Math.min(180, safeAlpha)))

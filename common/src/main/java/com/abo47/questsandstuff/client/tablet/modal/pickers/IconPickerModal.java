@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.ActionButtons;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
+import com.abo47.questsandstuff.client.tablet.controls.CycleButton;
 import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.modal.asset.AssetPickerApplyActions;
@@ -24,12 +24,12 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.CANVAS_ENTITY;
@@ -39,11 +39,11 @@ import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSl
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTENT_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runQuestIconAction;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CONTENT_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.runChapterAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.runQuestIconAction;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
@@ -57,7 +57,7 @@ public final class IconPickerModal {
     private IconPickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         int sidePad = 8;
         String detailsTarget = ModalTargetState.target(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget);
         String canvasEntityTarget = ModalTargetState.target(state, CANVAS_ENTITY, state.modal.modalCanvasEntityTarget);
@@ -100,7 +100,7 @@ public final class IconPickerModal {
 
         if (backgroundMode) {
             ModalIconPickerMode[] cycle = ModalIconPickerMode.gameBackgroundCycle();
-            TabletCycleButton.addIconModeButton(
+            CycleButton.addIconModeButton(
                     modal,
                     gridX,
                     headY,
@@ -117,7 +117,7 @@ public final class IconPickerModal {
                     });
         } else if (itemModelPicker) {
             ModalIconPickerMode[] cycle = ModalIconPickerMode.modelItemCycle();
-            TabletCycleButton.addIconModeButton(
+            CycleButton.addIconModeButton(
                     modal,
                     gridX,
                     headY,
@@ -134,7 +134,7 @@ public final class IconPickerModal {
                     });
         } else if (!entityPicker) {
             ModalIconPickerMode[] cycle = ModalIconPickerMode.cycleForContext(supportsEntityIcons, supportsInventoryIcons, useItemPicker);
-            TabletCycleButton.addIconModeButton(
+            CycleButton.addIconModeButton(
                     modal,
                     gridX,
                     headY,
@@ -169,7 +169,7 @@ public final class IconPickerModal {
                     6,
                     6,
                     entries,
-                    TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
+                    TranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                     ScrollState.bind(
                             () -> state.pickers.iconScroll,
                             value -> state.pickers.iconScroll = value,
@@ -250,14 +250,14 @@ public final class IconPickerModal {
                     refresh.run();
                 });
                 GlowShaderHelper.glowHit(hit, ModalPanel.iconTooltip(previewIcon));
-                hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
+                hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 90)));
                 surface.addWidget(hit);
                     });
         }
         return search;
     }
 
-    private static List<String> backgroundTextureEntries(TabletUiState state) {
+    private static List<String> backgroundTextureEntries(UiState state) {
         ModalIconPickerMode mode = ModalIconPickerMode.safe(state.pickers.iconMode);
         if (mode.showingBlocks()) {
             return DisplayIconProvider.searchableBlockEntries(state.pickers.iconSearch);
@@ -265,7 +265,7 @@ public final class IconPickerModal {
         return DisplayIconProvider.searchableEntries(state.pickers.iconSearch, mode.showingTags());
     }
 
-    private static List<String> searchableIconEntries(TabletUiState state) {
+    private static List<String> searchableIconEntries(UiState state) {
         ModalIconPickerMode mode = ModalIconPickerMode.safe(state.pickers.iconMode);
         if (mode.showingFluids()) {
             return DisplayIconProvider.searchableFluidEntries(state.pickers.iconSearch);
@@ -312,7 +312,7 @@ public final class IconPickerModal {
         return chapter.isBlank() ? "" : ModalTargets.chapterIcon(chapter);
     }
 
-    private static void applyInventoryIconPick(Player player, TabletUiState state, ItemStack stack, String target, Runnable refresh) {
+    private static void applyInventoryIconPick(Player player, UiState state, ItemStack stack, String target, Runnable refresh) {
         if (target == null || target.isBlank() || stack == null || stack.isEmpty()) {
             QuestsAndStuffMod.debugLog("[QnS:UI] icon inventory pick ignored target={}", target == null ? "" : target);
             refresh.run();

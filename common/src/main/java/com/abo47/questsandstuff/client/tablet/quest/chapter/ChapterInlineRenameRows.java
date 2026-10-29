@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -33,16 +33,16 @@ final class ChapterInlineRenameRows {
             Consumer<String> commit,
             Runnable cancel
     ) {
-        chapterList.addWidget(TabletUiFactory.panel(
+        chapterList.addWidget(UiFactory.panel(
                 cardX,
                 y,
                 cardW,
-                TabletUiFactory.CHAPTER_CARD_H,
-                withAlpha(TabletColors.INTERACTIVE, 108),
-                TabletColors.BORDER_ACCENT
+                UiFactory.CHAPTER_CARD_H,
+                withAlpha(ThemeColors.INTERACTIVE, 108),
+                ThemeColors.BORDER_ACCENT
         ));
         if (icon != null && !icon.isBlank()) {
-            chapterList.addWidget(new DisplayIconWidget(iconX, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, icon));
+            chapterList.addWidget(new DisplayIconWidget(iconX, y + 8, UiFactory.CONTENT_ICON_SIZE, UiFactory.CONTENT_ICON_SIZE, icon));
         }
 
         int doneW = 24;
@@ -64,10 +64,10 @@ final class ChapterInlineRenameRows {
         field.setClientSideWidget();
         field.setMaxStringLength(QuestIdentity.UI_CHAPTER_NAME_MAX_LENGTH);
         field.setBordered(false);
-        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));
-        field.setTextColor(TabletColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.INTERACTIVE));
+        field.setTextColor(ThemeColors.TEXT_PRIMARY);
         chapterList.addWidget(field);
-        addFlatIconAction(chapterList, doneX + 4, y + 10, TabletUiFactory.ACTION_ICON_SIZE, "add.png", click -> commit.accept(field.getCurrentString()));
+        addFlatIconAction(chapterList, doneX + 4, y + 10, UiFactory.ACTION_ICON_SIZE, "add.png", click -> commit.accept(field.getCurrentString()));
     }
 
     private static void addFlatIconAction(WidgetGroup parent, int x, int y, int size, String iconName, java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
@@ -75,6 +75,6 @@ final class ChapterInlineRenameRows {
         if (texture != null) {
             parent.addWidget(new ImageWidget(x, y, size, size, texture));
         }
-        parent.addWidget(TabletUiFactory.flatHitButton(x, y, size, size, callback));
+        parent.addWidget(UiFactory.flatHitButton(x, y, size, size, callback));
     }
 }

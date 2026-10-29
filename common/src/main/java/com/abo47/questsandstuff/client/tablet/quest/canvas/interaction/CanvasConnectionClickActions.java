@@ -7,19 +7,19 @@ import net.minecraft.world.entity.player.Player;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Keybindings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 public final class CanvasConnectionClickActions {
     private CanvasConnectionClickActions() {
     }
 
-    public static boolean handleQuickConnect(TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit, CanvasExclusiveChoice exclusiveChoiceHit, int button) {
+    public static boolean handleQuickConnect(UiState state, Player player, Runnable refresher, QuestCardLayout hit, CanvasExclusiveChoice exclusiveChoiceHit, int button) {
         if (shouldClearQuickConnect(state)) {
             clearQuickConnect(state);
         }
@@ -44,7 +44,7 @@ public final class CanvasConnectionClickActions {
         return finalizeQuickConnect(state, player, refresher, hit);
     }
 
-    public static boolean handlePendingConnect(TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit, CanvasExclusiveChoice exclusiveChoiceHit, int button) {
+    public static boolean handlePendingConnect(UiState state, Player player, Runnable refresher, QuestCardLayout hit, CanvasExclusiveChoice exclusiveChoiceHit, int button) {
         if (button != 0 || !hasPendingConnectSource(state)) {
             return false;
         }
@@ -60,7 +60,7 @@ public final class CanvasConnectionClickActions {
         return createPendingConnections(state, player, refresher, hit);
     }
 
-    public static boolean handleConnectMode(CanvasViewport canvasViewport, TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit, int button) {
+    public static boolean handleConnectMode(CanvasViewport canvasViewport, UiState state, Player player, Runnable refresher, QuestCardLayout hit, int button) {
         if (hit == null) {
             return true;
         }
@@ -73,26 +73,26 @@ public final class CanvasConnectionClickActions {
         return finalizeConnectMode(canvasViewport, state, player, refresher, hit, button);
     }
 
-    private static boolean shouldClearQuickConnect(TabletUiState state) {
+    private static boolean shouldClearQuickConnect(UiState state) {
         return !isQuickConnectActive(state) && !state.canvas.quickConnectSourceQuestId.isBlank() && !state.canvas.quickConnectExclusiveChoiceId.isBlank();
     }
 
-    private static void clearQuickConnect(TabletUiState state) {
+    private static void clearQuickConnect(UiState state) {
         state.canvas.quickConnectSourceQuestId = "";
         state.canvas.quickConnectExclusiveChoiceId = "";
     }
 
-    private static boolean isQuickConnectActive(TabletUiState state) {
-        return state.canvas.quickConnectHeld || TabletKeybindings.quickConnectDown();
+    private static boolean isQuickConnectActive(UiState state) {
+        return state.canvas.quickConnectHeld || Keybindings.quickConnectDown();
     }
 
-    private static boolean hasPendingConnectSource(TabletUiState state) {
+    private static boolean hasPendingConnectSource(UiState state) {
         return !state.canvas.connectSourceQuestId.isBlank()
                 || !state.canvas.connectSourceQuestIds.isEmpty()
                 || !state.canvas.connectExclusiveChoiceId.isBlank();
     }
 
-    private static boolean connectExclusiveChoiceToQuest(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
+    private static boolean connectExclusiveChoiceToQuest(UiState state, Runnable refresher, QuestCardLayout hit) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.quickConnectExclusiveChoiceId);
         if (ec != null && !ec.connectionQuestIds().contains(hit.questId())) {
@@ -108,7 +108,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean connectQuestToExclusiveChoice(TabletUiState state, Runnable refresher, CanvasExclusiveChoice exclusiveChoiceHit) {
+    private static boolean connectQuestToExclusiveChoice(UiState state, Runnable refresher, CanvasExclusiveChoice exclusiveChoiceHit) {
         if (!state.canvas.quickConnectSourceQuestId.isBlank()) {
             String chapter = EditorChapterCommandClient.selectedChapterName(state);
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceHit.id());
@@ -132,7 +132,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean setQuickConnectSource(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
+    private static boolean setQuickConnectSource(UiState state, Runnable refresher, QuestCardLayout hit) {
         state.canvas.quickConnectSourceQuestId = hit.questId();
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.questIds().add(hit.questId());
@@ -142,10 +142,10 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean finalizeQuickConnect(TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit) {
+    private static boolean finalizeQuickConnect(UiState state, Player player, Runnable refresher, QuestCardLayout hit) {
         String sourceQuestId = state.canvas.quickConnectSourceQuestId;
         ConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
-        TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
+        UiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
         state.canvas.quickConnectSourceQuestId = hit.questId();
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.questIds().add(hit.questId());
@@ -157,7 +157,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean handlePendingExclusiveChoiceConnect(TabletUiState state, Runnable refresher, QuestCardLayout hit) {
+    private static boolean handlePendingExclusiveChoiceConnect(UiState state, Runnable refresher, QuestCardLayout hit) {
         if (hit == null) {
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connect cancelled id={}", state.canvas.connectExclusiveChoiceId);
             state.canvas.connectExclusiveChoiceId = "";
@@ -180,7 +180,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean handlePendingExclusiveChoicePrerequisite(TabletUiState state, Runnable refresher, CanvasExclusiveChoice exclusiveChoiceHit) {
+    private static boolean handlePendingExclusiveChoicePrerequisite(UiState state, Runnable refresher, CanvasExclusiveChoice exclusiveChoiceHit) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceHit.id());
         if (ec != null && !ec.prerequisiteQuestIds().contains(state.canvas.connectSourceQuestId)) {
@@ -197,7 +197,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean cancelPendingConnect(TabletUiState state, Runnable refresher) {
+    private static boolean cancelPendingConnect(UiState state, Runnable refresher) {
         if (!state.canvas.connectSourceQuestIds.isEmpty() || !state.canvas.connectSourceQuestId.isBlank()) {
             state.canvas.connectSourceQuestIds.add(state.canvas.connectSourceQuestId);
         }
@@ -208,7 +208,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean createPendingConnections(TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit) {
+    private static boolean createPendingConnections(UiState state, Player player, Runnable refresher, QuestCardLayout hit) {
         if (state.canvas.connectSourceQuestIds.isEmpty() && !state.canvas.connectSourceQuestId.isBlank()) {
             state.canvas.connectSourceQuestIds.add(state.canvas.connectSourceQuestId);
         }
@@ -219,7 +219,7 @@ public final class CanvasConnectionClickActions {
             }
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas connect prerequisite={} quest={}", sourceQuestId, hit.questId());
             ConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
-            TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
+            UiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, true);
             connected++;
         }
         List<String> attemptedSources = List.copyOf(state.canvas.connectSourceQuestIds);
@@ -236,7 +236,7 @@ public final class CanvasConnectionClickActions {
         return true;
     }
 
-    private static boolean finalizeConnectMode(CanvasViewport canvasViewport, TabletUiState state, Player player, Runnable refresher, QuestCardLayout hit, int button) {
+    private static boolean finalizeConnectMode(CanvasViewport canvasViewport, UiState state, Player player, Runnable refresher, QuestCardLayout hit, int button) {
         boolean addPrerequisite = !(canvasViewport.shiftDown() || canvasViewport.ctrlDown() || button == 1);
         if (state.canvas.connectSourceQuestIds.isEmpty()) {
             state.canvas.connectSourceQuestIds.add(state.canvas.connectSourceQuestId);
@@ -246,7 +246,7 @@ public final class CanvasConnectionClickActions {
                 if (addPrerequisite) {
                     ConnectionAnimation.startIfNew(state, hit.questId(), sourceQuestId);
                 }
-                TabletUiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, addPrerequisite);
+                UiFactory.runPrerequisiteAction(player, hit.questId(), sourceQuestId, addPrerequisite);
             }
         }
         state.canvas.canvasSelection.selectOnlyQuest(hit.questId());

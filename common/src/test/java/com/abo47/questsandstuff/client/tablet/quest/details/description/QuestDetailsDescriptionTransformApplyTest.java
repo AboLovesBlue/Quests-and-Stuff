@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsDescriptionTransformApplyTest {
     @Test
     void previewTextTransformWritesTransientTextOnly() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsTransformKind = "desc_text";
         state.questDetails.questDetailsTransformId = "text";
         QuestDetailsDescriptionModel model = new QuestDetailsDescriptionModel();
@@ -28,7 +28,7 @@ class QuestDetailsDescriptionTransformApplyTest {
 
     @Test
     void previewSelectionTransformWritesSelectedTransientLayers() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsTransformKind = "selection";
         state.questDetails.questDetailsDescriptionSelection.textIds().add("text");
         state.questDetails.questDetailsDescriptionSelection.imageIds().add("image");
@@ -46,7 +46,7 @@ class QuestDetailsDescriptionTransformApplyTest {
 
     @Test
     void clearEditDragStateCancelsSelectionAndTransformSession() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.selectingCanvasTextRange = true;
         state.questDetails.questDetailsBoxSelecting = true;
         state.questDetails.questDetailsTransformKind = "desc_text";

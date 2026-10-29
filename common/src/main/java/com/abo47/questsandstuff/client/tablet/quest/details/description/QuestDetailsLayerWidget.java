@@ -15,13 +15,13 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class QuestDetailsLayerWidget extends WidgetGroup {
-    private final TabletUiState state;
+    private final UiState state;
     private final Runnable refresh;
 
-    public QuestDetailsLayerWidget(int x, int y, int width, int height, TabletUiState state, Runnable refresh) {
+    public QuestDetailsLayerWidget(int x, int y, int width, int height, UiState state, Runnable refresh) {
         super(x, y, width, height);
         this.state = state;
         this.refresh = refresh == null ? () -> {
@@ -123,7 +123,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     private static boolean taskInteractionStarted(
-            TabletUiState state,
+            UiState state,
             String selectedKindBefore,
             String selectedIdBefore,
             boolean dragPendingBefore,

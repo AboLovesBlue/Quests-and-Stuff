@@ -9,7 +9,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import com.google.gson.JsonObject;
 
@@ -17,7 +17,7 @@ public final class QuestTaskRenameActions {
     private QuestTaskRenameActions() {
     }
 
-    public static void openTaskRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+    public static void openTaskRenameEditor(UiState state, String questId, String id, boolean task) {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();

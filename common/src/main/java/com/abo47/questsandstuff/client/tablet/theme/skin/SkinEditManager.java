@@ -26,17 +26,17 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
+import com.abo47.questsandstuff.client.tablet.controls.IconTextButton;
 import com.abo47.questsandstuff.client.tablet.controls.FourFieldEditor;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsRootWidget;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.root.RootWidget;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class SkinEditManager {
     private SkinEditManager() {
@@ -48,7 +48,7 @@ public final class SkinEditManager {
     private static final IdentityHashMap<Widget, CapturedOriginal> ORIGINAL_BACKGROUNDS = new IdentityHashMap<>();
     private static Widget selectedTargetWidget;
 
-    public static Widget selectedTargetWidget(TabletRootWidget root) {
+    public static Widget selectedTargetWidget(RootWidget root) {
         Widget w = selectedTargetWidget;
         if (w == null) return null;
         for (Widget cur = w.getParent(); cur != null; cur = cur.getParent()) {
@@ -58,7 +58,7 @@ public final class SkinEditManager {
         return null;
     }
 
-    public static boolean handleClick(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY, int button) {
+    public static boolean handleClick(UiState state, RootWidget root, Runnable refresher, int mouseX, int mouseY, int button) {
         if (state == null || !state.root.skinEditMode) return false;
         if (ModalStateQueries.anyOpen(state)) {
             if (!state.root.skinEditSelectedTarget.isEmpty()) {
@@ -116,7 +116,7 @@ public final class SkinEditManager {
         return true;
     }
 
-    public static void reapplyOverrides(TabletUiState state, WidgetGroup root) {
+    public static void reapplyOverrides(UiState state, WidgetGroup root) {
         if (state == null || root == null) return;
         state.root.activeSkinTargets.clear();
         if (state.root.skinFillOverrides.isEmpty()) {
@@ -132,7 +132,7 @@ public final class SkinEditManager {
         applyOverrides(state, root, activeTargets);
     }
 
-    private static void applyOverrides(TabletUiState state, WidgetGroup root, Set<String> activeTargets) {
+    private static void applyOverrides(UiState state, WidgetGroup root, Set<String> activeTargets) {
         Set<Widget> touched = new HashSet<>();
         for (var entry : state.root.skinFillOverrides.entrySet()) {
             String entryKey = entry.getKey();
@@ -168,7 +168,7 @@ public final class SkinEditManager {
                 } else if (!SkinOverrideKey.isCardKey(targetKey)) {
                     for (Widget child : wg.widgets) {
                         if (!SkinEditTargetResolver.hasCustomChrome(child)
-                                || child instanceof TabletIconTextButton
+                                || child instanceof IconTextButton
                                 || child instanceof TextFieldWidget) {
                             if (SkinTargetKeys.SETTINGS_TAB_LAYER.equals(targetKey) && child instanceof WidgetGroup tabContainer && !tabContainer.widgets.isEmpty()) {
                                 applyToWidget(tabContainer.widgets.get(0), targetKey, tex, touched);
@@ -221,7 +221,7 @@ public final class SkinEditManager {
                 return new int[]{-1, -1, 2, 2};
             }
             Class<?> cls = w.getClass();
-            if (cls == TabletIconTextButton.class || cls == QuestDetailsRootWidget.class
+            if (cls == IconTextButton.class || cls == QuestDetailsRootWidget.class
                     || cls == TextFieldWidget.class) {
                 return new int[]{-1, -1, 2, 2};
             }
@@ -256,7 +256,7 @@ public final class SkinEditManager {
         ORIGINAL_BACKGROUNDS.clear();
     }
 
-    public static void restoreOverride(TabletUiState state, WidgetGroup root, String targetKey) {
+    public static void restoreOverride(UiState state, WidgetGroup root, String targetKey) {
         if (targetKey == null) return;
         String bare = SkinOverrideKey.resolveTargetKey(state, targetKey);
         ORIGINAL_BACKGROUNDS.entrySet().removeIf(entry -> {
@@ -276,11 +276,11 @@ public final class SkinEditManager {
         return SkinEditTargetResolver.widgetForKey(root, targetKey);
     }
 
-    private static String resolveSkinTarget(TabletUiState state, String targetKey) {
+    private static String resolveSkinTarget(UiState state, String targetKey) {
         return SkinOverrideKey.resolveTargetKey(state, targetKey);
     }
 
-    private static void buildContextMenu(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY) {
+    private static void buildContextMenu(UiState state, RootWidget root, Runnable refresher, int mouseX, int mouseY) {
         String targetKey = state.root.skinEditSelectedTarget;
         if (targetKey == null || targetKey.isBlank()) return;
 
@@ -293,9 +293,9 @@ public final class SkinEditManager {
 
         ContextMenuSections sections = new ContextMenuSections();
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.change_texture"),
+                TranslationKeys.text("ui.questsandstuff.skin.change_texture"),
                 "image",
-                TabletColors.INTERACTIVE,
+                ThemeColors.INTERACTIVE,
                 () -> {
                     root.closeContextMenu();
                     state.modal.skinEditFillTarget = resolvedTarget;
@@ -307,9 +307,9 @@ public final class SkinEditManager {
         for (SkinFillMode spec : SkinFillMode.values()) {
             boolean active = currentMode.equals(spec.mode);
             modeActions.add(ContextActionFactory.action(
-                    TabletTranslationKeys.text(spec.titleKey),
+                    TranslationKeys.text(spec.titleKey),
                     spec.icon,
-                    active ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    active ? ThemeColors.SUCCESS : ThemeColors.TEXT_SECONDARY,
                     () -> {
                         QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: {}, asset={}", spec.mode, currentAsset);
                         root.closeContextMenu();
@@ -317,15 +317,15 @@ public final class SkinEditManager {
                     }));
         }
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
+                TranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "layout-dashboard",
-                TabletColors.TEXT_PRIMARY,
+                ThemeColors.TEXT_PRIMARY,
                 modeActions));
 
         if (rawOverride != null && !rawOverride.isBlank()) {
             String skinTexKey = "skin_remove_tex:" + resolvedTarget;
             sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, skinTexKey,
-                    TabletTranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
+                    TranslationKeys.text("ui.questsandstuff.skin.remove_texture"),
                     () -> {
                         root.closeContextMenu();
                         String qualified = SkinOverrideKey.overrideKey(state, resolvedTarget);
@@ -336,7 +336,7 @@ public final class SkinEditManager {
                         }
                         restoreOverride(state, root, resolvedTarget);
                         if (refresher != null) refresher.run();
-                        TabletUiFactory.persistSkinState(state);
+                        UiFactory.persistSkinState(state);
                     }));
         }
 
@@ -352,7 +352,7 @@ public final class SkinEditManager {
         int py = ContextMenuPlacement.fitBelowOrAbove(mouseY, screenH, menuH);
 
         root.setContextMenu(
-                ContextMenuPanel.build(px, py, menuW, built, 0, built.size(), TabletColors.BORDER_BASE, state, a -> {
+                ContextMenuPanel.build(px, py, menuW, built, 0, built.size(), ThemeColors.BORDER_BASE, state, a -> {
                     if (state.root.skinModeEditorOpen) {
                         return;
                     }
@@ -364,7 +364,7 @@ public final class SkinEditManager {
         );
     }
 
-    private static void openModeEditorFor(TabletUiState state, TabletRootWidget root, Runnable refresher,
+    private static void openModeEditorFor(UiState state, RootWidget root, Runnable refresher,
             String targetKey, String asset, int mouseX, int mouseY, SkinFillMode spec, SkinFillOverride currentOverride) {
         boolean editingCurrent = currentOverride != null && spec.mode.equals(currentOverride.mode());
         int left = editingCurrent ? currentOverride.leftEdge() : spec.defaultLeft;
@@ -379,7 +379,7 @@ public final class SkinEditManager {
         }
     }
 
-    public static void setFillModeFromAssetPicker(TabletUiState state, String targetKey, String asset, Runnable refresher) {
+    public static void setFillModeFromAssetPicker(UiState state, String targetKey, String asset, Runnable refresher) {
         SkinFillOverride prior = SkinFillOverride.parse(SkinOverrideKey.resolveOverride(state, targetKey));
         String mode = prior != null ? prior.mode() : "stretch";
         int left = prior != null ? prior.leftEdge() : 0;
@@ -387,11 +387,11 @@ public final class SkinEditManager {
         setFillMode(state, targetKey, mode, asset, left, right, 0, 0, null, refresher);
     }
 
-    private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, WidgetGroup root, Runnable refresher) {
+    private static void setFillMode(UiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, WidgetGroup root, Runnable refresher) {
         setFillMode(state, targetKey, mode, asset, leftEdge, rightEdge, 0, 0, root, refresher);
     }
 
-    private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, int topEdge, int bottomEdge, WidgetGroup root, Runnable refresher) {
+    private static void setFillMode(UiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, int topEdge, int bottomEdge, WidgetGroup root, Runnable refresher) {
         if (asset == null || asset.isBlank()) {
             QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode ABORTED: asset is blank, target={}, mode={}", targetKey, mode);
             return;
@@ -404,10 +404,10 @@ public final class SkinEditManager {
         QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode: target={}, mode={}, asset={}, entryKey={}, encoded={}", targetKey, mode, asset, entryKey, encoded);
         reapplyOverrides(state, root);
         if (refresher != null) refresher.run();
-        TabletUiFactory.persistSkinState(state);
+        UiFactory.persistSkinState(state);
     }
 
-    private static void openModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY,
+    private static void openModeEditor(UiState state, RootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY,
             String mode, String titleKey, String leftLabelKey, String rightLabelKey, int left, int right) {
         int w = 240;
         int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
@@ -430,7 +430,7 @@ public final class SkinEditManager {
         root.setContextMenu(popup, x, y, w, h);
     }
 
-    private static void openDynamicModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY, int l, int r, int t, int b) {
+    private static void openDynamicModeEditor(UiState state, RootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY, int l, int r, int t, int b) {
         int w = 240;
         int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         Rectangle bounds = modeEditorBounds(mouseX, mouseY, w, h);
@@ -463,14 +463,14 @@ public final class SkinEditManager {
         return SkinTargetKeys.MINIMAP_BODY.equals(key) || SkinTargetKeys.MINIMAP_TOGGLE.equals(key);
     }
 
-    static boolean isMinimapHit(TabletUiState state, TabletRootWidget root, int mx, int my) {
+    static boolean isMinimapHit(UiState state, RootWidget root, int mx, int my) {
         CanvasViewport vp = root.getCanvasViewport();
         int[] body = SkinMinimapRects.bodyRect(state, vp);
         int[] toggle = SkinMinimapRects.toggleRect(state, vp);
         return contains(body, mx, my) || contains(toggle, mx, my);
     }
 
-    static String minimapHitKey(TabletUiState state, TabletRootWidget root, int mx, int my) {
+    static String minimapHitKey(UiState state, RootWidget root, int mx, int my) {
         CanvasViewport vp = root.getCanvasViewport();
         if (contains(SkinMinimapRects.toggleRect(state, vp), mx, my)) return SkinTargetKeys.MINIMAP_TOGGLE;
         if (contains(SkinMinimapRects.bodyRect(state, vp), mx, my)) return SkinTargetKeys.MINIMAP_BODY;

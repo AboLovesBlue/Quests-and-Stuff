@@ -8,9 +8,9 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 final class ChapterListMetrics {
     private static final int COLLAPSED_TILE_W = 28;
@@ -26,7 +26,7 @@ final class ChapterListMetrics {
         String chapterQuery = SearchFilter.normalize(queryText);
         List<String> chapterList = new ArrayList<>();
         for (String chapter : groups) {
-            if (TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
+            if (UiFactory.DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
             if (!canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {
@@ -40,7 +40,7 @@ final class ChapterListMetrics {
         return chapterList;
     }
 
-    static void addScrollBar(WidgetGroup chapterList, TabletUiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
+    static void addScrollBar(WidgetGroup chapterList, UiState state, Runnable refresh, int trackX, int trackY, int trackH, int totalHeight) {
         int knobH = Math.max(18, (int) ((float) trackH * ((float) trackH / (float) Math.max(trackH, totalHeight))));
         state.chapterPanel.chapterScrollKnobH = knobH;
         chapterList.addWidget(new DragScrollBarWidget(
@@ -59,7 +59,7 @@ final class ChapterListMetrics {
         ));
     }
 
-    static void rememberEmpty(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, int baseCardX, int rowStartY) {
+    static void rememberEmpty(UiState state, int listOriginX, int listOriginY, int listW, int listH, int baseCardX, int rowStartY) {
         state.chapterPanel.chapterScroll = 0;
         state.chapterPanel.chapterScrollMax = 0;
         state.chapterPanel.chapterScrollKnobH = 18;
@@ -74,7 +74,7 @@ final class ChapterListMetrics {
         state.chapterPanel.chapterCardHitBottom = listOriginY + listH - 6;
     }
 
-    static void remember(TabletUiState state, int listOriginX, int listOriginY, int listW, int listH, Layout layout, int trackY, int trackH, int rowStartY) {
+    static void remember(UiState state, int listOriginX, int listOriginY, int listW, int listH, Layout layout, int trackY, int trackH, int rowStartY) {
         state.chapterPanel.chapterListOriginX = listOriginX;
         state.chapterPanel.chapterListOriginY = listOriginY;
         state.chapterPanel.chapterListWidth = listW;

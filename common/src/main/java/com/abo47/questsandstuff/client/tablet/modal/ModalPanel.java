@@ -20,22 +20,22 @@ import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasModelPickerLauncher;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.closeIconButton;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTooltips;
 
 public final class ModalPanel {
     private ModalPanel() {
     }
 
-    public static void rebuildChapterModal(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
+    public static void rebuildChapterModal(WidgetGroup overlay, UiState state, Player player, Runnable refresh) {
         ModalPanelRouter.rebuildChapterModal(overlay, state, player, refresh);
     }
 
-    public static void addModalClose(WidgetGroup modal, int x, int y, int size, TabletUiState state, Runnable refresh) {
+    public static void addModalClose(WidgetGroup modal, int x, int y, int size, UiState state, Runnable refresh) {
         int closeX = x + GRID_1;
         int closeY = Math.max(0, y - GRID_3);
         Runnable close = () -> {
@@ -47,7 +47,7 @@ public final class ModalPanel {
         modal.addWidget(closeIconButton(closeX, closeY, size, size, click -> close.run()));
     }
 
-    public static boolean acceptPickerDoubleClick(TabletUiState state, String key) {
+    public static boolean acceptPickerDoubleClick(UiState state, String key) {
         String safeKey = key == null ? "" : key;
         long now = System.currentTimeMillis();
         boolean accepted = !safeKey.isBlank()
@@ -58,15 +58,15 @@ public final class ModalPanel {
         return accepted;
     }
 
-    public static void runAssetBackgroundAction(Player player, TabletUiState state, String background) {
+    public static void runAssetBackgroundAction(Player player, UiState state, String background) {
         AssetPickerApplyActions.run(player, state, background);
     }
 
-    public static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
+    public static boolean runCanvasEntityAction(Player player, UiState state, String target, String pickedItem) {
         return CanvasEntityPickerLauncher.run(player, state, target, pickedItem);
     }
 
-    public static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
+    public static boolean runCanvasModelAction(UiState state, String target, String pickedValue) {
         return CanvasModelPickerLauncher.run(state, target, pickedValue);
     }
 
@@ -122,11 +122,11 @@ public final class ModalPanel {
         return slash >= 0 ? relativePath.substring(0, slash) : "";
     }
 
-    public static int currentColorPickerValue(TabletUiState state, String target) {
+    public static int currentColorPickerValue(UiState state, String target) {
         return ColorPickerApplyActions.currentValue(state, target);
     }
 
-    public static void applyColorPickerValue(Player player, TabletUiState state, String target, int color) {
+    public static void applyColorPickerValue(Player player, UiState state, String target, int color) {
         ColorPickerApplyActions.apply(player, state, target, color);
     }
 

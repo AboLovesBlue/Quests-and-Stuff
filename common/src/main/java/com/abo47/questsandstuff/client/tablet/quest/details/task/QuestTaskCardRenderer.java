@@ -26,18 +26,18 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskL
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskLockJson;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
 
 final class QuestTaskCardRenderer {
     private QuestTaskCardRenderer() {
     }
 
-    static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom) {
+    static void renderTaskCard(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom) {
         parent.addWidget(QuestTaskCardPanel.cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom, false, false, false, QuestTaskLockJson.hasLocks(entry.json())));
         String icon = QuestTaskDisplayText.taskIcon(entry.json());
         addTaskIcon(parent, entry.json(), icon, x + 8, y + 8);
@@ -49,7 +49,7 @@ final class QuestTaskCardRenderer {
         }
     }
 
-    static void renderRewardCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom, boolean rewardsClaimed) {
+    static void renderRewardCard(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom, boolean rewardsClaimed) {
         boolean selectableWrapper = QuestTaskSelectableRewards.isSelectable(entry.json());
         boolean selectableChoice = QuestTaskSelectableRewards.isSelectableChoiceId(entry.id());
         boolean selectableReward = selectableWrapper || selectableChoice;
@@ -65,7 +65,7 @@ final class QuestTaskCardRenderer {
         if (!renaming && !selectableReward && QuestTaskLootTableRewardEditor.isLootTable(entry.json())) {
             QuestTaskLootTableRewardEditor.render(parent, state, player, refresh, questId, entry, titleX, y + 8, rewardTitleRightX(entry, x, w));
         } else {
-            QuestTaskInlineFields.renderTaskTitle(parent, state, player, refresh, questId, displayEntry, false, titleX, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? TabletColors.TEXT_MUTED : TabletColors.TEXT_PRIMARY);
+            QuestTaskInlineFields.renderTaskTitle(parent, state, player, refresh, questId, displayEntry, false, titleX, y + 8, renaming ? x + w - 8 : rewardTitleRightX(displayEntry, x, w), rewardsClaimed ? ThemeColors.TEXT_MUTED : ThemeColors.TEXT_PRIMARY);
         }
         if (!renaming) {
             QuestTaskInlineFields.renderAmountField(parent, state, player, refresh, questId, displayEntry, x + w - 34, y + 9, 30, false);
@@ -97,7 +97,7 @@ final class QuestTaskCardRenderer {
         return QuestTaskDisplayText.usesAmountField(entry.json(), false) ? x + w - 40 : x + w - 8;
     }
 
-    private static void addIconHoverHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String questId, String id, boolean task, JsonObject json, String icon, int x, int y) {
+    private static void addIconHoverHit(WidgetGroup parent, UiState state, Runnable refresh, String questId, String id, boolean task, JsonObject json, String icon, int x, int y) {
         if (!QuestDetailsEditController.canEdit(state)) {
             return;
         }

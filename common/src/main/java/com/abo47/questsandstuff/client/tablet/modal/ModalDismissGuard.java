@@ -4,14 +4,14 @@ import org.lwjgl.glfw.GLFW;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.ModalState;
 
 public final class ModalDismissGuard extends WidgetGroup {
-    private final TabletUiState state;
+    private final UiState state;
     private final Runnable refresh;
 
-    public ModalDismissGuard(int x, int y, int width, int height, TabletUiState state, Runnable refresh) {
+    public ModalDismissGuard(int x, int y, int width, int height, UiState state, Runnable refresh) {
         super(x, y, width, height);
         this.state = state;
         this.refresh = refresh == null ? () -> {
@@ -21,7 +21,7 @@ public final class ModalDismissGuard extends WidgetGroup {
     @Override
     public void updateScreen() {
         super.updateScreen();
-        if (TabletModalState.finishClosingIfDone(state)) {
+        if (ModalState.finishClosingIfDone(state)) {
             refresh.run();
         }
     }

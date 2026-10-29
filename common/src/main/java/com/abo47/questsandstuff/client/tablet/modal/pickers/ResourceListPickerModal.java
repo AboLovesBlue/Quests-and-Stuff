@@ -13,15 +13,15 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
 import com.abo47.questsandstuff.client.tablet.controls.picker.PickerListPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.QUEST_DETAILS_PICK;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.ROW_H_16;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
@@ -35,7 +35,7 @@ final class ResourceListPickerModal {
     private ResourceListPickerModal() {
     }
 
-    static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, Options options) {
+    static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h, Options options) {
         SearchScrollState picker = ModalPickerStates.forType(state, options.type());
         ModalShell.addTitleAndClose(modal, options.title(), w, state, refresh);
         TextFieldWidget search = ModalShell.addSearchField(modal, 8, ModalShell.PICKER_HEADER_Y, w - 16, ModalShell.PICKER_SEARCH_H, picker.search(), options.searchMaxLength(), value -> {
@@ -58,12 +58,12 @@ final class ResourceListPickerModal {
         return search;
     }
 
-    private static void renderRow(WidgetGroup list, TabletUiState state, Player player, Runnable refresh, Options options, String entry, int rowY, int rowW) {
+    private static void renderRow(WidgetGroup list, UiState state, Player player, Runnable refresh, Options options, String entry, int rowY, int rowW) {
         if (!options.icon().isBlank()) {
             list.addWidget(new DisplayIconWidget(8, rowY + 1, 12, 12, options.icon()));
         }
-        list.addWidget(label(options.displayX(), rowY + 4, SearchFilter.crop(options.displayName().value(entry), options.displayCrop()), TabletColors.TEXT_PRIMARY));
-        list.addWidget(label(Math.max(120, rowW - options.idRightOffset()), rowY + 4, SearchFilter.crop(entry, options.idCrop()), TabletColors.TEXT_MUTED));
+        list.addWidget(label(options.displayX(), rowY + 4, SearchFilter.crop(options.displayName().value(entry), options.displayCrop()), ThemeColors.TEXT_PRIMARY));
+        list.addWidget(label(Math.max(120, rowW - options.idRightOffset()), rowY + 4, SearchFilter.crop(entry, options.idCrop()), ThemeColors.TEXT_MUTED));
         ButtonWidget hit = flatHitButton(4, rowY, rowW - 8, ROW_H, click -> {
             if (!ModalTargetState.parsedTarget(state, QUEST_DETAILS_PICK, state.questDetails.questDetailsPickTarget).kind().isBlank()) {
                 options.pickAction().pick(player, state, entry);
@@ -111,6 +111,6 @@ final class ResourceListPickerModal {
 
     @FunctionalInterface
     interface PickAction {
-        void pick(Player player, TabletUiState state, String entry);
+        void pick(Player player, UiState state, String entry);
     }
 }

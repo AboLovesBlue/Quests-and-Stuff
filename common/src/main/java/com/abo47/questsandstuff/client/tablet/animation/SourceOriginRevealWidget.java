@@ -13,12 +13,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class SourceOriginRevealWidget extends WidgetGroup {
-    public static final long WINDOW_OPEN_MS = TabletAnimationTimings.WINDOW_OPEN_MS;
+    public static final long WINDOW_OPEN_MS = AnimationTimings.WINDOW_OPEN_MS;
     private static final float FALLBACK_SCALE = 0.96f;
     private static final float MIN_SOURCE_SCALE = 0.18f;
     private static final float MAX_SOURCE_SCALE = 0.90f;
@@ -167,10 +167,10 @@ public final class SourceOriginRevealWidget extends WidgetGroup {
         int w = getSizeWidth();
         int h = getSizeHeight();
         if (softAlpha > 0) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, softAlpha)).draw(graphics, 0, 0, x + 4, y + 5, w, h);
         }
         if (hardAlpha > 0) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, hardAlpha)).draw(graphics, 0, 0, x + 2, y + 3, w, h);
         }
     }
 

@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -92,7 +92,7 @@ final class ChapterMetadataJsonCodec {
             if (id.isBlank()) {
                 continue;
             }
-            texts.add(new CanvasTextLayer(id, stringOr(json, "text", ""), intOr(json, "x", 0), intOr(json, "y", 0), intOr(json, "w", 120), intOr(json, "h", 32), intOr(json, "rotation", 0), stringOr(json, "align", "left"), stringOr(json, "style", "normal"), intOr(json, "color", TabletColors.WHITE), intOr(json, "font_size", CanvasTextLayer.DEFAULT_FONT_SIZE), readTextSpans(json.get("spans"))));
+            texts.add(new CanvasTextLayer(id, stringOr(json, "text", ""), intOr(json, "x", 0), intOr(json, "y", 0), intOr(json, "w", 120), intOr(json, "h", 32), intOr(json, "rotation", 0), stringOr(json, "align", "left"), stringOr(json, "style", "normal"), intOr(json, "color", ThemeColors.WHITE), intOr(json, "font_size", CanvasTextLayer.DEFAULT_FONT_SIZE), readTextSpans(json.get("spans"))));
         }
         return texts;
     }
@@ -336,7 +336,7 @@ final class ChapterMetadataJsonCodec {
                 continue;
             }
             JsonObject json = child.getAsJsonObject();
-            spans.add(new CanvasTextStyleSpan(intOr(json, "start", 0), intOr(json, "end", 0), stringOr(json, "style", "normal"), intOr(json, "color", TabletColors.WHITE)));
+            spans.add(new CanvasTextStyleSpan(intOr(json, "start", 0), intOr(json, "end", 0), stringOr(json, "style", "normal"), intOr(json, "color", ThemeColors.WHITE)));
         }
         return spans;
     }

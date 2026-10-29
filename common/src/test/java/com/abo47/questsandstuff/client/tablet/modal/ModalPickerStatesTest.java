@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchScrollState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalPickerStates;
 class ModalPickerStatesTest {
     @Test
     void recipeBindingResetsSearchFocusScrollDraggingAndKeepsModeSeparate() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.recipeSearch = "minecraft:stone";
         state.pickers.recipeSearchFocused = true;
         state.pickers.recipeScroll = 42;
@@ -34,7 +34,7 @@ class ModalPickerStatesTest {
 
     @Test
     void assetBindingTargetsGridScrollFields() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.assetSearch = "blueprints";
         state.pickers.assetSearchFocused = true;
         state.pickers.assetGridScroll = 16;
@@ -51,7 +51,7 @@ class ModalPickerStatesTest {
 
     @Test
     void typeLookupBindsEverySimpleResourceListPicker() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         ModalPickerStates.forType(state, ModalWindowManager.ModalType.BIOME_PICKER).setSearch("plains");
         ModalPickerStates.forType(state, ModalWindowManager.ModalType.ADVANCEMENT_PICKER).setSearch("story");
@@ -70,7 +70,7 @@ class ModalPickerStatesTest {
 
     @Test
     void typeLookupRejectsModalsWithoutPickerState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         assertThrows(IllegalArgumentException.class,
                 () -> ModalPickerStates.forType(state, ModalWindowManager.ModalType.THEME_PICKER));
@@ -78,7 +78,7 @@ class ModalPickerStatesTest {
 
     @Test
     void activePickerBindingUpdatesModalSessionPayload() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         RegistryPickerOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
 
         SearchScrollState picker = ModalPickerStates.recipe(state);
@@ -97,7 +97,7 @@ class ModalPickerStatesTest {
 
     @Test
     void switchingPickerTypeCreatesFreshSessionPayload() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         RegistryPickerOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
         ModalPickerStates.recipe(state).setSearch("stone");
         ModalPickerStates.recipe(state).setScrollValue(22);
@@ -114,7 +114,7 @@ class ModalPickerStatesTest {
 
     @Test
     void prerequisitesManagerBindingNormalizesQuestSearch() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
 
         SearchScrollState picker = ModalPickerStates.prerequisitesManager(state);
         picker.setSearch(" Quest_A\n");
@@ -126,7 +126,7 @@ class ModalPickerStatesTest {
 
     @Test
     void recipeModeCycleKeepsOneModeActiveAndResetsScroll() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.recipeScroll = 24;
 
         RecipePickerMode.cycle(state, 1);
@@ -156,7 +156,7 @@ class ModalPickerStatesTest {
 
     @Test
     void hashRecipeSearchUsesTagModeNameWithoutChangingModeFlags() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.recipeSearch = " #forge:ingots ";
 
         assertEquals("tags", state.pickers.recipeMode.logName(state.pickers.recipeSearch));
@@ -166,7 +166,7 @@ class ModalPickerStatesTest {
 
     @Test
     void iconModeCycleKeepsOneModeActiveAndResetsScroll() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.iconMode = ModalIconPickerMode.ITEMS;
         state.pickers.iconScroll = 24;
 
@@ -204,7 +204,7 @@ class ModalPickerStatesTest {
 
     @Test
     void useItemIconModeCyclesUsableItemsBeforeAllItems() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.iconMode = ModalIconPickerMode.USABLE_ITEMS;
 
         ModalIconPickerMode.cycle(state, false, true, true, 1);
@@ -221,7 +221,7 @@ class ModalPickerStatesTest {
 
     @Test
     void modelItemIconModeOnlyCyclesItemsAndTags() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.pickers.iconMode = ModalIconPickerMode.ENTITIES;
 
         ModalIconPickerMode.cycleModelItems(state, 1);

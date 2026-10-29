@@ -18,19 +18,19 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.ModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class QuestDetailsDescriptionTransform {
-    private final TabletUiState state;
+    private final UiState state;
     private final IntSupplier contentX;
     private final IntSupplier contentY;
     private final IntSupplier contentW;
     private final IntSupplier contentH;
 
-    QuestDetailsDescriptionTransform(TabletUiState state, IntSupplier contentX, IntSupplier contentY, IntSupplier contentW, IntSupplier contentH) {
+    QuestDetailsDescriptionTransform(UiState state, IntSupplier contentX, IntSupplier contentY, IntSupplier contentW, IntSupplier contentH) {
         this.state = state;
         this.contentX = contentX;
         this.contentY = contentY;
@@ -186,7 +186,7 @@ public final class QuestDetailsDescriptionTransform {
         double logicalMouseY = mouseY - screenContentY() + state.questDetails.questDetailsDescScroll;
         double currentAngle = Math.atan2(logicalMouseY - state.canvas.rotatePivotY, logicalMouseX - state.canvas.rotatePivotX);
         double delta = currentAngle - state.canvas.rotateStartAngle;
-        if (TabletModifierKeys.shiftDown()) {
+        if (ModifierKeys.shiftDown()) {
             double snap = Math.PI / 12.0;
             delta = Math.round(delta / snap) * snap;
         }
@@ -228,8 +228,8 @@ public final class QuestDetailsDescriptionTransform {
                 4,
                 4,
                 CanvasGeometry.gridSize(state),
-                state.questDetails.questDetailsGridSnapLocked || TabletModifierKeys.shiftDown(),
-                TabletModifierKeys.shiftDown(),
+                state.questDetails.questDetailsGridSnapLocked || ModifierKeys.shiftDown(),
+                ModifierKeys.shiftDown(),
                 QuestDetailsDescriptionLayout.visibleLeftEdge(),
                 QuestDetailsDescriptionLayout.visibleTopEdge(state),
                 contentW.getAsInt(),
@@ -324,13 +324,13 @@ public final class QuestDetailsDescriptionTransform {
                 state.questDetails.questDetailsTransformStartAngle,
                 mouseX,
                 mouseY,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         ));
         return image.withModelRotation(rotation.yaw(), rotation.pitch());
     }
 
     private CanvasTextLayer resizedText(CanvasTextLayer text, int mouseX, int mouseY, int cornerX, int cornerY) {
-        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, CanvasTextLayer.MIN_W, CanvasTextLayer.MIN_H, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, TabletModifierKeys.shiftDown());
+        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, CanvasTextLayer.MIN_W, CanvasTextLayer.MIN_H, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, ModifierKeys.shiftDown());
         return fitAndClampText(new CanvasTextLayer(text.id(), text.text(), box.x(), box.y(), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans()));
     }
 
@@ -338,7 +338,7 @@ public final class QuestDetailsDescriptionTransform {
         boolean gizmoSupported = CanvasTransformGizmoAxis.supports(image.asset());
         int cornerX = gizmoSupported ? CanvasTransformGizmoAxis.resizeCornerX(state.questDetails.questDetailsTransformAxis) : 1;
         int cornerY = gizmoSupported ? CanvasTransformGizmoAxis.resizeCornerY(state.questDetails.questDetailsTransformAxis) : 1;
-        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, 8, 8, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, gizmoSupported || TabletModifierKeys.shiftDown());
+        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, 8, 8, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, gizmoSupported || ModifierKeys.shiftDown());
         return fitAndClampImage(image.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
 
@@ -405,7 +405,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private boolean shouldFitRotatedPreview(int rotation) {
-        return state.questDetails.questDetailsGridSnapLocked && TabletModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
+        return state.questDetails.questDetailsGridSnapLocked && ModifierKeys.shiftDown() && CanvasGeometry.isCardinalTurn(rotation);
     }
 
     private int rotation(int mouseX, int mouseY) {
@@ -416,7 +416,7 @@ public final class QuestDetailsDescriptionTransform {
                 state.questDetails.questDetailsTransformStartAngle,
                 mouseX,
                 mouseY,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         ));
     }
 
@@ -498,7 +498,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasTransformEngine.SnapSettings snapSettings() {
-        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.questDetails.questDetailsGridSnapLocked, TabletModifierKeys.shiftDown());
+        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.questDetails.questDetailsGridSnapLocked, ModifierKeys.shiftDown());
     }
 
     record ElementRect(int x, int y, int w, int h, int rotation) {

@@ -2,13 +2,13 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasChapterSwitchAnimation {
     private CanvasChapterSwitchAnimation() {
     }
 
-    public static void trackSelectedChapter(TabletUiState state, String selectedChapter) {
+    public static void trackSelectedChapter(UiState state, String selectedChapter) {
         if (state == null) {
             return;
         }
@@ -16,11 +16,11 @@ public final class CanvasChapterSwitchAnimation {
         clear(state);
     }
 
-    public static WidgetGroup wrap(TabletUiState state, WidgetGroup content) {
+    public static WidgetGroup wrap(UiState state, WidgetGroup content) {
         return content;
     }
 
-    public static boolean finishIfDone(TabletUiState state) {
+    public static boolean finishIfDone(UiState state) {
         if (state == null || state.chapterPanel.canvasChapterSwitchAnimationStartMs <= 0L) {
             return false;
         }
@@ -28,7 +28,7 @@ public final class CanvasChapterSwitchAnimation {
         return true;
     }
 
-    private static void clear(TabletUiState state) {
+    private static void clear(UiState state) {
         state.chapterPanel.canvasChapterSwitchAnimationStartMs = 0L;
         state.chapterPanel.canvasChapterSwitchDirection = 1;
     }

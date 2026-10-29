@@ -13,7 +13,7 @@ import net.minecraft.nbt.Tag;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
@@ -244,7 +244,7 @@ record PrerequisiteConnectionModel(
         if (title != null && !title.isBlank()) {
             return title;
         }
-        return questId == null || questId.isBlank() ? TabletTranslationKeys.text(TabletTranslationKeys.COMMON_UNKNOWN) : questId;
+        return questId == null || questId.isBlank() ? TranslationKeys.text(TranslationKeys.COMMON_UNKNOWN) : questId;
     }
 
     private static String safe(String value) {

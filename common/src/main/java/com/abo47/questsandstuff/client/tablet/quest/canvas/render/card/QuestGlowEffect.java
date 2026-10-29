@@ -7,11 +7,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasInteractionGate;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 
 public final class QuestGlowEffect {
-    public static WidgetGroup overlay(int x, int y, int w, int h, TabletUiState state) {
+    public static WidgetGroup overlay(int x, int y, int w, int h, UiState state) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {

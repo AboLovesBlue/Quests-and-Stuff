@@ -8,7 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.team.model.TeamData;
 import com.abo47.questsandstuff.team.model.TeamMember;
@@ -23,7 +23,7 @@ final class S2CTeamPacketDispatch {
             ClientTeamCache.INSTANCE.clear();
             QuestsAndStuffMod.debugLog("[QnS:Team] received empty team sync");
             ModNetwork.sendToServer(new C2STeamCreatePacket());
-            TabletUiFactory.refreshActiveTablet();
+            UiFactory.refreshActiveTablet();
             return;
         }
         List<ClientTeamCache.ClientMember> members = new ArrayList<>();
@@ -36,7 +36,7 @@ final class S2CTeamPacketDispatch {
         ClientTeamCache.ClientTeamInfo info = new ClientTeamCache.ClientTeamInfo(
                 team.teamId(), team.owner(), members, team.inviteCode(), team.inviteExpiryMs());
         ClientTeamCache.INSTANCE.setTeam(info);
-        TabletUiFactory.refreshActiveTablet();
+        UiFactory.refreshActiveTablet();
         QuestsAndStuffMod.debugLog("[QnS:Team] received team sync: {} members={}",
                 team.teamId(), team.members().size());
     }
@@ -47,6 +47,6 @@ final class S2CTeamPacketDispatch {
         } else {
             ClientTeamCache.INSTANCE.setPendingJoinResult(I18n.get(messageKey), success);
         }
-        TabletUiFactory.refreshActiveTablet();
+        UiFactory.refreshActiveTablet();
     }
 }

@@ -14,17 +14,17 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 
 final class CanvasContextMenuRenderer {
     private CanvasContextMenuRenderer() {
     }
 
-    static void renderCanvasContextMenu(CanvasViewport canvasViewport, TabletUiState state) {
+    static void renderCanvasContextMenu(CanvasViewport canvasViewport, UiState state) {
         if (!ContextMenuController.isOpen(state)) {
             ContextMenuController.resetClosedMetrics(state);
             return;
@@ -48,12 +48,12 @@ final class CanvasContextMenuRenderer {
         int menuY = ContextMenuPlacement.fitBelowOrAbove(state.contextMenu.contextMenuAnchorY, canvasViewport.getSize().height, menuH);
         ContextMenuController.setLayout(state, menuX, menuY, menuW, menuH, rowCount, scrollMax);
 
-        canvasViewport.addWidget(TabletUiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> {
+        canvasViewport.addWidget(UiFactory.flatHitButton(0, 0, canvasViewport.getSize().width, canvasViewport.getSize().height, click -> {
             if (!state.contextMenu.modeEditorOpen) {
                 close(state);
             }
         }));
-        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(menuX, menuY, menuW, actions, state.contextMenu.contextMenuScroll, visibleRows, ThemeColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 close(state);
             }
@@ -75,7 +75,7 @@ final class CanvasContextMenuRenderer {
                     (l, r) -> {
                         Player player = Minecraft.getInstance().player;
                         if (player != null) {
-                            TabletUiFactory.runChapterAction(player, state, "set_canvas_background", state.contextMenu.modeEditorTarget,
+                            UiFactory.runChapterAction(player, state, "set_canvas_background", state.contextMenu.modeEditorTarget,
                                     new SkinFillOverride(mode, l, r, state.contextMenu.modeEditorPath).encode(), 0);
                         }
                         state.contextMenu.modeEditorOpen = false;
@@ -89,7 +89,7 @@ final class CanvasContextMenuRenderer {
         }
     }
 
-    private static void close(TabletUiState state) {
+    private static void close(UiState state) {
         ContextMenuController.close(state);
     }
 }

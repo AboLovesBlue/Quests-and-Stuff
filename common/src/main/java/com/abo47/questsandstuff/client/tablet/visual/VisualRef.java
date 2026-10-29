@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.visual;
 
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class VisualRef {
     public static final String ASSET_PREFIX = "asset|";
@@ -31,6 +31,6 @@ public final class VisualRef {
         if (path.isEmpty()) {
             return null;
         }
-        return TabletUiFactory.chapterBackgroundTexture(path);
+        return UiFactory.chapterBackgroundTexture(path);
     }
 }

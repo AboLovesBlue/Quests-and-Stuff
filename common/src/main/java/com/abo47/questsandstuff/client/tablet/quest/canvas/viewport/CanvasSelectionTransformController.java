@@ -5,15 +5,15 @@ import java.util.Map;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasSelectionTransformController {
-    private final TabletUiState state;
+    private final UiState state;
     private final CanvasSelectionDragController dragController;
     private final CanvasSelectionResizeController resizeController;
     private final CanvasSelectionRotateController rotateController;
 
-    public CanvasSelectionTransformController(TabletUiState state, CanvasElementTransformController elementTransforms) {
+    public CanvasSelectionTransformController(UiState state, CanvasElementTransformController elementTransforms) {
         this.state = state;
         this.dragController = new CanvasSelectionDragController(state, elementTransforms);
         this.resizeController = new CanvasSelectionResizeController(state);

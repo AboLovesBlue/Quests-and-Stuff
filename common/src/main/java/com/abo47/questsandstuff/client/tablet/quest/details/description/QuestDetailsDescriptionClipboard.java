@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
@@ -14,7 +14,7 @@ public final class QuestDetailsDescriptionClipboard {
     private QuestDetailsDescriptionClipboard() {
     }
 
-    public static void copyText(TabletUiState state, QuestDetailsDescriptionModel model, String id) {
+    public static void copyText(UiState state, QuestDetailsDescriptionModel model, String id) {
         CanvasTextLayer text = model.text(id);
         if (text == null) {
             return;
@@ -22,7 +22,7 @@ public final class QuestDetailsDescriptionClipboard {
         state.clipboard.canvasClipboard.store(false, java.util.List.of(), java.util.List.of(text), text.x(), text.y());
     }
 
-    public static void copyImage(TabletUiState state, QuestDetailsDescriptionModel model, String id) {
+    public static void copyImage(UiState state, QuestDetailsDescriptionModel model, String id) {
         CanvasImageLayer image = model.image(id);
         if (image == null) {
             return;
@@ -30,13 +30,13 @@ public final class QuestDetailsDescriptionClipboard {
         state.clipboard.canvasClipboard.store(false, java.util.List.of(image), java.util.List.of(), image.x(), image.y());
     }
 
-    public static void pasteAtContext(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
+    public static void pasteAtContext(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int panelX, int panelY) {
         int anchorX = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX);
         int anchorY = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll);
         pasteAt(player, state, questId, model, anchorX, anchorY, QuestDetailsWindow.descriptionContentWidth(state));
     }
 
-    public static boolean pasteFromKeyboard(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
+    public static boolean pasteFromKeyboard(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
         if (state == null || model == null || !state.clipboard.canvasClipboard.hasCanvasLayers()) {
             return false;
         }
@@ -47,7 +47,7 @@ public final class QuestDetailsDescriptionClipboard {
         return true;
     }
 
-    public static boolean nudgeSelected(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int dx, int dy) {
+    public static boolean nudgeSelected(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int dx, int dy) {
         if (state == null || model == null || dx == 0 && dy == 0 || !QuestDetailsDescriptionSelectionState.hasSelection(state)) {
             return false;
         }
@@ -71,7 +71,7 @@ public final class QuestDetailsDescriptionClipboard {
         return true;
     }
 
-    private static void pasteAt(Player player, TabletUiState state, String questId, QuestDetailsDescriptionModel model, int anchorX, int anchorY, int contentW) {
+    private static void pasteAt(Player player, UiState state, String questId, QuestDetailsDescriptionModel model, int anchorX, int anchorY, int contentW) {
         int dx = anchorX - state.clipboard.canvasClipboard.originX();
         int dy = anchorY - state.clipboard.canvasClipboard.originY();
         QuestDetailsDescriptionSelectionState.clear(state);
@@ -101,7 +101,7 @@ public final class QuestDetailsDescriptionClipboard {
         return id.startsWith("ent_") ? "ent" : "img";
     }
 
-    private static int[] keyboardPasteAnchor(TabletUiState state, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
+    private static int[] keyboardPasteAnchor(UiState state, QuestDetailsDescriptionModel model, int viewportW, int viewportH) {
         int[] bounds = selectionBounds(state, model);
         if (bounds != null) {
             return new int[]{QuestDetailsDescriptionLayout.snap(state, bounds[0] + 12), QuestDetailsDescriptionLayout.snap(state, bounds[1] + 12)};
@@ -111,7 +111,7 @@ public final class QuestDetailsDescriptionClipboard {
         return new int[]{QuestDetailsDescriptionLayout.snap(state, x), QuestDetailsDescriptionLayout.snap(state, y)};
     }
 
-    private static int[] selectionBounds(TabletUiState state, QuestDetailsDescriptionModel model) {
+    private static int[] selectionBounds(UiState state, QuestDetailsDescriptionModel model) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (String textId : QuestDetailsDescriptionSelectionState.selectedTextIds(state)) {

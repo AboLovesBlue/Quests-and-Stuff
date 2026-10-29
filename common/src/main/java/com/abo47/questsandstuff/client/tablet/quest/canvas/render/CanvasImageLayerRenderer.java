@@ -11,11 +11,11 @@ import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterBackgroundTexture;
 
 public final class CanvasImageLayerRenderer {
     private CanvasImageLayerRenderer() {
@@ -69,6 +69,6 @@ public final class CanvasImageLayerRenderer {
     }
 
     private static void drawFallback(GuiGraphics graphics, int width, int height, int pivotX, int pivotY) {
-        SurfaceFactory.fill(withAlpha(TabletColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
+        SurfaceFactory.fill(withAlpha(ThemeColors.TEXT_MUTED, 45)).draw(graphics, 0, 0, -pivotX, -pivotY, width, height);
     }
 }

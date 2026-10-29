@@ -7,23 +7,23 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.AnchoredMenuRevealWidget;
-import com.abo47.questsandstuff.client.tablet.layout.TabletResizeCursor;
+import com.abo47.questsandstuff.client.tablet.layout.ResizeCursor;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.cyclePercent;
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.toolPercentStep;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.cyclePercent;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.toolPercentStep;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
 
 final class QuestDetailsToolsMenu {
     private QuestDetailsToolsMenu() {
     }
 
-    static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, String questId, int buttonX, int buttonY, int headerH, int toolSlot) {
+    static void rebuild(WidgetGroup toolsMenu, UiState state, Player player, Runnable refresh, String questId, int buttonX, int buttonY, int headerH, int toolSlot) {
         if (!ToolMenuAnimation.questDetailsVisible(state)) {
             return;
         }
@@ -31,7 +31,7 @@ final class QuestDetailsToolsMenu {
         final int toolGap = 1;
         final boolean editTools = QuestDetailsEditController.canEdit(state);
         final int toolCount = editTools ? 9 : 2;
-        final int toolButtonBorder = withAlpha(TabletColors.TEXT_MUTED, 210);
+        final int toolButtonBorder = withAlpha(ThemeColors.TEXT_MUTED, 210);
         int menuW = menuPad * 2 + toolSlot;
         int menuH = menuPad * 2 + toolCount * toolSlot + (toolCount - 1) * toolGap;
         int menuX = buttonX - 1;
@@ -41,7 +41,7 @@ final class QuestDetailsToolsMenu {
         WidgetGroup menu = new WidgetGroup(menuX, menuY, menuW, menuH);
         menu.setActive(ToolMenuAnimation.questDetailsInteractive(state));
 
-        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(TabletColors.SURFACE_BASE, 244), TabletColors.BORDER_ACCENT));
+        menu.addWidget(panel(0, 0, menuW, menuH, withAlpha(ThemeColors.SURFACE_BASE, 244), ThemeColors.BORDER_ACCENT));
 
         if (!editTools) {
             ToolMenuRows rows = ToolMenuRows.at(menu, slotX, y, toolSlot, toolGap, toolButtonBorder);
@@ -49,7 +49,7 @@ final class QuestDetailsToolsMenu {
                 state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
                 if (state.questDetails.questDetailsSplitterLocked) {
                     state.questDetails.questDetailsDraggingSplitter = false;
-                    TabletResizeCursor.update(false);
+                    ResizeCursor.update(false);
                 }
                 persistUiState(state);
                 refresh.run();
@@ -70,7 +70,7 @@ final class QuestDetailsToolsMenu {
         addAnimatedMenu(toolsMenu, state, menu);
     }
 
-    private static void addEditRows(ToolMenuRows rows, TabletUiState state, Runnable refresh) {
+    private static void addEditRows(ToolMenuRows rows, UiState state, Runnable refresh) {
         CanvasToolRows.grid(rows, state.questDetails.questDetailsGridEnabled, () -> {
                     state.questDetails.questDetailsGridEnabled = !state.questDetails.questDetailsGridEnabled;
                     persistUiState(state);
@@ -131,7 +131,7 @@ final class QuestDetailsToolsMenu {
                     state.questDetails.questDetailsSplitterLocked = !state.questDetails.questDetailsSplitterLocked;
                     if (state.questDetails.questDetailsSplitterLocked) {
                         state.questDetails.questDetailsDraggingSplitter = false;
-                        TabletResizeCursor.update(false);
+                        ResizeCursor.update(false);
                     }
                     persistUiState(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details tool splitter-lock enabled={} width={}", state.questDetails.questDetailsSplitterLocked, state.questDetails.questDetailsLeftPanelWidth);
@@ -139,7 +139,7 @@ final class QuestDetailsToolsMenu {
                 });
     }
 
-    private static void addAnimatedMenu(WidgetGroup toolsMenu, TabletUiState state, WidgetGroup menu) {
+    private static void addAnimatedMenu(WidgetGroup toolsMenu, UiState state, WidgetGroup menu) {
         if (!QuestsAndStuffConfig.toolsMenuAnimationsEnabled()) {
             toolsMenu.addWidget(menu);
             return;

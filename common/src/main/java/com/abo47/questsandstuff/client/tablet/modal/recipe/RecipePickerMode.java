@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.modal.recipe;
 
 import net.minecraft.network.chat.Component;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public enum RecipePickerMode {
     ITEMS("items", "mode_items"),
@@ -59,7 +59,7 @@ public enum RecipePickerMode {
         return mode == null ? ITEMS : mode;
     }
 
-    public static void cycle(TabletUiState state, int direction) {
+    public static void cycle(UiState state, int direction) {
         if (state == null) {
             return;
         }
@@ -67,7 +67,7 @@ public enum RecipePickerMode {
         state.pickers.recipeScroll = 0;
     }
 
-    public static void reset(TabletUiState state) {
+    public static void reset(UiState state) {
         if (state != null) {
             state.pickers.recipeMode = ITEMS;
         }

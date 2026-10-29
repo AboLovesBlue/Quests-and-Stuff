@@ -6,11 +6,11 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasRotationMath;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
@@ -20,34 +20,34 @@ public final class QuestElementSelectionSlot {
     private QuestElementSelectionSlot() {
     }
 
-    public static int[] screenBounds(TabletUiState state, int x, int y, int width, int height, int rotationDegrees) {
+    public static int[] screenBounds(UiState state, int x, int y, int width, int height, int rotationDegrees) {
         return CanvasElementGeometry.screenBounds(state, x, y, width, height, rotationDegrees);
     }
 
-    public static int[] screenBoundsAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static int[] screenBoundsAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         return CanvasElementGeometry.screenBoundsAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
     }
 
-    public static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
+    public static void draw(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, x, y, width, height, rotationDegrees);
         drawBox(graphics, originX, originY, box, rotationDegrees);
     }
 
-    public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static void drawAtPivot(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         drawBox(graphics, originX, originY, box, rotationDegrees);
     }
 
-    public static void drawResizeOnlyAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static void drawResizeOnlyAtPivot(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (box.right() > box.left() && box.bottom() > box.top()) {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(CanvasRotationMath.normalizeDegrees(rotationDegrees))));
-            SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
-            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(TabletColors.SELECTION, 185));
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), box.right() - box.left(), box.bottom() - box.top());
+            drawRectOutline(graphics, box.left(), box.top(), Math.max(1, box.right() - box.left()), Math.max(1, box.bottom() - box.top()), withAlpha(ThemeColors.SELECTION, 185));
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ThemeColors.SELECTION);
             graphics.pose().popPose();
         }
     }
@@ -71,8 +71,8 @@ public final class QuestElementSelectionSlot {
             graphics.pose().pushPose();
             graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
             drawBoxFillAndOutline(graphics, box);
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+            SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+            drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ThemeColors.SELECTION);
             graphics.pose().popPose();
         }
     }
@@ -93,16 +93,16 @@ public final class QuestElementSelectionSlot {
     private static void drawBoxFillAndOutline(GuiGraphics graphics, CanvasElementGeometry.Box box) {
         int w = Math.max(1, box.right() - box.left());
         int h = Math.max(1, box.bottom() - box.top());
-        SurfaceFactory.fill(withAlpha(TabletColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), w, h);
-        drawRectOutline(graphics, box.left(), box.top(), w, h, withAlpha(TabletColors.SELECTION, 185));
+        SurfaceFactory.fill(withAlpha(ThemeColors.SELECTION, 18)).draw(graphics, 0, 0, box.left(), box.top(), w, h);
+        drawRectOutline(graphics, box.left(), box.top(), w, h, withAlpha(ThemeColors.SELECTION, 185));
     }
 
-    public static void drawFillAndOutline(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
+    public static void drawFillAndOutline(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, x, y, width, height, rotationDegrees);
         drawFillAndOutlineAt(graphics, originX, originY, box, rotationDegrees);
     }
 
-    public static void drawFillAndOutlineAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    public static void drawFillAndOutlineAtPivot(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         drawFillAndOutlineAt(graphics, originX, originY, box, rotationDegrees);
     }
@@ -117,22 +117,22 @@ public final class QuestElementSelectionSlot {
         }
     }
 
-    public static boolean resizeHandleHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
+    public static boolean resizeHandleHit(UiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return resizeHandleHitAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, hitX, hitY);
     }
 
-    public static boolean resizeHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
+    public static boolean resizeHandleHitAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
         return point.x() >= box.right() - HANDLE_SIZE - GRID_1 && point.x() <= box.right() + GRID_1
                 && point.y() >= box.bottom() - HANDLE_SIZE - GRID_1 && point.y() <= box.bottom() + GRID_1;
     }
 
-    public static boolean rotateHandleHit(TabletUiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
+    public static boolean rotateHandleHit(UiState state, int x, int y, int width, int height, int rotationDegrees, int hitX, int hitY) {
         return rotateHandleHitAtPivot(state, x, y, width, height, width / 2, height / 2, rotationDegrees, hitX, hitY);
     }
 
-    public static boolean rotateHandleHitAtPivot(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
+    public static boolean rotateHandleHitAtPivot(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int hitX, int hitY) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         CanvasElementGeometry.LocalPoint point = CanvasElementGeometry.toLocalPoint(box, rotationDegrees, hitX, hitY);
         return point.x() >= box.right() - HANDLE_SIZE - GRID_1 && point.x() <= box.right() + GRID_1
@@ -140,10 +140,10 @@ public final class QuestElementSelectionSlot {
     }
 
     private static void drawHandles(GuiGraphics graphics, CanvasElementGeometry.Box box) {
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
-        SurfaceFactory.fill(withAlpha(TabletColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
-        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.bottom() - HANDLE_SIZE, HANDLE_SIZE, HANDLE_SIZE, ThemeColors.SELECTION);
+        SurfaceFactory.fill(withAlpha(ThemeColors.WARNING, 220)).draw(graphics, 0, 0, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE);
+        drawRectOutline(graphics, box.right() - HANDLE_SIZE, box.top(), HANDLE_SIZE, HANDLE_SIZE, ThemeColors.WARNING);
     }
 
     public static void drawCombinedBounds(
@@ -160,17 +160,17 @@ public final class QuestElementSelectionSlot {
     ) {
         int width = Math.max(1, right - left);
         int height = Math.max(1, bottom - top);
-        drawClippedFill(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(TabletColors.SELECTION, 26));
-        drawClippedOutline(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(TabletColors.SELECTION, 214));
+        drawClippedFill(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(ThemeColors.SELECTION, 26));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, left, top, width, height, withAlpha(ThemeColors.SELECTION, 214));
         int resizeX = right - HANDLE_SIZE;
         int resizeY = bottom - HANDLE_SIZE;
-        drawClippedFill(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.SURFACE_BASE, 230));
-        drawClippedOutline(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, TabletColors.SELECTION);
+        drawClippedFill(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ThemeColors.SURFACE_BASE, 230));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, resizeX, resizeY, HANDLE_SIZE, HANDLE_SIZE, ThemeColors.SELECTION);
         if (showRotate) {
             int rotateX = right - HANDLE_SIZE;
             int rotateY = top;
-            drawClippedFill(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(TabletColors.WARNING, 210));
-            drawClippedOutline(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, TabletColors.WARNING);
+            drawClippedFill(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, withAlpha(ThemeColors.WARNING, 210));
+            drawClippedOutline(graphics, originX, originY, maxW, maxH, rotateX, rotateY, HANDLE_SIZE, HANDLE_SIZE, ThemeColors.WARNING);
         }
     }
 
@@ -201,8 +201,8 @@ public final class QuestElementSelectionSlot {
         int minY = Math.min(startY, currentY);
         int boxW = Math.max(1, Math.abs(currentX - startX));
         int boxH = Math.max(1, Math.abs(currentY - startY));
-        drawClippedFill(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, withAlpha(TabletColors.SELECTION, 48));
-        drawClippedOutline(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, TabletColors.SELECTION);
+        drawClippedFill(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, withAlpha(ThemeColors.SELECTION, 48));
+        drawClippedOutline(graphics, originX, originY, maxW, maxH, minX, minY, boxW, boxH, ThemeColors.SELECTION);
     }
 
     private static void drawClippedFill(GuiGraphics graphics, int originX, int originY, int maxW, int maxH, int x, int y, int width, int height, int color) {

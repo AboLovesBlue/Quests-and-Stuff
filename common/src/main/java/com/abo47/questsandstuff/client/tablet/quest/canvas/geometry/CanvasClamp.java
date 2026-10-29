@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.geometry;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class CanvasClamp {
     private CanvasClamp() {
     }
 
-    static CanvasPoint clampAnchorToCanvas(TabletUiState state, int logicalX, int logicalY, int slotLogicalW, int slotLogicalH) {
+    static CanvasPoint clampAnchorToCanvas(UiState state, int logicalX, int logicalY, int slotLogicalW, int slotLogicalH) {
         float zoom = CanvasCoordinateMapper.zoom(state);
         int viewportLeft = (int) Math.floor((-state.canvas.canvasContentX - state.canvas.canvasOffsetX) / zoom);
         int viewportTop = (int) Math.floor((-state.canvas.canvasContentY - state.canvas.canvasOffsetY) / zoom);
@@ -28,7 +28,7 @@ final class CanvasClamp {
         return new CanvasPoint(centerX - halfW, centerY - halfH);
     }
 
-    static CanvasPoint clampRotatedAnchorToCanvas(TabletUiState state, int logicalX, int logicalY, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    static CanvasPoint clampRotatedAnchorToCanvas(UiState state, int logicalX, int logicalY, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         float zoom = CanvasCoordinateMapper.zoom(state);
         int viewportLeft = (int) Math.floor((-state.canvas.canvasContentX - state.canvas.canvasOffsetX) / zoom);
         int viewportTop = (int) Math.floor((-state.canvas.canvasContentY - state.canvas.canvasOffsetY) / zoom);

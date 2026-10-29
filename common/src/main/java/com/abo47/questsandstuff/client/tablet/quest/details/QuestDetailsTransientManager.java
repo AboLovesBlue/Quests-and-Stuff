@@ -3,13 +3,13 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class QuestDetailsTransientManager {
     private QuestDetailsTransientManager() {
     }
 
-    public static void openContext(TabletUiState state, String kind, String id, int x, int y) {
+    public static void openContext(UiState state, String kind, String id, int x, int y) {
         state.questDetails.questDetailsContextOpen = true;
         ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         state.questDetails.questDetailsContextKind = kind == null ? "" : kind;
@@ -31,7 +31,7 @@ public final class QuestDetailsTransientManager {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    public static void closeContext(TabletUiState state) {
+    public static void closeContext(UiState state) {
         state.questDetails.questDetailsContextOpen = false;
         state.questDetails.questDetailsContextKind = "";
         state.questDetails.questDetailsContextId = "";
@@ -41,18 +41,18 @@ public final class QuestDetailsTransientManager {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    public static void openTypePicker(TabletUiState state, String kind, String targetId) {
+    public static void openTypePicker(UiState state, String kind, String targetId) {
         ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.type(kind, targetId, state.questDetails.questDetailsContextX, state.questDetails.questDetailsContextY);
     }
 
-    public static void closeTypePicker(TabletUiState state) {
+    public static void closeTypePicker(UiState state) {
         if (state.questDetails.questDetailsPickerSession.typePicker()) {
             state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.none();
         }
     }
 
-    public static void openItemSourcePicker(TabletUiState state, String target) {
+    public static void openItemSourcePicker(UiState state, String target) {
         ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         QuestDetailsPickerSession active = state.questDetails.questDetailsPickerSession;
         int x = active.typePicker() ? active.x() : state.questDetails.questDetailsContextX;
@@ -60,13 +60,13 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.itemSource(target, x, y);
     }
 
-    public static void closeItemSourcePicker(TabletUiState state) {
+    public static void closeItemSourcePicker(UiState state) {
         if (state.questDetails.questDetailsPickerSession.itemSourcePicker()) {
             state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.none();
         }
     }
 
-    public static void openXpPicker(TabletUiState state, String questId, String id, boolean task) {
+    public static void openXpPicker(UiState state, String questId, String id, boolean task) {
         ContextMenuAnimationBridge.start(state, ContextMenuAnimationBridge.DEFAULT_KEY);
         QuestDetailsPickerSession active = state.questDetails.questDetailsPickerSession;
         int x = active.typePicker() ? active.x() : state.questDetails.questDetailsContextX;
@@ -77,13 +77,13 @@ public final class QuestDetailsTransientManager {
         closeContext(state);
     }
 
-    public static void closeXpPicker(TabletUiState state) {
+    public static void closeXpPicker(UiState state) {
         if (state.questDetails.questDetailsPickerSession.xpPicker()) {
             state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.none();
         }
     }
 
-    public static void openCommandRewardEditor(TabletUiState state, String questId, String id, String command, String title, String icon) {
+    public static void openCommandRewardEditor(UiState state, String questId, String id, String command, String title, String icon) {
         state.questDetails.questDetailsCommandRewardEditorOpen = true;
         state.questDetails.questDetailsCommandRewardQuestId = questId == null ? "" : questId;
         state.questDetails.questDetailsCommandRewardId = id == null ? "" : id;
@@ -96,7 +96,7 @@ public final class QuestDetailsTransientManager {
         closeContext(state);
     }
 
-    public static void openTaskRename(TabletUiState state, String questId, String id, boolean task, String draft) {
+    public static void openTaskRename(UiState state, String questId, String id, boolean task, String draft) {
         state.questDetails.questDetailsTaskRenameOpen = true;
         state.questDetails.questDetailsTaskRenameTask = task;
         state.questDetails.questDetailsTaskRenameQuestId = questId == null ? "" : questId;
@@ -109,7 +109,7 @@ public final class QuestDetailsTransientManager {
         closeContext(state);
     }
 
-    public static void closeCommandRewardEditor(TabletUiState state) {
+    public static void closeCommandRewardEditor(UiState state) {
         state.questDetails.questDetailsCommandRewardEditorOpen = false;
         state.questDetails.questDetailsCommandRewardQuestId = "";
         state.questDetails.questDetailsCommandRewardId = "";
@@ -118,7 +118,7 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsCommandRewardIcon = "";
     }
 
-    public static void closeTaskRename(TabletUiState state) {
+    public static void closeTaskRename(UiState state) {
         state.questDetails.questDetailsTaskRenameOpen = false;
         state.questDetails.questDetailsTaskRenameTask = false;
         state.questDetails.questDetailsTaskRenameQuestId = "";
@@ -127,7 +127,7 @@ public final class QuestDetailsTransientManager {
         state.questDetails.questDetailsTaskRenameFocusPending = false;
     }
 
-    public static boolean closeFloatingPopups(TabletUiState state) {
+    public static boolean closeFloatingPopups(UiState state) {
         boolean changed = false;
         if (state.questDetails.questDetailsPickerSession.active()) {
             state.questDetails.questDetailsPickerSession = QuestDetailsPickerSession.none();

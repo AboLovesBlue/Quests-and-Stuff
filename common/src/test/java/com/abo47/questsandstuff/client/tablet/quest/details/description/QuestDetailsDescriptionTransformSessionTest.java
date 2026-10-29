@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class QuestDetailsDescriptionTransformSessionTest {
     @Test
     void beginUpdateAndClearDescriptionTransformUsesSharedSessionCleanup() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.dragStartTextPositions.put("stale", new CanvasPoint(1, 2));
         state.questDetails.questDetailsTransientTexts.put("stale", text("stale", 1, 2));
         state.canvas.snapGuideXVisible = true;
@@ -56,7 +56,7 @@ class QuestDetailsDescriptionTransformSessionTest {
 
     @Test
     void descriptionTransformUsesSharedObjectSnapGuides() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.questDetails.questDetailsObjectSnapEnabled = true;
         state.questDetails.questDetailsGridSnapLocked = true;
 

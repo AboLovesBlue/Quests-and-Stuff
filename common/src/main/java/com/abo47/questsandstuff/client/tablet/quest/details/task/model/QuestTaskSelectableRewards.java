@@ -11,7 +11,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2SClaimSelectableRewardPacket;
 
@@ -107,7 +107,7 @@ public final class QuestTaskSelectableRewards {
         return separator < 0 ? "" : id.substring(separator + CHOICE_SEPARATOR.length());
     }
 
-    public static void selectChoice(TabletUiState state, String id) {
+    public static void selectChoice(UiState state, String id) {
         if (state == null || id == null || id.isBlank()) {
             return;
         }
@@ -122,7 +122,7 @@ public final class QuestTaskSelectableRewards {
         }
     }
 
-    public static boolean isSelectedChoice(TabletUiState state, String id) {
+    public static boolean isSelectedChoice(UiState state, String id) {
         if (state == null || id == null || id.isBlank()) {
             return false;
         }
@@ -148,7 +148,7 @@ public final class QuestTaskSelectableRewards {
         QuestsAndStuffMod.debugLog("[QnS:UI] reward marked selectable quest={} reward={}", questId, rewardId);
     }
 
-    public static boolean claimSelected(Player player, TabletUiState state, String questId) {
+    public static boolean claimSelected(Player player, UiState state, String questId) {
         if (state == null) {
             return false;
         }
@@ -179,7 +179,7 @@ public final class QuestTaskSelectableRewards {
         return claimedAny;
     }
 
-    public static boolean allSelectableRewardsSelected(CompoundTag quest, TabletUiState state) {
+    public static boolean allSelectableRewardsSelected(CompoundTag quest, UiState state) {
         if (quest == null || state == null) {
             return false;
         }
@@ -228,7 +228,7 @@ public final class QuestTaskSelectableRewards {
         return false;
     }
 
-    private static String selectedChoiceForGroup(TabletUiState state, String groupId) {
+    private static String selectedChoiceForGroup(UiState state, String groupId) {
         if (state == null || groupId == null || groupId.isBlank()) {
             return "";
         }
@@ -239,7 +239,7 @@ public final class QuestTaskSelectableRewards {
         return "";
     }
 
-    private static boolean isStandaloneSelected(TabletUiState state, String rewardId) {
+    private static boolean isStandaloneSelected(UiState state, String rewardId) {
         return state != null && rewardId != null && rewardId.equals(state.questDetails.questDetailsSelectableRewardChoices.get(STANDALONE_SELECTION_KEY));
     }
 

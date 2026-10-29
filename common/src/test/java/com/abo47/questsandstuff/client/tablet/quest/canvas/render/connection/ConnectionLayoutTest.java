@@ -10,7 +10,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ConnectionLayoutTest {
     @Test
     void prerequisiteLinesUseResolvedStyleBeforeDrawing() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.root.canEdit = true;
         state.root.selectedChapter = "main";
 

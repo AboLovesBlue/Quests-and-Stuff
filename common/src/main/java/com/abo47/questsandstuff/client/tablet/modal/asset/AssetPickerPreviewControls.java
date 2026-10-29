@@ -14,28 +14,28 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.PercentSliderControls;
 import com.abo47.questsandstuff.client.tablet.controls.ToggleSwitchWidget;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_BACKGROUND;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot.HUD_BACKGROUND;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.button;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.button;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class AssetPickerPreviewControls {
     private AssetPickerPreviewControls() {
     }
 
-    static boolean isQuestBackgroundPicker(TabletUiState state) {
+    static boolean isQuestBackgroundPicker(UiState state) {
         return !ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget).isBlank()
                 || !ModalTargetState.targetSet(state, QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets).isEmpty();
     }
 
-    static void addQuestBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
+    static void addQuestBackgroundOptions(WidgetGroup preview, UiState state, Runnable refresh, int leftW, int previewH) {
         if (!isQuestBackgroundPicker(state)) {
             return;
         }
@@ -43,7 +43,7 @@ final class AssetPickerPreviewControls {
                 ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget)
                 : "batch";
         int rowY = Math.max(48, previewH - 24);
-        preview.addWidget(label(8, rowY + 3, ModalPanel.tr(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY + 3, ModalPanel.tr(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE), ThemeColors.TEXT_SECONDARY));
         preview.addWidget(new ToggleSwitchWidget(
                 "quest_background_grayscale:" + target,
                 Math.max(8, leftW - 8 - ToggleSwitchWidget.DEFAULT_WIDTH),
@@ -59,17 +59,17 @@ final class AssetPickerPreviewControls {
         ));
     }
 
-    static boolean isHudBackgroundPicker(TabletUiState state) {
+    static boolean isHudBackgroundPicker(UiState state) {
         return hudElement(state) != null;
     }
 
-    static void addHudBackgroundOptions(WidgetGroup preview, TabletUiState state, Runnable refresh, int leftW, int previewH) {
+    static void addHudBackgroundOptions(WidgetGroup preview, UiState state, Runnable refresh, int leftW, int previewH) {
         QuestHudLayoutManager.Element element = hudElement(state);
         if (element == null) {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.hud.opacity"), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.hud.opacity"), ThemeColors.TEXT_SECONDARY));
         PercentSliderControls.add(
                 preview,
                 8,
@@ -88,7 +88,7 @@ final class AssetPickerPreviewControls {
         );
         boolean hudRemoveConfirming = state.modal.hudRemoveConfirmArmed;
         String hudRemoveLabel = hudRemoveConfirming ? "Sure?" : ModalPanel.tr("ui.questsandstuff.hud.remove_background");
-        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, hudRemoveLabel, TabletColors.SURFACE_PANEL_ALT, TabletColors.WARNING, click -> {
+        preview.addWidget(button(8, rowY + 32, leftW - 16, 14, hudRemoveLabel, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.WARNING, click -> {
             if (hudRemoveConfirming) {
                 state.modal.hudRemoveConfirmArmed = false;
                 QuestHudLayoutManager.setBackground(element, "");
@@ -101,17 +101,17 @@ final class AssetPickerPreviewControls {
         }));
     }
 
-    static boolean isConnectionTexturePicker(TabletUiState state) {
+    static boolean isConnectionTexturePicker(UiState state) {
         return !state.modal.modalConnectionTextureTarget.isBlank()
                 || !state.modal.modalConnectionTextureChapterTargets.isEmpty();
     }
 
-    static void addConnectionTextureControls(WidgetGroup preview, TabletUiState state, Player player, Runnable refresh, int leftW, int previewH) {
+    static void addConnectionTextureControls(WidgetGroup preview, UiState state, Player player, Runnable refresh, int leftW, int previewH) {
         if (!isConnectionTexturePicker(state)) {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), ThemeColors.TEXT_SECONDARY));
         PercentSliderControls.addRanged(
                 preview,
                 8,
@@ -131,7 +131,7 @@ final class AssetPickerPreviewControls {
         );
     }
 
-    static void commitConnectionTextureSpacing(Player player, TabletUiState state, Runnable refresh) {
+    static void commitConnectionTextureSpacing(Player player, UiState state, Runnable refresh) {
         int spacing = state.pickers.connectionTextureSpacingDraft;
         String target = ModalTargetState.target(state, ModalSession.TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
         java.util.Set<String> chapterTargets = ModalTargetState.targetSet(state, ModalSession.TargetSetSlot.CONNECTION_TEXTURE_CHAPTERS, state.modal.modalConnectionTextureChapterTargets);
@@ -175,7 +175,7 @@ final class AssetPickerPreviewControls {
         refresh.run();
     }
 
-    static QuestHudLayoutManager.Element hudElement(TabletUiState state) {
+    static QuestHudLayoutManager.Element hudElement(UiState state) {
         String target = ModalTargetState.target(state, HUD_BACKGROUND, state.modal.modalHudBackgroundTarget);
         if ("completion".equalsIgnoreCase(target)) {
             return QuestHudLayoutManager.Element.COMPLETION;

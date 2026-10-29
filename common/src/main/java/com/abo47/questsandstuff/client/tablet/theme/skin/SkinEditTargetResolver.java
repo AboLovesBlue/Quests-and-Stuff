@@ -16,8 +16,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
-import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
-import com.abo47.questsandstuff.client.tablet.home.TabletHomeOverviewPanel;
+import com.abo47.questsandstuff.client.tablet.controls.ScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.home.HomeOverviewPanel;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterRowRenderer;
@@ -94,7 +94,7 @@ public final class SkinEditTargetResolver {
     }
 
     private static boolean isClipContainer(Widget widget) {
-        return widget instanceof TabletScissoredWidgetGroup
+        return widget instanceof ScissoredWidgetGroup
                 || widget instanceof CanvasViewport
                 || widget instanceof QuestDetailsDescriptionCanvas;
     }
@@ -188,7 +188,7 @@ public final class SkinEditTargetResolver {
                 || widget instanceof ImageWidget
                 || widget instanceof DisplayIconWidget
                 || widget instanceof QuestDetailsDescriptionCanvas
-                || widget instanceof TabletHomeOverviewPanel
+                || widget instanceof HomeOverviewPanel
                 || widget instanceof ChapterRowRenderer.CollapsedChapterTileWidget
                 || widget instanceof ChapterRowRenderer.ChapterCompletionNoticeWidget
                 || widget instanceof InlineRenameField
@@ -198,7 +198,7 @@ public final class SkinEditTargetResolver {
     private static boolean isInsideChapterCardArea(Widget widget) {
         Widget cur = widget.getParent();
         while (cur != null) {
-            if (cur instanceof TabletScissoredWidgetGroup) return true;
+            if (cur instanceof ScissoredWidgetGroup) return true;
             cur = cur.getParent();
         }
         return false;

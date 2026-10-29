@@ -13,9 +13,9 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 
@@ -23,12 +23,12 @@ public final class LootTablePickerModal {
     private LootTablePickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
         return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
                 new ResourceListPickerModal.Options(
                         ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
-                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE),
-                        TabletTranslationKeys.text(QuestTranslationKeys.NO_LOOT_TABLES),
+                        TranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE),
+                        TranslationKeys.text(QuestTranslationKeys.NO_LOOT_TABLES),
                         "loot table",
                         LootTablePickerModal::lootTables,
                         LootTablePickerModal::displayName,

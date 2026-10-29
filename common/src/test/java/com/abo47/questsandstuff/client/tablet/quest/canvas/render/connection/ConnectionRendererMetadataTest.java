@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMetadata;
 import com.abo47.questsandstuff.quest.model.connection.QuestConnectionMode;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ConnectionRendererMetadataTest {
     @Test
     void metadataReadsSavedTargetTagsWithNormalizedSourceKey() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         CompoundTag target = new CompoundTag();
         CompoundTag colors = new CompoundTag();
         colors.putInt("quest/source", 0x336699);
@@ -50,7 +50,7 @@ public class ConnectionRendererMetadataTest {
 
     @Test
     void metadataFallsBackToLocalUiEdgeStateWhenTargetHasNoSavedOverride() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         String connectionKey = QuestConnectionMetadata.connectionKey("quest/source", "quest/target");
         state.canvas.connectionColorsByGroup.computeIfAbsent("main", ignored -> new HashMap<>()).put(connectionKey, 0xAA8844);
         state.canvas.gridConnectionsByGroup.computeIfAbsent("main", ignored -> new HashSet<>()).add(connectionKey);

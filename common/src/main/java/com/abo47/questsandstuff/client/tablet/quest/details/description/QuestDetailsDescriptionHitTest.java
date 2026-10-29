@@ -8,19 +8,19 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 final class QuestDetailsDescriptionHitTest {
-    private final TabletUiState state;
+    private final UiState state;
     private final QuestDetailsDescriptionSelection selection;
     private final IntSupplier contentW;
     private final IntSupplier contentH;
 
-    QuestDetailsDescriptionHitTest(TabletUiState state, QuestDetailsDescriptionSelection selection, IntSupplier contentW, IntSupplier contentH) {
+    QuestDetailsDescriptionHitTest(UiState state, QuestDetailsDescriptionSelection selection, IntSupplier contentW, IntSupplier contentH) {
         this.state = state;
         this.selection = selection;
         this.contentW = contentW;

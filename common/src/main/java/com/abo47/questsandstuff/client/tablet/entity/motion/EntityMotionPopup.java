@@ -8,15 +8,15 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.closeIconButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 
 final class EntityMotionPopup {
     private static final int W = 188;
@@ -28,7 +28,7 @@ final class EntityMotionPopup {
     private EntityMotionPopup() {
     }
 
-    static void render(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, EntityMotionValues motion, int maxW, int maxH) {
+    static void render(WidgetGroup parent, UiState state, Player player, Runnable refresh, EntityMotionValues motion, int maxW, int maxH) {
         int x = Math.max(4, Math.min(state.questDetails.entityMotionEditorX, Math.max(4, maxW - W - 4)));
         int y = Math.max(4, Math.min(state.questDetails.entityMotionEditorY, Math.max(4, maxH - H - 4)));
         state.questDetails.entityMotionEditorX = x;
@@ -36,9 +36,9 @@ final class EntityMotionPopup {
         state.questDetails.entityMotionEditorW = W;
         state.questDetails.entityMotionEditorH = H;
 
-        WidgetGroup popup = panel(x, y, W, H, withAlpha(TabletColors.SURFACE_BASE, 248), TabletColors.BORDER_ACCENT);
-        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(TabletColors.SURFACE_PANEL_ALT, 170), TabletColors.BORDER_BASE));
-        popup.addWidget(label(PAD, 6, "Entity spin", TabletColors.TEXT_PRIMARY));
+        WidgetGroup popup = panel(x, y, W, H, withAlpha(ThemeColors.SURFACE_BASE, 248), ThemeColors.BORDER_ACCENT);
+        popup.addWidget(panel(1, 1, W - 2, H - 2, withAlpha(ThemeColors.SURFACE_PANEL_ALT, 170), ThemeColors.BORDER_BASE));
+        popup.addWidget(label(PAD, 6, "Entity spin", ThemeColors.TEXT_PRIMARY));
         popup.addWidget(closeIconButton(W - 19, 3, 14, 14, click -> {
             EntityMotionEditor.close(state);
             refresh.run();
@@ -48,7 +48,7 @@ final class EntityMotionPopup {
         restoreFieldFocus(state, spinField);
     }
 
-    private static TextFieldWidget addSpinRow(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, EntityMotionValues motion, int y) {
+    private static TextFieldWidget addSpinRow(WidgetGroup parent, UiState state, Player player, Runnable refresh, EntityMotionValues motion, int y) {
         int value = motion.spin();
         int max = CanvasImageLayer.MAX_ENTITY_SPIN_SPEED;
         String draft = state.questDetails.entityMotionSpinDraft;
@@ -56,7 +56,7 @@ final class EntityMotionPopup {
             draft = Integer.toString(value);
             state.questDetails.entityMotionSpinDraft = draft;
         }
-        parent.addWidget(label(PAD, y + GRID_4, "Spin", TabletColors.TEXT_SECONDARY));
+        parent.addWidget(label(PAD, y + GRID_4, "Spin", ThemeColors.TEXT_SECONDARY));
         parent.addWidget(new EntityMotionSliderWidget(
                 56,
                 y + GRID_1,
@@ -84,7 +84,7 @@ final class EntityMotionPopup {
         return field;
     }
 
-    private static TextFieldWidget numberField(Player player, TabletUiState state, Runnable refresh, int x, int y, int w, int h, int max) {
+    private static TextFieldWidget numberField(Player player, UiState state, Runnable refresh, int x, int y, int w, int h, int max) {
         String draft = state.questDetails.entityMotionSpinDraft;
         TextFieldWidget field = StyledTextFields.numberField(
                 x,
@@ -122,19 +122,19 @@ final class EntityMotionPopup {
                 }
         );
         field.setCurrentString(draft);
-        StyledTextFields.applyStandardStyle(field, TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(field, ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE);
         field.setHoverTooltips(new Component[]{Component.literal("Spin speed")});
         return field;
     }
 
-    private static void restoreFieldFocus(TabletUiState state, TextFieldWidget spinField) {
+    private static void restoreFieldFocus(UiState state, TextFieldWidget spinField) {
         String focused = state.questDetails.entityMotionFocusedField == null ? "" : state.questDetails.entityMotionFocusedField;
         if ("spin".equals(focused)) {
             spinField.setFocus(true);
         }
     }
 
-    private static void commitNumberField(Player player, TabletUiState state) {
+    private static void commitNumberField(Player player, UiState state) {
         EntityMotionValues motion = EntityMotionTargets.currentMotionValues(state);
         if (motion == null) {
             EntityMotionEditor.close(state);

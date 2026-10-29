@@ -18,17 +18,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTr
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.ModifierKeys;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 public final class CanvasElementTransformController {
-    private final TabletUiState state;
+    private final UiState state;
 
-    public CanvasElementTransformController(TabletUiState state) {
+    public CanvasElementTransformController(UiState state) {
         this.state = state;
     }
 
@@ -85,7 +85,7 @@ public final class CanvasElementTransformController {
             return null;
         }
         if (CanvasTransformGizmoAxis.activeMode(state) == CanvasTransformMode.RESIZE
-                && TabletModifierKeys.shiftDown()
+                && ModifierKeys.shiftDown()
                 && CanvasTransformGizmoHit.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), localX, localY)) {
             return CanvasTransformMode.MOVE;
         }
@@ -94,7 +94,7 @@ public final class CanvasElementTransformController {
             return hitMode;
         }
         if (CanvasTransformGizmoAxis.activeMode(state) == CanvasTransformMode.MOVE
-                && TabletModifierKeys.shiftDown()
+                && ModifierKeys.shiftDown()
                 && CanvasTransformGizmoHit.boundsHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), localX, localY)) {
             return CanvasTransformMode.MOVE;
         }
@@ -102,7 +102,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateImageTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         CanvasImageLayer image = findImage(chapter, state.canvas.canvasSelection.primaryImageId());
         if (image == null) {
             return;
@@ -140,7 +140,7 @@ public final class CanvasElementTransformController {
                 state.canvas.canvasImageRotateStartAngle,
                 logicalX,
                 logicalY,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         ));
         return image.withModelRotation(rotation.yaw(), rotation.pitch());
     }
@@ -153,7 +153,7 @@ public final class CanvasElementTransformController {
                 state.canvas.canvasImageRotateStartAngle,
                 logicalX,
                 logicalY,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         ));
     }
 
@@ -230,7 +230,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateExclusiveChoiceTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryExclusiveChoiceId());
         if (ec == null) {
             return;
@@ -257,7 +257,7 @@ public final class CanvasElementTransformController {
                     state.canvas.canvasExclusiveChoiceRotateStartAngle,
                     logicalX,
                     logicalY,
-                    TabletModifierKeys.shiftDown()
+                    ModifierKeys.shiftDown()
             ));
             next = CanvasElementTransformFitting.clampRotationPreviewExclusiveChoice(state, ec.rotateTo(angle));
         }
@@ -265,7 +265,7 @@ public final class CanvasElementTransformController {
     }
 
     public void updateTextTransform(int localX, int localY, List<QuestCardLayout> cards) {
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
         if (text == null) {
             return;
@@ -291,7 +291,7 @@ public final class CanvasElementTransformController {
                     state.canvas.canvasTextRotateStartAngle,
                     logicalX,
                     logicalY,
-                    TabletModifierKeys.shiftDown()
+                    ModifierKeys.shiftDown()
             ));
             next = CanvasElementTransformFitting.clampRotationPreviewText(state, text.rotateTo(angle));
         }
@@ -335,7 +335,7 @@ public final class CanvasElementTransformController {
                 state.canvas.canvasImageStartPivotY,
                 CanvasTransformGizmoAxis.resizeCornerX(state.canvas.canvasImageTransformAxis),
                 CanvasTransformGizmoAxis.resizeCornerY(state.canvas.canvasImageTransformAxis),
-                CanvasTransformGizmoAxis.supports(image.asset()) || TabletModifierKeys.shiftDown()
+                CanvasTransformGizmoAxis.supports(image.asset()) || ModifierKeys.shiftDown()
         );
         return CanvasElementTransformFitting.fitAndClampImage(state, image.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
@@ -355,7 +355,7 @@ public final class CanvasElementTransformController {
                 CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartH),
                 1,
                 1,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         );
         return CanvasElementTransformFitting.fitAndClampText(state, text.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
@@ -375,7 +375,7 @@ public final class CanvasElementTransformController {
                 CanvasElementGeometry.defaultPivot(state.canvas.canvasExclusiveChoiceStartH),
                 1,
                 1,
-                TabletModifierKeys.shiftDown()
+                ModifierKeys.shiftDown()
         );
         return CanvasElementTransformFitting.fitAndClampExclusiveChoice(state, ec.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
@@ -400,7 +400,7 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasTransformEngine.SnapSettings snapSettings() {
-        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, TabletModifierKeys.shiftDown());
+        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, ModifierKeys.shiftDown());
     }
 
 

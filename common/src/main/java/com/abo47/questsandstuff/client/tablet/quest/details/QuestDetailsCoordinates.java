@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class QuestDetailsCoordinates {
     private QuestDetailsCoordinates() {
@@ -16,22 +16,22 @@ public final class QuestDetailsCoordinates {
         return (int) Math.round(mouse);
     }
 
-    public static int localX(TabletUiState state, double mouseX, int ownerX, int size) {
+    public static int localX(UiState state, double mouseX, int ownerX, int size) {
         return localAxis(mouseX, ownerX, screenX(state, ownerX), ownerLooksScreenX(state, ownerX), size);
     }
 
-    public static int localY(TabletUiState state, double mouseY, int ownerY, int size) {
+    public static int localY(UiState state, double mouseY, int ownerY, int size) {
         return localAxis(mouseY, ownerY, screenY(state, ownerY), ownerLooksScreenY(state, ownerY), size);
     }
 
-    public static int screenX(TabletUiState state, int ownerX) {
+    public static int screenX(UiState state, int ownerX) {
         if (state == null || ownerLooksScreenX(state, ownerX)) {
             return ownerX;
         }
         return state.questDetails.questDetailsScreenX + ownerX - state.questDetails.questDetailsX;
     }
 
-    public static int screenY(TabletUiState state, int ownerY) {
+    public static int screenY(UiState state, int ownerY) {
         if (state == null || ownerLooksScreenY(state, ownerY)) {
             return ownerY;
         }
@@ -39,7 +39,7 @@ public final class QuestDetailsCoordinates {
     }
 
     public static void openContextAtPointer(
-            TabletUiState state,
+            UiState state,
             String kind,
             String id,
             double mouseX,
@@ -68,7 +68,7 @@ public final class QuestDetailsCoordinates {
                 Math.round(mouseY));
     }
 
-    private static int modalX(TabletUiState state, double mouseX, int ownerX, int localX) {
+    private static int modalX(UiState state, double mouseX, int ownerX, int localX) {
         int fromPointer = (int) Math.round(mouseX) - modalScreenX(state);
         if (fromPointer >= -2 && fromPointer <= state.questDetails.questDetailsW + 2) {
             return fromPointer;
@@ -76,7 +76,7 @@ public final class QuestDetailsCoordinates {
         return screenX(state, ownerX) - modalScreenX(state) + localX;
     }
 
-    private static int modalY(TabletUiState state, double mouseY, int ownerY, int localY) {
+    private static int modalY(UiState state, double mouseY, int ownerY, int localY) {
         int fromPointer = (int) Math.round(mouseY) - modalScreenY(state);
         if (fromPointer >= -2 && fromPointer <= state.questDetails.questDetailsH + 2) {
             return fromPointer;
@@ -84,11 +84,11 @@ public final class QuestDetailsCoordinates {
         return screenY(state, ownerY) - modalScreenY(state) + localY;
     }
 
-    private static int modalScreenX(TabletUiState state) {
+    private static int modalScreenX(UiState state) {
         return state == null ? 0 : state.questDetails.questDetailsScreenX;
     }
 
-    private static int modalScreenY(TabletUiState state) {
+    private static int modalScreenY(UiState state) {
         return state == null ? 0 : state.questDetails.questDetailsScreenY;
     }
 
@@ -108,7 +108,7 @@ public final class QuestDetailsCoordinates {
         return value >= -2 && value <= size + 2;
     }
 
-    private static boolean ownerLooksScreenX(TabletUiState state, int ownerX) {
+    private static boolean ownerLooksScreenX(UiState state, int ownerX) {
         if (state == null) {
             return true;
         }
@@ -116,7 +116,7 @@ public final class QuestDetailsCoordinates {
                 && ownerX <= state.questDetails.questDetailsScreenX + Math.max(1, state.questDetails.questDetailsW) + 2;
     }
 
-    private static boolean ownerLooksScreenY(TabletUiState state, int ownerY) {
+    private static boolean ownerLooksScreenY(UiState state, int ownerY) {
         if (state == null) {
             return true;
         }

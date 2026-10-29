@@ -16,19 +16,19 @@ import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
 import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptor;
 import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptors;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class SettingsAppHeaderControls {
     private static final int TAB_H = GRID_20;
@@ -36,19 +36,19 @@ final class SettingsAppHeaderControls {
     private static final int SEARCH_INSET = 9;
     private static final int TAB_ENLARGE = GRID_4;
 
-    private final TabletUiState state;
+    private final UiState state;
     private final Runnable refresh;
     private final TextFieldWidget searchField;
     private final WidgetGroup tabLayer;
 
-    private SettingsAppHeaderControls(TabletUiState state, Runnable refresh, TextFieldWidget searchField, WidgetGroup tabLayer) {
+    private SettingsAppHeaderControls(UiState state, Runnable refresh, TextFieldWidget searchField, WidgetGroup tabLayer) {
         this.state = state;
         this.refresh = refresh;
         this.searchField = searchField;
         this.tabLayer = tabLayer;
     }
 
-    static SettingsAppHeaderControls create(TabletUiState state, Runnable refresh, int headerTop, int bodyW) {
+    static SettingsAppHeaderControls create(UiState state, Runnable refresh, int headerTop, int bodyW) {
         TextFieldWidget searchField = StyledTextFields.search(
                 SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP, Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H,
                 () -> state.settings.search, Integer.MAX_VALUE,
@@ -89,8 +89,8 @@ final class SettingsAppHeaderControls {
         }
         searchField.setSelfPosition(SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP);
         searchField.setSize(Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H);
-        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
-        searchField.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE));
+        searchField.setTextColor(ThemeColors.TEXT_PRIMARY);
+        searchField.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
     }
 
     void addTo(WidgetGroup mainPanel) {
@@ -101,17 +101,17 @@ final class SettingsAppHeaderControls {
     private WidgetGroup makeTabButton(SettingsTabDescriptor tab, int x, int w) {
         boolean active = state.settings.currentTab == tab.id();
         int h = TAB_H;
-        int fill = active ? withAlpha(TabletColors.SURFACE_BASE, 250) : withAlpha(TabletColors.SURFACE_PANEL_ALT, 142);
-        int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
+        int fill = active ? withAlpha(ThemeColors.SURFACE_BASE, 250) : withAlpha(ThemeColors.SURFACE_PANEL_ALT, 142);
+        int border = active ? ThemeColors.BORDER_ACCENT : ThemeColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
         WidgetGroup bg = skinnedTabBg(w, fill, border, active);
         SkinAnchorRegistry.registerShared("settings_tab_layer", bg);
-        LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
+        LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_MUTED);
         ButtonWidget hit = active
                 ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
                 : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
         GlowShaderHelper.glowHit(hit, Component.translatable(tab.labelKey()));
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 82)));
         container.addWidget(bg);
         container.addWidget(text);
         container.addWidget(hit);

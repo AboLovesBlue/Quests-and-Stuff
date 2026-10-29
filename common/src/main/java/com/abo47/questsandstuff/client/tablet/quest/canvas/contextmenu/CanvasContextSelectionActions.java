@@ -41,10 +41,10 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -54,7 +54,7 @@ final class CanvasContextSelectionActions {
     private CanvasContextSelectionActions() {
     }
 
-    static void addSelectionActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter) {
+    static void addSelectionActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter) {
         if (state.contextMenu.contextMenuTarget != ContextMenuTarget.SELECTION || selectedChapter.isBlank()) {
             return;
         }
@@ -63,7 +63,7 @@ final class CanvasContextSelectionActions {
         boolean hasConnections = !connectedConnections.isEmpty();
 
         if (totalCount > 0) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ThemeColors.INTERACTIVE, () -> {
                 boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextMenu.contextLastClickX, state.contextMenu.contextLastClickY);
                 ContextMenuController.close(state);
                 ContextMenuController.clearDeleteConfirm(state);
@@ -78,7 +78,7 @@ final class CanvasContextSelectionActions {
                     && !entityImageIds.isEmpty()
                     && entityImageIds.size() == totalCount) {
                 String batchTarget = ModalTargets.canvasEntityChangeBatch(selectedChapter, entityImageIds.toArray(new String[0]));
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ThemeColors.INTERACTIVE, () -> {
                     int x = state.canvas.canvasImageLogicalX;
                     int y = state.canvas.canvasImageLogicalY;
                     IconPickerOpenActions.openCanvasEntityPicker(state, batchTarget, x, y);
@@ -92,8 +92,8 @@ final class CanvasContextSelectionActions {
             if (totalCount > 1 && !questIds.isEmpty()) {
                 List<String> targets = new ArrayList<>(questIds);
                 CompoundTag first = firstQuest(targets);
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
                             ContextMenuController.closeExclusiveSubmenus(state);
                             AssetPickerOpenActions.openBatchQuestBackgroundPicker(
                                     state,
@@ -105,7 +105,7 @@ final class CanvasContextSelectionActions {
                             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
                             canvasViewport.refresh();
                         }),
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                             ContextMenuController.closeExclusiveSubmenus(state);
                             IconPickerOpenActions.openBatchQuestGameTexturePicker(
                                     state,
@@ -117,8 +117,8 @@ final class CanvasContextSelectionActions {
                             canvasViewport.refresh();
                         })
                 )));
-                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", TabletColors.INTERACTIVE, List.of(
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
                             ContextMenuController.closeExclusiveSubmenus(state);
                             AssetPickerOpenActions.openBatchQuestCompletionHudBackgroundPicker(
                                     state,
@@ -129,7 +129,7 @@ final class CanvasContextSelectionActions {
                             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background quests={}", targets.size());
                             canvasViewport.refresh();
                         }),
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                             ContextMenuController.closeExclusiveSubmenus(state);
                             IconPickerOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, targets);
                             ContextMenuController.clearDeleteConfirm(state);
@@ -142,20 +142,20 @@ final class CanvasContextSelectionActions {
         if (totalCount > 1) {
             ContextMenuController.closeExclusiveSubmenus(state);
             if (hasConnections) {
-                sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CONNECTION_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CONNECTION_COLOR), "style_color", ThemeColors.INTERACTIVE, () -> {
                     CanvasContextMenuController.ConnectionRef first = connectedConnections.get(0);
                     int color = CanvasRenderer.connectionColor(state, selectedChapter, first.prerequisiteId(), first.questId());
                     AppOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedChapter), color);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors chapter={} connections={}", selectedChapter, connectedConnections.size());
                     canvasViewport.refresh();
                 }));
-                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
                             AssetPickerOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
                             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
                             canvasViewport.refresh();
                         }),
-                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                             IconPickerOpenActions.openConnectionGameTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
                             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures_game chapter={} connections={}", selectedChapter, connectedConnections.size());
                             canvasViewport.refresh();
@@ -182,7 +182,7 @@ final class CanvasContextSelectionActions {
             addBatchRemainingVisualActions(sections, canvasViewport, state, player);
             addBatchBehaviorActions(sections, canvasViewport, state, player);
             if (CanvasGridFitController.canFitSelectionToGrid(state, selectedChapter, canvasViewport.cardLookup())) {
-                sections.add(ContextMenuSection.ARRANGE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.ARRANGE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ThemeColors.INTERACTIVE, () -> {
                     boolean changed = CanvasGridFitController.fitSelectionToGrid(player, state, selectedChapter, canvasViewport.cardLookup());
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", totalCount, changed);
@@ -196,7 +196,7 @@ final class CanvasContextSelectionActions {
         addSelectionCopyAndDeleteActions(sections, canvasViewport, state, player);
     }
 
-    private static boolean selectionSupportsGizmo(TabletUiState state, String selectedChapter) {
+    private static boolean selectionSupportsGizmo(UiState state, String selectedChapter) {
         if (!state.canvas.canvasSelection.questIds().isEmpty()) return false;
         if (!state.canvas.canvasSelection.textIds().isEmpty()) return false;
         if (!state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()) return false;
@@ -212,7 +212,7 @@ final class CanvasContextSelectionActions {
         return hasGizmoImage;
     }
 
-    private static void addBatchRemainingVisualActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+    private static void addBatchRemainingVisualActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
         Set<String> questIds = state.canvas.canvasSelection.questIds();
         if (questIds.size() <= 1) {
             return;
@@ -240,7 +240,7 @@ final class CanvasContextSelectionActions {
         }
     }
 
-    private static void addBatchBehaviorActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+    private static void addBatchBehaviorActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
         Set<String> questIds = state.canvas.canvasSelection.questIds();
         if (questIds.size() <= 1) {
             return;
@@ -257,7 +257,7 @@ final class CanvasContextSelectionActions {
         behaviorActions.add(new ContextAction(
                 CanvasContextMenuController.tr(repeatable ? QuestTranslationKeys.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestTranslationKeys.CONTEXT_MAKE_QUEST_REPEATABLE),
                 repeatable ? "repeat-off" : "repeat",
-                repeatable ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
+                repeatable ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
                 () -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     for (String questId : targets) {
@@ -269,7 +269,7 @@ final class CanvasContextSelectionActions {
         behaviorActions.add(new ContextAction(
                 CanvasContextMenuController.tr(lockUntilUnlocked ? QuestTranslationKeys.CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED : QuestTranslationKeys.CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED),
                 lockUntilUnlocked ? "unlock_quest" : "lock_quest",
-                lockUntilUnlocked ? TabletColors.SUCCESS : TabletColors.INTERACTIVE,
+                lockUntilUnlocked ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
                 () -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     for (String questId : targets) {
@@ -281,7 +281,7 @@ final class CanvasContextSelectionActions {
         behaviorActions.add(new ContextAction(
                 CanvasContextMenuController.tr(hidden ? QuestTranslationKeys.CONTEXT_REVEAL_QUEST : QuestTranslationKeys.CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED),
                 hidden ? "eye" : "eye-off",
-                hidden ? TabletColors.SUCCESS : TabletColors.WARNING,
+                hidden ? ThemeColors.SUCCESS : ThemeColors.WARNING,
                 () -> {
                     ContextMenuController.clearDeleteConfirm(state);
                     for (String questId : targets) {
@@ -290,17 +290,17 @@ final class CanvasContextSelectionActions {
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_hide quests={}", targets.size());
                     canvasViewport.refresh();
                 }));
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_BEHAVIOR), "wrench", TabletColors.INTERACTIVE, behaviorActions));
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_BEHAVIOR), "wrench", ThemeColors.INTERACTIVE, behaviorActions));
 
-        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> {
                     SoundPickerOpenActions.openBatchQuestGameSoundPicker(state, targets, first.getString("completion_sound"));
                     ContextMenuController.closeExclusiveSubmenus(state);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_game quests={}", targets.size());
                     canvasViewport.refresh();
                 }),
-                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> {
                     SoundPickerOpenActions.openBatchQuestCustomCompletionSoundPicker(state, targets, first.getString("completion_sound"));
                     ContextMenuController.closeExclusiveSubmenus(state);
                     ContextMenuController.clearDeleteConfirm(state);
@@ -310,7 +310,7 @@ final class CanvasContextSelectionActions {
         )));
     }
 
-    private static void addBatchResetQuest(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+    private static void addBatchResetQuest(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
         Set<String> questIds = state.canvas.canvasSelection.questIds();
         if (questIds.size() <= 1) {
             return;
@@ -366,7 +366,7 @@ final class CanvasContextSelectionActions {
         return false;
     }
 
-    private static boolean selectionHasConnectionTexture(TabletUiState state, String chapter, List<CanvasContextMenuController.ConnectionRef> connections) {
+    private static boolean selectionHasConnectionTexture(UiState state, String chapter, List<CanvasContextMenuController.ConnectionRef> connections) {
         for (var connection : connections) {
             String prereq = connection.prerequisiteId();
             String quest = connection.questId();
@@ -379,18 +379,18 @@ final class CanvasContextSelectionActions {
         return false;
     }
 
-    private static void addSelectionLayerActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
+    private static void addSelectionLayerActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
         CanvasSelectionSet selection = CanvasSelectionSet.current(state);
         if (selection.layerKeys().isEmpty()) {
             return;
         }
-        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ThemeColors.INTERACTIVE, () -> {
             CanvasLayerMutations.moveCanvasLayers(state, selectedChapter, selection.layerKeys(), true);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=selection count={}", selection.size());
             canvasViewport.refresh();
         }));
-        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", TabletColors.TEXT_MUTED, () -> {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ThemeColors.TEXT_MUTED, () -> {
             CanvasLayerMutations.moveCanvasLayers(state, selectedChapter, selection.layerKeys(), false);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=selection count={}", selection.size());
@@ -398,7 +398,7 @@ final class CanvasContextSelectionActions {
         }));
     }
 
-    private static void addSelectionCopyAndDeleteActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
+    private static void addSelectionCopyAndDeleteActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
         if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
             sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
                 CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
@@ -408,14 +408,14 @@ final class CanvasContextSelectionActions {
         }
         if (CanvasContextDeleteController.canDeleteContext(state)) {
             String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TabletTranslationKeys.text(TabletTranslationKeys.COMMON_REMOVE), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
                 CanvasContextDeleteController.runDeleteAction(player, state);
                 canvasViewport.refresh();
             }));
         }
     }
 
-    private static Set<String> selectedEntityImageIds(TabletUiState state, String selectedChapter) {
+    private static Set<String> selectedEntityImageIds(UiState state, String selectedChapter) {
         Set<String> ids = new LinkedHashSet<>();
         String primary = state.canvas.canvasSelection.primaryImageId();
         if (!primary.isBlank()) ids.add(primary);
@@ -431,7 +431,7 @@ final class CanvasContextSelectionActions {
         return entityIds;
     }
 
-    private static void addBatchElementActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
+    private static void addBatchElementActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
         Set<String> imageIds = state.canvas.canvasSelection.imageIds();
         Set<String> textIds = state.canvas.canvasSelection.textIds();
         Set<String> exclusiveChoiceIds = state.canvas.canvasSelection.exclusiveChoiceIds();
@@ -451,7 +451,7 @@ final class CanvasContextSelectionActions {
         }
     }
 
-    private static void addBatchImageOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter, Set<String> imageIds) {
+    private static void addBatchImageOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> imageIds) {
         String primaryId = state.canvas.canvasSelection.primaryImageId();
         if (primaryId.isBlank()) {
             primaryId = imageIds.iterator().next();
@@ -471,14 +471,14 @@ final class CanvasContextSelectionActions {
                 && selectedEntityImageIds(state, selectedChapter).size() == imageIds.size();
 
         if (isRecipeCard) {
-            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_RECIPE_CARD), "recipe", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_RECIPE_CARD), "recipe", ThemeColors.INTERACTIVE, () -> {
                 RegistryPickerOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
                 ContextMenuController.close(state);
                 canvasViewport.refresh();
             }));
         } else if (isEntity) {
             if (!allEntitySelection) {
-                sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", TabletColors.INTERACTIVE, () -> {
+                sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ThemeColors.INTERACTIVE, () -> {
                     IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
                     ContextMenuController.close(state);
                     canvasViewport.refresh();
@@ -497,20 +497,20 @@ final class CanvasContextSelectionActions {
                 }));
             }
             sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.promoted(
-                    TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION),
-                    "motion", TabletColors.INTERACTIVE, () -> {
+                    TranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION),
+                    "motion", ThemeColors.INTERACTIVE, () -> {
                         ContextMenuController.clearDeleteConfirm(state);
                         EntityMotionEditor.openMainCanvas(state, selectedChapter, finalPrimaryId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
                         canvasViewport.refresh();
                     }));
         } else if (isItem) {
-            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ThemeColors.INTERACTIVE, () -> {
                 IconPickerOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
                 ContextMenuController.close(state);
                 canvasViewport.refresh();
             }));
         } else if (isBlock) {
-            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", TabletColors.INTERACTIVE, () -> {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ThemeColors.INTERACTIVE, () -> {
                 RegistryPickerOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
                 ContextMenuController.close(state);
                 canvasViewport.refresh();
@@ -518,7 +518,7 @@ final class CanvasContextSelectionActions {
         }
     }
 
-    private static void addBatchExclusiveChoiceOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter, Set<String> exclusiveChoiceIds) {
+    private static void addBatchExclusiveChoiceOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> exclusiveChoiceIds) {
         String primaryId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
         if (primaryId.isBlank()) {
             primaryId = exclusiveChoiceIds.iterator().next();
@@ -527,13 +527,13 @@ final class CanvasContextSelectionActions {
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, finalPrimaryId);
         if (ec == null) return;
 
-        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
                     AssetPickerOpenActions.openExclusiveChoiceBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
                     ContextMenuController.close(state);
                     canvasViewport.refresh();
                 }),
-                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
                     IconPickerOpenActions.openExclusiveChoiceGameTexturePicker(state, selectedChapter, finalPrimaryId);
                     ContextMenuController.close(state);
                     canvasViewport.refresh();
@@ -556,13 +556,13 @@ final class CanvasContextSelectionActions {
         }
     }
 
-    private static void addBatchTextOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter, Set<String> textIds) {
+    private static void addBatchTextOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> textIds) {
         String primaryId = state.canvas.canvasSelection.primaryTextId();
         if (primaryId.isBlank()) {
             primaryId = textIds.iterator().next();
         }
         String finalPrimaryId = primaryId;
-        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, false, () -> {
+        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", ThemeColors.INTERACTIVE, false, () -> {
             CanvasTextStyleSession.openMainCanvas(state, finalPrimaryId);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_text_style id={}", finalPrimaryId);
@@ -570,15 +570,15 @@ final class CanvasContextSelectionActions {
         }));
     }
 
-    private static void addSelectionAlignmentActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player) {
-        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", TabletColors.INTERACTIVE, List.of(
-                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", TabletColors.INTERACTIVE, () -> {
+    private static void addSelectionAlignmentActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", ThemeColors.INTERACTIVE, () -> {
                     boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
                     canvasViewport.refresh();
                 }),
-                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", TabletColors.INTERACTIVE, () -> {
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", ThemeColors.INTERACTIVE, () -> {
                     boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);

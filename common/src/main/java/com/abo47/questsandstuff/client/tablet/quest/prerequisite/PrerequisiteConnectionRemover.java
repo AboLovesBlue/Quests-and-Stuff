@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 final class PrerequisiteConnectionRemover {
     private PrerequisiteConnectionRemover() {
@@ -15,7 +15,7 @@ final class PrerequisiteConnectionRemover {
                 && !row.targetId().isBlank();
     }
 
-    static void clearAfterRemove(TabletUiState state, PrerequisiteConnectionRow row) {
+    static void clearAfterRemove(UiState state, PrerequisiteConnectionRow row) {
         if (state == null || row == null) {
             return;
         }

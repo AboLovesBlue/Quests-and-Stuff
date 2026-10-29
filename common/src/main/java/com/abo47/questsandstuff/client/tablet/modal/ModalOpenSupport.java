@@ -8,23 +8,23 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalPickerStates;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.clearAllModalTargets;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState.openModal;
+import static com.abo47.questsandstuff.client.tablet.ui.state.ModalState.clearAllModalTargets;
+import static com.abo47.questsandstuff.client.tablet.ui.state.ModalState.openModal;
 
 final class ModalOpenSupport {
     private ModalOpenSupport() {
     }
 
-    static void openPickerModal(TabletUiState state, ModalWindowManager.ModalType type, Runnable configure) {
+    static void openPickerModal(UiState state, ModalWindowManager.ModalType type, Runnable configure) {
         closeBeforeOpen(state);
         clearAllModalTargets(state);
         configure.run();
         openModal(state, type);
     }
 
-    static void closeBeforeOpen(TabletUiState state) {
+    static void closeBeforeOpen(UiState state) {
         ModalCloseActions.closeAllImmediately(state);
         ContextMenuController.close(state);
         state.questDetails.questDetailsContextOpen = false;
@@ -35,7 +35,7 @@ final class ModalOpenSupport {
         state.modal.prerequisitesManagerContextOpen = false;
     }
 
-    static void setCanvasPickPoint(TabletUiState state, int logicalX, int logicalY) {
+    static void setCanvasPickPoint(UiState state, int logicalX, int logicalY) {
         state.canvas.canvasImageLogicalX = logicalX;
         state.canvas.canvasImageLogicalY = logicalY;
     }
@@ -62,17 +62,17 @@ final class ModalOpenSupport {
         return targets.isEmpty() ? "" : targets.iterator().next();
     }
 
-    static void resetIconPicker(TabletUiState state) {
+    static void resetIconPicker(UiState state) {
         ModalPickerStates.icon(state).reset();
         ModalIconPickerMode.reset(state);
     }
 
-    static void resetBlockPicker(TabletUiState state) {
+    static void resetBlockPicker(UiState state) {
         ModalPickerStates.block(state).reset();
         state.pickers.blockTagMode = false;
     }
 
-    static void resetRecipePicker(TabletUiState state) {
+    static void resetRecipePicker(UiState state) {
         ModalPickerStates.recipe(state).reset();
         RecipePickerMode.reset(state);
     }

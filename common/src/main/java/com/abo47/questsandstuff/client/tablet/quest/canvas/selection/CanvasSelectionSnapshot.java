@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -22,7 +22,7 @@ public record CanvasSelectionSnapshot(
     }
 
     public static CanvasSelectionSnapshot capture(
-            TabletUiState state,
+            UiState state,
             String chapter,
             Map<String, QuestCardLayout> byQuestId
     ) {

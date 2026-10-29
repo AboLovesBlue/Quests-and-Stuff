@@ -8,14 +8,14 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 public final class EntityMotionEditor {
     private EntityMotionEditor() {
     }
 
-    public static void openMainCanvas(TabletUiState state, String chapter, String imageId, int x, int y) {
+    public static void openMainCanvas(UiState state, String chapter, String imageId, int x, int y) {
         CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
             return;
@@ -24,7 +24,7 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=canvas chapter={} image={} spin={}", chapter, imageId, image.entitySpinSpeed());
     }
 
-    public static void openQuestDetails(TabletUiState state, String questId, String imageId, int x, int y) {
+    public static void openQuestDetails(UiState state, String questId, String imageId, int x, int y) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
         CanvasImageLayer image = model.image(imageId);
         if (!EntityMotionTargets.isEditableEntity(image)) {
@@ -34,7 +34,7 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_details quest={} image={} spin={}", questId, imageId, image.entitySpinSpeed());
     }
 
-    public static void openQuestIcon(TabletUiState state, String questId, int x, int y) {
+    public static void openQuestIcon(UiState state, String questId, int x, int y) {
         EntityIconMotion icon = EntityMotionTargets.currentQuestIconMotion(questId);
         if (!icon.editable()) {
             return;
@@ -43,7 +43,7 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=quest_icon quest={} spin={}", questId, icon.spin());
     }
 
-    public static void openChapterIcon(TabletUiState state, String chapter, int x, int y) {
+    public static void openChapterIcon(UiState state, String chapter, int x, int y) {
         EntityIconMotion icon = EntityMotionTargets.currentChapterIconMotion(chapter);
         if (!icon.editable()) {
             return;
@@ -52,7 +52,7 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=chapter_icon chapter={} spin={}", chapter, icon.spin());
     }
 
-    public static void openTaskIcon(TabletUiState state, String questId, String taskId, boolean task, int x, int y) {
+    public static void openTaskIcon(UiState state, String questId, String taskId, boolean task, int x, int y) {
         EntityIconMotion icon = EntityMotionTargets.currentTaskIconMotion(questId, taskId, task);
         if (!icon.editable()) {
             return;
@@ -61,7 +61,7 @@ public final class EntityMotionEditor {
         QuestsAndStuffMod.debugLog("[QnS:UI] entity motion editor open scope=task_icon quest={} task={} task={} spin={}", questId, taskId, task, icon.spin());
     }
 
-    public static void close(TabletUiState state) {
+    public static void close(UiState state) {
         if (state == null) {
             return;
         }
@@ -88,33 +88,33 @@ public final class EntityMotionEditor {
         }
     }
 
-    public static boolean isMainCanvasOpen(TabletUiState state) {
+    public static boolean isMainCanvasOpen(UiState state) {
         return state != null
                 && state.questDetails.entityMotionEditorOpen
                 && (EntityMotionTargets.SCOPE_CANVAS.equals(state.questDetails.entityMotionEditorScope)
                 || EntityMotionTargets.SCOPE_QUEST_ICON.equals(state.questDetails.entityMotionEditorScope));
     }
 
-    public static boolean isChapterPanelOpen(TabletUiState state) {
+    public static boolean isChapterPanelOpen(UiState state) {
         return state != null && state.questDetails.entityMotionEditorOpen && EntityMotionTargets.SCOPE_CHAPTER_ICON.equals(state.questDetails.entityMotionEditorScope);
     }
 
-    public static boolean isQuestDetailsOpen(TabletUiState state) {
+    public static boolean isQuestDetailsOpen(UiState state) {
         return state != null
                 && state.questDetails.entityMotionEditorOpen
                 && (EntityMotionTargets.SCOPE_QUEST_DETAILS.equals(state.questDetails.entityMotionEditorScope)
                 || EntityMotionTargets.SCOPE_TASK_ICON.equals(state.questDetails.entityMotionEditorScope));
     }
 
-    public static boolean isDragging(TabletUiState state) {
+    public static boolean isDragging(UiState state) {
         return state != null && (state.questDetails.entityMotionYawSliderDragging || state.questDetails.entityMotionSpinSliderDragging);
     }
 
-    public static boolean isMainCanvasHit(TabletUiState state, double localX, double localY) {
+    public static boolean isMainCanvasHit(UiState state, double localX, double localY) {
         return isMainCanvasOpen(state) && inside(localX, localY, state.questDetails.entityMotionEditorX, state.questDetails.entityMotionEditorY, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
-    public static boolean isQuestDetailsHit(TabletUiState state, double mouseX, double mouseY) {
+    public static boolean isQuestDetailsHit(UiState state, double mouseX, double mouseY) {
         if (!isQuestDetailsOpen(state)) {
             return false;
         }
@@ -123,11 +123,11 @@ public final class EntityMotionEditor {
         return inside(mouseX, mouseY, x, y, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
-    public static boolean isChapterPanelHit(TabletUiState state, double localX, double localY) {
+    public static boolean isChapterPanelHit(UiState state, double localX, double localY) {
         return isChapterPanelOpen(state) && inside(localX, localY, state.questDetails.entityMotionEditorX, state.questDetails.entityMotionEditorY, state.questDetails.entityMotionEditorW, state.questDetails.entityMotionEditorH);
     }
 
-    public static void renderMainCanvas(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh) {
+    public static void renderMainCanvas(WidgetGroup parent, UiState state, Player player, Runnable refresh) {
         if (!isMainCanvasOpen(state)) {
             return;
         }
@@ -139,7 +139,7 @@ public final class EntityMotionEditor {
         EntityMotionPopup.render(parent, state, player, refresh, motion, parent.getSizeWidth(), parent.getSizeHeight());
     }
 
-    public static void renderChapterPanel(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh) {
+    public static void renderChapterPanel(WidgetGroup parent, UiState state, Player player, Runnable refresh) {
         if (!isChapterPanelOpen(state)) {
             return;
         }
@@ -151,7 +151,7 @@ public final class EntityMotionEditor {
         EntityMotionPopup.render(parent, state, player, refresh, motion, parent.getSizeWidth(), parent.getSizeHeight());
     }
 
-    public static void renderQuestDetails(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh) {
+    public static void renderQuestDetails(WidgetGroup modal, UiState state, Player player, Runnable refresh) {
         if (!isQuestDetailsOpen(state)) {
             return;
         }

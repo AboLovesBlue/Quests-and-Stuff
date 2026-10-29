@@ -1,0 +1,274 @@
+package com.abo47.questsandstuff.client.tablet.layout;
+
+import org.joml.Vector4f;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.nbt.CompoundTag;
+
+import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
+import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+
+public final class PanelChrome {
+    private PanelChrome() {
+    }
+
+    public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, UiState state) {
+        drawCanvasPanelChrome(graphics, panel, state.canvas.canvasViewportX, state.canvas.canvasViewportY, state.canvas.canvasViewportW, state.canvas.canvasViewportH, state);
+    }
+
+    public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH) {
+        drawCanvasPanelChrome(graphics, panel, viewportX, viewportY, viewportW, viewportH, null);
+    }
+
+    public static void drawCanvasPanelChrome(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, @javax.annotation.Nullable UiState state) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSize().width;
+        int h = panel.getSize().height;
+        if (hasBuiltinCanvasBackground(state)) {
+            IGuiTexture fill;
+            if (hasPanelOverride(panel, state)) {
+                fill = resolveFill(panel);
+            } else {
+                fill = SurfaceFactory.fill(ThemeColors.SURFACE_PANEL);
+            }
+            fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            return;
+        }
+        boolean panelSkinned = hasSkinOverride(panel);
+        if (hasPanelOverride(panel, state)) {
+            if (panelSkinned) {
+                IGuiTexture fill = resolveFill(panel);
+                fillPanelRect(fill, graphics, x, y, x + w, y + h);
+            } else {
+                IGuiTexture fill = SurfaceFactory.fill(ThemeColors.SURFACE_PANEL);
+                int innerLeft = x + GRID_1;
+                int innerTop = y + GRID_1;
+                int innerRight = x + Math.max(1, w - 1);
+                int innerBottom = y + Math.max(1, h - 1);
+                fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
+            }
+        } else {
+            IGuiTexture fill = SurfaceFactory.fill(ThemeColors.SURFACE_PANEL);
+            int innerLeft = x + GRID_1;
+            int innerTop = y + GRID_1;
+            int innerRight = x + Math.max(1, w - 1);
+            int innerBottom = y + Math.max(1, h - 1);
+            fillPanelRect(fill, graphics, innerLeft, innerTop, innerRight, innerBottom);
+        }
+    }
+
+    public static void viewportScissor(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, Runnable draw) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int pvx = x + viewportX;
+        int pvy = y + viewportY;
+        var trans = graphics.pose().last().pose();
+        var p1 = trans.transform(new Vector4f(pvx, pvy, 0, 1));
+        var p2 = trans.transform(new Vector4f(pvx + viewportW, pvy + viewportH, 0, 1));
+        graphics.enableScissor((int) p1.x, (int) p1.y, (int) p2.x, (int) p2.y);
+        try {
+            draw.run();
+        } finally {
+            graphics.disableScissor();
+        }
+    }
+
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, UiState state) {
+        drawCanvasPanelOutlines(graphics, panel, state.canvas.canvasViewportX, state.canvas.canvasViewportY, state.canvas.canvasViewportW, state.canvas.canvasViewportH, state.root.canEdit, state.canvas.gridEnabled, state.canvas.gridOpacityPercent, GridControls.defaultGridColor(state), state);
+    }
+
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent, int gridColor) {
+        drawCanvasPanelOutlines(graphics, panel, viewportX, viewportY, viewportW, viewportH, canEdit, gridEnabled, gridOpacityPercent, gridColor, null);
+    }
+
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent, int gridColor, @javax.annotation.Nullable UiState state) {
+        if (!isActiveSkinPanel(panel, state)) {
+            drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ThemeColors.BORDER_BASE);
+        }
+        if (hasBuiltinCanvasBackground(state)) return;
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSize().width;
+        int h = panel.getSize().height;
+        int holeLeft = x + Math.max(1, Math.min(w - 1, viewportX));
+        int holeTop = y + Math.max(1, Math.min(h - 1, viewportY));
+        int holeRight = x + Math.max(1, Math.min(w - 1, viewportX + viewportW));
+        int holeBottom = y + Math.max(1, Math.min(h - 1, viewportY + viewportH));
+
+        if (holeRight > holeLeft && holeBottom > holeTop) {
+            if (canEdit && gridEnabled) {
+                drawRectOutline(graphics, holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, GridControls.gridAlpha(gridOpacityPercent, gridColor));
+            }
+        }
+    }
+
+    private static boolean isActiveSkinPanel(WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        if (state == null || state.root.skinFillOverrides == null) return false;
+        if (state.root.skinFillOverrides.isEmpty()) return false;
+        for (String entryKey : state.root.skinFillOverrides.keySet()) {
+            String bareKey = SkinOverrideKey.bareKeyForCurrentApp(state, entryKey);
+            if (bareKey == null || SkinTargetKeys.ROOT.equals(bareKey)) continue;
+            Widget w = SkinAnchorRegistry.findByKey(bareKey);
+            if (w == null) continue;
+            if (w == panel) return true;
+        }
+        return false;
+    }
+
+    private static boolean isBackgroundKeySkinned(WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        if (state == null || state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return false;
+        String panelKey = SkinAnchorRegistry.keyFor(panel);
+        if (panelKey == null) return false;
+        String bgKey = SkinOverrideKey.viewportBackgroundKey(panelKey);
+        if (bgKey == null) return false;
+        return SkinOverrideKey.resolveOverride(state, bgKey) != null;
+    }
+
+    public static boolean shouldHideViewportBorder(WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        if (hasBuiltinCanvasBackground(state)) return true;
+        if (state != null && isBackgroundKeySkinned(panel, state)) return true;
+        return false;
+    }
+
+    private static boolean hasBuiltinCanvasBackground(@javax.annotation.Nullable UiState state) {
+        if (state == null) return false;
+        if (QuestDetailsWindow.isVisible(state)) {
+            String questId = state.questDetails.questDetailsQuestId;
+            if (questId != null && !questId.isBlank()) {
+                CompoundTag quest = ClientQuestStateFacade.quest(questId);
+                if (quest != null) {
+                    String bg = QuestDetailsDescriptionModel.decode(quest).canvasBackground();
+                    return bg != null && !bg.equals("default") && !bg.isBlank();
+                }
+            }
+        } else {
+            String chapter = state.root.selectedChapter;
+            if (chapter != null && !chapter.isBlank()) {
+                String bg = ClientQuestStateFacade.chapterCanvasBackground(chapter);
+                return bg != null && !bg.equals("default") && !bg.isBlank();
+            }
+        }
+        return false;
+    }
+
+    public static void drawCanvasPanelOutlines(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable UiState state, int viewportX, int viewportY, int viewportW, int viewportH, boolean canEdit, boolean gridEnabled, int gridOpacityPercent, int gridColor) {
+        drawCanvasPanelOutlines(graphics, panel, viewportX, viewportY, viewportW, viewportH, canEdit, gridEnabled, gridOpacityPercent, gridColor, state);
+    }
+
+    public static void drawPanelChrome(GuiGraphics graphics, WidgetGroup panel) {
+        drawPanelChromeNoShadow(graphics, panel);
+    }
+
+    public static void drawPanelChrome(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        drawPanelChromeNoShadow(graphics, panel, state);
+    }
+
+    public static void drawRootChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSize().width;
+        int h = panel.getSize().height;
+        fillRootRect(resolveFill(panel), graphics, x, y, x + Math.max(1, w), y + Math.max(1, h));
+    }
+
+    public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel) {
+        drawPanelChromeNoShadow(graphics, panel, null);
+    }
+
+    public static void drawPanelChromeNoShadow(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        int x = panel.getPositionX();
+        int y = panel.getPositionY();
+        int w = panel.getSize().width;
+        int h = panel.getSize().height;
+        IGuiTexture fill = resolveFill(panel);
+        if (hasPanelOverride(panel, state)) {
+            fillPanelRect(fill, graphics, x, y, x + w, y + h);
+        } else {
+            int right = x + Math.max(1, w - 1);
+            int bottom = y + Math.max(1, h - 1);
+            fillPanelRect(fill, graphics, x + GRID_1, y + GRID_1, right, bottom);
+        }
+    }
+
+    public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel) {
+        if (hasSkinOverride(panel)) return;
+        drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ThemeColors.BORDER_BASE);
+    }
+
+    public static void drawPanelOutline(GuiGraphics graphics, WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        if (hasPanelOverride(panel, state)) return;
+        drawRectOutline(graphics, panel.getPositionX(), panel.getPositionY(), panel.getSize().width, panel.getSize().height, ThemeColors.BORDER_BASE);
+    }
+
+    public static void drawRectOutline(GuiGraphics graphics, int x, int y, int w, int h, int color) {
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        IGuiTexture fill = SurfaceFactory.fill(color);
+        fill.draw(graphics, 0, 0, x, y, w, GRID_1);
+        fill.draw(graphics, 0, 0, x, y + h - 1, w, GRID_1);
+        fill.draw(graphics, 0, 0, x, y + GRID_1, GRID_1, Math.max(0, h - 2));
+        fill.draw(graphics, 0, 0, x + w - GRID_1, y + GRID_1, GRID_1, Math.max(0, h - 2));
+    }
+
+    static IGuiTexture resolveFill(WidgetGroup panel) {
+        IGuiTexture bg = panel.getBackgroundTexture();
+        if (bg == null || bg.equals(IGuiTexture.EMPTY)) {
+            return SurfaceFactory.fill(ThemeColors.SURFACE_PANEL);
+        }
+        if (bg instanceof ColorRectTexture crt) {
+            return SurfaceFactory.fill(crt.color);
+        }
+        return bg;
+    }
+
+    static boolean hasSkinOverride(WidgetGroup panel) {
+        IGuiTexture bg = panel.getBackgroundTexture();
+        if (bg == null || bg.equals(IGuiTexture.EMPTY)) return false;
+        return !(bg instanceof ColorRectTexture) && !(bg instanceof GuiTextureGroup);
+    }
+
+    public static boolean hasPanelOverride(WidgetGroup panel, @javax.annotation.Nullable UiState state) {
+        if (hasSkinOverride(panel)) return true;
+        if (state != null && isBackgroundKeySkinned(panel, state)) return true;
+        if (state == null) return false;
+        String panelKey = SkinAnchorRegistry.keyFor(panel);
+        if (panelKey != null && state.root.activeSkinTargets.contains(panelKey)) return true;
+        if (state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return false;
+        for (String entryKey : state.root.skinFillOverrides.keySet()) {
+            String bareKey = SkinOverrideKey.bareKeyForCurrentApp(state, entryKey);
+            if (bareKey == null || SkinTargetKeys.ROOT.equals(bareKey)) continue;
+            Widget w = SkinAnchorRegistry.findByKey(bareKey);
+            if (w == panel) return true;
+        }
+        return false;
+    }
+
+    private static void fillPanelRect(IGuiTexture fill, GuiGraphics graphics, int left, int top, int right, int bottom) {
+        if (right > left && bottom > top) {
+            fill.draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        }
+    }
+
+    private static void fillRootRect(IGuiTexture fill, GuiGraphics graphics, int left, int top, int right, int bottom) {
+        if (right > left && bottom > top) {
+            fill.draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        }
+    }
+}

@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.modal.settings;
 import java.util.List;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.ChunkClaimTranslationKeys;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimConfigPacket;
@@ -12,7 +12,7 @@ final class ChunkClaimSettingsOptions {
     private ChunkClaimSettingsOptions() {
     }
 
-    static List<SettingsOptionDescriptor> options(TabletUiState state) {
+    static List<SettingsOptionDescriptor> options(UiState state) {
         int capMin = QuestsAndStuffConfig.minChunkClaimCap();
         int capMax = QuestsAndStuffConfig.maxChunkClaimCap();
         return List.of(

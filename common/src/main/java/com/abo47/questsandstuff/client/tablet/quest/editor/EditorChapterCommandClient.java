@@ -9,9 +9,9 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorChapterPacket;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorOpenChapterPacket;
@@ -21,7 +21,7 @@ public final class EditorChapterCommandClient {
     private EditorChapterCommandClient() {
     }
 
-    public static void cycleChapter(TabletUiState state, int dir) {
+    public static void cycleChapter(UiState state, int dir) {
         List<String> groups = ClientQuestStateFacade.selectableChapterOrder(state != null && state.root.canEdit);
         if (groups.isEmpty()) {
             state.root.selectedChapter = "";
@@ -37,19 +37,19 @@ public final class EditorChapterCommandClient {
         state.chapterPanel.chapterDraft = state.root.selectedChapter;
     }
 
-    public static String selectedChapterName(TabletUiState state) {
-        return TabletStateQueries.selectedChapterName(state);
+    public static String selectedChapterName(UiState state) {
+        return StateQueries.selectedChapterName(state);
     }
 
-    public static boolean canEditChapters(TabletUiState state) {
+    public static boolean canEditChapters(UiState state) {
         return state.root.canEdit;
     }
 
-    public static boolean canManageChapters(TabletUiState state) {
+    public static boolean canManageChapters(UiState state) {
         return state.root.canEdit;
     }
 
-    public static String resolveChapterDraft(TabletUiState state, String fallback) {
+    public static String resolveChapterDraft(UiState state, String fallback) {
         String sanitized = sanitizeChapterName(state.chapterPanel.chapterDraft);
         if (!sanitized.isBlank()) {
             return sanitized;
@@ -124,10 +124,10 @@ public final class EditorChapterCommandClient {
     }
 
     public static String sanitizeChapterName(String value) {
-        return TabletStateQueries.sanitizeChapterName(value);
+        return StateQueries.sanitizeChapterName(value);
     }
 
-    public static void runChapterAction(Player player, TabletUiState state, String action, String chapter, String value, int offset) {
+    public static void runChapterAction(Player player, UiState state, String action, String chapter, String value, int offset) {
         String op = action == null ? "" : action;
         String from = sanitizeChapterName(chapter);
         String rawValue = value == null ? "" : value.trim();
@@ -163,7 +163,7 @@ public final class EditorChapterCommandClient {
                 () -> EditorPreviewDeduplicator.dispatch("chapter:" + op + ":" + from + ":" + to + ":" + offset, optimisticApply, sendToServer));
     }
 
-    private static IntegratedServerActions.LocalAction integratedServerGroupAction(TabletUiState state, String op, String from, String to, int offset) {
+    private static IntegratedServerActions.LocalAction integratedServerGroupAction(UiState state, String op, String from, String to, int offset) {
         return serverPlayer -> {
             var editor = QuestServiceRegistry.editor(serverPlayer.server);
             switch (op) {
@@ -210,7 +210,7 @@ public final class EditorChapterCommandClient {
         };
     }
 
-    private static void applyLocalGroupAction(TabletUiState state, String op, String from, String to, int offset) {
+    private static void applyLocalGroupAction(UiState state, String op, String from, String to, int offset) {
         switch (op) {
             case "create" -> {
                 ClientQuestStateFacade.createChapterLocal(to);

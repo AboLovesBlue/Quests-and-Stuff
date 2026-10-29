@@ -6,7 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CanvasGeometryPartitionTest {
     @Test
     void coordinateMapperConvertsBetweenLogicalAndScreenSpace() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasContentX = 10;
         state.canvas.canvasContentY = 20;
         state.canvas.canvasOffsetX = 5;
@@ -29,7 +29,7 @@ public class CanvasGeometryPartitionTest {
 
     @Test
     void questCardGeometryBuildsSlotAndVisualBounds() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasContentX = 4;
         state.canvas.canvasContentY = 6;
         state.canvas.canvasZoom = 1.0f;
@@ -80,7 +80,7 @@ public class CanvasGeometryPartitionTest {
 
     @Test
     void clampRotatedAnchorStaysInsideViewport() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasViewportW = 100;
         state.canvas.canvasViewportH = 100;
         state.canvas.canvasContentX = 0;
@@ -97,7 +97,7 @@ public class CanvasGeometryPartitionTest {
 
     @Test
     void clampRotatedAnchorSlidesUnderEdgeWhenUnlocked() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.canvasViewportW = 100;
         state.canvas.canvasViewportH = 100;
         state.canvas.canvasContentX = 0;
@@ -114,7 +114,7 @@ public class CanvasGeometryPartitionTest {
 
     @Test
     void clampRotatedAnchorStaysFullyInsideWhenLocked() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         state.canvas.gridCanvasLocked = true;
         state.canvas.canvasViewportW = 100;
         state.canvas.canvasViewportH = 100;

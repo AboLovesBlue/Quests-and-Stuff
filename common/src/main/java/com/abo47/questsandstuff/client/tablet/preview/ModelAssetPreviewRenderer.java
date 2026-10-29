@@ -31,7 +31,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ItemStackTexture;
 
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiPerfProfiler;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiPerfProfiler;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 public final class ModelAssetPreviewRenderer {
@@ -269,7 +269,7 @@ public final class ModelAssetPreviewRenderer {
 
     private static void renderBlockPreview(GuiGraphics graphics, int centerX, int centerY, int size, BlockState state, int yawDegrees, int pitchDegrees, float fill) {
         float scale = Math.max(1.0F, size * fill);
-        TabletUiPerfProfiler.profile("ui.renderBlockPreview", () -> renderBlockPreviewInternal(graphics, centerX, centerY, state, yawDegrees, pitchDegrees, scale));
+        UiPerfProfiler.profile("ui.renderBlockPreview", () -> renderBlockPreviewInternal(graphics, centerX, centerY, state, yawDegrees, pitchDegrees, scale));
     }
 
     private static void renderBlockPreviewInternal(GuiGraphics graphics, int centerX, int centerY, BlockState state, int yawDegrees, int pitchDegrees, float scale) {

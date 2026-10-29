@@ -9,23 +9,23 @@ import net.minecraft.client.resources.language.I18n;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
+import com.abo47.questsandstuff.client.tablet.animation.AnimationTimings;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class CanvasMiniNotificationController {
-    private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;
-    private static final long FADE_MS = TabletAnimationTimings.MINI_NOTIFICATION_FADE_MS;
+    private static final long DURATION_MS = AnimationTimings.MINI_NOTIFICATION_MS;
+    private static final long FADE_MS = AnimationTimings.MINI_NOTIFICATION_FADE_MS;
     private static final int CURSOR_GAP = 2;
 
     private CanvasMiniNotificationController() {
     }
 
-    public static void rememberPointer(CanvasViewport canvasViewport, TabletUiState state, int mouseX, int mouseY) {
+    public static void rememberPointer(CanvasViewport canvasViewport, UiState state, int mouseX, int mouseY) {
         if (canvasViewport == null || state == null || !canvasViewport.isMouseOverElement(mouseX, mouseY)) {
             return;
         }
@@ -34,20 +34,20 @@ public final class CanvasMiniNotificationController {
         state.canvas.canvasPointerKnown = true;
     }
 
-    public static void show(TabletUiState state, String translationKey, int localX, int localY) {
+    public static void show(UiState state, String translationKey, int localX, int localY) {
         if (state == null || translationKey == null || translationKey.isBlank() || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
             return;
         }
         state.canvas.canvasMiniNotification.show(translationKey, localX, localY, System.currentTimeMillis(), DURATION_MS);
     }
 
-    public static void showAtPointer(TabletUiState state, CanvasViewport canvasViewport, String translationKey) {
+    public static void showAtPointer(UiState state, CanvasViewport canvasViewport, String translationKey) {
         int x = state != null && state.canvas.canvasPointerKnown ? state.canvas.canvasPointerX : Math.max(0, canvasViewport.getSizeWidth() / 2);
         int y = state != null && state.canvas.canvasPointerKnown ? state.canvas.canvasPointerY : Math.max(0, canvasViewport.getSizeHeight() / 2);
         show(state, translationKey, x, y);
     }
 
-    public static WidgetGroup render(CanvasViewport canvasViewport, TabletUiState state) {
+    public static WidgetGroup render(CanvasViewport canvasViewport, UiState state) {
         if (state == null
                 || !state.canvas.canvasMiniNotification.active(System.currentTimeMillis())
                 || !QuestsAndStuffConfig.canvasMiniNotificationsEnabled()) {
@@ -63,7 +63,7 @@ public final class CanvasMiniNotificationController {
         return notice;
     }
 
-    private static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int viewportW, int viewportH) {
+    private static void draw(GuiGraphics graphics, UiState state, int originX, int originY, int viewportW, int viewportH) {
         long remaining = state.canvas.canvasMiniNotification.untilMs() - System.currentTimeMillis();
         if (remaining <= 0L) {
             return;
@@ -78,7 +78,7 @@ public final class CanvasMiniNotificationController {
         }
         localY = clamp(localY, 2, Math.max(2, viewportH - font.lineHeight - 2));
         int alpha = remaining < FADE_MS ? clamp((int) (remaining * 255L / FADE_MS), 0, 255) : 255;
-        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(TabletColors.SUCCESS, alpha), true);
+        graphics.drawString(font, text, originX + localX, originY + localY, withAlpha(ThemeColors.SUCCESS, alpha), true);
     }
 
 }

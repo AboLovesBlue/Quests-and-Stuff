@@ -24,12 +24,12 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ScopedItemStackTexture;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -43,8 +43,8 @@ public final class ItemInventoryPickerModal {
     private ItemInventoryPickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_INVENTORY_ITEM), w, state, refresh);
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
+        ModalShell.addTitleAndClose(modal, TranslationKeys.text(QuestTranslationKeys.CHOOSE_INVENTORY_ITEM), w, state, refresh);
         int sidePad = 8;
         int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
@@ -72,7 +72,7 @@ public final class ItemInventoryPickerModal {
                 6,
                 6,
                 entries,
-                TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
+                TranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 ScrollState.bind(
                         () -> state.pickers.itemInventoryScroll,
                         value -> state.pickers.itemInventoryScroll = value,
@@ -112,7 +112,7 @@ public final class ItemInventoryPickerModal {
             }
         };
         GlowShaderHelper.glowHit(hit, tooltip(stack));
-        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 90)));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 90)));
         hit.setClientSideWidget();
         surface.addWidget(hit);
     }

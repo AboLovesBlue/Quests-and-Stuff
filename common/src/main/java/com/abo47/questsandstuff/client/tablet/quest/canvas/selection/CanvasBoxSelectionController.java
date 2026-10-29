@@ -7,18 +7,18 @@ import java.util.Set;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 public final class CanvasBoxSelectionController {
     private CanvasBoxSelectionController() {
     }
 
-    public static void toggleCanvasImageSelection(TabletUiState state, String imageId) {
+    public static void toggleCanvasImageSelection(UiState state, String imageId) {
         if (imageId == null || imageId.isBlank()) {
             return;
         }
@@ -32,7 +32,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.setPrimaryImageId(imageId);
     }
 
-    public static void toggleCanvasTextSelection(TabletUiState state, String textId) {
+    public static void toggleCanvasTextSelection(UiState state, String textId) {
         if (textId == null || textId.isBlank()) {
             return;
         }
@@ -46,7 +46,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.setPrimaryTextId(textId);
     }
 
-    public static void toggleCanvasExclusiveChoiceSelection(TabletUiState state, String exclusiveChoiceId) {
+    public static void toggleCanvasExclusiveChoiceSelection(UiState state, String exclusiveChoiceId) {
         if (exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return;
         }
@@ -60,7 +60,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(exclusiveChoiceId);
     }
 
-    public static void beginBoxSelection(TabletUiState state, boolean additive, int localX, int localY) {
+    public static void beginBoxSelection(UiState state, boolean additive, int localX, int localY) {
         state.canvas.boxSelecting = true;
         state.canvas.boxAdditive = additive;
         state.canvas.boxStartX = localX;
@@ -73,7 +73,7 @@ public final class CanvasBoxSelectionController {
         }
     }
 
-    public static void updateBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
+    public static void updateBoxSelection(UiState state, List<QuestCardLayout> cards) {
         int minX = Math.min(state.canvas.boxStartX, state.canvas.boxCurrentX);
         int minY = Math.min(state.canvas.boxStartY, state.canvas.boxCurrentY);
         int maxX = Math.max(state.canvas.boxStartX, state.canvas.boxCurrentX);
@@ -126,13 +126,13 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(primarySelection(lastExclusiveChoiceId, state.canvas.boxSelectionBaseCanvasExclusiveChoiceId, state.canvas.canvasSelection.exclusiveChoiceIds()));
     }
 
-    public static void finishBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
+    public static void finishBoxSelection(UiState state, List<QuestCardLayout> cards) {
         updateBoxSelection(state, cards);
         clearBoxSelectionBase(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas mixed box selection total={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
     }
 
-    private static void captureBoxSelectionBase(TabletUiState state, boolean additive) {
+    private static void captureBoxSelectionBase(UiState state, boolean additive) {
         clearBoxSelectionBase(state);
         if (!additive) {
             return;
@@ -146,7 +146,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.boxSelectionBaseCanvasExclusiveChoiceId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
     }
 
-    private static void clearBoxSelectionBase(TabletUiState state) {
+    private static void clearBoxSelectionBase(UiState state) {
         state.canvas.boxSelectionBaseQuestIds.clear();
         state.canvas.boxSelectionBaseCanvasImageIds.clear();
         state.canvas.boxSelectionBaseCanvasTextIds.clear();

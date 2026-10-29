@@ -16,9 +16,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -26,9 +26,9 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import static com.lowdragmc.lowdraglib.gui.widget.Widget.isShiftDown;
 
 final class CanvasSelectionRotateController {
-    private final TabletUiState state;
+    private final UiState state;
 
-    CanvasSelectionRotateController(TabletUiState state) {
+    CanvasSelectionRotateController(UiState state) {
         this.state = state;
     }
 
@@ -54,10 +54,10 @@ final class CanvasSelectionRotateController {
             maxX = Math.max(maxX, card.logicalRight());
             maxY = Math.max(maxY, card.logicalBottom());
         }
-        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, TabletStateQueries.selectedChapterName(state), byQuestId);
+        CanvasSelectionSnapshot snapshot = CanvasSelectionSnapshot.capture(state, StateQueries.selectedChapterName(state), byQuestId);
         state.canvas.rotateStartImageLayers.putAll(snapshot.images());
         state.canvas.rotateStartTextLayers.putAll(snapshot.texts());
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
                 state.canvas.rotateStartExclusiveChoiceLayers.put(ec.id(), ec);
@@ -80,8 +80,8 @@ final class CanvasSelectionRotateController {
             state.canvas.rotateStartAngle = 0.0;
             state.canvas.rotateStartBoundsLeft = 0;
             state.canvas.rotateStartBoundsTop = 0;
-            state.canvas.rotateStartBoundsRight = TabletUiFactory.CARD_W;
-            state.canvas.rotateStartBoundsBottom = TabletUiFactory.CARD_H;
+            state.canvas.rotateStartBoundsRight = UiFactory.CARD_W;
+            state.canvas.rotateStartBoundsBottom = UiFactory.CARD_H;
             return;
         }
         state.canvas.rotateStartBoundsLeft = minX;
@@ -123,8 +123,8 @@ final class CanvasSelectionRotateController {
             double rotatedCenterY = state.canvas.rotatePivotY + relX * sin + relY * cos;
             float scale = CanvasSelectionBounds.scaleForQuest(questId, byQuestId);
             CanvasPoint anchor = CanvasGeometry.anchorForVisualCenter(state, rotatedCenterX, rotatedCenterY, scale);
-            int nx = TabletUiFactory.snapToGrid(state, anchor.x);
-            int ny = TabletUiFactory.snapToGrid(state, anchor.y);
+            int nx = UiFactory.snapToGrid(state, anchor.x);
+            int ny = UiFactory.snapToGrid(state, anchor.y);
             CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(
                     state,
                     nx,

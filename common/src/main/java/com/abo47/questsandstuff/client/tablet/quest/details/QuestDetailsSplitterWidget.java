@@ -1,13 +1,13 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
 import com.abo47.questsandstuff.client.tablet.layout.BaseSplitterWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletGridControls.snapExpandedChapterWidth;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.SPLITTER_W;
+import static com.abo47.questsandstuff.client.tablet.layout.GridControls.snapExpandedChapterWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.SPLITTER_W;
 
 final class QuestDetailsSplitterWidget extends BaseSplitterWidget {
-    QuestDetailsSplitterWidget(int x, int y, int h, TabletUiState state, Runnable refresh) {
+    QuestDetailsSplitterWidget(int x, int y, int h, UiState state, Runnable refresh) {
         super(x, y, SPLITTER_W, h, state, refresh, "quest_details_splitter");
     }
 

@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.quest.sound.QuestCompletionSoundPlayer;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -123,12 +123,12 @@ public final class QuestCompletionNotificationOverlay {
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
         int contentW = Math.max(0, safeW - 14);
-        int text = withAlpha(TabletColors.TEXT_PRIMARY, alpha);
+        int text = withAlpha(ThemeColors.TEXT_PRIMARY, alpha);
 
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.COMPLETION, x, y, safeW, safeH, selected, background, alpha);
         if (safeH >= 10) {
             int barH = safeH < 24 ? 4 : 6;
-            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, TabletColors.SUCCESS, alpha);
+            QuestHudProgressBar.draw(graphics, x + 4, y + safeH - barH - 3, safeW - 8, barH, age, ThemeColors.SUCCESS, alpha);
         }
         if (contentW <= 0 || safeH < 12) {
             return;
@@ -141,7 +141,7 @@ public final class QuestCompletionNotificationOverlay {
         if (safeH >= 27) {
             graphics.drawString(font, completed, x + 7, y + 4, text, false);
             String title = cropToWidth(font, titleValue, contentW);
-            graphics.drawString(font, title, x + 7, y + 14, withAlpha(TabletColors.TEXT_SECONDARY, alpha), false);
+            graphics.drawString(font, title, x + 7, y + 14, withAlpha(ThemeColors.TEXT_SECONDARY, alpha), false);
             return;
         }
         String title = cropToWidth(font, titleValue == null || titleValue.isBlank() ? completed : titleValue, contentW);

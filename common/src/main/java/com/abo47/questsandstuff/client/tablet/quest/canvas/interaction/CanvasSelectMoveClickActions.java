@@ -12,8 +12,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElemen
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -24,7 +24,7 @@ public final class CanvasSelectMoveClickActions {
 
     public static void handleSelectMove(
             CanvasViewport canvasViewport,
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             Map<String, QuestCardLayout> byQuestId,
             CanvasInlineTextEditor textEditor,
@@ -49,8 +49,8 @@ public final class CanvasSelectMoveClickActions {
             state.canvas.canvasLastClickedQuestId = hit.questId();
             state.canvas.canvasLastQuestClickAtMs = now;
             if (doubleClick && button == 0) {
-                int viewportScreenX = TabletWidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
-                int viewportScreenY = TabletWidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
+                int viewportScreenX = WidgetCoordinates.screenX(canvasViewport, state.canvas.canvasPanelX + state.canvas.canvasViewportX);
+                int viewportScreenY = WidgetCoordinates.screenY(canvasViewport, state.canvas.canvasPanelY + state.canvas.canvasViewportY);
                 QuestDetailsWindow.openAtSource(
                         state,
                         hit.questId(),

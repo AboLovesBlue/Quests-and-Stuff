@@ -10,15 +10,15 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.controls.IconTextButton;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.refreshActiveTablet;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.refreshActiveTablet;
 
 final class TeamsAppHeaderControls {
     private static final int TOOL_SIZE = HEADER_H;
@@ -42,7 +42,7 @@ final class TeamsAppHeaderControls {
         this.inviteBtn = inviteBtn;
     }
 
-    static TeamsAppHeaderControls create(TabletUiState state, Runnable refresh, int headerY, int bodyW) {
+    static TeamsAppHeaderControls create(UiState state, Runnable refresh, int headerY, int bodyW) {
         int searchStartW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
 
         TextFieldWidget searchField = StyledTextFields.search(
@@ -127,7 +127,7 @@ final class TeamsAppHeaderControls {
     void layout(int headerY, int bodyW) {
         int searchW = Math.max(40, bodyW - HEADER_INSET * 2 - (TOOL_SIZE + HEADER_GAP) * 3);
         searchField.setSize(searchW, TOOL_SIZE);
-        searchField.setTextColor(TabletColors.TEXT_PRIMARY);
+        searchField.setTextColor(ThemeColors.TEXT_PRIMARY);
 
         int baX = HEADER_INSET + searchW;
         leaveBtn.setSize(TOOL_SIZE, TOOL_SIZE);
@@ -147,11 +147,11 @@ final class TeamsAppHeaderControls {
 
     private static ButtonWidget headerIconButton(int x, int y, String icon, int color,
                                                   java.util.function.Consumer<com.lowdragmc.lowdraglib.gui.util.ClickData> callback) {
-        TabletIconTextButton.Visuals visuals = new TabletIconTextButton.Visuals(
-                TabletIconTextButton.State.of(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE, color),
-                TabletIconTextButton.State.of(withAlpha(color, 66), TabletColors.BORDER_ACCENT, color),
-                TabletIconTextButton.State.of(withAlpha(color, 90), color, TabletColors.TEXT_PRIMARY)
+        IconTextButton.Visuals visuals = new IconTextButton.Visuals(
+                IconTextButton.State.of(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE, color),
+                IconTextButton.State.of(withAlpha(color, 66), ThemeColors.BORDER_ACCENT, color),
+                IconTextButton.State.of(withAlpha(color, 90), color, ThemeColors.TEXT_PRIMARY)
         );
-        return TabletIconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals, callback);
+        return IconTextButton.icon(x, y, TOOL_SIZE, TOOL_SIZE, icon, visuals, callback);
     }
 }

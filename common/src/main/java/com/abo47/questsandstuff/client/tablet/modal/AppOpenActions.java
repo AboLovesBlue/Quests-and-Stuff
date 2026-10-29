@@ -3,13 +3,13 @@ package com.abo47.questsandstuff.client.tablet.modal;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.SearchNormalizer;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalPickerStates;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class AppOpenActions {
     private AppOpenActions() {
     }
 
-    public static void openColorPicker(TabletUiState state, String target, int color) {
+    public static void openColorPicker(UiState state, String target, int color) {
         ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.COLOR_PICKER, () -> {
             state.pickers.colorPickerTarget = ModalOpenSupport.clean(target);
             state.pickers.colorDraft = color;
@@ -21,14 +21,14 @@ public final class AppOpenActions {
         });
     }
 
-    public static void openThemePicker(TabletUiState state) {
+    public static void openThemePicker(UiState state) {
         ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.THEME_PICKER, () -> {
             state.modal.themeScrollDragging = false;
             ContextMenuController.clearDeleteConfirm(state);
         });
     }
 
-    public static void openPrerequisitesManager(TabletUiState state, String questId) {
+    public static void openPrerequisitesManager(UiState state, String questId) {
         ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
             state.modal.prerequisitesManagerQuestId = ModalOpenSupport.clean(questId).trim();
             state.modal.prerequisitesManagerExclusiveChoiceMode = false;
@@ -43,7 +43,7 @@ public final class AppOpenActions {
         });
     }
 
-    public static void openPrerequisitesManagerForExclusiveChoice(TabletUiState state, String exclusiveChoiceId) {
+    public static void openPrerequisitesManagerForExclusiveChoice(UiState state, String exclusiveChoiceId) {
         ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.PREREQUISITES_MANAGER, () -> {
             state.modal.prerequisitesManagerQuestId = ModalOpenSupport.clean(exclusiveChoiceId).trim();
             state.modal.prerequisitesManagerExclusiveChoiceMode = true;

@@ -21,20 +21,20 @@ import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSlot;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
@@ -59,8 +59,8 @@ public final class SoundPickerModal {
         CACHE.source(owner(), SoundPickerModal::buildChoices);
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_SOUND), w, state, refresh);
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
+        ModalShell.addTitleAndClose(modal, TranslationKeys.text(QuestTranslationKeys.CHOOSE_SOUND), w, state, refresh);
         ModalPreviewLayout.Metrics libraryLayout = ModalPreviewLayout.calculate(w, h);
         int rightX = libraryLayout.rightX();
         int rightW = libraryLayout.rightW();
@@ -79,7 +79,7 @@ public final class SoundPickerModal {
         int listW = rightW;
         int listH = libraryLayout.bodyH();
         List<SoundChoice> entries = sounds(state.pickers.soundSearch);
-        PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, TabletTranslationKeys.text(QuestTranslationKeys.NO_SOUNDS),
+        PickerListPanel.add(modal, listX, listY, listW, listH, ROW_H, entries, TranslationKeys.text(QuestTranslationKeys.NO_SOUNDS),
                 ScrollState.bind(
                         () -> state.pickers.soundScroll,
                         value -> state.pickers.soundScroll = value,
@@ -92,14 +92,14 @@ public final class SoundPickerModal {
         return search;
     }
 
-    private static void addPreviewPanel(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, ModalPreviewLayout.Metrics layout) {
+    private static void addPreviewPanel(WidgetGroup modal, UiState state, Player player, Runnable refresh, ModalPreviewLayout.Metrics layout) {
         int previewW = layout.leftW();
         int previewH = layout.bodyH();
-        WidgetGroup preview = panel(ModalPreviewLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
+        WidgetGroup preview = panel(ModalPreviewLayout.PREVIEW_X, layout.bodyY(), previewW, previewH, withAlpha(ThemeColors.SURFACE_PANEL_ALT, 120), ThemeColors.BORDER_BASE);
         String selected = state.pickers.soundSelected == null ? "" : state.pickers.soundSelected.trim();
         SoundChoice choice = selected.isBlank() ? null : SoundChoice.of(selected);
         preview.addWidget(new DisplayIconWidget(8, 9, 14, 14, "audio-lines"));
-        preview.addWidget(label(28, 12, choice == null ? ModalPanel.tr("ui.questsandstuff.sound.none_selected") : SearchFilter.crop(choice.name(), 19), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(28, 12, choice == null ? ModalPanel.tr("ui.questsandstuff.sound.none_selected") : SearchFilter.crop(choice.name(), 19), ThemeColors.TEXT_SECONDARY));
         if (!selected.isBlank()) {
             int volumeY = Math.max(56, previewH - 24);
             int playY = 38;
@@ -114,15 +114,15 @@ public final class SoundPickerModal {
         return modalW - HEADER_CLOSE_ANCHOR_RIGHT_PAD + HEADER_CLOSE_RENDER_X_OFFSET;
     }
 
-    private static void renderRow(WidgetGroup list, TabletUiState state, Player player, Runnable refresh, SoundChoice entry, int rowY, int rowW) {
+    private static void renderRow(WidgetGroup list, UiState state, Player player, Runnable refresh, SoundChoice entry, int rowY, int rowW) {
         boolean selected = entry.id().equals(state.pickers.soundSelected);
         if (selected) {
             WidgetGroup selectedFill = new WidgetGroup(4, rowY, rowW - 8, ROW_H);
-            selectedFill.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 64)));
+            selectedFill.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 64)));
             list.addWidget(selectedFill);
         }
         list.addWidget(new DisplayIconWidget(8, rowY + 1, 12, 12, "audio-lines"));
-        list.addWidget(label(24, rowY + 4, SearchFilter.crop(entry.name(), Math.max(10, (rowW - 38) / 6)), TabletColors.TEXT_PRIMARY));
+        list.addWidget(label(24, rowY + 4, SearchFilter.crop(entry.name(), Math.max(10, (rowW - 38) / 6)), ThemeColors.TEXT_PRIMARY));
         ButtonWidget hit = flatHitButton(4, rowY, rowW - 8, ROW_H, click -> {
             boolean doubleClick = click.button == 0 && ModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("sound", entry.id()));
             state.pickers.soundSelected = entry.id();
@@ -136,7 +136,7 @@ public final class SoundPickerModal {
         list.addWidget(hit);
     }
 
-    private static void applySound(TabletUiState state, Player player, String soundId) {
+    private static void applySound(UiState state, Player player, String soundId) {
         Set<String> targets = ModalTargetState.targetSet(state, TargetSetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTargets);
         if (!targets.isEmpty()) {
             EditorQuestCommandClient.setQuestCompletionSound(player, targets, soundId);

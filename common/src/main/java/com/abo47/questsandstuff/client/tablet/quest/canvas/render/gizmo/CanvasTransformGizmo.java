@@ -14,11 +14,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasRotationMath;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
-import static com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome.drawRectOutline;
+import static com.abo47.questsandstuff.client.tablet.layout.PanelChrome.drawRectOutline;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
@@ -31,22 +31,22 @@ public final class CanvasTransformGizmo {
     private static final int RING_ALPHA_IDLE = 155;
     private static final int RING_ALPHA_ACTIVE = 255;
     private static final int RING_SEGMENTS = 256;
-    private static final int AXIS_X_COLOR = TabletColors.ERROR;
-    private static final int AXIS_Y_COLOR = TabletColors.SUCCESS;
-    private static final int AXIS_Z_COLOR = TabletColors.INTERACTIVE;
+    private static final int AXIS_X_COLOR = ThemeColors.ERROR;
+    private static final int AXIS_Y_COLOR = ThemeColors.SUCCESS;
+    private static final int AXIS_Z_COLOR = ThemeColors.INTERACTIVE;
 
     private CanvasTransformGizmo() {
     }
 
-    public static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
+    public static void draw(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees) {
         draw(graphics, state, originX, originY, x, y, width, height, rotationDegrees, 0, 0);
     }
 
-    public static void draw(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees) {
+    public static void draw(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int rotationDegrees, int yawDegrees, int pitchDegrees) {
         drawAtPivot(graphics, state, originX, originY, x, y, width, height, width / 2, height / 2, rotationDegrees, yawDegrees, pitchDegrees);
     }
 
-    public static void drawAtPivot(GuiGraphics graphics, TabletUiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees) {
+    public static void drawAtPivot(GuiGraphics graphics, UiState state, int originX, int originY, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees, int yawDegrees, int pitchDegrees) {
         Geometry geometry = geometry(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         if (geometry.width() <= 0 || geometry.height() <= 0) {
             return;
@@ -97,15 +97,15 @@ public final class CanvasTransformGizmo {
         int top = boxTop;
         int right = boxRight;
         int bottom = boxBottom;
-        SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
-        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(TabletColors.SUCCESS, 185));
-        drawInsideHandle(graphics, left, top, TabletColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, top, TabletColors.SUCCESS);
-        drawInsideHandle(graphics, left, bottom - HANDLE, TabletColors.SUCCESS);
-        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, TabletColors.SUCCESS);
+        SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 18)).draw(graphics, 0, 0, left, top, right - left, bottom - top);
+        drawRectOutline(graphics, left, top, Math.max(1, right - left), Math.max(1, bottom - top), withAlpha(ThemeColors.SUCCESS, 185));
+        drawInsideHandle(graphics, left, top, ThemeColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, top, ThemeColors.SUCCESS);
+        drawInsideHandle(graphics, left, bottom - HANDLE, ThemeColors.SUCCESS);
+        drawInsideHandle(graphics, right - HANDLE, bottom - HANDLE, ThemeColors.SUCCESS);
     }
 
-    private static void drawRotateGizmo(GuiGraphics graphics, TabletUiState state, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
+    private static void drawRotateGizmo(GuiGraphics graphics, UiState state, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
         String active = activeAxis(state);
         boolean dragging = isRotating(state);
         int pitchAlpha = CanvasTransformGizmoAxis.AXIS_PITCH.equals(active) && dragging ? RING_ALPHA_ACTIVE : RING_ALPHA_IDLE;
@@ -160,7 +160,7 @@ public final class CanvasTransformGizmo {
         RenderSystem.disableBlend();
     }
 
-    private static void drawActiveRotateLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
+    private static void drawActiveRotateLabel(GuiGraphics graphics, UiState state, int originX, int originY, Geometry geometry, RotateAxes axes, int rotationDegrees, int yawDegrees, int pitchDegrees) {
         if (state == null || !isRotating(state)) {
             return;
         }
@@ -192,7 +192,7 @@ public final class CanvasTransformGizmo {
         drawValueLabel(graphics, CanvasRotationMath.normalizeDegrees(value) + "\u00B0", point.x() + HANDLE, point.y() - HANDLE, color);
     }
 
-    private static void drawActiveMoveLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int axisLength, int x, int y) {
+    private static void drawActiveMoveLabel(GuiGraphics graphics, UiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int axisLength, int x, int y) {
         if (state == null || !isMoving(state)) {
             return;
         }
@@ -214,7 +214,7 @@ public final class CanvasTransformGizmo {
         drawValueLabel(graphics, text, point.x() + HANDLE, point.y() - HANDLE, color);
     }
 
-    private static void drawActiveResizeLabel(GuiGraphics graphics, TabletUiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int width, int height) {
+    private static void drawActiveResizeLabel(GuiGraphics graphics, UiState state, int originX, int originY, Geometry geometry, int rotationDegrees, int width, int height) {
         if (state == null || !isResizing(state)) {
             return;
         }
@@ -227,24 +227,24 @@ public final class CanvasTransformGizmo {
         var font = Minecraft.getInstance().font;
         int width = font.width(text) + 6;
         int height = font.lineHeight + 4;
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - GRID_3, y - GRID_2, width, height);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 205)).draw(graphics, 0, 0, x - GRID_3, y - GRID_2, width, height);
         drawRectOutline(graphics, x - GRID_3, y - GRID_2, width, height, withAlpha(color, 210));
-        graphics.drawString(font, text, x, y, TabletColors.TEXT_PRIMARY, false);
+        graphics.drawString(font, text, x, y, ThemeColors.TEXT_PRIMARY, false);
     }
 
-    private static boolean isRotating(TabletUiState state) {
+    private static boolean isRotating(UiState state) {
         return state.canvas.rotatingCanvasImage || "rotate".equals(state.questDetails.questDetailsTransformMode);
     }
 
-    private static boolean isMoving(TabletUiState state) {
+    private static boolean isMoving(UiState state) {
         return state.canvas.draggingCanvasImage || "move".equals(state.questDetails.questDetailsTransformMode);
     }
 
-    private static boolean isResizing(TabletUiState state) {
+    private static boolean isResizing(UiState state) {
         return state.canvas.resizingCanvasImage || "resize".equals(state.questDetails.questDetailsTransformMode);
     }
 
-    private static String activeAxis(TabletUiState state) {
+    private static String activeAxis(UiState state) {
         if (state.canvas.rotatingCanvasImage && state.canvas.canvasImageTransformAxis != null && !state.canvas.canvasImageTransformAxis.isBlank()) {
             return state.canvas.canvasImageTransformAxis;
         }
@@ -257,7 +257,7 @@ public final class CanvasTransformGizmo {
         return state.questDetails.questDetailsTransformAxis == null ? "" : state.questDetails.questDetailsTransformAxis;
     }
 
-    private static String activeMoveAxis(TabletUiState state) {
+    private static String activeMoveAxis(UiState state) {
         if (state.canvas.draggingCanvasImage) {
             return CanvasTransformGizmoAxis.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
         }
@@ -267,7 +267,7 @@ public final class CanvasTransformGizmo {
         return CanvasTransformGizmoAxis.AXIS_MOVE_FREE;
     }
 
-    private static String activeResizeAxis(TabletUiState state) {
+    private static String activeResizeAxis(UiState state) {
         if (state.canvas.resizingCanvasImage && state.canvas.canvasImageTransformAxis != null && !state.canvas.canvasImageTransformAxis.isBlank()) {
             return state.canvas.canvasImageTransformAxis;
         }
@@ -281,12 +281,12 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 72)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
     private static void drawInsideHandle(GuiGraphics graphics, int left, int top, int color) {
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
@@ -294,7 +294,7 @@ public final class CanvasTransformGizmo {
         int half = HANDLE / 2;
         int left = centerX - half;
         int top = centerY - half;
-        SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 220)).draw(graphics, 0, 0, left, top, HANDLE, HANDLE);
         drawRectOutline(graphics, left, top, HANDLE, HANDLE, color);
     }
 
@@ -334,7 +334,7 @@ public final class CanvasTransformGizmo {
         return Math.max(GRID_24, Math.min(70, Math.max(width, height) / 2 + GRID_12));
     }
 
-    static Geometry geometry(TabletUiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
+    static Geometry geometry(UiState state, int x, int y, int width, int height, int pivotX, int pivotY, int rotationDegrees) {
         CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, x, y, width, height, pivotX, pivotY, rotationDegrees);
         return new Geometry(box.centerX(), box.centerY(), box.width(), box.height(), box.left(), box.top(), box.right(), box.bottom());
     }

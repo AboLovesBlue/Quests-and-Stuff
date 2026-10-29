@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSelectionTransformController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -27,7 +27,7 @@ final class CanvasTransformHandleClicks {
 
     static boolean handleElementTransformStart(
             CanvasViewport canvasViewport,
-            TabletUiState state,
+            UiState state,
             Runnable refresher,
             Map<String, QuestCardLayout> byQuestId,
             CanvasInlineTextEditor textEditor,
@@ -146,7 +146,7 @@ final class CanvasTransformHandleClicks {
         return false;
     }
 
-    private static boolean imageTransformHit(CanvasViewport canvasViewport, TabletUiState state, CanvasImageLayer image, int localX, int localY) {
+    private static boolean imageTransformHit(CanvasViewport canvasViewport, UiState state, CanvasImageLayer image, int localX, int localY) {
         if (!CanvasTransformGizmoAxis.supports(image.asset())) {
             return CanvasRenderer.isCanvasImageResizeHandleHit(state, image, localX, localY)
                     || CanvasRenderer.isCanvasImageRotateHandleHit(state, image, localX, localY);

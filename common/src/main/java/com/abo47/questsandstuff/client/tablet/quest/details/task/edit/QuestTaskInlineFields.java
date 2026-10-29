@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.StyledTextFields;
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.controls.TextTextures;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
@@ -22,25 +22,25 @@ import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.Que
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import com.google.gson.JsonObject;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
 
 public final class QuestTaskInlineFields {
     private QuestTaskInlineFields() {
     }
 
-    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX) {
-        renderTaskTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, TabletColors.TEXT_PRIMARY);
+    public static void renderTaskTitle(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX) {
+        renderTaskTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, ThemeColors.TEXT_PRIMARY);
     }
 
-    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX, int color) {
+    public static void renderTaskTitle(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX, int color) {
         boolean renaming = isRenamingTask(state, questId, entry.id(), task);
         int doneW = renaming ? 12 : 0;
         int fieldW = Math.max(18, rightX - x - doneW - (renaming ? 3 : 0));
@@ -75,11 +75,11 @@ public final class QuestTaskInlineFields {
         field.setCurrentString(state.questDetails.questDetailsTaskRenameDraft);
         field.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         field.setBordered(false);
-        field.setTextColor(TabletColors.TEXT_PRIMARY);
-        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));
+        field.setTextColor(ThemeColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.INTERACTIVE));
         parent.addWidget(field);
         int doneX = x + fieldW + 3;
-        parent.addWidget(new ImageWidget(doneX, y + 2, TabletUiFactory.ACTION_ICON_SIZE, TabletUiFactory.ACTION_ICON_SIZE, IconAtlas.iconTexture("add.png")));
+        parent.addWidget(new ImageWidget(doneX, y + 2, UiFactory.ACTION_ICON_SIZE, UiFactory.ACTION_ICON_SIZE, IconAtlas.iconTexture("add.png")));
         parent.addWidget(flatHitButton(doneX, y, doneW, 16, click -> {
             commitTaskRename(player, state);
             refresh.run();
@@ -90,7 +90,7 @@ public final class QuestTaskInlineFields {
         }
     }
 
-    public static void renderAmountField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, boolean task) {
+    public static void renderAmountField(WidgetGroup parent, UiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, boolean task) {
         int count = task ? Math.max(0, entry.tag().getInt("count")) : 0;
         int amount = QuestTaskDisplayText.amount(entry.json());
         if (task && QuestTaskDisplayText.isManualTask(entry.json())) {
@@ -112,7 +112,7 @@ public final class QuestTaskInlineFields {
         }
         if (task) {
             String progress = count + " /";
-            renderDisplayText(parent, x - 42, y, 36, progress, TabletColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
+            renderDisplayText(parent, x - 42, y, 36, progress, ThemeColors.TEXT_MUTED, TextTexture.TextType.RIGHT_HIDE);
         }
         final TextFieldWidget[] fieldRef = new TextFieldWidget[1];
         TextFieldWidget field = StyledTextFields.commitField(
@@ -139,13 +139,13 @@ public final class QuestTaskInlineFields {
         field.setMaxStringLength(5);
         field.setNumbersOnly(1, 99999);
         field.setBordered(false);
-        field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE));
-        field.setTextColor(TabletColors.TEXT_PRIMARY);
+        field.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE));
+        field.setTextColor(ThemeColors.TEXT_PRIMARY);
         fieldRef[0] = field;
         parent.addWidget(field);
     }
 
-    public static boolean isRenamingTask(TabletUiState state, String questId, String entryId, boolean task) {
+    public static boolean isRenamingTask(UiState state, String questId, String entryId, boolean task) {
         return state.questDetails.questDetailsTaskRenameOpen
                 && state.questDetails.questDetailsTaskRenameTask == task
                 && questId.equals(state.questDetails.questDetailsTaskRenameQuestId)
@@ -153,7 +153,7 @@ public final class QuestTaskInlineFields {
                 && QuestDetailsEditController.canEdit(state);
     }
 
-    public static boolean handleRenameKey(Player player, TabletUiState state, int keyCode, boolean draftUnchanged) {
+    public static boolean handleRenameKey(Player player, UiState state, int keyCode, boolean draftUnchanged) {
         if (!state.questDetails.questDetailsTaskRenameOpen || !QuestDetailsEditController.canEdit(state)) {
             return false;
         }
@@ -172,7 +172,7 @@ public final class QuestTaskInlineFields {
         return false;
     }
 
-    public static boolean handleRenameChar(TabletUiState state, char c, boolean draftUnchanged) {
+    public static boolean handleRenameChar(UiState state, char c, boolean draftUnchanged) {
         if (!draftUnchanged || !state.questDetails.questDetailsTaskRenameOpen || !QuestDetailsEditController.canEdit(state)) {
             return false;
         }
@@ -186,11 +186,11 @@ public final class QuestTaskInlineFields {
         return true;
     }
 
-    public static void openTaskRenameEditor(TabletUiState state, String questId, String id, boolean task) {
+    public static void openTaskRenameEditor(UiState state, String questId, String id, boolean task) {
         QuestTaskListInteractions.openRenameEditor(state, questId, id, task);
     }
 
-    static void closeTaskRenameEditor(TabletUiState state) {
+    static void closeTaskRenameEditor(UiState state) {
         QuestDetailsTransientManager.closeTaskRename(state);
     }
 
@@ -210,7 +210,7 @@ public final class QuestTaskInlineFields {
         }
     }
 
-    private static void commitTaskRename(Player player, TabletUiState state) {
+    private static void commitTaskRename(Player player, UiState state) {
         QuestTaskEditActions.putTaskTitle(
                 player,
                 state.questDetails.questDetailsTaskRenameQuestId,
@@ -226,10 +226,10 @@ public final class QuestTaskInlineFields {
     }
 
     private static void renderAmountText(WidgetGroup parent, int x, int y, int maxW, String text) {
-        renderDisplayText(parent, x, y, Math.max(12, maxW), text, TabletColors.TEXT_SECONDARY, TextTexture.TextType.RIGHT_HIDE);
+        renderDisplayText(parent, x, y, Math.max(12, maxW), text, ThemeColors.TEXT_SECONDARY, TextTexture.TextType.RIGHT_HIDE);
     }
 
     static void renderDisplayText(WidgetGroup parent, int x, int y, int width, String text, int color, TextTexture.TextType type) {
-        parent.addWidget(TabletTextTextures.flatLiteral(x, y, Math.max(1, width), 16, text, color, type));
+        parent.addWidget(TextTextures.flatLiteral(x, y, Math.max(1, width), 16, text, color, type));
     }
 }

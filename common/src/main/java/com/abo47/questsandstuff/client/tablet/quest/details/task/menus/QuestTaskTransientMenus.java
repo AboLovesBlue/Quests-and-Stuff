@@ -24,28 +24,28 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskXpEditor;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import com.google.gson.JsonObject;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
 
 final class QuestTaskTransientMenus {
     private QuestTaskTransientMenus() {
     }
 
-    static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
+    static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH) {
         renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
         renderItemSourcePicker(modal, state, refresh, modalW, modalH);
         QuestTaskXpEditor.render(modal, state, player, refresh, modalW, modalH);
     }
 
-    private static void renderItemSourcePicker(WidgetGroup modal, TabletUiState state, Runnable refresh, int modalW, int modalH) {
+    private static void renderItemSourcePicker(WidgetGroup modal, UiState state, Runnable refresh, int modalW, int modalH) {
         QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
         if (!picker.itemSourcePicker() || !QuestDetailsEditController.canEdit(state)) {
             return;
@@ -56,12 +56,12 @@ final class QuestTaskTransientMenus {
             return;
         }
         ContextMenuSections sections = new ContextMenuSections();
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", ThemeColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openIconPicker(state, target);
         }));
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", ThemeColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsTransientManager.closeItemSourcePicker(state);
             QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
@@ -72,11 +72,11 @@ final class QuestTaskTransientMenus {
         int menuH = ContextMenuPanel.heightForRows(rowCount);
         int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
         int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
-        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, TabletColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ThemeColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
         modal.addWidget(menu);
     }
 
-    private static void renderCommandRewardEditor(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int modalW, int modalH) {
+    private static void renderCommandRewardEditor(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH) {
         if (!state.questDetails.questDetailsCommandRewardEditorOpen || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
@@ -88,8 +88,8 @@ final class QuestTaskTransientMenus {
         int buttonY = 48;
         int x = Math.max(4, Math.min(state.questDetails.questDetailsContextX, modalW - w - 4));
         int y = Math.max(4, Math.min(state.questDetails.questDetailsContextY, modalH - h - 4));
-        WidgetGroup popup = panel(x, y, w, h, withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT);
-        popup.addWidget(label(pad, 6, TabletTranslationKeys.text(QuestTranslationKeys.ENTER_COMMAND), TabletColors.TEXT_PRIMARY));
+        WidgetGroup popup = panel(x, y, w, h, withAlpha(ThemeColors.SURFACE_BASE, 246), ThemeColors.BORDER_ACCENT);
+        popup.addWidget(label(pad, 6, TranslationKeys.text(QuestTranslationKeys.ENTER_COMMAND), ThemeColors.TEXT_PRIMARY));
         TextFieldWidget commandField = StyledTextFields.commitField(
                 pad,
                 24,
@@ -114,13 +114,13 @@ final class QuestTaskTransientMenus {
         );
         commandField.setClientSideWidget();
         commandField.setMaxStringLength(256);
-        StyledTextFields.applyStandardStyle(commandField, TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
+        StyledTextFields.applyStandardStyle(commandField, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
         popup.addWidget(commandField);
-        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_SAVE), TabletColors.SUCCESS, null, click -> {
+        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", TranslationKeys.text(TranslationKeys.COMMON_SAVE), ThemeColors.SUCCESS, null, click -> {
             commitCommandReward(player, state);
             refresh.run();
         });
-        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", TabletTranslationKeys.text(TabletTranslationKeys.COMMON_CANCEL), TabletColors.ERROR, null, click -> {
+        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", TranslationKeys.text(TranslationKeys.COMMON_CANCEL), ThemeColors.ERROR, null, click -> {
             closeCommandRewardEditor(state);
             refresh.run();
         });
@@ -128,7 +128,7 @@ final class QuestTaskTransientMenus {
         modal.addWidget(popup);
     }
 
-    private static void commitCommandReward(Player player, TabletUiState state) {
+    private static void commitCommandReward(Player player, UiState state) {
         JsonObject json = new JsonObject();
         json.addProperty("id", state.questDetails.questDetailsCommandRewardId);
         json.addProperty("type", "questsandstuff:command");
@@ -137,7 +137,7 @@ final class QuestTaskTransientMenus {
         closeCommandRewardEditor(state);
     }
 
-    private static void closeCommandRewardEditor(TabletUiState state) {
+    private static void closeCommandRewardEditor(UiState state) {
         QuestDetailsTransientManager.closeCommandRewardEditor(state);
     }
 

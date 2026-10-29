@@ -1,0 +1,264 @@
+package com.abo47.questsandstuff.client.tablet.root;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Keybindings;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+final class ShortcutActions {
+    private ShortcutActions() {
+    }
+
+    static boolean handleGlobal(Player player, UiState state, CanvasViewport canvasViewport, int keyCode, int scanCode, boolean ctrl, boolean shift) {
+        if (state == null || !activeEditMode(state) || RootWindowController.isTextInputActive(state, null)) {
+            return false;
+        }
+        if (Keybindings.renameSelectedMatches(keyCode, scanCode)) {
+            return beginRename(state);
+        }
+        if (Keybindings.useLastBlueprintMatches(keyCode, scanCode)) {
+            return CanvasBlueprintController.beginUseLastPlacement(state);
+        }
+        if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+            return deleteSelection(player, state, canvasViewport);
+        }
+        if (ctrl && keyCode == GLFW.GLFW_KEY_A) {
+            return selectAll(state, canvasViewport);
+        }
+        if (ctrl && keyCode == GLFW.GLFW_KEY_D) {
+            return duplicateSelection(player, state, canvasViewport);
+        }
+        if (isArrow(keyCode)) {
+            return nudgeSelection(player, state, canvasViewport, keyCode, shift);
+        }
+        return false;
+    }
+
+    static boolean cancelTransient(UiState state) {
+        if (state == null) {
+            return false;
+        }
+        boolean changed = false;
+        if (state.canvas.boxSelecting || state.canvas.draggingSelection || state.canvas.resizingSelection || state.canvas.rotatingSelection
+                || state.canvas.draggingCanvas || state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage
+                || state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText
+                || state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
+            state.canvas.boxSelecting = false;
+            state.canvas.draggingCanvas = false;
+            CanvasTransformSessions.clearMainCanvasSession(state);
+            changed = true;
+        }
+        if (state.questDetails.questDetailsBoxSelecting || state.questDetails.questDetailsPanning || state.questDetails.questDetailsDescScrollDragging || !state.questDetails.questDetailsTransformKind.isBlank()) {
+            state.questDetails.questDetailsBoxSelecting = false;
+            state.questDetails.questDetailsPanning = false;
+            state.questDetails.questDetailsDescScrollDragging = false;
+            CanvasTransformSessions.clearQuestDetailsSession(state);
+            changed = true;
+        }
+        if (state.chapterPanel.chapterDragPending || state.chapterPanel.chapterDragActive || state.questDetails.questDetailsTaskDragPending || state.questDetails.questDetailsTaskDragActive) {
+            state.chapterPanel.chapterDragPending = false;
+            state.chapterPanel.chapterDragActive = false;
+            state.chapterPanel.chapterDragName = "";
+            state.chapterPanel.chapterDragTargetIndex = -1;
+            state.questDetails.questDetailsTaskDragPending = false;
+            state.questDetails.questDetailsTaskDragActive = false;
+            state.questDetails.questDetailsTaskDragKind = "";
+            state.questDetails.questDetailsTaskDragId = "";
+            state.questDetails.questDetailsTaskDragTargetIndex = -1;
+            changed = true;
+        }
+        return changed;
+    }
+
+    private static boolean beginRename(UiState state) {
+        if (state.questDetails.questDetailsOpen) {
+            return QuestDetailsWindow.beginSelectedRename(state);
+        }
+        String selectedQuestId = StateQueries.singleSelectedQuestId(state);
+        if (!selectedQuestId.isBlank()) {
+            EditorQuestCommandClient.beginQuestTitleChange(state, selectedQuestId);
+            return true;
+        }
+        if (!StateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
+                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && CanvasSelectionActions.selectedExclusiveChoiceIds(state).isEmpty()
+                && state.root.selectedChapter != null && !state.root.selectedChapter.isBlank()) {
+            state.canvas.pendingChapterRename = state.root.selectedChapter;
+            state.chapterPanel.chapterDraftName = state.root.selectedChapter;
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean deleteSelection(Player player, UiState state, CanvasViewport canvasViewport) {
+        if (state.questDetails.questDetailsOpen) {
+            return QuestDetailsWindow.deleteSelected(player, state);
+        }
+        String chapter = StateQueries.selectedChapterName(state);
+        boolean changed = false;
+        for (String questId : StateQueries.selectedQuestIdSnapshot(state)) {
+            EditorQuestCommandClient.runRemoveQuestAction(player, questId);
+            changed = true;
+        }
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasImage(state, chapter, imageId);
+        }
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasText(state, chapter, textId);
+        }
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
+        }
+        if (changed) {
+            CanvasSelectionActions.clearCanvasSelection(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] shortcut delete canvas selection chapter={}", chapter);
+        }
+        return changed;
+    }
+
+    private static boolean selectAll(UiState state, CanvasViewport canvasViewport) {
+        if (state.questDetails.questDetailsOpen) {
+            return QuestDetailsWindow.selectAllDescription(state);
+        }
+        if (canvasViewport == null) {
+            return false;
+        }
+        String chapter = StateQueries.selectedChapterName(state);
+        state.canvas.canvasSelection.questIds().clear();
+        state.canvas.canvasSelection.questIds().addAll(canvasViewport.cardLookup().keySet());
+        state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.textIds().clear();
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
+            state.canvas.canvasSelection.imageIds().add(image.id());
+            state.canvas.canvasSelection.setPrimaryImageId(image.id());
+        }
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
+            state.canvas.canvasSelection.textIds().add(text.id());
+            state.canvas.canvasSelection.setPrimaryTextId(text.id());
+        }
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
+            state.canvas.canvasSelection.exclusiveChoiceIds().add(ec.id());
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(ec.id());
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas chapter={} quests={} images={} texts={} ecs={}",
+                chapter, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size(), state.canvas.canvasSelection.exclusiveChoiceIds().size());
+        return true;
+    }
+
+    private static boolean duplicateSelection(Player player, UiState state, CanvasViewport canvasViewport) {
+        if (state.questDetails.questDetailsOpen) {
+            return QuestDetailsWindow.duplicateSelected(player, state);
+        }
+        if (canvasViewport == null) {
+            return false;
+        }
+        boolean copied = CanvasClipboardCopy.copySelectionToClipboard(canvasViewport, state);
+        return copied && CanvasClipboardPaste.pasteNearSelectionOrViewportCenter(player, state, canvasViewport);
+    }
+
+    private static boolean nudgeSelection(Player player, UiState state, CanvasViewport canvasViewport, int keyCode, boolean shift) {
+        if (state.questDetails.questDetailsOpen) {
+            return QuestDetailsWindow.nudgeSelected(player, state, nudgeDx(keyCode, shift, CanvasGeometry.gridSize(state)), nudgeDy(keyCode, shift, CanvasGeometry.gridSize(state)));
+        }
+        if (canvasViewport == null) {
+            return false;
+        }
+        int step = shift ? CanvasGeometry.gridSize(state) : 1;
+        int dx = nudgeDx(keyCode, false, step);
+        int dy = nudgeDy(keyCode, false, step);
+        String chapter = StateQueries.selectedChapterName(state);
+        boolean changed = false;
+        Map<String, CanvasPoint> questMoves = new LinkedHashMap<>();
+        for (String questId : state.canvas.canvasSelection.questIds()) {
+            QuestCardLayout card = canvasViewport.cardLookup().get(questId);
+            if (card != null) {
+                questMoves.put(questId, new CanvasPoint(Math.max(0, card.logicalX() + dx), Math.max(0, card.logicalY() + dy)));
+            }
+        }
+        if (!questMoves.isEmpty()) {
+            EditorCanvasCommandClient.runCanvasMoveAction(player, state, questMoves);
+            changed = true;
+        }
+        for (String imageId : CanvasSelectionActions.selectedImageIds(state)) {
+            CanvasImageLayer image = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
+            if (image != null) {
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, image.x() + dx, image.y() + dy, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+                CanvasLayerMutations.putCanvasImage(state, chapter, image.moveTo(point.x, point.y));
+                changed = true;
+            }
+        }
+        for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
+            CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, textId);
+            if (text != null) {
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, text.x() + dx, text.y() + dy, text.w(), text.h(), text.w() / 2, text.h() / 2, text.rotation());
+                CanvasLayerMutations.putCanvasText(state, chapter, text.moveTo(point.x, point.y));
+                changed = true;
+            }
+        }
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
+            if (ec != null) {
+                CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, ec.x() + dx, ec.y() + dy, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+                CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, ec.moveTo(point.x, point.y));
+                changed = true;
+            }
+        }
+        return changed;
+    }
+
+    private static boolean isArrow(int keyCode) {
+        return keyCode == GLFW.GLFW_KEY_LEFT || keyCode == GLFW.GLFW_KEY_RIGHT
+                || keyCode == GLFW.GLFW_KEY_UP || keyCode == GLFW.GLFW_KEY_DOWN;
+    }
+
+    private static boolean activeEditMode(UiState state) {
+        return state.questDetails.questDetailsOpen ? QuestDetailsEditController.canEdit(state) : state.root.canEdit;
+    }
+
+    private static int nudgeDx(int keyCode, boolean shift, int step) {
+        int amount = shift ? Math.max(1, step) : step;
+        if (keyCode == GLFW.GLFW_KEY_LEFT) {
+            return -amount;
+        }
+        if (keyCode == GLFW.GLFW_KEY_RIGHT) {
+            return amount;
+        }
+        return 0;
+    }
+
+    private static int nudgeDy(int keyCode, boolean shift, int step) {
+        int amount = shift ? Math.max(1, step) : step;
+        if (keyCode == GLFW.GLFW_KEY_UP) {
+            return -amount;
+        }
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
+            return amount;
+        }
+        return 0;
+    }
+}

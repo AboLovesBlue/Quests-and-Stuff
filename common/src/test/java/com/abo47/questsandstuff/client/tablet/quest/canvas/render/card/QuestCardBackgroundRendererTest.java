@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import net.minecraft.nbt.CompoundTag;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
@@ -26,19 +26,19 @@ public class QuestCardBackgroundRendererTest {
     void defaultTintMatchesQuestState() {
         CompoundTag unlocked = tag();
         unlocked.putBoolean(SyncKeys.Quest.UNLOCKED, true);
-        assertEquals(withAlpha(TabletColors.INTERACTIVE, 255), QuestCardBackgroundRenderer.defaultTint(unlocked, 255));
+        assertEquals(withAlpha(ThemeColors.INTERACTIVE, 255), QuestCardBackgroundRenderer.defaultTint(unlocked, 255));
 
         CompoundTag completed = tag();
         completed.putBoolean(SyncKeys.Quest.COMPLETED, true);
-        assertEquals(withAlpha(TabletColors.SUCCESS, 200), QuestCardBackgroundRenderer.defaultTint(completed, 200));
+        assertEquals(withAlpha(ThemeColors.SUCCESS, 200), QuestCardBackgroundRenderer.defaultTint(completed, 200));
 
         CompoundTag claimed = tag();
         claimed.putBoolean(SyncKeys.Quest.CLAIMED, true);
-        assertEquals(withAlpha(TabletColors.WARNING, 180), QuestCardBackgroundRenderer.defaultTint(claimed, 180));
+        assertEquals(withAlpha(ThemeColors.WARNING, 180), QuestCardBackgroundRenderer.defaultTint(claimed, 180));
 
         CompoundTag locked = tag();
         locked.putString(SyncKeys.Quest.HIDDEN_MODE, "locked");
-        assertEquals(withAlpha(TabletColors.TEXT_SECONDARY, 255), QuestCardBackgroundRenderer.defaultTint(locked, 255));
+        assertEquals(withAlpha(ThemeColors.TEXT_SECONDARY, 255), QuestCardBackgroundRenderer.defaultTint(locked, 255));
     }
 
     @Test
@@ -46,7 +46,7 @@ public class QuestCardBackgroundRendererTest {
         CompoundTag claimed = tag();
         claimed.putBoolean(SyncKeys.Quest.CLAIMED, true);
 
-        assertEquals(withAlpha(TabletColors.WARNING, 47), QuestCardBackgroundRenderer.statusFilter(claimed, 128));
+        assertEquals(withAlpha(ThemeColors.WARNING, 47), QuestCardBackgroundRenderer.statusFilter(claimed, 128));
     }
 
     @Test

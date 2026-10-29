@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import java.util.List;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 
 public final class CanvasMinimapGeometry {
@@ -46,7 +46,7 @@ public final class CanvasMinimapGeometry {
         return new Layout(panelX, panelY, panelW, panelH, mapX, mapY, mapW, mapH, toggleX, toggleY, toggleW, toggleH, false);
     }
 
-    public static WorldBounds worldBounds(TabletUiState state, String chapter, List<QuestCardLayout> cards) {
+    public static WorldBounds worldBounds(UiState state, String chapter, List<QuestCardLayout> cards) {
         int minX = (int) Math.floor(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX, true));
         int minY = (int) Math.floor(CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY, true));
         int maxX = (int) Math.ceil(CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX + Math.max(1, state.canvas.canvasContentW), true));
@@ -96,13 +96,13 @@ public final class CanvasMinimapGeometry {
         return projection.drawY() + Math.round((float) ((logicalY - projection.world().minY()) * projection.scale()));
     }
 
-    public static int mapWorldX(TabletUiState state, int localX) {
+    public static int mapWorldX(UiState state, int localX) {
         float xNorm = (float) (localX - state.canvas.minimapX) / (float) Math.max(1, state.canvas.minimapW);
         xNorm = Math.max(0.0f, Math.min(1.0f, xNorm));
         return state.canvas.minimapWorldMinX + Math.round(xNorm * Math.max(1, state.canvas.minimapWorldWidth));
     }
 
-    public static int mapWorldY(TabletUiState state, int localY) {
+    public static int mapWorldY(UiState state, int localY) {
         float yNorm = (float) (localY - state.canvas.minimapY) / (float) Math.max(1, state.canvas.minimapH);
         yNorm = Math.max(0.0f, Math.min(1.0f, yNorm));
         return state.canvas.minimapWorldMinY + Math.round(yNorm * Math.max(1, state.canvas.minimapWorldHeight));

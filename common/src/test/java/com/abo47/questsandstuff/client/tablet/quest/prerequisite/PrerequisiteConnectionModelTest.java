@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 
 import static java.util.stream.Collectors.toMap;
@@ -127,7 +127,7 @@ class PrerequisiteConnectionModelTest {
 
     @Test
     void removeCleanupClearsOnlyMatchingSelectionState() {
-        TabletUiState state = new TabletUiState();
+        UiState state = new UiState();
         PrerequisiteConnectionRow row = new PrerequisiteConnectionRow(
                 "quest/parent",
                 "quest/focus",

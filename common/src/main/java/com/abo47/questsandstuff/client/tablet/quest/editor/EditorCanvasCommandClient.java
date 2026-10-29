@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.quest.QuestServiceRegistry;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
@@ -25,7 +25,7 @@ public final class EditorCanvasCommandClient {
     private EditorCanvasCommandClient() {
     }
 
-    public static void runCanvasMoveAction(Player player, TabletUiState state, Map<String, CanvasPoint> positions) {
+    public static void runCanvasMoveAction(Player player, UiState state, Map<String, CanvasPoint> positions) {
         if (positions == null || positions.isEmpty()) {
             return;
         }
@@ -47,7 +47,7 @@ public final class EditorCanvasCommandClient {
                 });
     }
 
-    public static void runCanvasScaleAction(Player player, TabletUiState state, Map<String, Float> scales) {
+    public static void runCanvasScaleAction(Player player, UiState state, Map<String, Float> scales) {
         if (scales == null || scales.isEmpty()) {
             return;
         }
@@ -121,7 +121,7 @@ public final class EditorCanvasCommandClient {
                 });
     }
 
-    public static void runCanvasPasteBlueprintAction(Player player, TabletUiState state, CanvasBlueprint blueprint, int x, int y) {
+    public static void runCanvasPasteBlueprintAction(Player player, UiState state, CanvasBlueprint blueprint, int x, int y) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         if (chapter.isBlank() || blueprint == null || blueprint.isEmpty()) {
             return;
@@ -214,7 +214,7 @@ public final class EditorCanvasCommandClient {
                 });
     }
 
-    private static String resolveExclusiveChoiceId(TabletUiState state, String chapter, String idA, String idB) {
+    private static String resolveExclusiveChoiceId(UiState state, String chapter, String idA, String idB) {
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idA) != null) return idA;
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idB) != null) return idB;
         return "";
@@ -229,7 +229,7 @@ public final class EditorCanvasCommandClient {
         void run(String chapter, String exclusiveChoiceId, String questId);
     }
 
-    private static void runExclusiveChoiceConnectionAction(TabletUiState state, String sourceId, String targetId, ExclusiveChoiceConnectionAction action) {
+    private static void runExclusiveChoiceConnectionAction(UiState state, String sourceId, String targetId, ExclusiveChoiceConnectionAction action) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         if (chapter.isBlank()) return;
         String exclusiveChoiceId = resolveExclusiveChoiceId(state, chapter, sourceId, targetId);
@@ -238,27 +238,27 @@ public final class EditorCanvasCommandClient {
         action.run(chapter, exclusiveChoiceId, questId);
     }
 
-    public static void runExclusiveChoiceConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
+    public static void runExclusiveChoiceConnectionColorAction(Player player, UiState state, String sourceId, String targetId, int color) {
         runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
                 ConnectionRenderer.setExclusiveChoiceConnectionColor(state, chapter, exclusiveChoiceId, questId, color));
     }
 
-    public static void runExclusiveChoiceConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
+    public static void runExclusiveChoiceConnectionModeAction(Player player, UiState state, String sourceId, String targetId, boolean direct) {
         runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
                 ConnectionRenderer.setExclusiveChoiceConnectionMode(state, chapter, exclusiveChoiceId, questId, direct));
     }
 
-    public static void runExclusiveChoiceConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
+    public static void runExclusiveChoiceConnectionHiddenAction(Player player, UiState state, String sourceId, String targetId, boolean hidden) {
         runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
                 ConnectionRenderer.setExclusiveChoiceConnectionHidden(state, chapter, exclusiveChoiceId, questId, hidden));
     }
 
-    public static void runExclusiveChoiceConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
+    public static void runExclusiveChoiceConnectionTextureAction(UiState state, String sourceId, String targetId, String texture) {
         runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
                 ConnectionRenderer.setExclusiveChoiceConnectionTexture(state, chapter, exclusiveChoiceId, questId, texture));
     }
 
-    public static void runExclusiveChoiceConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
+    public static void runExclusiveChoiceConnectionTextureSpacingAction(UiState state, String sourceId, String targetId, int spacing) {
         runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
                 ConnectionRenderer.setExclusiveChoiceConnectionTextureSpacing(state, chapter, exclusiveChoiceId, questId, spacing));
     }

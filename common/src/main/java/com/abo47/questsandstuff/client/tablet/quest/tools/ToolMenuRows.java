@@ -32,17 +32,17 @@ final class ToolMenuRows {
     }
 
     void toggle(String iconName, int accentColor, boolean active, Component[] tooltip, Runnable action) {
-        TabletToolButtons.addToggle(menu, x, y, slot, border, iconName, accentColor, active, tooltip, action);
+        ToolButtons.addToggle(menu, x, y, slot, border, iconName, accentColor, active, tooltip, action);
         advance();
     }
 
     void action(String iconName, int accentColor, Component[] tooltip, Runnable action) {
-        TabletToolButtons.addAction(menu, x, y, slot, border, iconName, accentColor, tooltip, action);
+        ToolButtons.addAction(menu, x, y, slot, border, iconName, accentColor, tooltip, action);
         advance();
     }
 
     void opacity(String iconName, Component[] tooltip, Consumer<Boolean> action) {
-        TabletToolButtons.addOpacity(menu, x, y, slot, border, iconName, tooltip, action);
+        ToolButtons.addOpacity(menu, x, y, slot, border, iconName, tooltip, action);
         advance();
     }
 

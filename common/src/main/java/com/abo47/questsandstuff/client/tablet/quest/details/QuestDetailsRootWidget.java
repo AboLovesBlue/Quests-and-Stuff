@@ -8,11 +8,11 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasWorldPortalCapture;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletActiveState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.ActiveState;
 
 public final class QuestDetailsRootWidget extends WidgetGroup {
     public QuestDetailsRootWidget(int x, int y, int width, int height) {
@@ -21,13 +21,13 @@ public final class QuestDetailsRootWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        CanvasWorldPortalCapture.captureMainCanvas(TabletActiveState.getActiveTabletState());
-        TabletUiState state = TabletActiveState.getActiveTabletState();
+        CanvasWorldPortalCapture.captureMainCanvas(ActiveState.getActiveTabletState());
+        UiState state = ActiveState.getActiveTabletState();
         int rx = getPositionX(), ry = getPositionY(), rw = getSizeWidth(), rh = getSizeHeight();
         int bx, by, bw, bh;
         if (state.root.fullScreenMode) {
-            bw = TabletUiFactory.ROOT_W;
-            bh = TabletUiFactory.ROOT_H;
+            bw = UiFactory.ROOT_W;
+            bh = UiFactory.ROOT_H;
             bx = rx + (rw - bw) / 2;
             by = ry + (rh - bh) / 2;
         } else {
@@ -40,7 +40,7 @@ public final class QuestDetailsRootWidget extends WidgetGroup {
         if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
             bg.draw(graphics, 0, 0, bx, by, bw, bh);
         } else {
-            SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.BORDER_BASE)
+            SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE)
                     .draw(graphics, mouseX, mouseY, bx, by, bw, bh);
         }
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);

@@ -11,9 +11,9 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
 
@@ -26,7 +26,7 @@ public final class QuestEffectBadges {
     private QuestEffectBadges() {
     }
 
-    public static void render(WidgetGroup parent, TabletUiState state, QuestCardLayout card) {
+    public static void render(WidgetGroup parent, UiState state, QuestCardLayout card) {
         if (!QuestsAndStuffConfig.questEffectIconsEnabled()) {
             return;
         }
@@ -61,7 +61,7 @@ public final class QuestEffectBadges {
         }
     }
 
-    private static List<Badge> badges(TabletUiState state, CompoundTag tag) {
+    private static List<Badge> badges(UiState state, CompoundTag tag) {
         List<Badge> badges = new ArrayList<>();
         boolean editor = state != null && state.root.canEdit;
         if (editor ? tag.getBoolean("visual_hidden") : ClientQuestStateFacade.questHiddenPreview(tag)) {
@@ -102,7 +102,7 @@ public final class QuestEffectBadges {
 
     private static void addBadge(WidgetGroup parent, int x, int y, int boxSize, int iconSize, String icon) {
         WidgetGroup badge = new WidgetGroup(x, y, boxSize, boxSize);
-        badge.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 190)));
+        badge.setBackground(SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 190)));
         parent.addWidget(badge);
         parent.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, iconSize, iconSize, icon));
     }

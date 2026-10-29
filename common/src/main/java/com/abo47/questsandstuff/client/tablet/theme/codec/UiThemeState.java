@@ -5,7 +5,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class UiThemeState {
     public final Map<String, Integer> roleColors;
@@ -20,7 +20,7 @@ public final class UiThemeState {
 
     int colorForRole(String role) {
         String normalized = normalizeRole(role);
-        return roleColors.getOrDefault(normalized, roleColors.getOrDefault(UiThemeManager.ROLE_ICON_DEFAULT, TabletColors.DEFAULT_TEXT_SECONDARY));
+        return roleColors.getOrDefault(normalized, roleColors.getOrDefault(UiThemeManager.ROLE_ICON_DEFAULT, ThemeColors.DEFAULT_TEXT_SECONDARY));
     }
 
     int colorForIcon(String iconFileName) {
@@ -35,43 +35,43 @@ public final class UiThemeState {
 
     private static Map<String, Integer> defaultRoleColors() {
         Map<String, Integer> colors = new LinkedHashMap<>();
-        colors.put(UiThemeManager.ROLE_ICON_DEFAULT, TabletColors.DEFAULT_TEXT_SECONDARY);
-        colors.put(UiThemeManager.ROLE_ICON_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
-        colors.put(UiThemeManager.ROLE_ICON_SUCCESS, TabletColors.DEFAULT_SUCCESS);
-        colors.put(UiThemeManager.ROLE_ICON_WARNING, TabletColors.DEFAULT_WARNING);
-        colors.put(UiThemeManager.ROLE_ICON_ERROR, TabletColors.DEFAULT_ERROR);
-        colors.put(UiThemeManager.ROLE_ICON_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
-        colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, TabletColors.DEFAULT_BORDER_BASE);
-        colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, TabletColors.DEFAULT_INTERACTIVE);
-        colors.put(UiThemeManager.ROLE_ICON_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
-        colors.put(UiThemeManager.ROLE_ICON_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
-        colors.put(UiThemeManager.ROLE_ICON_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
-        colors.put(UiThemeManager.ROLE_ICON_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
+        colors.put(UiThemeManager.ROLE_ICON_DEFAULT, ThemeColors.DEFAULT_TEXT_SECONDARY);
+        colors.put(UiThemeManager.ROLE_ICON_INTERACTIVE, ThemeColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_SUCCESS, ThemeColors.DEFAULT_SUCCESS);
+        colors.put(UiThemeManager.ROLE_ICON_WARNING, ThemeColors.DEFAULT_WARNING);
+        colors.put(UiThemeManager.ROLE_ICON_ERROR, ThemeColors.DEFAULT_ERROR);
+        colors.put(UiThemeManager.ROLE_ICON_MUTED, ThemeColors.DEFAULT_TEXT_MUTED);
+        colors.put(UiThemeManager.ROLE_ICON_SCROLL_TRACK, ThemeColors.DEFAULT_BORDER_BASE);
+        colors.put(UiThemeManager.ROLE_ICON_SCROLL_THUMB, ThemeColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_APP_QUESTS, ThemeColors.DEFAULT_INTERACTIVE);
+        colors.put(UiThemeManager.ROLE_ICON_APP_TEAMS, ThemeColors.DEFAULT_SUCCESS);
+        colors.put(UiThemeManager.ROLE_ICON_APP_CHUNKCLAIMER, ThemeColors.DEFAULT_WARNING);
+        colors.put(UiThemeManager.ROLE_ICON_APP_SETTINGS, ThemeColors.DEFAULT_TEXT_MUTED);
         return colors;
     }
 
     private static Map<String, Integer> defaultUiColors() {
         Map<String, Integer> uiColors = new LinkedHashMap<>();
-        uiColors.put(UiThemeManager.UI_SURFACE_BASE, TabletColors.DEFAULT_SURFACE_BASE);
-        uiColors.put(UiThemeManager.UI_SURFACE_PANEL, TabletColors.DEFAULT_SURFACE_PANEL);
-        uiColors.put(UiThemeManager.UI_SURFACE_PANEL_ALT, TabletColors.DEFAULT_SURFACE_PANEL_ALT);
-        uiColors.put(UiThemeManager.UI_BORDER_BASE, TabletColors.DEFAULT_BORDER_BASE);
-        uiColors.put(UiThemeManager.UI_BORDER_ACCENT, TabletColors.DEFAULT_BORDER_ACCENT);
-        uiColors.put(UiThemeManager.UI_TEXT_PRIMARY, TabletColors.DEFAULT_TEXT_PRIMARY);
-        uiColors.put(UiThemeManager.UI_TEXT_SECONDARY, TabletColors.DEFAULT_TEXT_SECONDARY);
-        uiColors.put(UiThemeManager.UI_TEXT_MUTED, TabletColors.DEFAULT_TEXT_MUTED);
-        uiColors.put(UiThemeManager.UI_SUCCESS, TabletColors.DEFAULT_SUCCESS);
-        uiColors.put(UiThemeManager.UI_WARNING, TabletColors.DEFAULT_WARNING);
-        uiColors.put(UiThemeManager.UI_ERROR, TabletColors.DEFAULT_ERROR);
-        uiColors.put(UiThemeManager.UI_INTERACTIVE, TabletColors.DEFAULT_INTERACTIVE);
-        uiColors.put(UiThemeManager.UI_GLOW, TabletColors.DEFAULT_GLOW);
-        uiColors.put(UiThemeManager.UI_SELECTION, TabletColors.DEFAULT_SELECTION);
-        uiColors.put(UiThemeManager.UI_SCROLL_TRACK, TabletColors.DEFAULT_SCROLL_TRACK);
-        uiColors.put(UiThemeManager.UI_SCROLL_THUMB, TabletColors.DEFAULT_SCROLL_THUMB);
-        uiColors.put(UiThemeManager.UI_APP_QUESTS, TabletColors.DEFAULT_INTERACTIVE);
-        uiColors.put(UiThemeManager.UI_APP_TEAMS, TabletColors.DEFAULT_SUCCESS);
-        uiColors.put(UiThemeManager.UI_APP_CHUNKCLAIMER, TabletColors.DEFAULT_WARNING);
-        uiColors.put(UiThemeManager.UI_APP_SETTINGS, TabletColors.DEFAULT_TEXT_MUTED);
+        uiColors.put(UiThemeManager.UI_SURFACE_BASE, ThemeColors.DEFAULT_SURFACE_BASE);
+        uiColors.put(UiThemeManager.UI_SURFACE_PANEL, ThemeColors.DEFAULT_SURFACE_PANEL);
+        uiColors.put(UiThemeManager.UI_SURFACE_PANEL_ALT, ThemeColors.DEFAULT_SURFACE_PANEL_ALT);
+        uiColors.put(UiThemeManager.UI_BORDER_BASE, ThemeColors.DEFAULT_BORDER_BASE);
+        uiColors.put(UiThemeManager.UI_BORDER_ACCENT, ThemeColors.DEFAULT_BORDER_ACCENT);
+        uiColors.put(UiThemeManager.UI_TEXT_PRIMARY, ThemeColors.DEFAULT_TEXT_PRIMARY);
+        uiColors.put(UiThemeManager.UI_TEXT_SECONDARY, ThemeColors.DEFAULT_TEXT_SECONDARY);
+        uiColors.put(UiThemeManager.UI_TEXT_MUTED, ThemeColors.DEFAULT_TEXT_MUTED);
+        uiColors.put(UiThemeManager.UI_SUCCESS, ThemeColors.DEFAULT_SUCCESS);
+        uiColors.put(UiThemeManager.UI_WARNING, ThemeColors.DEFAULT_WARNING);
+        uiColors.put(UiThemeManager.UI_ERROR, ThemeColors.DEFAULT_ERROR);
+        uiColors.put(UiThemeManager.UI_INTERACTIVE, ThemeColors.DEFAULT_INTERACTIVE);
+        uiColors.put(UiThemeManager.UI_GLOW, ThemeColors.DEFAULT_GLOW);
+        uiColors.put(UiThemeManager.UI_SELECTION, ThemeColors.DEFAULT_SELECTION);
+        uiColors.put(UiThemeManager.UI_SCROLL_TRACK, ThemeColors.DEFAULT_SCROLL_TRACK);
+        uiColors.put(UiThemeManager.UI_SCROLL_THUMB, ThemeColors.DEFAULT_SCROLL_THUMB);
+        uiColors.put(UiThemeManager.UI_APP_QUESTS, ThemeColors.DEFAULT_INTERACTIVE);
+        uiColors.put(UiThemeManager.UI_APP_TEAMS, ThemeColors.DEFAULT_SUCCESS);
+        uiColors.put(UiThemeManager.UI_APP_CHUNKCLAIMER, ThemeColors.DEFAULT_WARNING);
+        uiColors.put(UiThemeManager.UI_APP_SETTINGS, ThemeColors.DEFAULT_TEXT_MUTED);
         return uiColors;
     }
 

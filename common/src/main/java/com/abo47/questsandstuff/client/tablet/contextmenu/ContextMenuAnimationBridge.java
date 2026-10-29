@@ -4,7 +4,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.ContextMenuPopWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class ContextMenuAnimationBridge {
     public static final String DEFAULT_KEY = "context";
@@ -17,7 +17,7 @@ public final class ContextMenuAnimationBridge {
         return wrap(content, null, "");
     }
 
-    public static WidgetGroup wrap(WidgetGroup content, TabletUiState state, String key) {
+    public static WidgetGroup wrap(WidgetGroup content, UiState state, String key) {
         if (content == null) {
             return new WidgetGroup(0, 0, 1, 1);
         }
@@ -29,7 +29,7 @@ public final class ContextMenuAnimationBridge {
         return ContextMenuPopWidget.menu(content, () -> effectiveStartMs(state, safeKey, fallbackStartMs));
     }
 
-    public static void start(TabletUiState state, String key) {
+    public static void start(UiState state, String key) {
         if (state == null) {
             return;
         }
@@ -37,7 +37,7 @@ public final class ContextMenuAnimationBridge {
         state.contextMenu.contextMenuAnimationKey = key == null ? "" : key;
     }
 
-    public static void finish(TabletUiState state, String key) {
+    public static void finish(UiState state, String key) {
         if (state == null) {
             return;
         }
@@ -45,7 +45,7 @@ public final class ContextMenuAnimationBridge {
         state.contextMenu.contextMenuAnimationKey = key == null ? "" : key;
     }
 
-    private static long effectiveStartMs(TabletUiState state, String key, long fallbackStartMs) {
+    private static long effectiveStartMs(UiState state, String key, long fallbackStartMs) {
         if (state == null || state.contextMenu.contextMenuAnimationStartMs <= 0L) {
             return fallbackStartMs;
         }

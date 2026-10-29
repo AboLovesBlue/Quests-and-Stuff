@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu.CanvasContextMenuController.ConnectionRef;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasOverlayController {
     private CanvasOverlayController() {
@@ -12,7 +12,7 @@ public final class CanvasOverlayController {
 
     public static void renderCanvasMetaPanels(
             CanvasViewport canvasViewport,
-            TabletUiState state,
+            UiState state,
             int contentX,
             int contentY,
             int contentW,
@@ -24,10 +24,10 @@ public final class CanvasOverlayController {
         EntityMotionEditor.renderMainCanvas(canvasViewport, state, canvasViewport.player(), canvasViewport::refresh);
     }
 
-    public static boolean isContextMenuHit(TabletUiState state, int x, int y) {
+    public static boolean isContextMenuHit(UiState state, int x, int y) {
         return CanvasContextMenuController.isContextMenuHit(state, x, y);
     }
-    public static java.util.List<ConnectionRef> selectedConnections(TabletUiState state, String chapter) {
+    public static java.util.List<ConnectionRef> selectedConnections(UiState state, String chapter) {
         return CanvasContextMenuController.selectedConnections(state, chapter);
     }
 }

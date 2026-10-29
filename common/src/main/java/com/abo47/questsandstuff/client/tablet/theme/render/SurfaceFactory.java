@@ -6,7 +6,7 @@ import com.lowdragmc.lowdraglib.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens;
 
 public final class SurfaceFactory {
@@ -18,7 +18,7 @@ public final class SurfaceFactory {
     }
 
     public static ColorRectTexture transparentFill() {
-        return fill(TabletColors.TRANSPARENT);
+        return fill(ThemeColors.TRANSPARENT);
     }
 
     public static int withAlpha(int color, int alpha) {
@@ -38,38 +38,38 @@ public final class SurfaceFactory {
     }
 
     public static GuiTextureGroup transparentBorder(int borderColor) {
-        return bordered(TabletColors.TRANSPARENT, borderColor);
+        return bordered(ThemeColors.TRANSPARENT, borderColor);
     }
 
     public static GuiTextureGroup panel() {
-        return bordered(TabletColors.SURFACE_PANEL, TabletColors.BORDER_BASE);
+        return bordered(ThemeColors.SURFACE_PANEL, ThemeColors.BORDER_BASE);
     }
 
     public static GuiTextureGroup insetPanel() {
-        return bordered(TabletColors.recessedSurface(), TabletColors.subtleBorder());
+        return bordered(ThemeColors.recessedSurface(), ThemeColors.subtleBorder());
     }
 
     public static GuiTextureGroup raisedPanel() {
-        return bordered(TabletColors.elevatedSurface(), TabletColors.BORDER_BASE);
+        return bordered(ThemeColors.elevatedSurface(), ThemeColors.BORDER_BASE);
     }
 
     public static GuiTextureGroup control() {
-        return bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_BASE);
+        return bordered(ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
     }
 
     public static GuiTextureGroup controlHover(int accentColor) {
-        return bordered(TabletColors.hoverFill(accentColor), TabletColors.focusBorder());
+        return bordered(ThemeColors.hoverFill(accentColor), ThemeColors.focusBorder());
     }
 
     public static GuiTextureGroup controlPressed(int accentColor) {
-        return bordered(TabletColors.pressedFill(accentColor), accentColor);
+        return bordered(ThemeColors.pressedFill(accentColor), accentColor);
     }
 
     public static GuiTextureGroup card(boolean selected, int accentColor, boolean muted) {
         int fill = muted
-                ? withAlpha(TabletColors.TEXT_MUTED, 34)
-                : (selected ? withAlpha(accentColor, 180) : TabletColors.elevatedSurface());
-        int border = muted ? TabletColors.subtleBorder() : (selected ? accentColor : TabletColors.subtleBorder());
+                ? withAlpha(ThemeColors.TEXT_MUTED, 34)
+                : (selected ? withAlpha(accentColor, 180) : ThemeColors.elevatedSurface());
+        int border = muted ? ThemeColors.subtleBorder() : (selected ? accentColor : ThemeColors.subtleBorder());
         return bordered(fill, border);
     }
 

@@ -15,17 +15,17 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.CardDragGhosts;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
-import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
+import com.abo47.questsandstuff.client.tablet.controls.TextTextures;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -39,9 +39,9 @@ public final class ChapterRowRenderer {
     private ChapterRowRenderer() {
     }
 
-    static void addChapterRow(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
+    static void addChapterRow(WidgetGroup chapterList, UiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed) {
         boolean lockedPreview = ClientQuestStateFacade.chapterLockedPreview(chapter);
-        boolean selected = chapter.equals(TabletStateQueries.selectedChapterName(state));
+        boolean selected = chapter.equals(StateQueries.selectedChapterName(state));
         String rowLabel = chapter.equals(state.canvas.pendingChapterRename) ? state.chapterPanel.chapterDraftName : chapter;
         if (collapsed) {
             addCollapsedChapterRow(chapterList, chapter, rowLabel, y, layout, selected);
@@ -55,32 +55,32 @@ public final class ChapterRowRenderer {
         }
 
         IGuiTexture bgTexture = BackgroundModes.createTexture(ClientQuestStateFacade.chapterBackground(chapter));
-        int border = bgTexture != null ? 0 : (selected ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE);
-        int fill = bgTexture != null ? TabletColors.TRANSPARENT : TabletUiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(chapter), TabletColors.SURFACE_PANEL_ALT);
-        chapterList.addWidget(TabletUiFactory.panel(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, fill, border));
+        int border = bgTexture != null ? 0 : (selected ? ThemeColors.BORDER_ACCENT : ThemeColors.BORDER_BASE);
+        int fill = bgTexture != null ? ThemeColors.TRANSPARENT : UiFactory.chapterBackgroundFill(ClientQuestStateFacade.chapterBackground(chapter), ThemeColors.SURFACE_PANEL_ALT);
+        chapterList.addWidget(UiFactory.panel(layout.cardX(), y, layout.cardW(), UiFactory.CHAPTER_CARD_H, fill, border));
 
         if (bgTexture != null) {
-            chapterList.addWidget(new ImageWidget(layout.cardX() - 1, y - 1, layout.cardW() + 2, TabletUiFactory.CHAPTER_CARD_H + 2, bgTexture));
+            chapterList.addWidget(new ImageWidget(layout.cardX() - 1, y - 1, layout.cardW() + 2, UiFactory.CHAPTER_CARD_H + 2, bgTexture));
         }
         if (selected) {
-            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H, SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 82))));
+            chapterList.addWidget(new ImageWidget(layout.cardX(), y, layout.cardW(), UiFactory.CHAPTER_CARD_H, SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 82))));
         }
         String chapterIcon = ClientQuestStateFacade.chapterIcon(chapter);
         int iconDrawX = layout.iconX();
         if (chapterIcon != null && !chapterIcon.isBlank()) {
-            chapterList.addWidget(new DisplayIconWidget(iconDrawX, y + 8, TabletUiFactory.CONTENT_ICON_SIZE, TabletUiFactory.CONTENT_ICON_SIZE, chapterIcon));
+            chapterList.addWidget(new DisplayIconWidget(iconDrawX, y + 8, UiFactory.CONTENT_ICON_SIZE, UiFactory.CONTENT_ICON_SIZE, chapterIcon));
         }
         int textW = Math.max(8, layout.cardW() - 26);
         addChapterLabel(chapterList, chapter, rowLabel, y, layout.cardX(), textW);
         if (lockedPreview) {
-            renderLockedFilter(chapterList, layout.cardX(), y, layout.cardW(), TabletUiFactory.CHAPTER_CARD_H);
+            renderLockedFilter(chapterList, layout.cardX(), y, layout.cardW(), UiFactory.CHAPTER_CARD_H);
         }
         addCompletionNotice(chapterList, chapter, iconDrawX - 2, y + 3);
         addChapterSelectionHits(chapterList, state, refresh, chapter, y, layout, collapsed, textW);
         addChapterIconChangeHit(chapterList, state, refresh, chapter, iconDrawX, y + 8);
     }
 
-    static void addRenameRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout) {
+    static void addRenameRow(WidgetGroup chapterList, UiState state, Player player, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout) {
         ChapterInlineRenameRows.add(
                 chapterList,
                 layout.cardX(),
@@ -99,7 +99,7 @@ public final class ChapterRowRenderer {
         );
     }
 
-    static void addDraftRow(WidgetGroup chapterList, TabletUiState state, Player player, Runnable refresh, int y, ChapterListMetrics.Layout layout) {
+    static void addDraftRow(WidgetGroup chapterList, UiState state, Player player, Runnable refresh, int y, ChapterListMetrics.Layout layout) {
         ChapterInlineRenameRows.add(
                 chapterList,
                 layout.cardX(),
@@ -119,7 +119,7 @@ public final class ChapterRowRenderer {
     }
 
     static int addGhostIfVisible(WidgetGroup chapterList, String chapter, int cardX, int y, int cardW, int listH, int rowStep) {
-        if (y < listH && y + TabletUiFactory.CHAPTER_CARD_H > 0) {
+        if (y < listH && y + UiFactory.CHAPTER_CARD_H > 0) {
             renderChapterGhost(chapterList, chapter, cardX, y, cardW);
         }
         return y + rowStep;
@@ -142,16 +142,16 @@ public final class ChapterRowRenderer {
         int tileY = collapsedTileY(y);
         chapterList.addWidget(new CollapsedChapterTileWidget(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, rowLabel, selected));
         if (!initial.isBlank()) {
-            chapterList.addWidget(TabletTextTextures.literal(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, initial, selected ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED, TextTexture.TextType.HIDE));
+            chapterList.addWidget(TextTextures.literal(layout.cardX(), tileY, layout.cardW(), COLLAPSED_TILE_SIZE, initial, selected ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_MUTED, TextTexture.TextType.HIDE));
         }
         if (chapterIcon != null && !chapterIcon.isBlank()) {
             chapterList.addWidget(new DisplayIconWidget(collapsedIconX(layout), collapsedIconY(y), COLLAPSED_ICON_SIZE, COLLAPSED_ICON_SIZE, chapterIcon));
         }
     }
 
-    private static void addChapterSelectionHits(WidgetGroup chapterList, TabletUiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
+    private static void addChapterSelectionHits(WidgetGroup chapterList, UiState state, Runnable refresh, String chapter, int y, ChapterListMetrics.Layout layout, boolean collapsed, int textW) {
         final int rowY = y;
-        var menuHit = TabletUiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
+        var menuHit = UiFactory.flatHitButton(collapsed ? layout.cardX() : layout.cardX() + 24, collapsed ? collapsedTileY(y) : y + 8, collapsed ? layout.cardW() : textW, collapsed ? COLLAPSED_TILE_SIZE : 16, click -> {
             if (!canOpenChapter(state, chapter)) {
                 return;
             }
@@ -159,17 +159,17 @@ public final class ChapterRowRenderer {
             state.chapterPanel.chapterMenuTarget = chapter;
             state.chapterPanel.chapterMenuX = 8;
             state.chapterPanel.chapterMenuY = Math.max(4, Math.min(rowY, chapterList.getSize().height - 72));
-            TabletUiFactory.persistUiState(state);
+            UiFactory.persistUiState(state);
             refresh.run();
         });
         menuHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
         chapterList.addWidget(menuHit);
-        var rowHit = TabletUiFactory.flatHitButton(layout.cardX(), collapsed ? collapsedTileY(y) : y, layout.cardW(), collapsed ? COLLAPSED_TILE_SIZE : TabletUiFactory.CHAPTER_CARD_H, click -> {
+        var rowHit = UiFactory.flatHitButton(layout.cardX(), collapsed ? collapsedTileY(y) : y, layout.cardW(), collapsed ? COLLAPSED_TILE_SIZE : UiFactory.CHAPTER_CARD_H, click -> {
             if (!canOpenChapter(state, chapter)) {
                 return;
             }
             selectChapter(state, chapter);
-            TabletUiFactory.persistUiState(state);
+            UiFactory.persistUiState(state);
             refresh.run();
         });
         rowHit.setHoverTooltips(new Component[]{Component.literal(chapter)});
@@ -177,11 +177,11 @@ public final class ChapterRowRenderer {
         chapterList.addWidget(rowHit);
     }
 
-    private static boolean canOpenChapter(TabletUiState state, String chapter) {
+    private static boolean canOpenChapter(UiState state, String chapter) {
         return state != null && (state.root.canEdit || ClientQuestStateFacade.chapterOpenablePreview(chapter));
     }
 
-    private static void selectChapter(TabletUiState state, String chapter) {
+    private static void selectChapter(UiState state, String chapter) {
         state.root.selectedChapter = chapter;
         state.chapterPanel.chapterDraft = chapter;
         state.chapterPanel.chapterDraftName = chapter;
@@ -197,7 +197,7 @@ public final class ChapterRowRenderer {
         int innerW = Math.max(1, Math.round(width / scale));
         int innerH = Math.max(1, Math.round(height / scale));
         WidgetGroup group = new WidgetGroup(x, y, width, height);
-        TextTextureWidget label = TabletTextTextures.literal(
+        TextTextureWidget label = TextTextures.literal(
                 Math.max(0, (width - innerW) / 2),
                 Math.max(0, (height - innerH) / 2),
                 innerW,
@@ -225,7 +225,7 @@ public final class ChapterRowRenderer {
 
     private static void renderLockedFilter(WidgetGroup chapterList, int x, int y, int w, int h) {
         WidgetGroup filter = new WidgetGroup(x, y, w, h);
-        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 150)));
+        filter.setBackground(com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 150)));
         chapterList.addWidget(filter);
     }
 
@@ -238,7 +238,7 @@ public final class ChapterRowRenderer {
 
     private static int chapterTextY(int rowY, int fontSize) {
         int labelH = chapterLabelHeight(fontSize);
-        int iconCenterY = TabletUiFactory.CHAPTER_CARD_H / 2;
+        int iconCenterY = UiFactory.CHAPTER_CARD_H / 2;
         return rowY + Math.max(2, iconCenterY - labelH / 2);
     }
 
@@ -252,7 +252,7 @@ public final class ChapterRowRenderer {
     }
 
     private static int collapsedTileY(int rowY) {
-        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_TILE_SIZE) / 2);
+        return rowY + Math.max(0, (UiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_TILE_SIZE) / 2);
     }
 
     private static int collapsedIconX(ChapterListMetrics.Layout layout) {
@@ -260,7 +260,7 @@ public final class ChapterRowRenderer {
     }
 
     private static int collapsedIconY(int rowY) {
-        return rowY + Math.max(0, (TabletUiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_ICON_SIZE) / 2);
+        return rowY + Math.max(0, (UiFactory.CHAPTER_COLLAPSED_ROW_STEP - COLLAPSED_ICON_SIZE) / 2);
     }
 
     private static TextTexture.TextType chapterTextType(String align) {
@@ -293,11 +293,11 @@ public final class ChapterRowRenderer {
         return prefix + safe;
     }
 
-    private static void addChapterIconChangeHit(WidgetGroup parent, TabletUiState state, Runnable refresh, String chapter, int x, int y) {
+    private static void addChapterIconChangeHit(WidgetGroup parent, UiState state, Runnable refresh, String chapter, int x, int y) {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, TabletUiFactory.CONTENT_ICON_SIZE, () -> {
+        EntityIconControls.addChangeIconHit(parent, state, refresh, x, y, UiFactory.CONTENT_ICON_SIZE, () -> {
             selectChapter(state, chapter);
             state.chapterPanel.chapterMenuOpen = false;
             state.chapterPanel.chapterDragPending = false;
@@ -305,7 +305,7 @@ public final class ChapterRowRenderer {
             state.chapterPanel.chapterDragName = "";
             state.chapterPanel.chapterDragTargetIndex = -1;
             EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(chapter));
-            TabletUiFactory.persistUiState(state);
+            UiFactory.persistUiState(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", chapter);
         });
     }
@@ -329,7 +329,7 @@ public final class ChapterRowRenderer {
             int h = getSizeHeight();
             boolean hovered = isMouseOverElement(mouseX, mouseY);
             if (selected) {
-                SurfaceFactory.fill(withAlpha(TabletColors.INTERACTIVE, 108)).draw(graphics, 0, 0, x, y, w, h);
+                SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 108)).draw(graphics, 0, 0, x, y, w, h);
             } else if (hovered) {
                 GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
             }

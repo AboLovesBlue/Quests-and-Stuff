@@ -9,11 +9,11 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.team.C2STeamInviteCodePacket;
 import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
@@ -21,9 +21,9 @@ import com.abo47.questsandstuff.network.team.C2STeamJoinPacket;
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.GRID_3;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.label;
 
 final class TeamsInviteCodeModal {
     private static final int PAD = 8;
@@ -35,7 +35,7 @@ final class TeamsInviteCodeModal {
     private TeamsInviteCodeModal() {
     }
 
-    static void rebuild(WidgetGroup modal, TabletUiState state, Runnable refresh, int layerW, int layerH) {
+    static void rebuild(WidgetGroup modal, UiState state, Runnable refresh, int layerW, int layerH) {
         if (!state.teams.inviteCodeModalOpen) {
             return;
         }
@@ -53,13 +53,13 @@ final class TeamsInviteCodeModal {
         int py = Math.max(GRID_24, (layerH - panelH) / 2);
 
         WidgetGroup panel = SurfaceFactory.panel(px, py, panelW, panelH,
-                withAlpha(TabletColors.elevatedSurface(), 245), TabletColors.BORDER_ACCENT);
+                withAlpha(ThemeColors.elevatedSurface(), 245), ThemeColors.BORDER_ACCENT);
 
         panel.addWidget(label(PAD, 6,
                 I18n.get(state.teams.inviteCodeImportMode
                         ? "ui.questsandstuff.teams.enter_invite_code"
                         : "ui.questsandstuff.teams.share_invite"),
-                TabletColors.TEXT_PRIMARY));
+                ThemeColors.TEXT_PRIMARY));
 
         int closeX = panelW - PAD - BTN_SIZE;
         panel.addWidget(ChromeFactory.closeIconButton(closeX, 4, BTN_SIZE, BTN_SIZE, click -> {
@@ -128,7 +128,7 @@ final class TeamsInviteCodeModal {
                 new com.lowdragmc.lowdraglib.gui.widget.codeeditor.CodeEditorWidget(
                         PAD, CODE_Y, panelW - PAD * 2, CODE_H);
         editor.codeEditor.setLanguageDefinitionUnformatted();
-        editor.setBackground(SurfaceFactory.bordered(TabletColors.recessedSurface(), TabletColors.BORDER_BASE));
+        editor.setBackground(SurfaceFactory.bordered(ThemeColors.recessedSurface(), ThemeColors.BORDER_BASE));
         String draft = state.teams.inviteCodeDraft == null ? "" : state.teams.inviteCodeDraft;
         editor.setLines(draft.isBlank() ? List.of("") : List.of(draft.split("\\R", -1)));
         editor.setFocus(true);
@@ -137,7 +137,7 @@ final class TeamsInviteCodeModal {
         if (state.teams.inviteCodeMessage != null && !state.teams.inviteCodeMessage.isBlank()) {
             panel.addWidget(label(PAD, CODE_Y + CODE_H + 8,
                     state.teams.inviteCodeMessage,
-                    state.teams.inviteCodeMessageSuccess ? TabletColors.SUCCESS : TabletColors.WARNING));
+                    state.teams.inviteCodeMessageSuccess ? ThemeColors.SUCCESS : ThemeColors.WARNING));
         }
 
         modal.addWidget(QuestsAndStuffConfig.popupWindowAnimationsEnabled()

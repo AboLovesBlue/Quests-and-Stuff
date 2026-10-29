@@ -15,9 +15,9 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
-import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.state.StateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -26,11 +26,11 @@ public final class CanvasClipboardCopy {
     private CanvasClipboardCopy() {
     }
 
-    public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {
+    public static boolean canCopyContext(CanvasViewport canvasViewport, UiState state) {
         return canCopy(canvasViewport, state, contextSelection(state));
     }
 
-    public static boolean copyContextToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
+    public static boolean copyContextToClipboard(CanvasViewport canvasViewport, UiState state) {
         boolean copied = copyToClipboard(canvasViewport, state, contextSelection(state), "context");
         if (copied) {
             CanvasMiniNotificationController.show(state, "ui.questsandstuff.canvas_notifications.copied", state.contextMenu.contextLastClickX, state.contextMenu.contextLastClickY);
@@ -38,7 +38,7 @@ public final class CanvasClipboardCopy {
         return copied;
     }
 
-    public static boolean copySelectionToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
+    public static boolean copySelectionToClipboard(CanvasViewport canvasViewport, UiState state) {
         boolean copied = copyToClipboard(canvasViewport, state, currentSelection(state), "shortcut");
         if (copied) {
             CanvasMiniNotificationController.showAtPointer(state, canvasViewport, "ui.questsandstuff.canvas_notifications.copied");
@@ -46,11 +46,11 @@ public final class CanvasClipboardCopy {
         return copied;
     }
 
-    public static boolean hasClipboardContent(TabletUiState state) {
+    public static boolean hasClipboardContent(UiState state) {
         return state != null && state.clipboard.canvasClipboard.hasContent();
     }
 
-    private static boolean canCopy(CanvasViewport canvasViewport, TabletUiState state, ClipboardSelection selection) {
+    private static boolean canCopy(CanvasViewport canvasViewport, UiState state, ClipboardSelection selection) {
         if (canvasViewport == null || state == null || selection.isEmpty()) {
             return false;
         }
@@ -60,7 +60,7 @@ public final class CanvasClipboardCopy {
                 return true;
             }
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             if (selection.imageIds().contains(image.id())) {
                 return true;
@@ -79,7 +79,7 @@ public final class CanvasClipboardCopy {
         return false;
     }
 
-    private static ClipboardSelection contextSelection(TabletUiState state) {
+    private static ClipboardSelection contextSelection(UiState state) {
         ClipboardSelection current = currentSelection(state);
         return switch (state.contextMenu.contextMenuTarget) {
             case SELECTION -> current;
@@ -111,7 +111,7 @@ public final class CanvasClipboardCopy {
         };
     }
 
-    private static ClipboardSelection currentSelection(TabletUiState state) {
+    private static ClipboardSelection currentSelection(UiState state) {
         return new ClipboardSelection(
                 new LinkedHashSet<>(state.canvas.canvasSelection.questIds()),
                 CanvasSelectionActions.selectedImageIds(state),
@@ -120,11 +120,11 @@ public final class CanvasClipboardCopy {
         );
     }
 
-    private static boolean copyToClipboard(CanvasViewport canvasViewport, TabletUiState state, ClipboardSelection selection, String source) {
+    private static boolean copyToClipboard(CanvasViewport canvasViewport, UiState state, ClipboardSelection selection, String source) {
         if (state == null || canvasViewport == null || selection.isEmpty()) {
             return false;
         }
-        String chapter = TabletStateQueries.selectedChapterName(state);
+        String chapter = StateQueries.selectedChapterName(state);
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, chapter, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, chapter, selection.textIds());
@@ -161,7 +161,7 @@ public final class CanvasClipboardCopy {
         return copiedIds;
     }
 
-    private static List<CanvasImageLayer> copiedImages(TabletUiState state, String chapter, Set<String> imageIds) {
+    private static List<CanvasImageLayer> copiedImages(UiState state, String chapter, Set<String> imageIds) {
         if (imageIds.isEmpty()) {
             return List.of();
         }
@@ -174,7 +174,7 @@ public final class CanvasClipboardCopy {
         return copied;
     }
 
-    private static List<CanvasTextLayer> copiedTexts(TabletUiState state, String chapter, Set<String> textIds) {
+    private static List<CanvasTextLayer> copiedTexts(UiState state, String chapter, Set<String> textIds) {
         if (textIds.isEmpty()) {
             return List.of();
         }
@@ -187,7 +187,7 @@ public final class CanvasClipboardCopy {
         return copied;
     }
 
-    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String chapter, Set<String> exclusiveChoiceIds) {
+    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(UiState state, String chapter, Set<String> exclusiveChoiceIds) {
         if (exclusiveChoiceIds.isEmpty()) {
             return List.of();
         }
@@ -201,7 +201,7 @@ public final class CanvasClipboardCopy {
     }
 
     private static CanvasPoint clipboardOrigin(
-            TabletUiState state,
+            UiState state,
             CanvasViewport canvasViewport,
             Set<String> questIds,
             List<CanvasImageLayer> images,
@@ -233,7 +233,7 @@ public final class CanvasClipboardCopy {
             }
         }
         if (minX == Integer.MAX_VALUE) {
-            return new CanvasPoint(TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), TabletUiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
+            return new CanvasPoint(UiFactory.snapToGrid(state, state.contextMenu.contextLogicalX), UiFactory.snapToGrid(state, state.contextMenu.contextLogicalY));
         }
         return new CanvasPoint(minX, minY);
     }

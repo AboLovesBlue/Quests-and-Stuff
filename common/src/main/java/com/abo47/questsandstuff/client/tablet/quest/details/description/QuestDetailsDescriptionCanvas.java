@@ -13,13 +13,13 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasViewportScissor;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
-    private final TabletUiState state;
+    private final UiState state;
     private final String questId;
     private final QuestDetailsDescriptionSelection selection;
     private final QuestDetailsDescriptionTextEdit textEdit;
@@ -41,7 +41,7 @@ public final class QuestDetailsDescriptionCanvas extends WidgetGroup {
         super.drawBackgroundTexture(graphics, mouseX, mouseY);
     }
 
-    QuestDetailsDescriptionCanvas(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId) {
+    QuestDetailsDescriptionCanvas(int x, int y, int w, int h, UiState state, Player player, Runnable refresh, String questId) {
         super(x, y, w, h);
         this.state = state;
         this.questId = questId;

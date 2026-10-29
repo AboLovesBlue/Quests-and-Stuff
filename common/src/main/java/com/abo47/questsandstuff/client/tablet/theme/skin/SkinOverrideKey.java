@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 import java.util.Map;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class SkinOverrideKey {
     private static final Set<String> SHARED_KEYS = Set.of(
@@ -46,7 +46,7 @@ public final class SkinOverrideKey {
         return targetKey != null && ROOT_KEYS.contains(targetKey);
     }
 
-    public static String overrideKey(TabletUiState state, String targetKey) {
+    public static String overrideKey(UiState state, String targetKey) {
         if (targetKey == null || targetKey.isBlank()) return "";
         String resolved = resolveTargetKey(state, targetKey);
         if (isSharedKey(resolved)) return resolved;
@@ -54,7 +54,7 @@ public final class SkinOverrideKey {
         return app.isBlank() ? resolved : app + ":" + resolved;
     }
 
-    public static String resolveOverride(TabletUiState state, String targetKey) {
+    public static String resolveOverride(UiState state, String targetKey) {
         if (targetKey == null || targetKey.isBlank()) return null;
         String qualified = overrideKey(state, targetKey);
         String raw = state.root.skinFillOverrides.get(qualified);
@@ -67,7 +67,7 @@ public final class SkinOverrideKey {
         return raw;
     }
 
-    public static String bareKeyForCurrentApp(TabletUiState state, String entryKey) {
+    public static String bareKeyForCurrentApp(UiState state, String entryKey) {
         if (entryKey == null) return null;
         int colon = entryKey.indexOf(':');
         if (colon < 0) return entryKey;
@@ -76,7 +76,7 @@ public final class SkinOverrideKey {
         return entryKey.startsWith(app + ":") ? entryKey.substring(colon + 1) : null;
     }
 
-    public static String resolveTargetKey(TabletUiState state, String targetKey) {
+    public static String resolveTargetKey(UiState state, String targetKey) {
         if (targetKey == null) return null;
         int colon = targetKey.indexOf(':');
         if (colon > 0 && targetKey.length() > colon + 1) {

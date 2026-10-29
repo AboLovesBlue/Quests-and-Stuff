@@ -9,7 +9,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 public final class ChromeFactory {
     private ChromeFactory() {
@@ -23,8 +23,8 @@ public final class ChromeFactory {
         IGuiTexture glyph = IconAtlas.iconTexture(icon);
         IGuiTexture iconTexture = (graphics, mouseX, mouseY, x0, y0, width, height) -> {
             int ac = activeColor.getAsInt();
-            SurfaceFactory.fill(TabletColors.elevatedSurface()).draw(graphics, mouseX, mouseY, x0, y0, width, height);
-            drawBorder(graphics, (int) x0, (int) y0, width, height, TabletColors.BORDER_BASE);
+            SurfaceFactory.fill(ThemeColors.elevatedSurface()).draw(graphics, mouseX, mouseY, x0, y0, width, height);
+            drawBorder(graphics, (int) x0, (int) y0, width, height, ThemeColors.BORDER_BASE);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, ac);
         };
 
@@ -33,7 +33,7 @@ public final class ChromeFactory {
         GlowShaderHelper.glowHit(btn);
         btn.setClickedTexture((graphics, mouseX, mouseY, x0, y0, width, height) -> {
             int ac = activeColor.getAsInt();
-            SurfaceFactory.fill(TabletColors.pressedFill(ac)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
+            SurfaceFactory.fill(ThemeColors.pressedFill(ac)).draw(graphics, mouseX, mouseY, x0, y0, width, height);
             drawBorder(graphics, (int) x0, (int) y0, width, height, ac);
             drawGlyph(graphics, mouseX, mouseY, x0, y0, width, height, glyph, ac);
         });

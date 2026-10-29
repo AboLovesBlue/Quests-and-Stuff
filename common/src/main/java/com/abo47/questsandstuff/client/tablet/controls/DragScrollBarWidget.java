@@ -11,7 +11,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
@@ -86,7 +86,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int railX = x + Math.max(0, (w - railW) / 2);
         boolean active = draggingSupplier.getAsBoolean();
         boolean hovered = isMouseOverElement(mouseX, mouseY);
-        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, TabletColors.scrollTrack(active));
+        drawVerticalTrack(graphics, mouseX, mouseY, railX, y, railW, h, ThemeColors.scrollTrack(active));
 
         int knobH = knobHeight();
         int max = Math.max(0, maxSupplier.getAsInt());
@@ -95,7 +95,7 @@ public final class DragScrollBarWidget extends WidgetGroup {
         int knobY = y + (max <= 0 || span <= 0 ? 0 : Math.round((float) span * ((float) current / (float) max)));
         int knobW = Math.min(w, active || hovered ? Math.max(knobVisualWidth, WIDTH) : knobVisualWidth);
         int knobX = x + Math.max(0, (w - knobW) / 2);
-        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, TabletColors.scrollThumb(active || hovered));
+        drawVerticalThumb(graphics, mouseX, mouseY, knobX, knobY, knobW, knobH, ThemeColors.scrollThumb(active || hovered));
     }
 
     @Override

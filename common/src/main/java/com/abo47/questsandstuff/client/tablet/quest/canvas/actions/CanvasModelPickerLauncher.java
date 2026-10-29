@@ -13,8 +13,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFi
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
@@ -24,11 +24,11 @@ public final class CanvasModelPickerLauncher {
     private CanvasModelPickerLauncher() {
     }
 
-    public static boolean run(TabletUiState state, String target, String pickedValue) {
+    public static boolean run(UiState state, String target, String pickedValue) {
         return run(state, ModalTargetParser.parse(target), pickedValue);
     }
 
-    public static boolean run(TabletUiState state, ModalTargetParser.Target parsed, String pickedValue) {
+    public static boolean run(UiState state, ModalTargetParser.Target parsed, String pickedValue) {
         int requiredParts = parsed.isCanvasItemChange() || parsed.isCanvasBlockChange() ? 3 : 2;
         if (!ModalTargetState.requireParts("canvas_model", parsed, requiredParts)) {
             return false;
@@ -56,7 +56,7 @@ public final class CanvasModelPickerLauncher {
         return "";
     }
 
-    private static boolean changeModel(TabletUiState state, ModalTargetParser.Target parsed, String asset) {
+    private static boolean changeModel(UiState state, ModalTargetParser.Target parsed, String asset) {
         String chapter = parsed.part(1);
         String imageId = parsed.part(2);
         CanvasImageLayer current = CanvasLayerMutations.findCanvasImage(state, chapter, imageId);
@@ -70,14 +70,14 @@ public final class CanvasModelPickerLauncher {
         return true;
     }
 
-    private static void addModel(TabletUiState state, ModalTargetParser.Target parsed, String chapter, String asset) {
+    private static void addModel(UiState state, ModalTargetParser.Target parsed, String chapter, String asset) {
         String id = StableIdAllocator.nextId(parsed.isCanvasBlockNew() ? "blk" : "itm", canvasImageIds(state, chapter));
         int size = Math.max(MIN_MODEL_SIZE, CanvasGeometry.gridSize(state) * 3);
         int x = state.canvas.canvasImageLogicalX - size / 2;
         int y = state.canvas.canvasImageLogicalY - size / 2;
         if (!state.canvas.gridSnapLocked) {
-            x = TabletUiFactory.snapToGrid(state, x);
-            y = TabletUiFactory.snapToGrid(state, y);
+            x = UiFactory.snapToGrid(state, x);
+            y = UiFactory.snapToGrid(state, y);
         }
         CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, x, y, size, size);
         CanvasImageLayer image = ModelAssetPreviewRenderer.isBlockModelAsset(asset)
@@ -95,7 +95,7 @@ public final class CanvasModelPickerLauncher {
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas model added chapter={} id={} asset={} pos={},{} size={}x{}", chapter, id, asset, clamped.x, clamped.y, size, size);
     }
 
-    private static void selectOnlyImage(TabletUiState state, String id) {
+    private static void selectOnlyImage(UiState state, String id) {
         state.canvas.canvasSelection.setPrimaryImageId(id);
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().add(id);
@@ -106,7 +106,7 @@ public final class CanvasModelPickerLauncher {
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    private static List<String> canvasImageIds(TabletUiState state, String chapter) {
+    private static List<String> canvasImageIds(UiState state, String chapter) {
         List<String> ids = new ArrayList<>();
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
             ids.add(image.id());

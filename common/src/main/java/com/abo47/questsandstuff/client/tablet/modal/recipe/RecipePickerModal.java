@@ -6,18 +6,18 @@ import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.tablet.controls.TabletCycleButton;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.controls.CycleButton;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
-import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TranslationKeys;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 
 public final class RecipePickerModal {
     private RecipePickerModal() {
     }
 
-    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
-        ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_RECIPE), w, state, refresh);
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
+        ModalShell.addTitleAndClose(modal, TranslationKeys.text(QuestTranslationKeys.CHOOSE_RECIPE), w, state, refresh);
         int sidePad = 8;
         int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
@@ -37,7 +37,7 @@ public final class RecipePickerModal {
             refresh.run();
         }, focused -> state.pickers.recipeSearchFocused = focused);
 
-        TabletCycleButton.addIconModeButton(
+        CycleButton.addIconModeButton(
                 modal,
                 gridX,
                 headY,

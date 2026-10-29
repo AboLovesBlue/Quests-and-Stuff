@@ -31,9 +31,9 @@ import com.abo47.questsandstuff.client.tablet.modal.pickers.StatPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.StructurePickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.ThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -67,7 +67,7 @@ public final class ModalPanelRouter {
     private ModalPanelRouter() {
     }
 
-    public static void rebuildChapterModal(WidgetGroup overlay, TabletUiState state, Player player, Runnable refresh) {
+    public static void rebuildChapterModal(WidgetGroup overlay, UiState state, Player player, Runnable refresh) {
         overlay.clearAllWidgets();
         if (!ModalStateQueries.anyOpen(state) && !state.modal.modalWindowClosing) {
             return;
@@ -87,12 +87,12 @@ public final class ModalPanelRouter {
                 if (alpha <= 0) {
                     return;
                 }
-                SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
+                SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, alpha)).draw(graphics, 0, 0, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
             }
         };
         overlay.addWidget(dim);
         WidgetGroup modal = new WidgetGroup(mx, my, w, h);
-        modal.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 252), TabletColors.BORDER_ACCENT));
+        modal.setBackground(SurfaceFactory.bordered(withAlpha(ThemeColors.SURFACE_BASE, 252), ThemeColors.BORDER_ACCENT));
         TextFieldWidget searchField = descriptor.rebuild(modal, state, player, refresh, w, h);
         modal.setActive(!state.modal.modalWindowClosing);
         if (QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
@@ -119,7 +119,7 @@ public final class ModalPanelRouter {
         return null;
     }
 
-    private static int dimAlpha(TabletUiState state) {
+    private static int dimAlpha(UiState state) {
         if (!QuestsAndStuffConfig.popupWindowAnimationsEnabled()) {
             return 140;
         }
@@ -127,7 +127,7 @@ public final class ModalPanelRouter {
         return Math.round(140 * amount);
     }
 
-    private static SourceOriginRevealWidget.SourceRect sourceRect(TabletUiState state) {
+    private static SourceOriginRevealWidget.SourceRect sourceRect(UiState state) {
         if (!state.modal.modalWindowAnimationHasSource) {
             return null;
         }
@@ -139,7 +139,7 @@ public final class ModalPanelRouter {
         );
     }
 
-    private static void restoreSearchFocus(TabletUiState state, ModalPanelDescriptor descriptor, TextFieldWidget searchField) {
+    private static void restoreSearchFocus(UiState state, ModalPanelDescriptor descriptor, TextFieldWidget searchField) {
         if (searchField != null && descriptor.searchFocused(state)) {
             searchField.setFocus(true);
         }
@@ -150,20 +150,20 @@ public final class ModalPanelRouter {
             ModalPanelBuilder builder,
             ModalSearchFocus searchFocus
     ) {
-        TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+        TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
             return builder.rebuild(modal, state, player, refresh, w, h);
         }
 
-        boolean searchFocused(TabletUiState state) {
+        boolean searchFocused(UiState state) {
             return searchFocus.focused(state);
         }
     }
 
     private interface ModalPanelBuilder {
-        TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h);
+        TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h);
     }
 
     private interface ModalSearchFocus {
-        boolean focused(TabletUiState state);
+        boolean focused(UiState state);
     }
 }

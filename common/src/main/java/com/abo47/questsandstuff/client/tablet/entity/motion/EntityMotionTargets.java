@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDet
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 
 final class EntityMotionTargets {
@@ -30,7 +30,7 @@ final class EntityMotionTargets {
     private EntityMotionTargets() {
     }
 
-    static void openImage(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, CanvasImageLayer image) {
+    static void openImage(UiState state, String scope, String chapter, String questId, String imageId, int x, int y, CanvasImageLayer image) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
         state.questDetails.entityMotionEditorGroup = chapter == null ? "" : chapter;
@@ -43,7 +43,7 @@ final class EntityMotionTargets {
         resetTransientState(state);
     }
 
-    static void openIcon(TabletUiState state, String scope, String chapter, String questId, String imageId, int x, int y, EntityIconMotion icon) {
+    static void openIcon(UiState state, String scope, String chapter, String questId, String imageId, int x, int y, EntityIconMotion icon) {
         state.questDetails.entityMotionEditorOpen = true;
         state.questDetails.entityMotionEditorScope = scope;
         state.questDetails.entityMotionEditorGroup = chapter == null ? "" : chapter;
@@ -56,7 +56,7 @@ final class EntityMotionTargets {
         resetTransientState(state);
     }
 
-    static EntityMotionValues mainCanvasMotion(TabletUiState state) {
+    static EntityMotionValues mainCanvasMotion(UiState state) {
         if (SCOPE_QUEST_ICON.equals(state.questDetails.entityMotionEditorScope)) {
             EntityIconMotion icon = currentQuestIconMotion(state.questDetails.entityMotionEditorQuestId);
             return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
@@ -65,12 +65,12 @@ final class EntityMotionTargets {
         return isEditableEntity(image) ? new EntityMotionValues(image.entityYaw(), image.entitySpinSpeed()) : null;
     }
 
-    static EntityMotionValues chapterMotion(TabletUiState state) {
+    static EntityMotionValues chapterMotion(UiState state) {
         EntityIconMotion icon = currentChapterIconMotion(state.questDetails.entityMotionEditorGroup);
         return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
     }
 
-    static EntityMotionValues questDetailsMotion(TabletUiState state) {
+    static EntityMotionValues questDetailsMotion(UiState state) {
         if (SCOPE_TASK_ICON.equals(state.questDetails.entityMotionEditorScope)) {
             EntityIconMotion icon = currentTaskIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, taskMotionTask(state));
             return icon.editable() ? new EntityMotionValues(icon.yaw(), icon.spin()) : null;
@@ -80,7 +80,7 @@ final class EntityMotionTargets {
         return isEditableEntity(image) ? new EntityMotionValues(image.entityYaw(), image.entitySpinSpeed()) : null;
     }
 
-    static EntityMotionValues currentMotionValues(TabletUiState state) {
+    static EntityMotionValues currentMotionValues(UiState state) {
         if (state == null || !state.questDetails.entityMotionEditorOpen) {
             return null;
         }
@@ -92,7 +92,7 @@ final class EntityMotionTargets {
         };
     }
 
-    static void applyMotion(Player player, TabletUiState state, boolean sync) {
+    static void applyMotion(Player player, UiState state, boolean sync) {
         EntityMotionValues motion = currentMotionValues(state);
         if (motion == null) {
             EntityMotionEditor.close(state);
@@ -109,7 +109,7 @@ final class EntityMotionTargets {
         }
     }
 
-    static void resetDrafts(TabletUiState state, EntityMotionValues motion) {
+    static void resetDrafts(UiState state, EntityMotionValues motion) {
         if (state == null || motion == null) {
             return;
         }
@@ -117,7 +117,7 @@ final class EntityMotionTargets {
         state.questDetails.entityMotionSpinDraft = Integer.toString(motion.spin());
     }
 
-    static void setDraft(TabletUiState state, boolean yaw, int value) {
+    static void setDraft(UiState state, boolean yaw, int value) {
         if (yaw) {
             state.questDetails.entityMotionYawDraft = Integer.toString(CanvasImageLayer.normalizeDegrees(value));
         } else {
@@ -162,7 +162,7 @@ final class EntityMotionTargets {
         return new EntityIconMotion(icon, EntityPreviewRenderer.entityYaw(icon), EntityPreviewRenderer.entitySpinSpeed(icon), true);
     }
 
-    static boolean taskMotionTask(TabletUiState state) {
+    static boolean taskMotionTask(UiState state) {
         return state != null && TASK_TASK.equals(state.questDetails.entityMotionEditorGroup);
     }
 
@@ -170,14 +170,14 @@ final class EntityMotionTargets {
         return task ? TASK_TASK : TASK_REWARD;
     }
 
-    private static void resetTransientState(TabletUiState state) {
+    private static void resetTransientState(UiState state) {
         state.questDetails.entityMotionFocusedField = "";
         state.questDetails.entityMotionYawSliderDragging = false;
         state.questDetails.entityMotionSpinSliderDragging = false;
         ContextMenuController.clearDeleteConfirm(state);
     }
 
-    private static void applyCanvasMotion(TabletUiState state, int yaw, int spin, boolean sync) {
+    private static void applyCanvasMotion(UiState state, int yaw, int spin, boolean sync) {
         CanvasImageLayer primary = CanvasLayerMutations.findCanvasImage(state, state.questDetails.entityMotionEditorGroup, state.questDetails.entityMotionEditorImageId);
         if (primary == null) {
             EntityMotionEditor.close(state);
@@ -200,7 +200,7 @@ final class EntityMotionTargets {
         }
     }
 
-    private static void applyQuestIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
+    private static void applyQuestIconMotion(Player player, UiState state, int yaw, int spin, boolean sync) {
         EntityIconMotion icon = currentQuestIconMotion(state.questDetails.entityMotionEditorQuestId);
         if (!icon.editable()) {
             EntityMotionEditor.close(state);
@@ -213,7 +213,7 @@ final class EntityMotionTargets {
         }
     }
 
-    private static void applyChapterIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
+    private static void applyChapterIconMotion(Player player, UiState state, int yaw, int spin, boolean sync) {
         EntityIconMotion icon = currentChapterIconMotion(state.questDetails.entityMotionEditorGroup);
         if (!icon.editable()) {
             EntityMotionEditor.close(state);
@@ -226,7 +226,7 @@ final class EntityMotionTargets {
         }
     }
 
-    private static void applyTaskIconMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
+    private static void applyTaskIconMotion(Player player, UiState state, int yaw, int spin, boolean sync) {
         EntityIconMotion icon = currentTaskIconMotion(state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, taskMotionTask(state));
         if (!icon.editable()) {
             EntityMotionEditor.close(state);
@@ -236,7 +236,7 @@ final class EntityMotionTargets {
         QuestTaskEditActions.putTaskIcon(player, state.questDetails.entityMotionEditorQuestId, state.questDetails.entityMotionEditorImageId, nextIcon, taskMotionTask(state), sync);
     }
 
-    private static void applyQuestDetailsMotion(Player player, TabletUiState state, int yaw, int spin, boolean sync) {
+    private static void applyQuestDetailsMotion(Player player, UiState state, int yaw, int spin, boolean sync) {
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(state.questDetails.entityMotionEditorQuestId));
         CanvasImageLayer detailsImage = model.image(state.questDetails.entityMotionEditorImageId);
         if (detailsImage == null) {

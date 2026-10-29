@@ -15,14 +15,14 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 final class QuestTaskContextMenu {
     private QuestTaskContextMenu() {
     }
 
-    static void render(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, String questId) {
+    static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId) {
         if (!state.questDetails.questDetailsContextOpen || !QuestDetailsEditController.canEdit(state)) {
             return;
         }
@@ -55,7 +55,7 @@ final class QuestTaskContextMenu {
         state.questDetails.questDetailsContextY = y;
         state.questDetails.questDetailsContextW = menuW;
         state.questDetails.questDetailsContextH = menuH;
-        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, TabletColors.BORDER_BASE, state, action -> {
+        WidgetGroup menu = ContextMenuPanel.build(x, y, menuW, actions, state.questDetails.questDetailsContextScroll, visibleRows, ThemeColors.BORDER_BASE, state, action -> {
             if (action.closeAfterClick()) {
                 QuestDetailsTransientManager.closeContext(state);
             }

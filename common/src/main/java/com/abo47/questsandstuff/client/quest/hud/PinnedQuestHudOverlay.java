@@ -18,8 +18,8 @@ import net.minecraft.network.chat.Component;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskHudDisplay;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
-import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -138,9 +138,9 @@ public final class PinnedQuestHudOverlay {
         Font font = minecraft.font;
         int safeW = Math.max(1, width);
         int safeH = Math.max(1, height);
-        int titleColor = withAlpha(TabletColors.TEXT_PRIMARY, 235);
-        int secondary = withAlpha(TabletColors.TEXT_SECONDARY, 202);
-        int muted = withAlpha(TabletColors.TEXT_MUTED, 154);
+        int titleColor = withAlpha(ThemeColors.TEXT_PRIMARY, 235);
+        int secondary = withAlpha(ThemeColors.TEXT_SECONDARY, 202);
+        int muted = withAlpha(ThemeColors.TEXT_MUTED, 154);
 
         QuestHudBackgroundRenderer.draw(graphics, QuestHudLayoutManager.Element.PINNED, x, y, safeW, safeH, selected);
         if (safeW < HudConstants.PINNED_PAD * 2 + 8 || safeH < 12) {
@@ -164,7 +164,7 @@ public final class PinnedQuestHudOverlay {
         int barW = safeW - HudConstants.PINNED_PAD * 2;
         if (safeH >= 22) {
             String progressKey = ProgressAnimations.key("pinned_hud", quest.getString("_hud_id"));
-            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), TabletColors.SUCCESS, 230);
+            QuestHudProgressBar.draw(graphics, barX, barY, barW, 6, ProgressAnimations.value(progressKey, progressValue), ThemeColors.SUCCESS, 230);
         }
 
         List<TaskLine> lines = taskLines(quest);
@@ -205,9 +205,9 @@ public final class PinnedQuestHudOverlay {
         if (contentW <= 0 || safeH < 12) {
             return;
         }
-        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + HudConstants.PINNED_PAD, y + 5, withAlpha(TabletColors.TEXT_PRIMARY, 230), false);
+        graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.pinned_preview").getString(), contentW), x + HudConstants.PINNED_PAD, y + 5, withAlpha(ThemeColors.TEXT_PRIMARY, 230), false);
         if (safeH >= 28) {
-            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + HudConstants.PINNED_PAD, y + HudConstants.PINNED_HEADER_HEIGHT + 2, withAlpha(TabletColors.TEXT_MUTED, 170), false);
+            graphics.drawString(font, cropToWidth(font, Component.translatable("ui.questsandstuff.hud.no_pinned_quest").getString(), contentW), x + HudConstants.PINNED_PAD, y + HudConstants.PINNED_HEADER_HEIGHT + 2, withAlpha(ThemeColors.TEXT_MUTED, 170), false);
         }
     }
 
@@ -288,7 +288,7 @@ public final class PinnedQuestHudOverlay {
             return title;
         }
         String questId = quest.getString("_hud_id");
-        return questId == null || questId.isBlank() ? Component.translatable("ui.questsandstuff.hud.pinned_preview").getString() : TabletUiFactory.shortQuestId(questId);
+        return questId == null || questId.isBlank() ? Component.translatable("ui.questsandstuff.hud.pinned_preview").getString() : UiFactory.shortQuestId(questId);
     }
 
     private static String cropToWidth(Font font, String value, int width) {

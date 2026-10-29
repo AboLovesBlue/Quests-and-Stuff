@@ -12,7 +12,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
@@ -60,9 +60,9 @@ final class EntityMotionSliderWidget extends WidgetGroup {
         int trackRight = left + width - TRACK_PAD_X;
         int trackY = top + height / 2 - 1;
         int knobX = knobX(trackLeft, trackRight);
-        int trackColor = withAlpha(TabletColors.BORDER_BASE, 180);
-        int activeColor = withAlpha(TabletColors.INTERACTIVE, 220);
-        int mutedColor = withAlpha(TabletColors.SURFACE_PANEL_ALT, 180);
+        int trackColor = withAlpha(ThemeColors.BORDER_BASE, 180);
+        int activeColor = withAlpha(ThemeColors.INTERACTIVE, 220);
+        int mutedColor = withAlpha(ThemeColors.SURFACE_PANEL_ALT, 180);
 
         SurfaceFactory.fill(trackColor).draw(graphics, 0, 0, trackLeft, trackY, trackRight - trackLeft, 2);
         SurfaceFactory.fill(activeColor).draw(graphics, 0, 0, trackLeft, trackY, knobX + KNOB_W / 2 - trackLeft, 2);

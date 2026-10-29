@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.text;
 
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class CanvasTextEditSession {
     public static final int MAX_DRAFT_LENGTH = 2048;
@@ -8,7 +8,7 @@ public final class CanvasTextEditSession {
     private CanvasTextEditSession() {
     }
 
-    public static void beginMainCanvas(TabletUiState state, String targetId, String draft) {
+    public static void beginMainCanvas(UiState state, String targetId, String draft) {
         begin(state, targetId, draft);
         state.questDetails.questDetailsTextEditTarget = "";
         state.questDetails.questDetailsTextEditDraft = "";
@@ -16,7 +16,7 @@ public final class CanvasTextEditSession {
         state.canvas.canvasTextMenuTarget = safe(targetId);
     }
 
-    public static void beginQuestDetails(TabletUiState state, String targetId, String draft) {
+    public static void beginQuestDetails(UiState state, String targetId, String draft) {
         begin(state, targetId, draft);
         state.questDetails.questDetailsTextEditTarget = safe(targetId);
         state.questDetails.questDetailsTextEditDraft = state.canvas.canvasTextEditDraft;
@@ -24,7 +24,7 @@ public final class CanvasTextEditSession {
         state.canvas.canvasTextMenuTarget = "";
     }
 
-    private static void begin(TabletUiState state, String targetId, String draft) {
+    private static void begin(UiState state, String targetId, String draft) {
         String safeDraft = safeDraft(draft);
         state.canvas.canvasTextEditOpen = true;
         state.canvas.canvasTextEditTarget = safe(targetId);
@@ -34,31 +34,31 @@ public final class CanvasTextEditSession {
         state.canvas.selectingCanvasTextRange = false;
     }
 
-    public static boolean isAnyEditing(TabletUiState state) {
+    public static boolean isAnyEditing(UiState state) {
         return state != null && (state.canvas.canvasTextEditOpen || !state.questDetails.questDetailsTextEditTarget.isBlank());
     }
 
-    public static boolean isMainCanvasEditing(TabletUiState state) {
+    public static boolean isMainCanvasEditing(UiState state) {
         return state != null
                 && state.canvas.canvasTextEditOpen
                 && state.questDetails.questDetailsTextEditTarget.isBlank()
                 && !state.canvas.canvasTextEditTarget.isBlank();
     }
 
-    public static boolean isQuestDetailsEditing(TabletUiState state) {
+    public static boolean isQuestDetailsEditing(UiState state) {
         return state != null
                 && state.canvas.canvasTextEditOpen
                 && !state.questDetails.questDetailsTextEditTarget.isBlank()
                 && state.questDetails.questDetailsTextEditTarget.equals(state.canvas.canvasTextEditTarget);
     }
 
-    public static boolean isEditingTarget(TabletUiState state, String targetId) {
+    public static boolean isEditingTarget(UiState state, String targetId) {
         return state != null
                 && state.canvas.canvasTextEditOpen
                 && state.canvas.canvasTextEditTarget.equals(safe(targetId));
     }
 
-    public static void closeMainCanvas(TabletUiState state, boolean clearDraft) {
+    public static void closeMainCanvas(UiState state, boolean clearDraft) {
         if (state == null) {
             return;
         }
@@ -67,7 +67,7 @@ public final class CanvasTextEditSession {
         }
     }
 
-    public static void closeQuestDetails(TabletUiState state, boolean clearDraft) {
+    public static void closeQuestDetails(UiState state, boolean clearDraft) {
         if (state == null) {
             return;
         }
@@ -78,7 +78,7 @@ public final class CanvasTextEditSession {
         state.questDetails.questDetailsTextEditDraft = "";
     }
 
-    public static void closeAny(TabletUiState state, boolean clearDraft) {
+    public static void closeAny(UiState state, boolean clearDraft) {
         if (state == null || !isAnyEditing(state)) {
             return;
         }
@@ -87,7 +87,7 @@ public final class CanvasTextEditSession {
         state.questDetails.questDetailsTextEditDraft = "";
     }
 
-    private static void closeShared(TabletUiState state, boolean clearDraft) {
+    private static void closeShared(UiState state, boolean clearDraft) {
         state.canvas.canvasTextEditOpen = false;
         state.canvas.canvasTextEditTarget = "";
         if (clearDraft) {
@@ -98,11 +98,11 @@ public final class CanvasTextEditSession {
         state.canvas.selectingCanvasTextRange = false;
     }
 
-    public static void startRangeSelection(TabletUiState state) {
+    public static void startRangeSelection(UiState state) {
         state.canvas.selectingCanvasTextRange = true;
     }
 
-    public static boolean finishRangeSelection(TabletUiState state) {
+    public static boolean finishRangeSelection(UiState state) {
         if (!state.canvas.selectingCanvasTextRange) {
             return false;
         }
@@ -110,51 +110,51 @@ public final class CanvasTextEditSession {
         return true;
     }
 
-    public static void selectAll(TabletUiState state) {
+    public static void selectAll(UiState state) {
         state.canvas.canvasTextSelectionAnchor = 0;
         state.canvas.canvasTextEditCursor = state.canvas.canvasTextEditDraft.length();
     }
 
-    public static void moveCursor(TabletUiState state, int cursor, boolean extendSelection) {
+    public static void moveCursor(UiState state, int cursor, boolean extendSelection) {
         state.canvas.canvasTextEditCursor = Math.max(0, Math.min(cursor, state.canvas.canvasTextEditDraft.length()));
         if (!extendSelection) {
             state.canvas.canvasTextSelectionAnchor = state.canvas.canvasTextEditCursor;
         }
     }
 
-    public static int clampedCursor(TabletUiState state) {
+    public static int clampedCursor(UiState state) {
         state.canvas.canvasTextEditCursor = Math.max(0, Math.min(state.canvas.canvasTextEditCursor, state.canvas.canvasTextEditDraft.length()));
         return state.canvas.canvasTextEditCursor;
     }
 
-    public static int draftLength(TabletUiState state) {
+    public static int draftLength(UiState state) {
         return state.canvas.canvasTextEditDraft.length();
     }
 
-    public static int cursor(TabletUiState state) {
+    public static int cursor(UiState state) {
         return Math.max(0, Math.min(state.canvas.canvasTextEditCursor, state.canvas.canvasTextEditDraft.length()));
     }
 
-    public static int selectionStart(TabletUiState state) {
+    public static int selectionStart(UiState state) {
         return Math.max(0, Math.min(state.canvas.canvasTextEditDraft.length(), Math.min(state.canvas.canvasTextEditCursor, state.canvas.canvasTextSelectionAnchor)));
     }
 
-    public static int selectionEnd(TabletUiState state) {
+    public static int selectionEnd(UiState state) {
         return Math.max(0, Math.min(state.canvas.canvasTextEditDraft.length(), Math.max(state.canvas.canvasTextEditCursor, state.canvas.canvasTextSelectionAnchor)));
     }
 
-    public static boolean hasSelection(TabletUiState state) {
+    public static boolean hasSelection(UiState state) {
         return selectionStart(state) < selectionEnd(state);
     }
 
-    public static String selectedText(TabletUiState state) {
+    public static String selectedText(UiState state) {
         if (!hasSelection(state)) {
             return "";
         }
         return state.canvas.canvasTextEditDraft.substring(selectionStart(state), selectionEnd(state));
     }
 
-    public static Replacement insert(TabletUiState state, String value) {
+    public static Replacement insert(UiState state, String value) {
         String normalized = value == null ? "" : value.replace("\r\n", "\n").replace('\r', '\n');
         if (normalized.isEmpty()) {
             return Replacement.none();
@@ -171,14 +171,14 @@ public final class CanvasTextEditSession {
         return replaceRange(state, start, end, normalized);
     }
 
-    public static Replacement deleteSelection(TabletUiState state) {
+    public static Replacement deleteSelection(UiState state) {
         if (!hasSelection(state)) {
             return Replacement.none();
         }
         return replaceRange(state, selectionStart(state), selectionEnd(state), "");
     }
 
-    public static Replacement replaceRange(TabletUiState state, int start, int end, String replacement) {
+    public static Replacement replaceRange(UiState state, int start, int end, String replacement) {
         int safeStart = Math.max(0, Math.min(start, state.canvas.canvasTextEditDraft.length()));
         int safeEnd = Math.max(safeStart, Math.min(end, state.canvas.canvasTextEditDraft.length()));
         String value = safe(replacement);

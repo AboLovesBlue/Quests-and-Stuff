@@ -2,18 +2,18 @@ package com.abo47.questsandstuff.client.tablet.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 
 public final class ContextMenuController {
     private ContextMenuController() {
     }
 
-    public static boolean isOpen(TabletUiState state) {
+    public static boolean isOpen(UiState state) {
         return state != null && state.contextMenu.contextMenuOpen;
     }
 
     public static void openCanvas(
-            TabletUiState state,
+            UiState state,
             int localX,
             int localY,
             int logicalX,
@@ -40,7 +40,7 @@ public final class ContextMenuController {
         closeExclusiveSubmenus(state);
     }
 
-    public static void targetCanvas(TabletUiState state) {
+    public static void targetCanvas(UiState state) {
         if (state == null) {
             return;
         }
@@ -48,7 +48,7 @@ public final class ContextMenuController {
         clearTarget(state);
     }
 
-    public static void targetSelection(TabletUiState state) {
+    public static void targetSelection(UiState state) {
         if (state == null) {
             return;
         }
@@ -56,7 +56,7 @@ public final class ContextMenuController {
         clearTarget(state);
     }
 
-    public static void targetQuest(TabletUiState state, String questId) {
+    public static void targetQuest(UiState state, String questId) {
         if (state == null) {
             return;
         }
@@ -65,7 +65,7 @@ public final class ContextMenuController {
         state.contextMenu.contextQuestId = clean(questId);
     }
 
-    public static void targetConnection(TabletUiState state, String sourceQuestId, String targetQuestId) {
+    public static void targetConnection(UiState state, String sourceQuestId, String targetQuestId) {
         if (state == null) {
             return;
         }
@@ -75,7 +75,7 @@ public final class ContextMenuController {
         state.contextMenu.contextConnectionTarget = clean(targetQuestId);
     }
 
-    public static void targetImage(TabletUiState state, String imageId) {
+    public static void targetImage(UiState state, String imageId) {
         if (state == null) {
             return;
         }
@@ -84,7 +84,7 @@ public final class ContextMenuController {
         state.contextMenu.contextCanvasImageId = clean(imageId);
     }
 
-    public static void targetText(TabletUiState state, String textId) {
+    public static void targetText(UiState state, String textId) {
         if (state == null) {
             return;
         }
@@ -93,7 +93,7 @@ public final class ContextMenuController {
         state.contextMenu.contextCanvasTextId = clean(textId);
     }
 
-    public static void targetExclusiveChoice(TabletUiState state, String exclusiveChoiceId) {
+    public static void targetExclusiveChoice(UiState state, String exclusiveChoiceId) {
         if (state == null) {
             return;
         }
@@ -102,7 +102,7 @@ public final class ContextMenuController {
         state.contextMenu.contextCanvasExclusiveChoiceId = clean(exclusiveChoiceId);
     }
 
-    public static void close(TabletUiState state) {
+    public static void close(UiState state) {
         if (state == null) {
             return;
         }
@@ -112,7 +112,7 @@ public final class ContextMenuController {
         closeExclusiveSubmenus(state);
     }
 
-    public static void resetClosedMetrics(TabletUiState state) {
+    public static void resetClosedMetrics(UiState state) {
         if (state == null) {
             return;
         }
@@ -120,7 +120,7 @@ public final class ContextMenuController {
         closeExclusiveSubmenus(state);
     }
 
-    public static void setLayout(TabletUiState state, int x, int y, int width, int height, int rowCount, int scrollMax) {
+    public static void setLayout(UiState state, int x, int y, int width, int height, int rowCount, int scrollMax) {
         if (state == null) {
             return;
         }
@@ -136,7 +136,7 @@ public final class ContextMenuController {
         }
     }
 
-    public static void setLastClick(TabletUiState state, int x, int y) {
+    public static void setLastClick(UiState state, int x, int y) {
         if (state == null) {
             return;
         }
@@ -144,7 +144,7 @@ public final class ContextMenuController {
         state.contextMenu.contextLastClickY = y;
     }
 
-    public static void scrollByWheel(TabletUiState state, double wheelDelta) {
+    public static void scrollByWheel(UiState state, double wheelDelta) {
         if (!isOpen(state) || state.contextMenu.contextMenuScrollMax <= 0 || wheelDelta == 0) {
             return;
         }
@@ -152,21 +152,21 @@ public final class ContextMenuController {
         setScroll(state, state.contextMenu.contextMenuScroll + step);
     }
 
-    public static void setScroll(TabletUiState state, int value) {
+    public static void setScroll(UiState state, int value) {
         if (state == null) {
             return;
         }
         state.contextMenu.contextMenuScroll = ScrollMath.clamp(value, state.contextMenu.contextMenuScrollMax);
     }
 
-    public static void setScrollDragging(TabletUiState state, boolean dragging) {
+    public static void setScrollDragging(UiState state, boolean dragging) {
         if (state == null) {
             return;
         }
         state.contextMenu.contextMenuScrollDragging = dragging;
     }
 
-    public static ScrollState scrollState(TabletUiState state) {
+    public static ScrollState scrollState(UiState state) {
         return ScrollState.bind(
                 () -> state.contextMenu.contextMenuScroll,
                 value -> setScroll(state, value),
@@ -175,21 +175,21 @@ public final class ContextMenuController {
         );
     }
 
-    public static void clearDeleteConfirm(TabletUiState state) {
+    public static void clearDeleteConfirm(UiState state) {
         if (state != null) {
             state.contextMenu.contextDeleteConfirmKey = "";
         }
     }
 
-    public static boolean isDeleteConfirming(TabletUiState state, String key) {
+    public static boolean isDeleteConfirming(UiState state, String key) {
         return state != null && key != null && key.equals(state.contextMenu.contextDeleteConfirmKey);
     }
 
-    public static String pendingDeleteLabel(TabletUiState state, String key, String fallback) {
+    public static String pendingDeleteLabel(UiState state, String key, String fallback) {
         return isDeleteConfirming(state, key) ? "Sure?" : fallback;
     }
 
-    public static boolean confirmDeleteClick(TabletUiState state, String key) {
+    public static boolean confirmDeleteClick(UiState state, String key) {
         if (state == null) {
             return false;
         }
@@ -202,13 +202,13 @@ public final class ContextMenuController {
         return false;
     }
 
-    public static void closeExclusiveSubmenus(TabletUiState state) {
+    public static void closeExclusiveSubmenus(UiState state) {
         if (state != null) {
             state.contextMenu.contextQuestCompletionSoundMenuOpen = false;
         }
     }
 
-    public static void clearTarget(TabletUiState state) {
+    public static void clearTarget(UiState state) {
         if (state == null) {
             return;
         }
@@ -220,7 +220,7 @@ public final class ContextMenuController {
         state.contextMenu.contextCanvasExclusiveChoiceId = "";
     }
 
-    private static void resetMenuMetrics(TabletUiState state) {
+    private static void resetMenuMetrics(UiState state) {
         state.contextMenu.contextMenuRows = 0;
         state.contextMenu.contextMenuScroll = 0;
         state.contextMenu.contextMenuScrollMax = 0;

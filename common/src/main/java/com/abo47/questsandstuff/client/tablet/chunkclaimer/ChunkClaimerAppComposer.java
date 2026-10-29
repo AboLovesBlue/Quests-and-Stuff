@@ -9,13 +9,13 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
-import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Bootstrap;
+import com.abo47.questsandstuff.client.tablet.bootstrap.Lifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
-import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.root.RootWidget;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
@@ -23,26 +23,26 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
 
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.BORDER_ACCENT;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.BORDER_BASE;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.SURFACE_BASE;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.SURFACE_PANEL_ALT;
-import static com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors.subtleBorder;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors.BORDER_ACCENT;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors.BORDER_BASE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors.SURFACE_BASE;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors.SURFACE_PANEL_ALT;
+import static com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors.subtleBorder;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.BODY_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.HEADER_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_H;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_W;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.applyRootSize;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.refreshActiveTablet;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletRefresh;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.setActiveTabletState;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootHeight;
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.rootWidth;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_H;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_W;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.applyRootSize;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.refreshActiveTablet;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletRefresh;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletState;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.rootHeight;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.rootWidth;
 
 public final class ChunkClaimerAppComposer {
     private static final int HOME_BTN_SIZE = GRID_10;
@@ -59,15 +59,15 @@ public final class ChunkClaimerAppComposer {
     }
 
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
-        TabletUiState state = TabletBootstrap.prepare(player);
-        TabletLifecycle.rememberMainWindow();
+        UiState state = Bootstrap.prepare(player);
+        Lifecycle.rememberMainWindow();
         state.root.currentApp = TabletAppRegistry.APP_CHUNKCLAIMER;
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int crw = rootWidth(state);
         int crh = rootHeight(state);
 
-        TabletRootWidget root = new TabletRootWidget(0, 0, crw, crh, state);
+        RootWidget root = new RootWidget(0, 0, crw, crh, state);
         root.setBackground(fullScreenMode
                 ? SurfaceFactory.transparent()
                 : SurfaceFactory.transparentBorder(BORDER_BASE));
@@ -80,7 +80,7 @@ public final class ChunkClaimerAppComposer {
         int homeBtnY = ROOT_PAD_Y + ((crh - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
         ButtonWidget homeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
                 SurfaceFactory.bordered(SURFACE_PANEL_ALT, subtleBorder()),
-                cd -> TabletLifecycle.openTabletUiHome(player));
+                cd -> Lifecycle.openTabletUiHome(player));
         homeBtn.setClientSideWidget();
         GlowShaderHelper.glowHit(homeBtn);
         homeBtn.setClickedTexture(SurfaceFactory.bordered(SURFACE_PANEL_ALT, BORDER_ACCENT));
@@ -107,7 +107,7 @@ public final class ChunkClaimerAppComposer {
             int rcrw = rootWidth(state);
             int rcrh = rootHeight(state);
             root.setSize(rcrw, rcrh);
-            TabletRootWidget.refreshRootBackground(root, state);
+            RootWidget.refreshRootBackground(root, state);
 
             int rcbw = rcrw - ROOT_PAD_X * 2;
             int rcbh = chapterHeight(state);

@@ -14,32 +14,32 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBr
 import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
-import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
+import com.abo47.questsandstuff.client.tablet.layout.PanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
-import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.Layout;
+import com.abo47.questsandstuff.client.tablet.ui.widget.WidgetCoordinates;
 
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_X;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_Y;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CONTENT_ICON_SIZE;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterAtY;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterInsertIndexAtY;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterRowStep;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterCardAreaHit;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.isChapterScrollBarHit;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.runChapterAction;
-import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.updateChapterScrollByMouse;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_X;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_Y;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.CONTENT_ICON_SIZE;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterInsertIndexAtY;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.chapterRowStep;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterCardAreaHit;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterScrollBarHit;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.runChapterAction;
+import static com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.updateChapterScrollByMouse;
 
 public final class ChapterPanelInteractionWidget extends WidgetGroup {
-    private final TabletUiState state;
+    private final UiState state;
     private final Player player;
     private final Runnable refresh;
     private final Runnable refreshChapterViews;
 
-    public ChapterPanelInteractionWidget(int x, int y, int width, int height, TabletUiState state, Player player, Runnable refresh, Runnable refreshChapterViews) {
+    public ChapterPanelInteractionWidget(int x, int y, int width, int height, UiState state, Player player, Runnable refresh, Runnable refreshChapterViews) {
         super(x, y, width, height);
         this.state = state;
         this.player = player;
@@ -49,9 +49,9 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
 
     @Override
     public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        TabletPanelChrome.drawPanelChrome(graphics, this, state);
+        PanelChrome.drawPanelChrome(graphics, this, state);
         drawWidgetsBackground(graphics, mouseX, mouseY, partialTicks);
-        TabletPanelChrome.drawPanelOutline(graphics, this, state);
+        PanelChrome.drawPanelOutline(graphics, this, state);
     }
 
     @Override
@@ -59,8 +59,8 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         if (ModalStateQueries.anyOpen(state)) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        int localX = TabletWidgetCoordinates.localX(this, CHAPTER_X, mouseX);
-        int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
+        int localX = WidgetCoordinates.localX(this, CHAPTER_X, mouseX);
+        int localY = WidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
         if (button == 1 && isMouseOverElement(mouseX, mouseY) && isChapterCardAreaHit(localX, localY, state)) {
             openContextAt(localX, localY);
             return true;
@@ -90,14 +90,14 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (state.chapterPanel.chapterScrollDragging) {
             int previous = state.chapterPanel.chapterScroll;
-            updateChapterScrollByMouse(TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY), state);
+            updateChapterScrollByMouse(WidgetCoordinates.localY(this, CHAPTER_Y, mouseY), state);
             if (state.chapterPanel.chapterScroll != previous) {
                 refreshChapterViews.run();
             }
             return true;
         }
         if (state.chapterPanel.chapterDragActive) {
-            int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
+            int localY = WidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
             int nextTarget = chapterInsertIndexAtY(localY, state);
             if (nextTarget != state.chapterPanel.chapterDragTargetIndex) {
                 state.chapterPanel.chapterDragTargetIndex = nextTarget;
@@ -112,7 +112,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
             }
             state.chapterPanel.chapterDragPending = false;
             state.chapterPanel.chapterDragActive = true;
-            int localY = TabletWidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
+            int localY = WidgetCoordinates.localY(this, CHAPTER_Y, mouseY);
             state.chapterPanel.chapterDragTargetIndex = chapterInsertIndexAtY(localY, state);
             QuestsAndStuffMod.debugLog("[QnS:UI] chapter drag start moving={} targetIndex={}", state.chapterPanel.chapterDragName, state.chapterPanel.chapterDragTargetIndex);
             refreshChapterViews.run();
@@ -246,7 +246,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         int cardLeft = state.chapterPanel.chapterCardHitLeft;
         int cardRight = state.chapterPanel.chapterCardHitRight;
         int cardWidth = Math.max(1, cardRight - cardLeft);
-        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= TabletLayout.CHAPTER_LIST_COLLAPSED_W;
+        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= Layout.CHAPTER_LIST_COLLAPSED_W;
         int iconLeft = collapsed ? cardLeft + Math.max(0, (cardWidth - CONTENT_ICON_SIZE) / 2) : cardLeft + 2;
         int rowStep = chapterRowStep(state);
         int iconTop = state.chapterPanel.chapterRowStartY + index * rowStep - state.chapterPanel.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);
@@ -260,7 +260,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         String query = SearchFilter.normalize(state.chapterPanel.chapterSearch);
         java.util.List<String> visible = new java.util.ArrayList<>();
         for (String chapter : ClientQuestStateFacade.chapterOrder()) {
-            if (com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.DRAFT_CHAPTER.equals(chapter)) {
+            if (com.abo47.questsandstuff.client.tablet.ui.factory.UiFactory.DRAFT_CHAPTER.equals(chapter)) {
                 continue;
             }
             if (!state.root.canEdit && ClientQuestStateFacade.chapterHiddenPreview(chapter)) {

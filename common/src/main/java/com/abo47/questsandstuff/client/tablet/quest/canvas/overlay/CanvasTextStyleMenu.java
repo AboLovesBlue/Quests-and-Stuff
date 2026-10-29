@@ -16,17 +16,17 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
-import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.state.UiState;
+import com.abo47.questsandstuff.client.tablet.theme.tokens.ThemeColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
-import static com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries.selectedChapterName;
+import static com.abo47.questsandstuff.client.tablet.ui.state.StateQueries.selectedChapterName;
 
 public final class CanvasTextStyleMenu {
     private CanvasTextStyleMenu() {
     }
 
-    static void render(CanvasViewport canvasViewport, TabletUiState state, Runnable refresh) {
+    static void render(CanvasViewport canvasViewport, UiState state, Runnable refresh) {
         if (!state.canvas.canvasTextMenuOpen || state.canvas.canvasTextMenuTarget.isBlank()) {
             return;
         }
@@ -58,7 +58,7 @@ public final class CanvasTextStyleMenu {
 
     public static void renderQuestDetails(
             WidgetGroup parent,
-            TabletUiState state,
+            UiState state,
             CanvasTextLayer text,
             int viewportX,
             int viewportY,
@@ -85,7 +85,7 @@ public final class CanvasTextStyleMenu {
 
     private static void renderShared(
             WidgetGroup parent,
-            TabletUiState state,
+            UiState state,
             CanvasTextLayer text,
             int x,
             int y,
@@ -115,7 +115,7 @@ public final class CanvasTextStyleMenu {
                 align, CanvasRenderer.activeTextColor(state, text),
                 bold, italic, underline, strikethrough, quote, spoiler,
                 fontSize, fontSizeFieldOpen, true,
-                TabletColors.INTERACTIVE,
+                ThemeColors.INTERACTIVE,
                 () -> applyAlign(state, logScope, fresh, "left", updateText, refresh),
                 () -> applyAlign(state, logScope, fresh, "center", updateText, refresh),
                 () -> applyAlign(state, logScope, fresh, "right", updateText, refresh),
@@ -138,7 +138,7 @@ public final class CanvasTextStyleMenu {
         );
     }
 
-    private static void applyAlign(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String align, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+    private static void applyAlign(UiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String align, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
         CanvasTextLayer current = freshLookup.get();
         if (current == null) {
             return;
@@ -146,7 +146,7 @@ public final class CanvasTextStyleMenu {
         updateStyle(state, logScope, current, current.withAlign(align), updateText, refresh);
     }
 
-    private static void applyToggle(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String flag, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+    private static void applyToggle(UiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, String flag, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
         CanvasTextLayer current = freshLookup.get();
         if (current == null) {
             return;
@@ -154,7 +154,7 @@ public final class CanvasTextStyleMenu {
         updateStyle(state, logScope, current, CanvasRenderer.toggleTextStyleSelection(state, current, flag), updateText, refresh);
     }
 
-    private static void applyReset(TabletUiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+    private static void applyReset(UiState state, String logScope, Supplier<CanvasTextLayer> freshLookup, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
         CanvasTextLayer current = freshLookup.get();
         if (current == null) {
             return;
@@ -162,7 +162,7 @@ public final class CanvasTextStyleMenu {
         updateStyle(state, logScope, current, CanvasRenderer.applyTextStyleSelection(state, current, "normal"), updateText, refresh);
     }
 
-    private static void updateStyle(TabletUiState state, String logScope, CanvasTextLayer oldText, CanvasTextLayer next, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
+    private static void updateStyle(UiState state, String logScope, CanvasTextLayer oldText, CanvasTextLayer next, Consumer<CanvasTextLayer> updateText, Runnable refresh) {
         markStyleInteraction(state, logScope);
         updateText.accept(CanvasTextRenderer.fitTextHeight(next));
         keepQuestDetailsStyleMenuOpen(state, logScope, next.id());
@@ -170,22 +170,22 @@ public final class CanvasTextStyleMenu {
         refresh.run();
     }
 
-    private static CanvasTextLayer fitCanvasText(TabletUiState state, CanvasTextLayer text) {
+    private static CanvasTextLayer fitCanvasText(UiState state, CanvasTextLayer text) {
         return state.canvas.gridSnapLocked ? CanvasGridFitController.fittedText(state, text) : text;
     }
 
-    private static void closeFontSizeField(TabletUiState state, String logScope, Runnable refresh) {
+    private static void closeFontSizeField(UiState state, String logScope, Runnable refresh) {
         setTextFontSizeFieldTarget(state, logScope, "");
         refresh.run();
     }
 
-    private static void markStyleInteraction(TabletUiState state, String logScope) {
+    private static void markStyleInteraction(UiState state, String logScope) {
         if (isQuestDetailsScope(logScope)) {
             CanvasTextStyleSession.markQuestDetailsInteraction(state);
         }
     }
 
-    private static void keepQuestDetailsStyleMenuOpen(TabletUiState state, String logScope, String textId) {
+    private static void keepQuestDetailsStyleMenuOpen(UiState state, String logScope, String textId) {
         if (isQuestDetailsScope(logScope)) {
             CanvasTextStyleSession.openQuestDetails(state, textId);
         }
@@ -195,11 +195,11 @@ public final class CanvasTextStyleMenu {
         return "quest details".equals(logScope);
     }
 
-    private static String textFontSizeFieldTarget(TabletUiState state, String logScope) {
+    private static String textFontSizeFieldTarget(UiState state, String logScope) {
         return CanvasTextStyleSession.fontSizeTarget(state, surface(logScope));
     }
 
-    private static void setTextFontSizeFieldTarget(TabletUiState state, String logScope, String target) {
+    private static void setTextFontSizeFieldTarget(UiState state, String logScope, String target) {
         CanvasTextStyleSession.setFontSizeTarget(state, surface(logScope), target);
     }
 
@@ -207,7 +207,7 @@ public final class CanvasTextStyleMenu {
         return isQuestDetailsScope(logScope) ? CanvasTextStyleSession.Surface.QUEST_DETAILS : CanvasTextStyleSession.Surface.MAIN_CANVAS;
     }
 
-    private static int[] menuBoundsForGeometry(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {
+    private static int[] menuBoundsForGeometry(UiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {
         int oldContentX = state.canvas.canvasContentX;
         int oldContentY = state.canvas.canvasContentY;
         int oldContentW = state.canvas.canvasContentW;

@@ -67,6 +67,15 @@ public final class SkinOverrideKey {
         return raw;
     }
 
+    public static String bareKeyForCurrentApp(TabletUiState state, String entryKey) {
+        if (entryKey == null) return null;
+        int colon = entryKey.indexOf(':');
+        if (colon < 0) return entryKey;
+        String app = state.root.currentApp;
+        if (app == null || app.isBlank()) return null;
+        return entryKey.startsWith(app + ":") ? entryKey.substring(colon + 1) : null;
+    }
+
     public static String resolveTargetKey(TabletUiState state, String targetKey) {
         if (targetKey == null) return null;
         int colon = targetKey.indexOf(':');
@@ -78,6 +87,11 @@ public final class SkinOverrideKey {
 
     public static boolean hasCanvasBackground(String targetKey) {
         return CANVAS_PANEL_KEYS.contains(targetKey);
+    }
+
+    public static boolean isViewportBackgroundKey(String targetKey) {
+        if (targetKey == null) return false;
+        return VIEWPORT_BG_KEYS.containsValue(targetKey);
     }
 
     public static String viewportBackgroundKey(String canvasKey) {

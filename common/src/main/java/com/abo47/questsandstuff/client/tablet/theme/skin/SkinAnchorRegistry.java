@@ -33,6 +33,11 @@ public final class SkinAnchorRegistry {
         WIDGET_TO_KEY.put(widget, key);
     }
 
+    public static void registerRootChrome(Widget root, Widget homeBtn) {
+        register(SkinTargetKeys.ROOT, root);
+        register(SkinTargetKeys.HOME_BTN, homeBtn);
+    }
+
     public static void unregister(String key) {
         if (key == null || key.isBlank()) return;
         Widget old = KEY_TO_WIDGET.remove(key);
@@ -76,6 +81,16 @@ public final class SkinAnchorRegistry {
     public static Widget findByKey(String key) {
         if (key == null || key.isBlank()) return null;
         return KEY_TO_WIDGET.get(key);
+    }
+
+    public static String sharedKeyFor(Widget widget) {
+        Widget cur = widget;
+        while (cur != null) {
+            String key = WIDGET_TO_SHARED_KEY.get(cur);
+            if (key != null) return key;
+            cur = cur.getParent();
+        }
+        return null;
     }
 
     public static Set<Widget> sharedWidgetsFor(String key) {

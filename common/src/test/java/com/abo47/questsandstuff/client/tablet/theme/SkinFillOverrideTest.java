@@ -122,6 +122,18 @@ class SkinFillOverrideTest {
     }
 
     @Test
+    void parseMalformedEdgesRejected() {
+        assertNull(SkinFillOverride.parse("hrstretch:x:12|path.png"));
+        assertNull(SkinFillOverride.parse("dynamic:1:2:q:4|path.png"));
+    }
+
+    @Test
+    void parseUnknownModeRejected() {
+        assertNull(SkinFillOverride.parse("weird|path.png"));
+        assertNull(SkinFillOverride.parse("weird:1:2|path.png"));
+    }
+
+    @Test
     void clearCacheDoesNotThrow() {
         SkinFillOverride.clearCache();
         SkinFillOverride override = new SkinFillOverride("stretch", "dummy.png");

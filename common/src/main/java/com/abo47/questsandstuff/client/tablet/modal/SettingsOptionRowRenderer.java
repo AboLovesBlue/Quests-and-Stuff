@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -271,6 +272,7 @@ public final class SettingsOptionRowRenderer {
     }
 
     private static void applyCardSkin(WidgetGroup list, TabletUiState state, WidgetGroup card, int x, int y, int w, int h) {
+        SkinAnchorRegistry.registerShared("settings_option_cards", card);
         String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_option_cards");
         if (rawOverride == null) {
             return;

@@ -14,6 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditTargetResolver;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -266,5 +267,100 @@ class SkinEditTargetResolverTest {
         layer.addWidget(modal);
 
         assertTrue(SkinEditTargetResolver.isTargetable(modal));
+    }
+
+    @Test
+    void settingsCardsSiblingContainerKeepsOwnTarget() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        WidgetGroup list = new WidgetGroup(10, 10, 180, 180);
+        root.addWidget(list);
+        SkinAnchorRegistry.register("settings_option_cards", list);
+
+        WidgetGroup card = new WidgetGroup(0, 0, 170, 24);
+        card.setBackground(new ColorRectTexture(0xFF222222));
+        list.addWidget(card);
+        SkinAnchorRegistry.registerShared("settings_option_cards", card);
+
+        WidgetGroup container = new WidgetGroup(0, 30, 170, 100);
+        container.setBackground(new ColorRectTexture(0xFF333333));
+        list.addWidget(container);
+
+        assertEquals(SkinEditTargetResolver.stableKeyFor(container),
+                SkinEditTargetResolver.findTargetKeyAt(root, 85, 60),
+                "sibling container of the shared card keeps its own target");
+        assertEquals("settings_option_cards", SkinEditTargetResolver.findTargetKeyAt(root, 85, 12),
+                "card click still promotes to the shared cards entity");
+    }
+
+    @Test
+    void unresolvableDeepHitFallsBackToRoot() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        root.setBackground(new ColorRectTexture(0xFF111111));
+        SkinAnchorRegistry.register(SkinTargetKeys.ROOT, root);
+        WidgetGroup overlay = new WidgetGroup(0, 0, 200, 200) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            }
+        };
+        root.addWidget(overlay);
+
+        assertEquals(SkinTargetKeys.ROOT, SkinEditTargetResolver.findTargetKeyAt(root, 100, 100),
+                "deepest hit that cannot resolve to a targetable key falls back to ROOT");
+        assertEquals(root, SkinEditTargetResolver.findTargetWidgetAt(root, 100, 100),
+                "widget variant falls back to the root widget the same way");
+    }
+
+    @Test
+    void untargetableBlockerAboveTargetableContentIsSkipped() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        WidgetGroup list = new WidgetGroup(10, 10, 180, 180);
+        root.addWidget(list);
+
+        WidgetGroup card = new WidgetGroup(0, 0, 170, 24);
+        card.setBackground(new ColorRectTexture(0xFF222222));
+        list.addWidget(card);
+        SkinAnchorRegistry.registerShared("settings_option_cards", card);
+
+        WidgetGroup hoverOverlay = new WidgetGroup(0, 0, 170, 24) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            }
+        };
+        list.addWidget(hoverOverlay);
+
+        assertEquals("settings_option_cards", SkinEditTargetResolver.findTargetKeyAt(root, 85, 12),
+                "hover chrome over a card is skipped in favour of the card below");
+        assertEquals(card, SkinEditTargetResolver.findTargetWidgetAt(root, 85, 12),
+                "widget variant surfaces the card, not the overlay");
+    }
+
+    @Test
+    void settingsTabTargetsTheSharedTabLayer() {
+        WidgetGroup root = new WidgetGroup(0, 0, 200, 200);
+        WidgetGroup mainPanel = new WidgetGroup(0, 0, 200, 200);
+        root.addWidget(mainPanel);
+        WidgetGroup tabLayer = new WidgetGroup(0, 0, 180, 24);
+        mainPanel.addWidget(tabLayer);
+        SkinAnchorRegistry.register("settings_tab_layer", tabLayer);
+
+        WidgetGroup container = new WidgetGroup(0, 0, 40, 24);
+        tabLayer.addWidget(container);
+        WidgetGroup bg = new WidgetGroup(0, 0, 40, 24);
+        bg.setBackground(new ColorRectTexture(0xFF222222));
+        container.addWidget(bg);
+        SkinAnchorRegistry.registerShared("settings_tab_layer", bg);
+        WidgetGroup hitButton = new WidgetGroup(0, 0, 40, 24) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+            }
+        };
+        container.addWidget(hitButton);
+
+        assertEquals("settings_tab_layer", SkinEditTargetResolver.findTargetKeyAt(root, 20, 12),
+                "hovering a tab resolves to the shared tab layer skin target, not the container behind it");
+        assertEquals(bg, SkinEditTargetResolver.findTargetWidgetAt(root, 20, 12),
+                "widget variant outlines the tab body itself");
+        assertEquals("settings_tab_layer", SkinEditTargetResolver.findTargetKeyAt(root, 100, 12),
+                "hovering the gap beside tabs keeps the shared tab layer target");
     }
 }

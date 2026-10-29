@@ -242,9 +242,8 @@ public final class QuestAppComposer {
             if (!QuestDetailsWindow.isVisible(state)) {
                 refreshCanvas[0].run();
             }
-            SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.registerRootChrome(root, questHomeBtn);
             SkinAnchorRegistry.register("quests_home_btn", questHomeBtn);
-            SkinAnchorRegistry.register("home_btn", questHomeBtn);
             SkinAnchorRegistry.register("quests_search", headers.searchField());
             SkinAnchorRegistry.register("quests_chapter_search", headers.chapterSearchField());
             SkinAnchorRegistry.register("quests_tools_btn", headers.toolsButton());

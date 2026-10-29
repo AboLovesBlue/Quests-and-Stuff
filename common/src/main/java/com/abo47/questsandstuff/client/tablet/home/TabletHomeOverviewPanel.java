@@ -25,7 +25,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_X;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ROOT_PAD_Y;
 
-final class TabletHomeOverviewPanel extends WidgetGroup {
+public class TabletHomeOverviewPanel extends WidgetGroup {
     private static final int HOME_BTN_SIZE = GRID_10;
     private static final int APP_ICON_SIZE = GRID_48;
     private final WidgetGroup innerContainer;

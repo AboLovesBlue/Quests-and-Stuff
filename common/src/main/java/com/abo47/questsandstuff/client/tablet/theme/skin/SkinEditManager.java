@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -45,15 +46,27 @@ public final class SkinEditManager {
     }
 
     private static final IdentityHashMap<Widget, CapturedOriginal> ORIGINAL_BACKGROUNDS = new IdentityHashMap<>();
+    private static Widget selectedTargetWidget;
+
+    public static Widget selectedTargetWidget(TabletRootWidget root) {
+        Widget w = selectedTargetWidget;
+        if (w == null) return null;
+        for (Widget cur = w.getParent(); cur != null; cur = cur.getParent()) {
+            if (cur == root) return w;
+        }
+        selectedTargetWidget = null;
+        return null;
+    }
 
     public static boolean handleClick(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY, int button) {
         if (state == null || !state.root.skinEditMode) return false;
         if (ModalStateQueries.anyOpen(state)) {
             if (!state.root.skinEditSelectedTarget.isEmpty()) {
                 state.root.skinEditSelectedTarget = "";
-            root.closeContextMenu();
-            state.root.skinModeEditorOpen = false;
-        }
+                selectedTargetWidget = null;
+                root.closeContextMenu();
+                state.root.skinModeEditorOpen = false;
+            }
             return false;
         }
 
@@ -70,17 +83,22 @@ public final class SkinEditManager {
         }
 
         Widget homeBtn = root.getHomeButton();
+        Widget hitWidget;
         String hitKey;
         if (homeBtn != null && homeBtn.isVisible() && homeBtn.isMouseOverElement(mouseX, mouseY)) {
-            hitKey = "home_btn";
+            hitWidget = homeBtn;
+            hitKey = SkinTargetKeys.HOME_BTN;
         } else if (isMinimapHit(state, root, mouseX, mouseY)) {
+            hitWidget = null;
             hitKey = minimapHitKey(state, root, mouseX, mouseY);
         } else {
-            hitKey = SkinEditTargetResolver.findTargetKeyAt(root, mouseX, mouseY);
+            hitWidget = SkinEditTargetResolver.findTargetWidgetAt(root, mouseX, mouseY);
+            hitKey = SkinEditTargetResolver.keyForTarget(root, hitWidget);
         }
 
         if (button == 0) {
             state.root.skinEditSelectedTarget = hitKey != null ? hitKey : "";
+            selectedTargetWidget = hitWidget;
             return true;
         }
 
@@ -91,6 +109,7 @@ public final class SkinEditManager {
                 return true;
             }
             state.root.skinEditSelectedTarget = "";
+            selectedTargetWidget = null;
             return true;
         }
 
@@ -106,16 +125,21 @@ public final class SkinEditManager {
         }
         Set<String> activeTargets = new HashSet<>();
         for (var entry : state.root.skinFillOverrides.entrySet()) {
-            String targetKey = bareTargetFor(state, entry.getKey());
+            String targetKey = SkinOverrideKey.bareKeyForCurrentApp(state, entry.getKey());
             if (targetKey != null) activeTargets.add(targetKey);
         }
         resetRemovedTargets(activeTargets);
+        applyOverrides(state, root, activeTargets);
+    }
+
+    private static void applyOverrides(TabletUiState state, WidgetGroup root, Set<String> activeTargets) {
+        Set<Widget> touched = new HashSet<>();
         for (var entry : state.root.skinFillOverrides.entrySet()) {
             String entryKey = entry.getKey();
 
-            String targetKey = bareTargetFor(state, entryKey);
+            String targetKey = SkinOverrideKey.bareKeyForCurrentApp(state, entryKey);
             if (targetKey == null) continue;
-            if ("root".equals(targetKey)) continue;
+            if (SkinTargetKeys.ROOT.equals(targetKey)) continue;
             if (SkinOverrideKey.isSharedKey(targetKey) && !SkinOverrideKey.isSharedKey(entryKey)) continue;
 
             if (isMinimapKey(targetKey)) {
@@ -140,37 +164,29 @@ public final class SkinEditManager {
 
             if (SkinOverrideKey.isSharedKey(targetKey) && w instanceof WidgetGroup wg) {
                 if (SkinOverrideKey.isRootKey(targetKey)) {
-                    applyToWidget(w, targetKey, tex);
+                    applyToWidget(w, targetKey, tex, touched);
                 } else if (!SkinOverrideKey.isCardKey(targetKey)) {
                     for (Widget child : wg.widgets) {
                         if (!SkinEditTargetResolver.hasCustomChrome(child)
                                 || child instanceof TabletIconTextButton
                                 || child instanceof TextFieldWidget) {
-                            if ("settings_tab_layer".equals(targetKey) && child instanceof WidgetGroup tabContainer && !tabContainer.widgets.isEmpty()) {
-                                applyToWidget(tabContainer.widgets.get(0), targetKey, tex);
+                            if (SkinTargetKeys.SETTINGS_TAB_LAYER.equals(targetKey) && child instanceof WidgetGroup tabContainer && !tabContainer.widgets.isEmpty()) {
+                                applyToWidget(tabContainer.widgets.get(0), targetKey, tex, touched);
                             } else {
-                                applyToWidget(child, targetKey, tex);
+                                applyToWidget(child, targetKey, tex, touched);
                             }
                         }
                     }
                 }
             } else {
-                applyToWidget(w, targetKey, tex);
+                applyToWidget(w, targetKey, tex, touched);
             }
             state.root.activeSkinTargets.add(targetKey);
         }
+        pruneStaleCaptures(touched);
     }
 
-    private static String bareTargetFor(TabletUiState state, String entryKey) {
-        if (entryKey.contains(":")) {
-            String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-            if (!entryKey.startsWith(appPrefix)) return null;
-            return entryKey.substring(entryKey.indexOf(':') + 1);
-        }
-        return entryKey;
-    }
-
-    private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex) {
+    private static void applyToWidget(Widget w, String targetKey, IGuiTexture tex, Set<Widget> touched) {
         CapturedOriginal cap = ORIGINAL_BACKGROUNDS.computeIfAbsent(w, k -> new CapturedOriginal(targetKey, w.getBackgroundTexture()));
         int[] offsets = skinExtendOffsets(w, targetKey, cap.original());
         if (offsets != null) {
@@ -191,10 +207,7 @@ public final class SkinEditManager {
             };
         }
 
-        if (tex instanceof DynamicClippingTexture dct) {
-            dct.setReferenceSize(w.getSizeWidth(), w.getSizeHeight());
-        }
-
+        touched.add(w);
         w.setBackground(tex);
         w.setDrawBackgroundWhenHover(true);
     }
@@ -204,9 +217,7 @@ public final class SkinEditManager {
             return new int[]{-1, -1, 2, 2};
         }
         if (original == null || original.equals(IGuiTexture.EMPTY)) {
-            if ("quests_task_cards".equals(targetKey) || "quests_reward_cards".equals(targetKey)
-                    || "settings_option_cards".equals(targetKey)
-                    || "teams_member_cards".equals(targetKey)) {
+            if (SkinOverrideKey.isCardKey(targetKey)) {
                 return new int[]{-1, -1, 2, 2};
             }
             Class<?> cls = w.getClass();
@@ -229,6 +240,10 @@ public final class SkinEditManager {
             }
             return false;
         });
+    }
+
+    private static void pruneStaleCaptures(Set<Widget> touched) {
+        ORIGINAL_BACKGROUNDS.keySet().removeIf(widget -> !touched.contains(widget));
     }
 
     private static void resetAllCaptured() {
@@ -261,26 +276,15 @@ public final class SkinEditManager {
         return SkinEditTargetResolver.widgetForKey(root, targetKey);
     }
 
-    private static String resolveSkinTarget(TabletUiState state, TabletRootWidget root, String targetKey) {
-        String resolved = SkinOverrideKey.resolveTargetKey(state, targetKey);
-        if (!SkinOverrideKey.isSharedKey(resolved)) {
-            Widget targetWidget = SkinEditTargetResolver.widgetForKey(root, targetKey);
-            if (targetWidget != null) {
-                String selfKey = SkinAnchorRegistry.keyFor(targetWidget);
-                if (selfKey == null) {
-                    String containerKey = SkinEditTargetResolver.resolveSharedKey(targetWidget);
-                    if (containerKey != null) resolved = containerKey;
-                }
-            }
-        }
-        return resolved;
+    private static String resolveSkinTarget(TabletUiState state, String targetKey) {
+        return SkinOverrideKey.resolveTargetKey(state, targetKey);
     }
 
     private static void buildContextMenu(TabletUiState state, TabletRootWidget root, Runnable refresher, int mouseX, int mouseY) {
         String targetKey = state.root.skinEditSelectedTarget;
         if (targetKey == null || targetKey.isBlank()) return;
 
-        String resolvedTarget = resolveSkinTarget(state, root, targetKey);
+        String resolvedTarget = resolveSkinTarget(state, targetKey);
 
         String rawOverride = SkinOverrideKey.resolveOverride(state, resolvedTarget);
         SkinFillOverride currentOverride = SkinFillOverride.parse(rawOverride);
@@ -300,61 +304,18 @@ public final class SkinEditManager {
                 }));
 
         List<ContextAction> modeActions = new ArrayList<>();
-        modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_stretch"),
-                "size",
-                currentMode.equals("stretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
-                () -> {
-                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: stretch, asset={}", currentAsset);
-                    root.closeContextMenu();
-                    setFillMode(state, resolvedTarget, "stretch", currentAsset, 0, 0, root, refresher);
-                }));
-        modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_tile"),
-                "brick-wall",
-                currentMode.equals("tile") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
-                () -> {
-                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: tile, asset={}", currentAsset);
-                    int curW = currentOverride != null && "tile".equals(currentOverride.mode()) ? currentOverride.leftEdge() : 0;
-                    int curH = currentOverride != null && "tile".equals(currentOverride.mode()) ? currentOverride.rightEdge() : 0;
-                    root.closeContextMenu();
-                    openModeEditor(state, root, refresher, resolvedTarget, currentAsset, mouseX, mouseY,
-                            "tile", "ui.questsandstuff.skin.mode_tile", "ui.questsandstuff.skin.tile_size_w", "ui.questsandstuff.skin.tile_size_h", curW, curH);
-                }));
-        modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_original_size"),
-                "original_size",
-                currentMode.equals("center") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
-                () -> {
-                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: center, asset={}", currentAsset);
-                    root.closeContextMenu();
-                    setFillMode(state, resolvedTarget, "center", currentAsset, 0, 0, root, refresher);
-                }));
-        modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_dynamic"),
-                "dynamic",
-                currentMode.equals("dynamic") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
-                () -> {
-                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: dynamic, asset={}", currentAsset);
-                    int curL = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.leftEdge() : 1;
-                    int curR = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.rightEdge() : 1;
-                    int curT = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.topEdge() : 1;
-                    int curB = currentOverride != null && "dynamic".equals(currentOverride.mode()) ? currentOverride.bottomEdge() : 1;
-                    root.closeContextMenu();
-                    openDynamicModeEditor(state, root, refresher, resolvedTarget, currentAsset, mouseX, mouseY, curL, curR, curT, curB);
-                }));
-        modeActions.add(ContextActionFactory.action(
-                TabletTranslationKeys.text("ui.questsandstuff.skin.mode_hrstretch"),
-                "repeat",
-                currentMode.equals("hrstretch") ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
-                () -> {
-                    QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: hrstretch, asset={}", currentAsset);
-                    int curLeft = currentOverride != null && "hrstretch".equals(currentOverride.mode()) ? currentOverride.leftEdge() : 0;
-                    int curRight = currentOverride != null && "hrstretch".equals(currentOverride.mode()) ? currentOverride.rightEdge() : 0;
-                    root.closeContextMenu();
-                    openModeEditor(state, root, refresher, resolvedTarget, currentAsset, mouseX, mouseY,
-                            "hrstretch", "ui.questsandstuff.skin.mode_hrstretch", "ui.questsandstuff.skin.hrstretch_left", "ui.questsandstuff.skin.hrstretch_right", curLeft, curRight);
-                }));
+        for (SkinFillMode spec : SkinFillMode.values()) {
+            boolean active = currentMode.equals(spec.mode);
+            modeActions.add(ContextActionFactory.action(
+                    TabletTranslationKeys.text(spec.titleKey),
+                    spec.icon,
+                    active ? TabletColors.SUCCESS : TabletColors.TEXT_SECONDARY,
+                    () -> {
+                        QuestsAndStuffMod.debugLog("[QnS:Skin] mode action clicked: {}, asset={}", spec.mode, currentAsset);
+                        root.closeContextMenu();
+                        openModeEditorFor(state, root, refresher, resolvedTarget, currentAsset, mouseX, mouseY, spec, currentOverride);
+                    }));
+        }
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(
                 TabletTranslationKeys.text("ui.questsandstuff.skin.change_mode"),
                 "layout-dashboard",
@@ -403,6 +364,29 @@ public final class SkinEditManager {
         );
     }
 
+    private static void openModeEditorFor(TabletUiState state, TabletRootWidget root, Runnable refresher,
+            String targetKey, String asset, int mouseX, int mouseY, SkinFillMode spec, SkinFillOverride currentOverride) {
+        boolean editingCurrent = currentOverride != null && spec.mode.equals(currentOverride.mode());
+        int left = editingCurrent ? currentOverride.leftEdge() : spec.defaultLeft;
+        int right = editingCurrent ? currentOverride.rightEdge() : spec.defaultRight;
+        int top = editingCurrent ? currentOverride.topEdge() : spec.defaultTop;
+        int bottom = editingCurrent ? currentOverride.bottomEdge() : spec.defaultBottom;
+        switch (spec) {
+            case DYNAMIC -> openDynamicModeEditor(state, root, refresher, targetKey, asset, mouseX, mouseY, left, right, top, bottom);
+            case TILE, HRSTRETCH -> openModeEditor(state, root, refresher, targetKey, asset, mouseX, mouseY,
+                    spec.mode, spec.titleKey, spec.leftLabelKey, spec.rightLabelKey, left, right);
+            default -> setFillMode(state, targetKey, spec.mode, asset, 0, 0, root, refresher);
+        }
+    }
+
+    public static void setFillModeFromAssetPicker(TabletUiState state, String targetKey, String asset, Runnable refresher) {
+        SkinFillOverride prior = SkinFillOverride.parse(SkinOverrideKey.resolveOverride(state, targetKey));
+        String mode = prior != null ? prior.mode() : "stretch";
+        int left = prior != null ? prior.leftEdge() : 0;
+        int right = prior != null ? prior.rightEdge() : 0;
+        setFillMode(state, targetKey, mode, asset, left, right, 0, 0, null, refresher);
+    }
+
     private static void setFillMode(TabletUiState state, String targetKey, String mode, String asset, int leftEdge, int rightEdge, WidgetGroup root, Runnable refresher) {
         setFillMode(state, targetKey, mode, asset, leftEdge, rightEdge, 0, 0, root, refresher);
     }
@@ -412,11 +396,10 @@ public final class SkinEditManager {
             QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode ABORTED: asset is blank, target={}, mode={}", targetKey, mode);
             return;
         }
-        String entryKey = SkinOverrideKey.isSharedKey(targetKey) ? targetKey : (state.root.currentApp.isBlank() ? targetKey : state.root.currentApp + ":" + targetKey);
+        String entryKey = SkinOverrideKey.overrideKey(state, targetKey);
         SkinFillOverride override = new SkinFillOverride(mode, leftEdge, rightEdge, topEdge, bottomEdge, asset);
         String encoded = override.encode();
         state.root.skinFillOverrides.put(entryKey, encoded);
-        state.root.activeSkinTargets.add(targetKey);
         SkinFillOverride.clearCache();
         QuestsAndStuffMod.debugLog("[QnS:Skin] setFillMode: target={}, mode={}, asset={}, entryKey={}, encoded={}", targetKey, mode, asset, entryKey, encoded);
         reapplyOverrides(state, root);
@@ -428,10 +411,9 @@ public final class SkinEditManager {
             String mode, String titleKey, String leftLabelKey, String rightLabelKey, int left, int right) {
         int w = 240;
         int h = 116;
-        int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-        int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-        int x = Math.max(4, Math.min(mouseX, screenW - w - 4));
-        int y = Math.max(4, Math.min(mouseY, screenH - h - 4));
+        Rectangle bounds = modeEditorBounds(mouseX, mouseY, w, h);
+        int x = bounds.x;
+        int y = bounds.y;
         Runnable cancel = () -> {
             state.root.skinModeEditorOpen = false;
             root.closeContextMenu();
@@ -451,69 +433,52 @@ public final class SkinEditManager {
     private static void openDynamicModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY, int l, int r, int t, int b) {
         int w = 240;
         int h = 116;
-        int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
-        int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-        int x = Math.max(4, Math.min(mouseX, screenW - w - 4));
-        int y = Math.max(4, Math.min(mouseY, screenH - h - 4));
+        Rectangle bounds = modeEditorBounds(mouseX, mouseY, w, h);
+        int x = bounds.x;
+        int y = bounds.y;
         Runnable cancel = () -> {
             state.root.skinModeEditorOpen = false;
             root.closeContextMenu();
         };
-        WidgetGroup popup = FourFieldEditor.build(state, x, y, w, h, "ui.questsandstuff.skin.mode_dynamic", "ui.questsandstuff.skin.hrstretch_left", "ui.questsandstuff.skin.hrstretch_right", "ui.questsandstuff.skin.dynamic_top", "ui.questsandstuff.skin.dynamic_bottom", l, r, t, b, (a, c, d, e) -> {
-            state.root.skinModeEditorOpen = false;
-            root.closeContextMenu();
-            setFillMode(state, targetKey, "dynamic", asset, a, c, d, e, root, refresher);
-        }, cancel);
+        WidgetGroup popup = FourFieldEditor.build(state, x, y, w, h, "ui.questsandstuff.skin.mode_dynamic",
+                "ui.questsandstuff.skin.dynamic_left", "ui.questsandstuff.skin.dynamic_right",
+                "ui.questsandstuff.skin.dynamic_top", "ui.questsandstuff.skin.dynamic_bottom", l, r, t, b, (a, c, d, e) -> {
+                    state.root.skinModeEditorOpen = false;
+                    root.closeContextMenu();
+                    setFillMode(state, targetKey, "dynamic", asset, a, c, d, e, root, refresher);
+                }, cancel);
         state.root.skinModeEditorOpen = true;
         root.setContextMenu(popup, x, y, w, h);
     }
 
-    private static boolean isMinimapKey(String key) {
-        return "quests_minimap_body".equals(key) || "quests_minimap_toggle".equals(key);
+    private static Rectangle modeEditorBounds(int mouseX, int mouseY, int w, int h) {
+        int screenW = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int screenH = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        int x = Math.max(4, Math.min(mouseX, screenW - w - 4));
+        int y = Math.max(4, Math.min(mouseY, screenH - h - 4));
+        return new Rectangle(x, y, w, h);
+    }
+
+    static boolean isMinimapKey(String key) {
+        return SkinTargetKeys.MINIMAP_BODY.equals(key) || SkinTargetKeys.MINIMAP_TOGGLE.equals(key);
     }
 
     static boolean isMinimapHit(TabletUiState state, TabletRootWidget root, int mx, int my) {
-        int[] abs = minimapViewportOrigin(root);
-        if (abs == null) return false;
-        int vpAbsX = abs[0];
-        int vpAbsY = abs[1];
-        int bodyX = vpAbsX + state.canvas.minimapPanelX;
-        int bodyY = vpAbsY + state.canvas.minimapPanelY;
-        int toggleX = vpAbsX + state.canvas.minimapToggleX;
-        int toggleY = vpAbsY + state.canvas.minimapToggleY;
-        return (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
-                && mx >= bodyX && mx < bodyX + state.canvas.minimapPanelW
-                && my >= bodyY && my < bodyY + state.canvas.minimapPanelH)
-                || (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
-                && mx >= toggleX && mx < toggleX + state.canvas.minimapToggleW
-                && my >= toggleY && my < toggleY + state.canvas.minimapToggleH);
+        CanvasViewport vp = root.getCanvasViewport();
+        int[] body = SkinMinimapRects.bodyRect(state, vp);
+        int[] toggle = SkinMinimapRects.toggleRect(state, vp);
+        return contains(body, mx, my) || contains(toggle, mx, my);
     }
 
     static String minimapHitKey(TabletUiState state, TabletRootWidget root, int mx, int my) {
-        int[] abs = minimapViewportOrigin(root);
-        if (abs == null) return null;
-        int vpAbsX = abs[0];
-        int vpAbsY = abs[1];
-        int bodyX = vpAbsX + state.canvas.minimapPanelX;
-        int bodyY = vpAbsY + state.canvas.minimapPanelY;
-        int toggleX = vpAbsX + state.canvas.minimapToggleX;
-        int toggleY = vpAbsY + state.canvas.minimapToggleY;
-        if (state.canvas.minimapToggleW > 0 && state.canvas.minimapToggleH > 0
-                && mx >= toggleX && mx < toggleX + state.canvas.minimapToggleW
-                && my >= toggleY && my < toggleY + state.canvas.minimapToggleH) {
-            return "quests_minimap_toggle";
-        }
-        if (state.canvas.minimapPanelW > 0 && state.canvas.minimapPanelH > 0
-                && mx >= bodyX && mx < bodyX + state.canvas.minimapPanelW
-                && my >= bodyY && my < bodyY + state.canvas.minimapPanelH) {
-            return "quests_minimap_body";
-        }
+        CanvasViewport vp = root.getCanvasViewport();
+        if (contains(SkinMinimapRects.toggleRect(state, vp), mx, my)) return SkinTargetKeys.MINIMAP_TOGGLE;
+        if (contains(SkinMinimapRects.bodyRect(state, vp), mx, my)) return SkinTargetKeys.MINIMAP_BODY;
         return null;
     }
 
-    private static int[] minimapViewportOrigin(TabletRootWidget root) {
-        CanvasViewport vp = root.getCanvasViewport();
-        if (vp == null) return null;
-        return new int[]{vp.getPositionX(), vp.getPositionY()};
+    private static boolean contains(int[] rect, int x, int y) {
+        if (rect == null || rect[2] <= 0 || rect[3] <= 0) return false;
+        return x >= rect[0] && x < rect[0] + rect[2] && y >= rect[1] && y < rect[1] + rect[3];
     }
 }

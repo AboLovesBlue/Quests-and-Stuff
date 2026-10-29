@@ -24,13 +24,6 @@ public class DynamicClippingTexture implements IGuiTexture {
     private final int right;
     private final int top;
     private final int bottom;
-    private boolean referenceSet = false;
-    private int refW = -1;
-    private int refH = -1;
-
-    public DynamicClippingTexture(ResourceLocation imageLocation, int origW, int origH) {
-        this(imageLocation, origW, origH, 0, 0, 0, 0);
-    }
 
     public DynamicClippingTexture(ResourceLocation imageLocation, int origW, int origH, int left, int right, int top, int bottom) {
         this.imageLocation = imageLocation;
@@ -40,14 +33,6 @@ public class DynamicClippingTexture implements IGuiTexture {
         this.right = Math.max(0, right);
         this.top = Math.max(0, top);
         this.bottom = Math.max(0, bottom);
-    }
-
-    public void setReferenceSize(int w, int h) {
-        if (!referenceSet && w > 0 && h > 0) {
-            referenceSet = true;
-            refW = w;
-            refH = h;
-        }
     }
 
     @Environment(EnvType.CLIENT)

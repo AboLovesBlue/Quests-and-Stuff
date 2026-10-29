@@ -29,8 +29,8 @@ import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandCl
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.ui.IntegratedServerActions;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.client.tablet.visual.VisualRef;
@@ -128,21 +128,10 @@ public final class AssetPickerApplyActions {
         }
         String skinFillTarget = state.modal.skinEditFillTarget;
         if (!skinFillTarget.isBlank()) {
-            String entryKey = SkinOverrideKey.overrideKey(state, skinFillTarget);
-            String existing = SkinOverrideKey.resolveOverride(state, skinFillTarget);
-            SkinFillOverride existingOverride = SkinFillOverride.parse(existing);
-            String mode = (existingOverride != null) ? existingOverride.mode() : "stretch";
-            int left = existingOverride != null ? existingOverride.leftEdge() : 0;
-            int right = existingOverride != null ? existingOverride.rightEdge() : 0;
-            SkinFillOverride newOverride = new SkinFillOverride(mode, left, right, background);
-            state.root.skinFillOverrides.put(entryKey, newOverride.encode());
-            state.root.activeSkinTargets.add(skinFillTarget);
+            SkinEditManager.setFillModeFromAssetPicker(state, skinFillTarget, background, TabletUiFactory::refreshActiveTablet);
             state.modal.skinEditFillTarget = "";
             state.pickers.assetBrowseDir = "";
-            SkinFillOverride.clearCache();
-            TabletUiFactory.persistSkinState(state);
-            TabletUiFactory.refreshActiveTablet();
-            QuestsAndStuffMod.debugLog("[QnS:UI] skin fill override target={} asset={} mode={}", skinFillTarget, background, mode);
+            QuestsAndStuffMod.debugLog("[QnS:UI] skin fill override target={} asset={}", skinFillTarget, background);
             return;
         }
 

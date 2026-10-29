@@ -135,8 +135,7 @@ memberListPanel.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE,
                 TeamsConfirmModal.rebuild(modalLayer, state, refresh[0], crw, crh);
             }
             TeamsMemberCardRenderer.rebuildMemberList(memberListPanel, state, refresh[0]);
-            SkinAnchorRegistry.register("root", root);
-            SkinAnchorRegistry.register("home_btn", homeBtn);
+            SkinAnchorRegistry.registerRootChrome(root, homeBtn);
             SkinAnchorRegistry.register("teams_main_panel", mainPanel);
             SkinAnchorRegistry.register("teams_member_list", memberListPanel);
             SkinAnchorRegistry.register("teams_header_leave", headers.leaveBtn());

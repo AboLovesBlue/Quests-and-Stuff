@@ -19,6 +19,7 @@ import com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptors;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -71,6 +72,7 @@ final class SettingsAppHeaderControls {
 
     void layout(int headerTop, int bodyW) {
         tabLayer.clearAllWidgets();
+        SkinAnchorRegistry.clearShared("settings_tab_layer");
         tabLayer.setSelfPosition(0, headerTop);
         tabLayer.setSize(bodyW, TAB_H + TAB_ENLARGE);
         int tabAreaW = Math.max(1, bodyW - SEARCH_INSET * 2);
@@ -103,6 +105,7 @@ final class SettingsAppHeaderControls {
         int border = active ? TabletColors.BORDER_ACCENT : TabletColors.BORDER_BASE;
         WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
         WidgetGroup bg = skinnedTabBg(w, fill, border, active);
+        SkinAnchorRegistry.registerShared("settings_tab_layer", bg);
         LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_MUTED);
         ButtonWidget hit = active
                 ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))

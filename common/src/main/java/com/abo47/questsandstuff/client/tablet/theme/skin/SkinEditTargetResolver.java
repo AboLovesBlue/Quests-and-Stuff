@@ -10,10 +10,18 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import com.lowdragmc.lowdraglib.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
+import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
+import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGroup;
+import com.abo47.questsandstuff.client.tablet.home.TabletHomeOverviewPanel;
+import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterRowRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionCanvas;
 
 public final class SkinEditTargetResolver {
     private static final Map<Class<?>, Boolean> CUSTOM_CHROME_CACHE = new HashMap<>();
@@ -22,55 +30,80 @@ public final class SkinEditTargetResolver {
     }
 
     public static String findTargetKeyAt(WidgetGroup root, int mouseX, int mouseY) {
-        Widget qdl = SkinAnchorRegistry.findByKey("quest_details_layer");
-        if (qdl != null && qdl instanceof WidgetGroup qdlGroup) {
-            Widget hit = deepestAt(qdlGroup, mouseX, mouseY);
-            if (hit != null && hit != qdl) {
-                return resolveHit(hit);
-            }
-        }
-        Widget hit = deepestAt(root, mouseX, mouseY);
-        if (hit != null && hit != root) {
-            return resolveHit(hit);
-        }
-        if (root.isMouseOverElement(mouseX, mouseY) && isTargetable(root)) {
-            return "root";
-        }
-        return null;
+        return keyForTarget(root, findTargetWidgetAt(root, mouseX, mouseY));
+    }
+
+    public static String keyForTarget(WidgetGroup root, Widget hit) {
+        if (hit == null) return null;
+        if (hit == root) return SkinTargetKeys.ROOT;
+        return resolveHit(hit);
+    }
+
+    public static Widget findTargetWidgetAt(WidgetGroup root, int mouseX, int mouseY) {
+        Widget hit = topTargetIn(SkinAnchorRegistry.findByKey("quest_details_layer"), mouseX, mouseY);
+        if (hit == null) hit = topTargetIn(root, mouseX, mouseY);
+        if (hit != null) return hit;
+        return root.isMouseOverElement(mouseX, mouseY) ? root : null;
+    }
+
+    private static Widget topTargetIn(Widget layer, int mouseX, int mouseY) {
+        if (!(layer instanceof WidgetGroup group)) return null;
+        Widget hit = frontIn(group, mouseX, mouseY, null);
+        return hit != null && hit != group ? targetableHit(hit) : null;
+    }
+
+    private static Widget targetableHit(Widget hit) {
+        return isTargetable(hit) && !isCanvasPanelKey(stableKeyFor(hit)) ? hit : null;
     }
 
     private static String resolveHit(Widget hit) {
         String key = stableKeyFor(hit);
         if (isCanvasPanelKey(key)) return null;
-        String shared = resolveSharedKey(hit);
+        String shared = SkinAnchorRegistry.sharedKeyFor(hit);
         if (shared != null && SkinOverrideKey.isCardKey(shared)) return shared;
         return key;
     }
 
     private static boolean isCanvasPanelKey(String key) {
-        return key != null && ("quests_canvas_background".equals(key) || "quest_details_canvas_background".equals(key));
+        return SkinOverrideKey.isViewportBackgroundKey(key);
     }
 
-    private static Widget deepestAt(WidgetGroup group, int mouseX, int mouseY) {
-        Widget groupMatch = null;
-        if (group.isMouseOverElement(mouseX, mouseY) && isTargetable(group)) {
-            groupMatch = group;
-        }
+    private static Widget frontIn(WidgetGroup group, int mouseX, int mouseY, Rectangle clip) {
+        clip = visibleClipFor(group, clip);
+        if (clip != null && !clip.contains(mouseX, mouseY)) return null;
 
+        Widget blocker = null;
         for (int i = group.widgets.size() - 1; i >= 0; i--) {
             Widget child = group.widgets.get(i);
             if (!child.isVisible()) continue;
-            boolean childCoversMouse = child.isMouseOverElement(mouseX, mouseY);
+            if (!child.isMouseOverElement(mouseX, mouseY)) continue;
             if (child instanceof WidgetGroup childGroup) {
-                Widget found = deepestAt(childGroup, mouseX, mouseY);
-                if (found != null) return found;
+                Widget deeper = frontIn(childGroup, mouseX, mouseY, clip);
+                if (deeper != null) return deeper;
             }
-            if (childCoversMouse && isTargetable(child)) {
-                return child;
-            }
+            if (isTargetable(child)) return child;
+            if (blocker == null && isBlockingContent(child)) blocker = child;
         }
 
-        return groupMatch;
+        return blocker;
+    }
+
+    private static boolean isBlockingContent(Widget widget) {
+        if (widget instanceof CanvasViewport) return false;
+        return hasVisibleBackground(widget) || hasCustomChrome(widget);
+    }
+
+    private static boolean isClipContainer(Widget widget) {
+        return widget instanceof TabletScissoredWidgetGroup
+                || widget instanceof CanvasViewport
+                || widget instanceof QuestDetailsDescriptionCanvas;
+    }
+
+    private static Rectangle visibleClipFor(Widget widget, Rectangle parentClip) {
+        if (!isClipContainer(widget)) return parentClip;
+        Rectangle bounds = new Rectangle(widget.getPositionX(), widget.getPositionY(),
+                widget.getSizeWidth(), widget.getSizeHeight());
+        return parentClip == null ? bounds : parentClip.intersection(bounds);
     }
 
     public static Widget widgetForKey(WidgetGroup root, String targetKey) {
@@ -151,23 +184,21 @@ public final class SkinEditTargetResolver {
             if (cur instanceof CanvasViewport) return true;
             cur = cur.getParent();
         }
-        String simpleName = widget.getClass().getSimpleName();
-        if ("SourceOriginRevealWidget".equals(simpleName)) return true;
-        if ("ImageWidget".equals(simpleName)) return true;
-        if ("DisplayIconWidget".equals(simpleName)) return true;
-        if ("QuestDetailsDescriptionCanvas".equals(simpleName)) return true;
-        if ("TabletHomeOverviewPanel".equals(simpleName)) return true;
-        if ("CollapsedChapterTileWidget".equals(simpleName)) return true;
-        if ("ChapterCompletionNoticeWidget".equals(simpleName)) return true;
-        if ("InlineRenameField".equals(simpleName)) return true;
-        if (isInsideChapterCardArea(widget)) return true;
-        return false;
+        return widget instanceof SourceOriginRevealWidget
+                || widget instanceof ImageWidget
+                || widget instanceof DisplayIconWidget
+                || widget instanceof QuestDetailsDescriptionCanvas
+                || widget instanceof TabletHomeOverviewPanel
+                || widget instanceof ChapterRowRenderer.CollapsedChapterTileWidget
+                || widget instanceof ChapterRowRenderer.ChapterCompletionNoticeWidget
+                || widget instanceof InlineRenameField
+                || isInsideChapterCardArea(widget);
     }
 
     private static boolean isInsideChapterCardArea(Widget widget) {
         Widget cur = widget.getParent();
         while (cur != null) {
-            if ("TabletScissoredWidgetGroup".equals(cur.getClass().getSimpleName())) return true;
+            if (cur instanceof TabletScissoredWidgetGroup) return true;
             cur = cur.getParent();
         }
         return false;
@@ -179,20 +210,6 @@ public final class SkinEditTargetResolver {
         if (bg.equals(IGuiTexture.EMPTY)) return false;
         if (bg instanceof ColorRectTexture crt && (crt.color >>> 24) == 0) return false;
         return true;
-    }
-
-    public static String resolveSharedKey(Widget widget) {
-        String selfKey = SkinAnchorRegistry.keyFor(widget);
-        if (selfKey != null && !SkinOverrideKey.isSharedKey(selfKey)) return null;
-        Widget cur = widget;
-        while (cur != null) {
-            String registeredKey = SkinAnchorRegistry.keyFor(cur);
-            if (registeredKey != null && SkinOverrideKey.isSharedKey(registeredKey)) {
-                return registeredKey;
-            }
-            cur = cur.getParent();
-        }
-        return null;
     }
 
     public static boolean hasCustomChrome(Widget widget) {
@@ -230,42 +247,51 @@ public final class SkinEditTargetResolver {
     }
 
     /**
-     * Find bounds of all target-widgets nested inside {@code widget} (not including widget itself).
-     * Recursion stops as soon as a target is found along a branch, since a target's own
-     * bounds already contain whatever is nested further inside it.
+     * Find bounds of all visible content nested inside {@code widget} (not including widget itself).
+     * Recursion stops as soon as visible content is found along a branch, since visible content's
+     * own bounds already cover whatever is nested further inside it. Scissored layers stop the
+     * search at their own bounds and clip nested holes to the visible region.
      */
     public static List<Rectangle> nestedTargetBounds(Widget widget, WidgetGroup root) {
         List<Rectangle> out = new ArrayList<>();
         if (widget instanceof WidgetGroup group) {
             for (Widget child : group.widgets) {
-                collectNestedTargets(child, out);
+                collectNestedTargets(child, out, null);
             }
         }
         return out;
     }
 
-    private static void collectNestedTargets(Widget widget, List<Rectangle> out) {
+    private static void collectNestedTargets(Widget widget, List<Rectangle> out, Rectangle clip) {
         if (!widget.isVisible()) return;
-        if (isSkinExcluded(widget)) return;
+        Rectangle area = visibleArea(widget, clip);
+        if (area.isEmpty()) return;
         if (isTargetable(widget)) {
-            out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
-                    widget.getSizeWidth(), widget.getSizeHeight()));
+            out.add(area);
             return;
         }
-
-        if (widget instanceof WidgetGroup group) {
-            boolean hasBackground = hasVisibleBackground(widget);
-            boolean hasChrome = hasCustomChrome(widget);
-            for (Widget child : group.widgets) {
-                collectNestedTargets(child, out);
-            }
-            if (out.isEmpty() && (hasBackground || hasChrome)) {
-                out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
-                        widget.getSizeWidth(), widget.getSizeHeight()));
-            }
-        } else if (hasVisibleBackground(widget) || (widget.getSizeWidth() > 0 && widget.getSizeHeight() > 0)) {
-            out.add(new Rectangle(widget.getPositionX(), widget.getPositionY(),
-                    widget.getSizeWidth(), widget.getSizeHeight()));
+        if (isClipContainer(widget)) {
+            out.add(area);
+            return;
         }
+        if (widget instanceof WidgetGroup group) {
+            int before = out.size();
+            Rectangle childClip = visibleClipFor(widget, clip);
+            for (Widget child : group.widgets) {
+                collectNestedTargets(child, out, childClip);
+            }
+            if (out.size() == before && (hasVisibleBackground(widget) || hasCustomChrome(widget))) {
+                out.add(area);
+            }
+        } else if (hasVisibleBackground(widget) || hasCustomChrome(widget)) {
+            out.add(area);
+        }
+    }
+
+    private static Rectangle visibleArea(Widget widget, Rectangle clip) {
+        Rectangle own = new Rectangle(widget.getPositionX(), widget.getPositionY(),
+                widget.getSizeWidth(), widget.getSizeHeight());
+        if (clip == null) return own;
+        return clip.intersection(own);
     }
 }

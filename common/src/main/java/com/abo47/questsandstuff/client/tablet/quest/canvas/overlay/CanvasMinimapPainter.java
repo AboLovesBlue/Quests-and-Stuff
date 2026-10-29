@@ -28,6 +28,7 @@ import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
@@ -75,7 +76,7 @@ final class CanvasMinimapPainter {
     }
 
     private static boolean drawBodyFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
-        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_body");
+        IGuiTexture override = skinOverrideTexture(state, SkinTargetKeys.MINIMAP_BODY);
         if (override != null) {
             override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
             return true;
@@ -85,7 +86,7 @@ final class CanvasMinimapPainter {
     }
 
     private static boolean drawHandleFill(GuiGraphics graphics, TabletUiState state, int x, int y, int w, int h) {
-        IGuiTexture override = skinOverrideTexture(state, "quests_minimap_toggle");
+        IGuiTexture override = skinOverrideTexture(state, SkinTargetKeys.MINIMAP_TOGGLE);
         if (override != null) {
             override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
             return true;

@@ -142,12 +142,7 @@ final class TabletRootKeyboardRouter {
         }
         if (root.isFrontWindowOpen()) {
             if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode) && !ModalStateQueries.anyOpen(state)) {
-                state.root.skinEditMode = !state.root.skinEditMode;
-                state.root.skinEditSelectedTarget = "";
-                root.closeContextMenu();
-                TabletUiFactory.persistSkinState(state);
-                refresher.run();
-                return true;
+                return toggleSkinEdit(root, state, refresher);
             }
             return keyPressedForFrontWindow(root, state, frontWindowLayer, canvasViewport, refresher, undoAction, redoAction, keyCode, scanCode, modifiers);
         }
@@ -185,18 +180,22 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode)) {
-            state.root.skinEditMode = !state.root.skinEditMode;
-            state.root.skinEditSelectedTarget = "";
-            root.closeContextMenu();
-            TabletUiFactory.persistSkinState(state);
-            QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
-            refresher.run();
-            return true;
+            return toggleSkinEdit(root, state, refresher);
         }
         if (!state.root.canEdit || !Widget.isCtrlDown()) {
             return false;
         }
         return handleEditorShortcut(state, refresher, undoAction, redoAction, keyCode);
+    }
+
+    private static boolean toggleSkinEdit(TabletRootWidget root, TabletUiState state, Runnable refresher) {
+        state.root.skinEditMode = !state.root.skinEditMode;
+        state.root.skinEditSelectedTarget = "";
+        root.closeContextMenu();
+        TabletUiFactory.persistSkinState(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] skin edit mode toggled enabled={}", state.root.skinEditMode);
+        refresher.run();
+        return true;
     }
 
     private static void forceClearStuckStates(TabletUiState state) {

@@ -2,6 +2,7 @@ package com.abo47.questsandstuff.client.tablet.theme.skin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -14,7 +15,13 @@ import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 public record SkinFillOverride(String mode, String path, int leftEdge, int rightEdge, int topEdge, int bottomEdge) {
     private static final String SEP = "|";
+    private static final Set<String> KNOWN_MODES = Set.of(
+            "stretch", "tile", "tile_size", "center", "dynamic", "hrstretch");
     private static final Map<String, IGuiTexture> CACHED = new HashMap<>();
+
+    private static boolean isKnownMode(String mode) {
+        return KNOWN_MODES.contains(mode);
+    }
 
     public SkinFillOverride(String mode, String path) {
         this(mode, path, 0, 0, 0, 0);
@@ -42,23 +49,26 @@ public record SkinFillOverride(String mode, String path, int leftEdge, int right
             int bottom = 0;
             if (modePart.indexOf(':') > 0) {
                 String[] bits = modePart.split(":");
-                if (bits.length >= 5) {
-                    try {
+                try {
+                    if (bits.length >= 5) {
                         mode = bits[0];
                         left = Integer.parseInt(bits[1]);
                         right = Integer.parseInt(bits[2]);
                         top = Integer.parseInt(bits[3]);
                         bottom = Integer.parseInt(bits[4]);
-                    } catch (NumberFormatException ignored) {
-                    }
-                } else if (bits.length >= 3) {
-                    try {
+                    } else if (bits.length >= 3) {
                         mode = bits[0];
                         left = Integer.parseInt(bits[1]);
                         right = Integer.parseInt(bits[2]);
-                    } catch (NumberFormatException ignored) {
                     }
+                } catch (NumberFormatException exception) {
+                    QuestsAndStuffMod.debugLog("[QnS:Skin] parse rejected malformed edges: encoded={}", encoded);
+                    return null;
                 }
+            }
+            if (!isKnownMode(mode)) {
+                QuestsAndStuffMod.debugLog("[QnS:Skin] parse rejected unknown mode: encoded={}", encoded);
+                return null;
             }
             return new SkinFillOverride(mode, path, left, right, top, bottom);
         }

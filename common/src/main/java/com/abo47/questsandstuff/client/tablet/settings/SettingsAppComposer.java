@@ -45,7 +45,6 @@ public final class SettingsAppComposer {
     private static final int SEARCH_INSET = GRID_9;
     private static final int BOTTOM_GUTTER = GRID_6;
     private static final int LIST_INNER_PAD = GRID_6;
-    private static final int LIST_V_PAD = GRID_4;
 
     private SettingsAppComposer() {
     }
@@ -120,10 +119,9 @@ public final class SettingsAppComposer {
             mainPanel.setBackground(IGuiTexture.EMPTY);
 
             headers.layout(CONTENT_INSET, cbw);
-            SettingsOptionsPanelRenderer.rebuildOptions(optionsPanel, state, refresh[0], LIST_INNER_PAD, LIST_V_PAD, cbw - SEARCH_INSET * 2 - LIST_INNER_PAD * 2, cListH - LIST_V_PAD * 2);
+            SettingsOptionsPanelRenderer.rebuildOptions(optionsPanel, state, refresh[0], LIST_INNER_PAD, SettingsOptionsPanelRenderer.LIST_V_PAD, cbw - SEARCH_INSET * 2 - LIST_INNER_PAD * 2, cListH - SettingsOptionsPanelRenderer.LIST_V_PAD * 2);
 
-            SkinAnchorRegistry.register("root", root);
-            SkinAnchorRegistry.register("home_btn", homeBtn);
+            SkinAnchorRegistry.registerRootChrome(root, homeBtn);
             SkinAnchorRegistry.register("settings_main_panel", mainPanel);
             SkinAnchorRegistry.register("settings_options", optionsPanel);
             SkinAnchorRegistry.register("settings_header_search", headers.searchField());

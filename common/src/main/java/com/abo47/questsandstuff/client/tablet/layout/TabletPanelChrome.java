@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
@@ -120,11 +121,9 @@ public final class TabletPanelChrome {
     private static boolean isActiveSkinPanel(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
         if (state == null || state.root.skinFillOverrides == null) return false;
         if (state.root.skinFillOverrides.isEmpty()) return false;
-        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
         for (String entryKey : state.root.skinFillOverrides.keySet()) {
-            if (entryKey.contains(":") && !entryKey.startsWith(appPrefix)) continue;
-            String bareKey = entryKey.contains(":") ? entryKey.substring(entryKey.indexOf(':') + 1) : entryKey;
-            if ("root".equals(bareKey)) continue;
+            String bareKey = SkinOverrideKey.bareKeyForCurrentApp(state, entryKey);
+            if (bareKey == null || SkinTargetKeys.ROOT.equals(bareKey)) continue;
             Widget w = SkinAnchorRegistry.findByKey(bareKey);
             if (w == null) continue;
             if (w == panel) return true;
@@ -138,9 +137,7 @@ public final class TabletPanelChrome {
         if (panelKey == null) return false;
         String bgKey = SkinOverrideKey.viewportBackgroundKey(panelKey);
         if (bgKey == null) return false;
-        String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-        return state.root.skinFillOverrides.containsKey(bgKey)
-                || state.root.skinFillOverrides.containsKey(appPrefix + bgKey);
+        return SkinOverrideKey.resolveOverride(state, bgKey) != null;
     }
 
     public static boolean shouldHideViewportBorder(WidgetGroup panel, @javax.annotation.Nullable TabletUiState state) {
@@ -255,10 +252,8 @@ public final class TabletPanelChrome {
         if (panelKey != null && state.root.activeSkinTargets.contains(panelKey)) return true;
         if (state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return false;
         for (String entryKey : state.root.skinFillOverrides.keySet()) {
-            String appPrefix = state.root.currentApp.isBlank() ? "" : state.root.currentApp + ":";
-            if (entryKey.contains(":") && !entryKey.startsWith(appPrefix)) continue;
-            String bareKey = entryKey.contains(":") ? entryKey.substring(entryKey.indexOf(':') + 1) : entryKey;
-            if ("root".equals(bareKey)) continue;
+            String bareKey = SkinOverrideKey.bareKeyForCurrentApp(state, entryKey);
+            if (bareKey == null || SkinTargetKeys.ROOT.equals(bareKey)) continue;
             Widget w = SkinAnchorRegistry.findByKey(bareKey);
             if (w == panel) return true;
         }

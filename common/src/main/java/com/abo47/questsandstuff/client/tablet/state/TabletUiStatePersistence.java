@@ -260,7 +260,6 @@ public final class TabletUiStatePersistence {
         try {
             if (!Files.exists(SKIN_STATE_FILE)) return;
             JsonObject root = JsonParser.parseString(Files.readString(SKIN_STATE_FILE, StandardCharsets.UTF_8)).getAsJsonObject();
-            state.root.skinEditSelectedTarget = JsonFieldHelper.string(root, "skin_edit_selected_target", state.root.skinEditSelectedTarget);
             readSkinFillOverrides(root, state);
         } catch (Exception exception) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed reading skin state from {}, keeping defaults", SKIN_STATE_FILE, exception);
@@ -272,7 +271,6 @@ public final class TabletUiStatePersistence {
         try {
             Files.createDirectories(SKIN_STATE_FILE.getParent());
             JsonObject root = new JsonObject();
-            root.addProperty("skin_edit_selected_target", state.root.skinEditSelectedTarget == null ? "" : state.root.skinEditSelectedTarget);
             writeSkinFillOverrides(root, state);
             Files.writeString(SKIN_STATE_FILE, GSON.toJson(root), StandardCharsets.UTF_8);
         } catch (Exception e) {

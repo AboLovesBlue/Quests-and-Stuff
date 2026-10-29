@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.theme.render;
 
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -104,12 +105,11 @@ public final class GlowShaderHelper {
 
     /**
      * Draw the glow shader over [wx,wy,ww,wh], but with rectangular "holes"
-     * cut out for nested target containers (so they read as separately hoverable,
-     * not swallowed by the parent's glow).
+     * cut out for nested target widgets (so nested elements read as separately
+     * targetable, not swallowed by the parent's glow).
      *
-     * @param ancestors ancestor clip bounds (outermost -> innermost), same as drawGlowClipped
-     * @param excludes  bounds of nested target widgets to occlude, in the same
-     *                  coordinate space as wx/wy (screen space), unclipped
+     * @param ancestors ancestor clip bounds (outermost -> innermost)
+     * @param excludes  bounds of nested target widgets, same coordinate space
      */
     public static void drawGlowOccluded(GuiGraphics graphics, int mouseX, int mouseY,
                                           int wx, int wy, int ww, int wh,
@@ -127,14 +127,14 @@ public final class GlowShaderHelper {
             return;
         }
 
-        List<Rectangle> free = new java.util.ArrayList<>();
+        List<Rectangle> free = new ArrayList<>();
         free.add(base);
 
         for (Rectangle hole : excludes) {
             Rectangle h = base.intersection(hole);
             if (h.isEmpty()) continue;
 
-            List<Rectangle> next = new java.util.ArrayList<>();
+            List<Rectangle> next = new ArrayList<>();
             for (Rectangle r : free) {
                 subtract(r, h, next);
             }

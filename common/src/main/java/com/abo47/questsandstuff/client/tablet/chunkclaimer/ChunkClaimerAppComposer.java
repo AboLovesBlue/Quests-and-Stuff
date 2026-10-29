@@ -127,8 +127,7 @@ public final class ChunkClaimerAppComposer {
             mapPanel.setSize(rcbw - LIST_INSET * 2, rListH);
             map.setSize(mapPanel.getSizeWidth(), mapPanel.getSizeHeight());
 
-            SkinAnchorRegistry.register("root", root);
-            SkinAnchorRegistry.register("home_btn", homeBtn);
+            SkinAnchorRegistry.registerRootChrome(root, homeBtn);
             SkinAnchorRegistry.register("chunkclaimer_main_panel", mainPanel);
             SkinAnchorRegistry.register("chunkclaimer_claim_btn", headers.claimBtn());
             SkinAnchorRegistry.register("chunkclaimer_force_btn", headers.forceBtn());

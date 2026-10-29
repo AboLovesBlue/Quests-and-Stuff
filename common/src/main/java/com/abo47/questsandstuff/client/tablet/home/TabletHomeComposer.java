@@ -59,9 +59,8 @@ public final class TabletHomeComposer {
                 homePanel.setBackground(rootOverrideTex);
             }
             homePanel.getHomeBtn().setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.subtleBorder()));
-            SkinAnchorRegistry.register("root", root);
+            SkinAnchorRegistry.registerRootChrome(root, homePanel.getHomeBtn());
             SkinAnchorRegistry.register("home_close_btn", homePanel.getHomeBtn());
-            SkinAnchorRegistry.register("home_btn", homePanel.getHomeBtn());
             SkinAnchorRegistry.register("home_inner", innerContainer);
             SkinEditManager.reapplyOverrides(state, root);
         };

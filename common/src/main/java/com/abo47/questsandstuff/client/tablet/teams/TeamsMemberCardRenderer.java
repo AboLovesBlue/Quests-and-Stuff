@@ -39,6 +39,7 @@ final class TeamsMemberCardRenderer {
 
     static void rebuildMemberList(WidgetGroup panel, TabletUiState state, Runnable refresh) {
         panel.clearAllWidgets();
+        SkinAnchorRegistry.clearShared("teams_member_cards");
 
         ClientTeamCache.ClientTeamInfo teamInfo = ClientTeamCache.INSTANCE.getTeam();
         if (teamInfo == null || teamInfo.members().isEmpty()) {

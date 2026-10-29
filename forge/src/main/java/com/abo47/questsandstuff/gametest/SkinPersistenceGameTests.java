@@ -34,11 +34,10 @@ public final class SkinPersistenceGameTests {
             TabletUiState loaded = new TabletUiState();
             loaded.root.skinEditMode = true;
             loaded.root.skinEditSelectedTarget = "previous_selection";
-            loaded.root.skinFillOverrides.put("dummy", "stretch|old.png");
             TabletUiStatePersistence.readSkinState(loaded);
 
-            assertEqual(false, loaded.root.skinEditMode, "skinEditMode should default to false");
-            assertEqual("", loaded.root.skinEditSelectedTarget, "skinEditSelectedTarget should default to empty");
+            assertEqual(true, loaded.root.skinEditMode, "skinEditMode is transient, untouched by read");
+            assertEqual("previous_selection", loaded.root.skinEditSelectedTarget, "skinEditSelectedTarget is transient, untouched by read");
             assertEqual(true, loaded.root.skinFillOverrides.isEmpty(), "skinFillOverrides should be empty");
         } catch (Exception e) {
             throw new GameTestAssertException("emptyStatePersistenceRoundTrip failed: " + e.getMessage());
@@ -52,8 +51,6 @@ public final class SkinPersistenceGameTests {
     public static void fullStatePersistenceRoundTrip(GameTestHelper helper) {
         try {
             TabletUiState original = new TabletUiState();
-            original.root.skinEditMode = true;
-            original.root.skinEditSelectedTarget = "quests_canvas";
             original.root.skinFillOverrides.put("home_inner", "stretch|assets/bg.png");
             original.root.skinFillOverrides.put("quests:quest_details_modal", "tile|assets/tile.png");
             TabletUiStatePersistence.writeSkinState(original);
@@ -61,8 +58,6 @@ public final class SkinPersistenceGameTests {
             TabletUiState loaded = new TabletUiState();
             TabletUiStatePersistence.readSkinState(loaded);
 
-            assertEqual(true, loaded.root.skinEditMode, "skinEditMode");
-            assertEqual("quests_canvas", loaded.root.skinEditSelectedTarget, "skinEditSelectedTarget");
             assertEqual(2, loaded.root.skinFillOverrides.size(), "skinFillOverrides count");
             assertEqual("stretch|assets/bg.png", loaded.root.skinFillOverrides.get("home_inner"), "non-prefixed key");
             assertEqual("tile|assets/tile.png", loaded.root.skinFillOverrides.get("quests:quest_details_modal"), "prefixed key");
@@ -75,24 +70,19 @@ public final class SkinPersistenceGameTests {
 
     @PrefixGameTestTemplate(false)
     @GameTest(template = "questschemagametests.empty")
-    public static void skinEditModeToggleSurvivesRoundTrip(GameTestHelper helper) {
+    public static void modeAndSelectionAreNotPersisted(GameTestHelper helper) {
         try {
             TabletUiState original = new TabletUiState();
             original.root.skinEditMode = true;
+            original.root.skinEditSelectedTarget = "root";
             TabletUiStatePersistence.writeSkinState(original);
 
             TabletUiState loaded = new TabletUiState();
             TabletUiStatePersistence.readSkinState(loaded);
-            assertEqual(true, loaded.root.skinEditMode, "skinEditMode=true");
-
-            original.root.skinEditMode = false;
-            TabletUiStatePersistence.writeSkinState(original);
-
-            TabletUiState reloaded = new TabletUiState();
-            TabletUiStatePersistence.readSkinState(reloaded);
-            assertEqual(false, reloaded.root.skinEditMode, "skinEditMode=false");
+            assertEqual(false, loaded.root.skinEditMode, "skinEditMode must not be persisted");
+            assertEqual("", loaded.root.skinEditSelectedTarget, "skinEditSelectedTarget must not be persisted");
         } catch (Exception e) {
-            throw new GameTestAssertException("skinEditModeToggleSurvivesRoundTrip failed: " + e.getMessage());
+            throw new GameTestAssertException("modeAndSelectionAreNotPersisted failed: " + e.getMessage());
         } finally {
             cleanup();
         }
@@ -106,7 +96,6 @@ public final class SkinPersistenceGameTests {
             Files.writeString(SKIN_STATE_FILE, "{not valid json", StandardCharsets.UTF_8);
 
             TabletUiState state = new TabletUiState();
-            state.root.skinEditMode = true;
             TabletUiStatePersistence.readSkinState(state);
 
             assertEqual(false, state.root.skinEditMode, "skinEditMode should fall back to default");
@@ -132,7 +121,8 @@ public final class SkinPersistenceGameTests {
                         "valid_key": "stretch|real.png",
                         "empty_value_key": "",
                         "pipe_only_key": "|",
-                        "blank_path_key": "stretch|"
+                        "blank_path_key": "stretch|",
+                        "bad_edges_key": "hrstretch:x:y|bad.png"
                       }
                     }
                     """;
@@ -141,8 +131,8 @@ public final class SkinPersistenceGameTests {
             TabletUiState state = new TabletUiState();
             TabletUiStatePersistence.readSkinState(state);
 
-            assertEqual(true, state.root.skinEditMode, "skinEditMode read from json");
-            assertEqual("root", state.root.skinEditSelectedTarget, "skinEditSelectedTarget read from json");
+            assertEqual(false, state.root.skinEditMode, "legacy skin_edit_mode key must be ignored");
+            assertEqual("", state.root.skinEditSelectedTarget, "legacy skin_edit_selected_target key must be ignored");
             assertEqual(1, state.root.skinFillOverrides.size(), "only one valid override should be loaded");
             assertEqual("stretch|real.png", state.root.skinFillOverrides.get("valid_key"), "valid key preserved");
         } catch (Exception e) {
@@ -162,13 +152,13 @@ public final class SkinPersistenceGameTests {
             TabletUiStatePersistence.writeSkinState(state);
 
             String content = Files.readString(SKIN_STATE_FILE, StandardCharsets.UTF_8);
-            if (!content.contains("\"skin_edit_selected_target\": \"\"")) {
-                throw new GameTestAssertException("null skinEditSelectedTarget should be written as empty string");
+            if (content.contains("skin_edit_selected_target") || content.contains("skin_edit_mode")) {
+                throw new GameTestAssertException("transient skin fields should not be written");
             }
 
             TabletUiState loaded = new TabletUiState();
             TabletUiStatePersistence.readSkinState(loaded);
-            assertEqual("", loaded.root.skinEditSelectedTarget, "null target becomes empty string");
+            assertEqual("", loaded.root.skinEditSelectedTarget, "selection stays default on reload");
             assertEqual(true, loaded.root.skinFillOverrides.isEmpty(), "null override value should be skipped");
         } catch (Exception e) {
             throw new GameTestAssertException("nullFieldsDoNotCorruptWrittenFile failed: " + e.getMessage());

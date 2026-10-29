@@ -30,7 +30,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
-final class ChapterRowRenderer {
+public final class ChapterRowRenderer {
     private static final int COLLAPSED_TILE_SIZE = 28;
     private static final int COLLAPSED_ICON_SIZE = 16;
     private static final int NOTICE_ICON_SIZE = 9;
@@ -310,7 +310,7 @@ final class ChapterRowRenderer {
         });
     }
 
-    private static final class CollapsedChapterTileWidget extends WidgetGroup {
+    public static final class CollapsedChapterTileWidget extends WidgetGroup {
         private final String label;
         private final boolean selected;
 
@@ -336,7 +336,7 @@ final class ChapterRowRenderer {
         }
     }
 
-    private static final class ChapterCompletionNoticeWidget extends WidgetGroup {
+    public static final class ChapterCompletionNoticeWidget extends WidgetGroup {
         private ChapterCompletionNoticeWidget(int x, int y, int width, int height) {
             super(x, y, width, height);
         }

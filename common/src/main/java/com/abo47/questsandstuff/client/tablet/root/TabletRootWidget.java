@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditManager;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinEditRenderer;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abo47.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 public final class TabletRootWidget extends WidgetGroup {
@@ -318,8 +319,8 @@ public final class TabletRootWidget extends WidgetGroup {
 
     private static String rootFillRaw(TabletUiState state) {
         if (state.root.skinFillOverrides == null || state.root.skinFillOverrides.isEmpty()) return null;
-        String rootKey = SkinOverrideKey.resolveTargetKey(state, "root");
-        String qualified = SkinOverrideKey.overrideKey(state, "root");
+        String rootKey = SkinOverrideKey.resolveTargetKey(state, SkinTargetKeys.ROOT);
+        String qualified = SkinOverrideKey.overrideKey(state, SkinTargetKeys.ROOT);
         String raw = state.root.skinFillOverrides.get(qualified);
         if (raw == null && !qualified.equals(rootKey)) {
             raw = state.root.skinFillOverrides.get(rootKey);

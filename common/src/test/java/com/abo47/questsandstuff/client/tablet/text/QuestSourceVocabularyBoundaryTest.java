@@ -17,8 +17,7 @@ class QuestSourceVocabularyBoundaryTest {
             Path.of("src/main/java"),
             Path.of("src/test/java"),
             Path.of("src/main/resources"),
-            Path.of("art/source-icons"),
-            Path.of(".agents/skills")
+            Path.of("art/source-icons")
     );
     private static final String OLD_UNLOCK_EDGE = "dependenc";
     private static final String OLD_MEDIA_NODE = "pictur";

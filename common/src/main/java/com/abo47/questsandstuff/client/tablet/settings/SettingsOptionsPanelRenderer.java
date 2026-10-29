@@ -22,14 +22,14 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 
 public final class SettingsOptionsPanelRenderer {
     private static final int ROW_H = SettingsOptionRowRenderer.ROW_H;
-    private static final int LIST_V_PAD = GRID_4;
+    public static final int LIST_V_PAD = GRID_4;
 
     private SettingsOptionsPanelRenderer() {
     }
 
     public static void rebuildOptions(WidgetGroup panel, TabletUiState state, Runnable refresh, int listX, int listY, int listW, int listH) {
         panel.clearAllWidgets();
-        SkinAnchorRegistry.unregister("settings_option_cards");
+        SkinAnchorRegistry.clearShared("settings_option_cards");
         boolean skinEditMode = state.root.skinEditMode;
         String search = state.settings.search;
         RowDrawer<SettingsOptionDescriptor> drawer = (list2, option, rowY, rowW, mode, st) -> SettingsOptionRowRenderer.render(list2, option, rowY, rowW, refresh, mode, st);
@@ -38,21 +38,12 @@ public final class SettingsOptionsPanelRenderer {
             WidgetGroup list = buildList(panel, listX, listY, listW, listH, ROW_H, matches, I18n.get("ui.questsandstuff.settings.empty"),
                     ScrollState.bind(() -> state.settings.scroll, v -> state.settings.scroll = v, () -> state.settings.scrollDragging, d -> state.settings.scrollDragging = d),
                     refresh, skinEditMode, drawer, LIST_V_PAD, state);
-            registerOptionsList(list);
             return;
         }
         SettingsTabDescriptor tab = SettingsTabDescriptors.descriptor(state.settings.currentTab);
         WidgetGroup list = buildList(panel, listX, listY, listW, listH, ROW_H, tab.options(state), I18n.get("ui.questsandstuff.settings.empty"),
                 ScrollState.bind(() -> state.settings.scroll, v -> state.settings.scroll = v, () -> state.settings.scrollDragging, d -> state.settings.scrollDragging = d),
                 refresh, skinEditMode, drawer, LIST_V_PAD, state);
-        registerOptionsList(list);
-    }
-
-    private static void registerOptionsList(WidgetGroup list) {
-        if (list == null) {
-            return;
-        }
-        SkinAnchorRegistry.register("settings_option_cards", list);
     }
 
     private interface RowDrawer<T> {

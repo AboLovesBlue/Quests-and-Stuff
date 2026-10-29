@@ -18,7 +18,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalSession.TargetSetSlot.QUEST_BACKGROUND;
@@ -43,7 +43,7 @@ final class AssetPickerPreviewControls {
                 ? ModalTargetState.target(state, ModalSession.TargetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTarget)
                 : "batch";
         int rowY = Math.max(48, previewH - 24);
-        preview.addWidget(label(8, rowY + 3, TabletModalPanel.tr(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY + 3, ModalPanel.tr(QuestTranslationKeys.QUEST_BACKGROUND_GRAYSCALE), TabletColors.TEXT_SECONDARY));
         preview.addWidget(new ToggleSwitchWidget(
                 "quest_background_grayscale:" + target,
                 Math.max(8, leftW - 8 - ToggleSwitchWidget.DEFAULT_WIDTH),
@@ -69,7 +69,7 @@ final class AssetPickerPreviewControls {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.hud.opacity"), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.hud.opacity"), TabletColors.TEXT_SECONDARY));
         PercentSliderControls.add(
                 preview,
                 8,
@@ -87,7 +87,7 @@ final class AssetPickerPreviewControls {
                 new Component[]{Component.translatable("ui.questsandstuff.hud.opacity")}
         );
         boolean hudRemoveConfirming = state.modal.hudRemoveConfirmArmed;
-        String hudRemoveLabel = hudRemoveConfirming ? "Sure?" : TabletModalPanel.tr("ui.questsandstuff.hud.remove_background");
+        String hudRemoveLabel = hudRemoveConfirming ? "Sure?" : ModalPanel.tr("ui.questsandstuff.hud.remove_background");
         preview.addWidget(button(8, rowY + 32, leftW - 16, 14, hudRemoveLabel, TabletColors.SURFACE_PANEL_ALT, TabletColors.WARNING, click -> {
             if (hudRemoveConfirming) {
                 state.modal.hudRemoveConfirmArmed = false;
@@ -111,7 +111,7 @@ final class AssetPickerPreviewControls {
             return;
         }
         int rowY = Math.max(58, previewH - 56);
-        preview.addWidget(label(8, rowY, TabletModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), TabletColors.TEXT_SECONDARY));
+        preview.addWidget(label(8, rowY, ModalPanel.tr("ui.questsandstuff.context.connection_texture_spacing"), TabletColors.TEXT_SECONDARY));
         PercentSliderControls.addRanged(
                 preview,
                 8,
@@ -151,12 +151,12 @@ final class AssetPickerPreviewControls {
                 for (com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, java.util.List.of())) {
                     for (String connectedId : ec.connectionQuestIds()) {
                         if (chapterTargets.contains(connectedId) || chapterTargets.contains(ec.id())) {
-                            EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
+                            EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureSpacingAction(state, ec.id(), connectedId, spacing);
                         }
                     }
                     for (String prerequisiteId : ec.prerequisiteQuestIds()) {
                         if (chapterTargets.contains(prerequisiteId) || chapterTargets.contains(ec.id())) {
-                            EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, ec.id(), spacing);
+                            EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureSpacingAction(state, prerequisiteId, ec.id(), spacing);
                         }
                     }
                 }

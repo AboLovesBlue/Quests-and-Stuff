@@ -9,7 +9,7 @@ public final class TabletAppRouter {
     }
 
     public static WidgetGroup create(String appId, Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
-        AppDescriptor app = TabletAppRegistry.get(appId);
+        TabletAppDescriptor app = TabletAppRegistry.get(appId);
         if (app == null) {
             return null;
         }

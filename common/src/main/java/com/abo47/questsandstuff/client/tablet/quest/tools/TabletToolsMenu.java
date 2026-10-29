@@ -11,7 +11,7 @@ public final class TabletToolsMenu {
     }
 
     public static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {
-        MainCanvasToolsMenu.rebuild(toolsMenu, state, player, refresh, canvasX, toolsX, topY, headerH, toolsW);
+        CanvasToolsMenu.rebuild(toolsMenu, state, player, refresh, canvasX, toolsX, topY, headerH, toolsW);
     }
 
     public static void rebuildQuestDetails(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, String questId, int buttonX, int buttonY, int headerH, int toolSlot) {

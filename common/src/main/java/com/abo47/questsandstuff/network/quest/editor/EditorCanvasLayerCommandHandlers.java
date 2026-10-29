@@ -22,7 +22,7 @@ final class EditorCanvasLayerCommandHandlers {
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicePut));
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoicesPut));
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasExclusiveChoiceRemove));
-        registrar.accept(new EditorCommandDescriptor(EditorCommandType.EC_CONNECTION_HIDDEN, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::ecConnectionHidden));
+        registrar.accept(new EditorCommandDescriptor(EditorCommandType.EXCLUSIVE_CHOICE_CONNECTION_HIDDEN, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::exclusiveChoiceConnectionHidden));
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_IMAGE_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImagePut));
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_IMAGE_REMOVE, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasImageRemove));
         registrar.accept(new EditorCommandDescriptor(EditorCommandType.CANVAS_TEXT_PUT, EditorCommandFamily.CANVAS_LAYER, EditorCanvasLayerCommandHandlers::canvasTextPut));
@@ -54,7 +54,7 @@ final class EditorCanvasLayerCommandHandlers {
         );
     }
 
-    private static void ecConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
+    private static void exclusiveChoiceConnectionHidden(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {
         String chapter = EditorCommandPayloads.chapter(payload);
         String sourceId = EditorCommandPayloads.string(payload, EditorCommandPayloads.ID);
         String targetId = EditorCommandPayloads.string(payload, EditorCommandPayloads.PREREQUISITE);
@@ -62,7 +62,7 @@ final class EditorCanvasLayerCommandHandlers {
         if (sourceId.isBlank() || targetId.isBlank()) {
             return;
         }
-        editor.ecConnectionHidden(player, chapter, sourceId, targetId, hidden);
+        editor.exclusiveChoiceConnectionHidden(player, chapter, sourceId, targetId, hidden);
     }
 
     private static void canvasImagePut(ServerPlayer player, EditorSessionService editor, CompoundTag payload) {

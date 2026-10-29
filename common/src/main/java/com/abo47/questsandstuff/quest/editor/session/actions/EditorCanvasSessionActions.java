@@ -30,12 +30,12 @@ public final class EditorCanvasSessionActions {
         canvasEdits.putCanvasExclusiveChoices(player, chapterName, ecs);
     }
 
-    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String ecId) {
-        canvasEdits.removeCanvasExclusiveChoice(player, chapterName, ecId);
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String exclusiveChoiceId) {
+        canvasEdits.removeCanvasExclusiveChoice(player, chapterName, exclusiveChoiceId);
     }
 
-    public void ecConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
-        canvasEdits.ecConnectionHidden(player, chapterName, sourceId, targetId, hidden);
+    public void exclusiveChoiceConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
+        canvasEdits.exclusiveChoiceConnectionHidden(player, chapterName, sourceId, targetId, hidden);
     }
 
     public void putCanvasImage(ServerPlayer player, String chapterName, CanvasImageLayer image) {

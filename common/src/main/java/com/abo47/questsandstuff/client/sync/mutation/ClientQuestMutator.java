@@ -73,8 +73,8 @@ public final class ClientQuestMutator {
         ClientQuestPropertyMutator.putCanvasExclusiveChoiceLocal(chapter, ec);
     }
 
-    public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
-        ClientQuestPropertyMutator.removeCanvasExclusiveChoiceLocal(chapter, ecId);
+    public static void removeCanvasExclusiveChoiceLocal(String chapter, String exclusiveChoiceId) {
+        ClientQuestPropertyMutator.removeCanvasExclusiveChoiceLocal(chapter, exclusiveChoiceId);
     }
 
     public static void putCanvasImageLocal(String chapter, CanvasImageLayer image) {

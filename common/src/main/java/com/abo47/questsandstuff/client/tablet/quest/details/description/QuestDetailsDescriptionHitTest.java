@@ -5,7 +5,7 @@ import java.util.function.IntSupplier;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -129,7 +129,7 @@ final class QuestDetailsDescriptionHitTest {
     private boolean elementBoundsHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
         withSelectionGeometry(() -> {
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, x, y, w, h, pivotX, pivotY, rotation);
+            int[] bounds = QuestElementSelectionSlot.screenBoundsAtPivot(state, x, y, w, h, pivotX, pivotY, rotation);
             hit[0] = px >= bounds[0] && px <= bounds[2] && visibleY >= bounds[1] && visibleY <= bounds[3];
         });
         return hit[0];
@@ -152,13 +152,13 @@ final class QuestDetailsDescriptionHitTest {
 
     private boolean selectionResizeHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
-        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
+        withSelectionGeometry(() -> hit[0] = QuestElementSelectionSlot.resizeHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
         return hit[0];
     }
 
     private boolean selectionRotateHit(int x, int y, int w, int h, int pivotX, int pivotY, int rotation, int px, int visibleY) {
         final boolean[] hit = new boolean[1];
-        withSelectionGeometry(() -> hit[0] = CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
+        withSelectionGeometry(() -> hit[0] = QuestElementSelectionSlot.rotateHandleHitAtPivot(state, x, y, w, h, pivotX, pivotY, rotation, px, visibleY));
         return hit[0];
     }
 

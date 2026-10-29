@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -51,7 +51,7 @@ final class QuestTaskMenuSupport {
     }
 
     static JsonObject parseTaskJson(String value) {
-        TaskJsonFactory.ParseResult result = TaskJsonFactory.readResult(value);
+        QuestTaskJsonFactory.ParseResult result = QuestTaskJsonFactory.readResult(value);
         if (!result.valid()) {
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] task menu json fallback diagnostic={}",

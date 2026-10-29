@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.ClientQuestDefinitionSnapshots;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintSnapshots;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.ChapterDef;
@@ -26,18 +26,18 @@ final class PrerequisitePreviewBuilder {
         if (model == null) {
             return CanvasBlueprint.empty();
         }
-        QuestDefinition focus = ClientQuestDefinitionSnapshots.fromClientTag(model.questId(), model.questTag());
+        QuestDefinition focus = CanvasBlueprintSnapshots.fromClientTag(model.questId(), model.questTag());
         if (focus == null) {
             return CanvasBlueprint.empty();
         }
 
-        boolean ecMode = model.isExclusiveChoice();
-        Set<String> ecIds = ecMode ? Set.of(model.questId()) : ecIdsFromRows(model.rows(), model.questId());
+        boolean exclusiveChoiceMode = model.isExclusiveChoice();
+        Set<String> exclusiveChoiceIds = exclusiveChoiceMode ? Set.of(model.questId()) : exclusiveChoiceIdsFromRows(model.rows(), model.questId());
         Map<String, QuestDefinition> definitions = definitionsForPreview(model.questId(), focus, model.rows());
         Map<String, QuestPlacement> placements = placementsForPreview(chapter, model.questId(), definitions, model.rows(), externalMode);
-        Map<String, Set<String>> prerequisitesByTarget = prerequisitesByTarget(model.rows(), ecIds);
+        Map<String, Set<String>> prerequisitesByTarget = prerequisitesByTarget(model.rows(), exclusiveChoiceIds);
         List<CanvasBlueprint.QuestEntry> entries = new ArrayList<>();
-        List<CanvasBlueprint.ExclusiveChoiceEntry> ecEntries = new ArrayList<>();
+        List<CanvasBlueprint.ExclusiveChoiceEntry> exclusiveChoiceEntries = new ArrayList<>();
         List<String> order = new ArrayList<>();
         for (Map.Entry<String, QuestDefinition> entry : definitions.entrySet()) {
             String id = entry.getKey();
@@ -51,43 +51,43 @@ final class PrerequisitePreviewBuilder {
             entries.add(new CanvasBlueprint.QuestEntry(id, placement.chapter(), placement.x(), placement.y(), placement.scale(), withPrerequisites(entry.getValue(), prerequisitesByTarget.getOrDefault(id, Set.of()))));
             order.add(CanvasLayerOrdering.questKey(id));
         }
-        if (ecMode) {
-            CanvasExclusiveChoice focusEc = findEcById(model.questId(), chapter);
-            if (focusEc != null) {
-                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
-                        model.questId(), chapter, model.ecX(), model.ecY(),
-                        model.ecW(), model.ecH(), focusEc.rotation(),
-                        focusEc.background(), focusEc.connectionQuestIds(),
+        if (exclusiveChoiceMode) {
+            CanvasExclusiveChoice focusExclusiveChoice = findExclusiveChoiceById(model.questId(), chapter);
+            if (focusExclusiveChoice != null) {
+                exclusiveChoiceEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        model.questId(), chapter, model.exclusiveChoiceX(), model.exclusiveChoiceY(),
+                        model.exclusiveChoiceW(), model.exclusiveChoiceH(), focusExclusiveChoice.rotation(),
+                        focusExclusiveChoice.background(), focusExclusiveChoice.connectionQuestIds(),
                         prerequisitesByTarget.getOrDefault(model.questId(), Set.of()),
-                        focusEc.connectionColors(), focusEc.connectionModes(),
-                        focusEc.connectionTextures(), focusEc.connectionTextureSpacings(),
-                        focusEc.hiddenConnections()));
+                        focusExclusiveChoice.connectionColors(), focusExclusiveChoice.connectionModes(),
+                        focusExclusiveChoice.connectionTextures(), focusExclusiveChoice.connectionTextureSpacings(),
+                        focusExclusiveChoice.hiddenConnections()));
             } else {
-                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
-                        model.questId(), chapter, model.ecX(), model.ecY(),
-                        model.ecW(), model.ecH(), 0,
+                exclusiveChoiceEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        model.questId(), chapter, model.exclusiveChoiceX(), model.exclusiveChoiceY(),
+                        model.exclusiveChoiceW(), model.exclusiveChoiceH(), 0,
                         focus.display().questBackground(), List.of(),
                         prerequisitesByTarget.getOrDefault(model.questId(), Set.of()),
                         Map.of(), Map.of(), Map.of(), Map.of(), Set.of()));
             }
             order.add(CanvasLayerOrdering.exclusiveChoiceKey(model.questId()));
         } else {
-            for (String ecId : ecIds) {
-                CanvasExclusiveChoice ec = findEcById(ecId, chapter);
+            for (String exclusiveChoiceId : exclusiveChoiceIds) {
+                CanvasExclusiveChoice ec = findExclusiveChoiceById(exclusiveChoiceId, chapter);
                 if (ec == null) {
                     continue;
                 }
-                QuestPlacement ecPlacement = placements.get(ecId);
-                int ecX = ecPlacement != null ? ecPlacement.x() : ec.x();
-                int ecY = ecPlacement != null ? ecPlacement.y() : ec.y();
-                ecEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
-                        ecId, chapter, ecX, ecY, ec.w(), ec.h(), ec.rotation(),
+                QuestPlacement exclusiveChoicePlacement = placements.get(exclusiveChoiceId);
+                int exclusiveChoiceX = exclusiveChoicePlacement != null ? exclusiveChoicePlacement.x() : ec.x();
+                int exclusiveChoiceY = exclusiveChoicePlacement != null ? exclusiveChoicePlacement.y() : ec.y();
+                exclusiveChoiceEntries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
+                        exclusiveChoiceId, chapter, exclusiveChoiceX, exclusiveChoiceY, ec.w(), ec.h(), ec.rotation(),
                         ec.background(), ec.connectionQuestIds(),
-                        prerequisitesByTarget.getOrDefault(ecId, Set.of()),
+                        prerequisitesByTarget.getOrDefault(exclusiveChoiceId, Set.of()),
                         ec.connectionColors(), ec.connectionModes(),
                         ec.connectionTextures(), ec.connectionTextureSpacings(),
                         ec.hiddenConnections()));
-                order.add(CanvasLayerOrdering.exclusiveChoiceKey(ecId));
+                order.add(CanvasLayerOrdering.exclusiveChoiceKey(exclusiveChoiceId));
             }
             QuestPlacement focusPlacement = placements.get(model.questId());
             if (focusPlacement != null) {
@@ -95,8 +95,8 @@ final class PrerequisitePreviewBuilder {
                 order.add(CanvasLayerOrdering.questKey(model.questId()));
             }
         }
-        Origin origin = origin(entries, ecEntries);
-        return new CanvasBlueprint(CanvasBlueprint.CURRENT_SCHEMA, focus.display().title(), origin.x(), origin.y(), entries, List.of(), List.of(), order, ecEntries);
+        Origin origin = origin(entries, exclusiveChoiceEntries);
+        return new CanvasBlueprint(CanvasBlueprint.CURRENT_SCHEMA, focus.display().title(), origin.x(), origin.y(), entries, List.of(), List.of(), order, exclusiveChoiceEntries);
     }
 
     private static Map<String, QuestDefinition> definitionsForPreview(String questId, QuestDefinition focus, List<PrerequisiteConnectionRow> rows) {
@@ -113,7 +113,7 @@ final class PrerequisitePreviewBuilder {
         if (definitions.containsKey(questId)) {
             return;
         }
-        QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, ClientQuestStateFacade.quest(questId));
+        QuestDefinition definition = CanvasBlueprintSnapshots.fromClientTag(questId, ClientQuestStateFacade.quest(questId));
         if (definition != null) {
             definitions.put(questId, definition);
         }
@@ -174,10 +174,10 @@ final class PrerequisitePreviewBuilder {
         return new QuestPlacement(preferredGroup, 0, 0, 1.0f);
     }
 
-    private static Map<String, Set<String>> prerequisitesByTarget(List<PrerequisiteConnectionRow> rows, Set<String> ecIds) {
+    private static Map<String, Set<String>> prerequisitesByTarget(List<PrerequisiteConnectionRow> rows, Set<String> exclusiveChoiceIds) {
         Map<String, Set<String>> prerequisites = new LinkedHashMap<>();
         for (PrerequisiteConnectionRow row : rows) {
-            if (row.exclusiveChoice() && !ecIds.contains(row.targetId())) {
+            if (row.exclusiveChoice() && !exclusiveChoiceIds.contains(row.targetId())) {
                 continue;
             }
             prerequisites.computeIfAbsent(row.targetId(), ignored -> new LinkedHashSet<>()).add(row.sourceId());
@@ -204,36 +204,36 @@ final class PrerequisitePreviewBuilder {
         );
     }
 
-    private static Origin origin(List<CanvasBlueprint.QuestEntry> entries, List<CanvasBlueprint.ExclusiveChoiceEntry> ecEntries) {
+    private static Origin origin(List<CanvasBlueprint.QuestEntry> entries, List<CanvasBlueprint.ExclusiveChoiceEntry> exclusiveChoiceEntries) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (CanvasBlueprint.QuestEntry entry : entries) {
             minX = Math.min(minX, entry.sourceX());
             minY = Math.min(minY, entry.sourceY());
         }
-        for (CanvasBlueprint.ExclusiveChoiceEntry entry : ecEntries) {
+        for (CanvasBlueprint.ExclusiveChoiceEntry entry : exclusiveChoiceEntries) {
             minX = Math.min(minX, entry.sourceX());
             minY = Math.min(minY, entry.sourceY());
         }
         return minX == Integer.MAX_VALUE ? new Origin(0, 0) : new Origin(minX, minY);
     }
 
-    private static Set<String> ecIdsFromRows(List<PrerequisiteConnectionRow> rows, String focusId) {
-        Set<String> ecIds = new LinkedHashSet<>();
+    private static Set<String> exclusiveChoiceIdsFromRows(List<PrerequisiteConnectionRow> rows, String focusId) {
+        Set<String> exclusiveChoiceIds = new LinkedHashSet<>();
         for (PrerequisiteConnectionRow row : rows) {
             if (row.exclusiveChoice()) {
                 if (!row.sourceId().equals(focusId)) {
-                    ecIds.add(row.sourceId());
+                    exclusiveChoiceIds.add(row.sourceId());
                 }
                 if (!row.targetId().equals(focusId)) {
-                    ecIds.add(row.targetId());
+                    exclusiveChoiceIds.add(row.targetId());
                 }
             }
         }
-        return ecIds;
+        return exclusiveChoiceIds;
     }
 
-    private static CanvasExclusiveChoice findEcById(String id, String chapter) {
+    private static CanvasExclusiveChoice findExclusiveChoiceById(String id, String chapter) {
         if (chapter == null || chapter.isBlank()) {
             return null;
         }

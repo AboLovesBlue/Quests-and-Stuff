@@ -14,22 +14,22 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletAdvancementPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.asset.TabletAssetPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletBiomePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletBlockPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletColorPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletDimensionPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.AdvancementPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.asset.AssetPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.BiomePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.BlockPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ColorPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.DimensionPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.entity.EntityVariantModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletIconPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletItemInventoryPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletItemLockPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletLootTablePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.recipe.TabletRecipePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.sound.TabletSoundPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletStatPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletStructurePickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletThemePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.IconPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ItemInventoryPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ItemLockPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.LootTablePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.sound.SoundPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.StatPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.StructurePickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ThemePickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.prerequisite.QuestPrerequisitesModal;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -39,29 +39,29 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 
 public final class ModalPanelRouter {
     private static final List<ModalPanelDescriptor> MODAL_DESCRIPTORS = List.of(
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ICON_PICKER, TabletIconPickerModal::rebuild, state -> state.pickers.iconSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ASSET_PICKER, TabletAssetPickerModal::rebuild, state -> state.pickers.assetSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.BIOME_PICKER, TabletBiomePickerModal::rebuild, state -> state.pickers.biomeSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ADVANCEMENT_PICKER, TabletAdvancementPickerModal::rebuild, state -> state.pickers.advancementSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.RECIPE_PICKER, TabletRecipePickerModal::rebuild, state -> state.pickers.recipeSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.STRUCTURE_PICKER, TabletStructurePickerModal::rebuild, state -> state.pickers.structureSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.BLOCK_PICKER, TabletBlockPickerModal::rebuild, state -> state.pickers.blockSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.STAT_PICKER, TabletStatPickerModal::rebuild, state -> state.pickers.statSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.DIMENSION_PICKER, TabletDimensionPickerModal::rebuild, state -> state.pickers.dimensionSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, TabletLootTablePickerModal::rebuild, state -> state.pickers.lootTableSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, TabletItemInventoryPickerModal::rebuild, state -> state.pickers.itemInventorySearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.SOUND_PICKER, TabletSoundPickerModal::rebuild, state -> state.pickers.soundSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ICON_PICKER, IconPickerModal::rebuild, state -> state.pickers.iconSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ASSET_PICKER, AssetPickerModal::rebuild, state -> state.pickers.assetSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.BIOME_PICKER, BiomePickerModal::rebuild, state -> state.pickers.biomeSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ADVANCEMENT_PICKER, AdvancementPickerModal::rebuild, state -> state.pickers.advancementSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.RECIPE_PICKER, RecipePickerModal::rebuild, state -> state.pickers.recipeSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.STRUCTURE_PICKER, StructurePickerModal::rebuild, state -> state.pickers.structureSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.BLOCK_PICKER, BlockPickerModal::rebuild, state -> state.pickers.blockSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.STAT_PICKER, StatPickerModal::rebuild, state -> state.pickers.statSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.DIMENSION_PICKER, DimensionPickerModal::rebuild, state -> state.pickers.dimensionSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.LOOT_TABLE_PICKER, LootTablePickerModal::rebuild, state -> state.pickers.lootTableSearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_INVENTORY_PICKER, ItemInventoryPickerModal::rebuild, state -> state.pickers.itemInventorySearchFocused),
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.SOUND_PICKER, SoundPickerModal::rebuild, state -> state.pickers.soundSearchFocused),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.COLOR_PICKER, (modal, state, player, refresh, w, h) -> {
-                TabletColorPickerModal.rebuild(modal, state, player, refresh, w, h);
+                ColorPickerModal.rebuild(modal, state, player, refresh, w, h);
                 return null;
             }, state -> false),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.THEME_PICKER, (modal, state, player, refresh, w, h) -> {
-                TabletThemePickerModal.rebuild(modal, state, refresh, w, h);
+                ThemePickerModal.rebuild(modal, state, refresh, w, h);
                 return null;
             }, state -> false),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, EntityVariantModal::rebuild, state -> state.pickers.entityVariantSearchFocused),
             new ModalPanelDescriptor(ModalWindowManager.ModalType.PREREQUISITES_MANAGER, QuestPrerequisitesModal::rebuild, state -> state.modal.prerequisitesManagerSearchFocused),
-            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_LOCK_PICKER, TabletItemLockPickerModal::rebuild, state -> state.pickers.itemLockSearchFocused)
+            new ModalPanelDescriptor(ModalWindowManager.ModalType.ITEM_LOCK_PICKER, ItemLockPickerModal::rebuild, state -> state.pickers.itemLockSearchFocused)
     );
 
     private ModalPanelRouter() {

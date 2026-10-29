@@ -146,21 +146,21 @@ public final class AssetPickerApplyActions {
             addCanvasImage(state, imageTarget, background);
             return;
         }
-        String ecTarget = ModalTargetState.target(state, ModalSession.TargetSlot.EC_BACKGROUND, state.modal.modalEcBackgroundTarget);
-        if (!ecTarget.isBlank()) {
-            String[] parts = ecTarget.split(":", 2);
+        String exclusiveChoiceTarget = ModalTargetState.target(state, ModalSession.TargetSlot.EXCLUSIVE_CHOICE_BACKGROUND, state.modal.modalExclusiveChoiceBackgroundTarget);
+        if (!exclusiveChoiceTarget.isBlank()) {
+            String[] parts = exclusiveChoiceTarget.split(":", 2);
             if (parts.length == 2) {
                 String chapter = parts[0];
-                String ecId = parts[1];
-                CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecId);
+                String exclusiveChoiceId = parts[1];
+                CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
                 if (ec != null) {
                     CanvasExclusiveChoice updated = ec.withBackground(background);
                     CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
-                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
-                    QuestsAndStuffMod.debugLog("[QnS:UI] exclusive choice background picked chapter={} ec={} background={}", chapter, ecId, background);
+                    CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] exclusive choice background picked chapter={} ec={} background={}", chapter, exclusiveChoiceId, background);
                 }
             }
-            state.modal.modalEcBackgroundTarget = "";
+            state.modal.modalExclusiveChoiceBackgroundTarget = "";
             return;
         }
         String canvasTarget = ModalTargetState.target(state, ModalSession.TargetSlot.CANVAS_BACKGROUND, state.modal.modalCanvasBackgroundTarget);
@@ -242,9 +242,9 @@ public final class AssetPickerApplyActions {
                 for (var connection : CanvasOverlayController.selectedConnections(state, chapter)) {
                     String prereq = connection.prerequisiteId();
                     String quest = connection.questId();
-                    boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq) || ConnectionRenderer.isEcId(state, chapter, quest);
-                    if (isEc) {
-                        EditorCanvasCommandClient.runEcConnectionTextureAction(state, prereq, quest, background);
+                    boolean isExclusiveChoice = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq) || ConnectionRenderer.isExclusiveChoiceId(state, chapter, quest);
+                    if (isExclusiveChoice) {
+                        EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, prereq, quest, background);
                     } else {
                         EditorCanvasCommandClient.runConnectionTextureAction(player, quest, prereq, background);
                         ConnectionRenderer.setConnectionTexture(state, chapter, prereq, quest, background);
@@ -261,10 +261,10 @@ public final class AssetPickerApplyActions {
                 String chapter = parts[1];
                 String prerequisiteId = parts[2];
                 String questId = parts[3];
-                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer.isEcId(state, chapter, prerequisiteId)
-                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer.isEcId(state, chapter, questId);
-                if (isEc) {
-                    EditorCanvasCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, background);
+                boolean isExclusiveChoice = com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer.isExclusiveChoiceId(state, chapter, prerequisiteId)
+                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer.isExclusiveChoiceId(state, chapter, questId);
+                if (isExclusiveChoice) {
+                    EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, prerequisiteId, questId, background);
                 } else {
                     EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, background);
                     ConnectionRenderer.setConnectionTexture(state, chapter, prerequisiteId, questId, background);

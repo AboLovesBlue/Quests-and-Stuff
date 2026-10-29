@@ -18,7 +18,7 @@ import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskInlineFields;
@@ -37,7 +37,7 @@ final class QuestTaskCardRenderer {
     private QuestTaskCardRenderer() {
     }
 
-    static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, List<QuestDetailsTaskEntry> entries, int listY, int listBottom) {
+    static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom) {
         parent.addWidget(QuestTaskCardPanel.cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom, false, false, false, QuestTaskLockJson.hasLocks(entry.json())));
         String icon = QuestTaskDisplayText.taskIcon(entry.json());
         addTaskIcon(parent, entry.json(), icon, x + 8, y + 8);
@@ -49,13 +49,13 @@ final class QuestTaskCardRenderer {
         }
     }
 
-    static void renderRewardCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, List<QuestDetailsTaskEntry> entries, int listY, int listBottom, boolean rewardsClaimed) {
+    static void renderRewardCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, List<QuestTaskEntry> entries, int listY, int listBottom, boolean rewardsClaimed) {
         boolean selectableWrapper = QuestTaskSelectableRewards.isSelectable(entry.json());
         boolean selectableChoice = QuestTaskSelectableRewards.isSelectableChoiceId(entry.id());
         boolean selectableReward = selectableWrapper || selectableChoice;
         boolean claimChoiceEntry = QuestTaskSelectableRewards.isClaimChoiceEntry(entry);
         JsonObject displayJson = selectableWrapper ? QuestTaskSelectableRewards.displayJson(entry.json()) : entry.json();
-        QuestDetailsTaskEntry displayEntry = selectableWrapper ? new QuestDetailsTaskEntry(entry.id(), entry.tag(), displayJson) : entry;
+        QuestTaskEntry displayEntry = selectableWrapper ? new QuestTaskEntry(entry.id(), entry.tag(), displayJson) : entry;
         parent.addWidget(QuestTaskCardPanel.cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry, false));
         String icon = QuestTaskDisplayText.rewardIcon(displayJson);
         addTaskIcon(parent, displayJson, icon, x + 8, y + 8);
@@ -75,13 +75,13 @@ final class QuestTaskCardRenderer {
     private static void addTaskIcon(WidgetGroup parent, JsonObject json, String icon, int x, int y) {
         ItemStack stack = QuestTaskItemStacks.iconStack(json);
         if (!stack.isEmpty()) {
-            parent.addWidget(new DisplayIconWidget(x, y, QuestDetailsTasksPanel.ICON, QuestDetailsTasksPanel.ICON, stack));
+            parent.addWidget(new DisplayIconWidget(x, y, QuestTaskListPanel.ICON, QuestTaskListPanel.ICON, stack));
             return;
         }
-        parent.addWidget(new DisplayIconWidget(x, y, QuestDetailsTasksPanel.ICON, QuestDetailsTasksPanel.ICON, icon));
+        parent.addWidget(new DisplayIconWidget(x, y, QuestTaskListPanel.ICON, QuestTaskListPanel.ICON, icon));
     }
 
-    private static int taskTitleRightX(QuestDetailsTaskEntry entry, int x, int w) {
+    private static int taskTitleRightX(QuestTaskEntry entry, int x, int w) {
         if (!QuestTaskDisplayText.usesAmountField(entry.json(), true)) {
             return x + w - 8;
         }
@@ -93,7 +93,7 @@ final class QuestTaskCardRenderer {
         return x + w - 34 - countTextW - 6;
     }
 
-    private static int rewardTitleRightX(QuestDetailsTaskEntry entry, int x, int w) {
+    private static int rewardTitleRightX(QuestTaskEntry entry, int x, int w) {
         return QuestTaskDisplayText.usesAmountField(entry.json(), false) ? x + w - 40 : x + w - 8;
     }
 
@@ -101,7 +101,7 @@ final class QuestTaskCardRenderer {
         if (!QuestDetailsEditController.canEdit(state)) {
             return;
         }
-        var hit = flatHitButton(x, y, QuestDetailsTasksPanel.ICON, QuestDetailsTasksPanel.ICON, click -> {
+        var hit = flatHitButton(x, y, QuestTaskListPanel.ICON, QuestTaskListPanel.ICON, click -> {
             ContextMenuController.clearDeleteConfirm(state);
             QuestDetailsWindow.openIconPicker(state, task ? ModalTargets.taskIcon(questId, id) : ModalTargets.rewardIcon(questId, id));
             refresh.run();
@@ -114,7 +114,7 @@ final class QuestTaskCardRenderer {
     private static Component[] iconTooltip(JsonObject json, String icon) {
         ItemStack stack = QuestTaskItemStacks.iconStack(json);
         if (stack.isEmpty()) {
-            return TabletModalPanel.iconTooltip(icon);
+            return ModalPanel.iconTooltip(icon);
         }
         List<Component> lines = new ArrayList<>(Screen.getTooltipFromItem(Minecraft.getInstance(), stack));
         String itemId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();

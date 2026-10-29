@@ -18,7 +18,7 @@ public final class CanvasClipboardState {
     private final List<CanvasExclusiveChoice> exclusiveChoiceLayers = new ArrayList<>();
     private final Set<String> pendingPastedImageIds = new LinkedHashSet<>();
     private final Set<String> pendingPastedTextIds = new LinkedHashSet<>();
-    private final Set<String> pendingPastedEcIds = new LinkedHashSet<>();
+    private final Set<String> pendingPastedExclusiveChoiceIds = new LinkedHashSet<>();
 
     public boolean hasQuestClipboard() {
         return questClipboardAvailable;
@@ -94,7 +94,7 @@ public final class CanvasClipboardState {
     public void clearPendingPastedLayers() {
         pendingPastedImageIds.clear();
         pendingPastedTextIds.clear();
-        pendingPastedEcIds.clear();
+        pendingPastedExclusiveChoiceIds.clear();
     }
 
     public void recordPastedImage(String id) {
@@ -114,7 +114,7 @@ public final class CanvasClipboardState {
     public void recordPastedExclusiveChoice(String id) {
         String clean = clean(id);
         if (!clean.isBlank()) {
-            pendingPastedEcIds.add(clean);
+            pendingPastedExclusiveChoiceIds.add(clean);
         }
     }
 
@@ -126,8 +126,8 @@ public final class CanvasClipboardState {
         return Set.copyOf(pendingPastedTextIds);
     }
 
-    public Set<String> pendingPastedEcIds() {
-        return Set.copyOf(pendingPastedEcIds);
+    public Set<String> pendingPastedExclusiveChoiceIds() {
+        return Set.copyOf(pendingPastedExclusiveChoiceIds);
     }
 
     public String lastPendingPastedImageId() {
@@ -138,8 +138,8 @@ public final class CanvasClipboardState {
         return pendingPastedTextIds.stream().reduce((first, second) -> second).orElse("");
     }
 
-    public String lastPendingPastedEcId() {
-        return pendingPastedEcIds.stream().reduce((first, second) -> second).orElse("");
+    public String lastPendingPastedExclusiveChoiceId() {
+        return pendingPastedExclusiveChoiceIds.stream().reduce((first, second) -> second).orElse("");
     }
 
     private static String clean(String value) {

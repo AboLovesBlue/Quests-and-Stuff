@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFi
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -99,7 +99,7 @@ final class CanvasContextCanvasActions {
             state.canvas.canvasSelection.setPrimaryTextId(id);
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.questIds().clear();
-            TextEditSession.beginMainCanvas(state, id, text.text());
+            CanvasTextEditSession.beginMainCanvas(state, id, text.text());
             ContextMenuController.close(state);
             canvasViewport.setFocus(true);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=add_text_box chapter={} id={} logical={},{}", selectedChapter, id, x, y);
@@ -122,7 +122,7 @@ final class CanvasContextCanvasActions {
                 ec = CanvasGridFitController.fittedExclusiveChoice(state, ec);
             }
             CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedChapter, ec);
-            state.canvas.canvasSelection.setPrimaryEcId(id);
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(id);
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.questIds().clear();
@@ -229,7 +229,7 @@ final class CanvasContextCanvasActions {
         }
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = TabletGridControls.defaultGridColor(state);
-            AppModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
+            AppOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_grid_color color={}", color);
             canvasViewport.refresh();
         }));

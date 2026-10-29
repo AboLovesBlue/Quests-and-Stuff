@@ -216,10 +216,10 @@ public final class CanvasViewportInputController {
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            String ecId = state.canvas.canvasSelection.primaryEcId();
+            String exclusiveChoiceId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
             return commitElementTransform(state, refresher, () -> {
-                CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, ecId);
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
+                CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
             });
         }
 
@@ -243,8 +243,8 @@ public final class CanvasViewportInputController {
                 CanvasLayerMutations.persistCanvasText(state, chapter, textId);
             }
             int movedEcs = state.canvas.transientCanvasExclusiveChoices.size();
-            for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
+            for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
             }
             QuestsAndStuffMod.debugLog(
                     "[QnS:UI] canvas selection drag commit quests={} images={} texts={} ecs={} delta={},{}",
@@ -312,8 +312,8 @@ public final class CanvasViewportInputController {
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             CanvasLayerMutations.persistCanvasText(state, chapter, textId);
         }
-        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
         }
     }
 

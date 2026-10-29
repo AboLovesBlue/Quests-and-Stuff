@@ -70,10 +70,10 @@ final class CanvasRangeSelection {
             }
         }
         for (CanvasExclusiveChoice ec : ecs) {
-            int[] ecBounds = CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
-            if (ecBounds[0] < maxX && ecBounds[2] > minX && ecBounds[1] < maxY && ecBounds[3] > minY) {
-                state.canvas.canvasSelection.ecIds().add(ec.id());
-                state.canvas.canvasSelection.setPrimaryEcId(ec.id());
+            int[] exclusiveChoiceBounds = CanvasElementGeometry.logicalBoundsAtPivot(ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+            if (exclusiveChoiceBounds[0] < maxX && exclusiveChoiceBounds[2] > minX && exclusiveChoiceBounds[1] < maxY && exclusiveChoiceBounds[3] > minY) {
+                state.canvas.canvasSelection.exclusiveChoiceIds().add(ec.id());
+                state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(ec.id());
             }
         }
     }
@@ -90,8 +90,8 @@ final class CanvasRangeSelection {
                 state.canvas.canvasSelection.setPrimaryTextId(id);
             }
             case EXCLUSIVE_CHOICE -> {
-                state.canvas.canvasSelection.ecIds().add(id);
-                state.canvas.canvasSelection.setPrimaryEcId(id);
+                state.canvas.canvasSelection.exclusiveChoiceIds().add(id);
+                state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(id);
             }
             case CONNECTION -> {
             }

@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.TaskSections;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
@@ -29,10 +29,10 @@ final class QuestTaskContextMenu {
         ContextMenuSections sections = new ContextMenuSections();
         String kind = state.questDetails.questDetailsContextKind == null ? "" : state.questDetails.questDetailsContextKind;
         QuestTaskCreateMenuActions.addSections(sections, state, kind);
-        if (TaskSections.isTask(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+        if (QuestTaskSections.isTask(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
             QuestTaskMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
-        if (TaskSections.isReward(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+        if (QuestTaskSections.isReward(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
             QuestTaskRewardMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
         List<ContextAction> actions = sections.build();

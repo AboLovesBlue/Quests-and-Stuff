@@ -154,17 +154,17 @@ public final class ClientCanvasLayerState {
         ensureLayerOrder(normalized, "exclusive_choice:" + ec.id());
     }
 
-    public static boolean removeExclusiveChoice(String chapter, String ecId) {
+    public static boolean removeExclusiveChoice(String chapter, String exclusiveChoiceId) {
         String normalized = ClientChapterState.normalizeChapter(chapter);
-        if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
+        if (normalized.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return false;
         }
         List<CanvasExclusiveChoice> choices = new ArrayList<>(CHAPTER_CANVAS_EXCLUSIVE_CHOICES.getOrDefault(normalized, List.of()));
-        if (!choices.removeIf(ec -> ec.id().equals(ecId))) {
+        if (!choices.removeIf(ec -> ec.id().equals(exclusiveChoiceId))) {
             return false;
         }
         putOrRemove(CHAPTER_CANVAS_EXCLUSIVE_CHOICES, normalized, choices);
-        removeLayerOrder(normalized, "exclusive_choice:" + ecId);
+        removeLayerOrder(normalized, "exclusive_choice:" + exclusiveChoiceId);
         return true;
     }
 

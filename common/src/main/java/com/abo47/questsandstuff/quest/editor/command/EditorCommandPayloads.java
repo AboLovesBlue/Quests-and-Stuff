@@ -503,11 +503,11 @@ public final class EditorCommandPayloads {
         return payload;
     }
 
-    public static CompoundTag canvasExclusiveChoiceRemove(String chapter, String ecId) {
-        return chapterId(chapter, ecId);
+    public static CompoundTag canvasExclusiveChoiceRemove(String chapter, String exclusiveChoiceId) {
+        return chapterId(chapter, exclusiveChoiceId);
     }
 
-    public static CompoundTag ecConnectionHidden(String chapter, String sourceId, String targetId, boolean hidden) {
+    public static CompoundTag exclusiveChoiceConnectionHidden(String chapter, String sourceId, String targetId, boolean hidden) {
         CompoundTag payload = chapter(chapter);
         payload.putString(ID, sourceId);
         payload.putString(PREREQUISITE, targetId);

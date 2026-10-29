@@ -13,8 +13,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskLootTableRewardEditor;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonDefaults;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
@@ -50,55 +50,55 @@ public final class QuestTaskDisplayText {
     }
 
     public static String taskIcon(JsonObject json) {
-        String explicitIcon = TaskJsonFactory.asString(json, "icon", "");
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
+        String explicitIcon = QuestTaskJsonFactory.asString(json, "icon", "");
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
         if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
-            return TaskJsonFactory.XP_CARD_ICON;
+            return QuestTaskJsonFactory.XP_CARD_ICON;
         }
         if (!explicitIcon.isBlank()) {
             return explicitIcon;
         }
-        String tag = TaskJsonFactory.asString(json, "tag", "");
+        String tag = QuestTaskJsonFactory.asString(json, "tag", "");
         if (!tag.isBlank()) {
             return "#" + tag;
         }
-        String target = TaskJsonFactory.asString(json, "target", "");
+        String target = QuestTaskJsonFactory.asString(json, "target", "");
         if (isEntityTask(path) && !target.isBlank()) {
             return EntityPreviewRenderer.entityAsset(target);
         }
-        return TaskJsonFactory.firstPresent(json, "item", "fallback_item", "minecraft:book");
+        return QuestTaskJsonFactory.firstPresent(json, "item", "fallback_item", "minecraft:book");
     }
 
     public static String rewardIcon(JsonObject json) {
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
-        String explicitIcon = TaskJsonFactory.asString(json, "icon", "");
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
+        String explicitIcon = QuestTaskJsonFactory.asString(json, "icon", "");
         if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
-            return TaskJsonFactory.XP_CARD_ICON;
+            return QuestTaskJsonFactory.XP_CARD_ICON;
         }
         if ("loot_table".equals(path) || "loot".equals(path)) {
-            return TaskJsonFactory.firstPresent(json, "icon", "minecraft:chest");
+            return QuestTaskJsonFactory.firstPresent(json, "icon", "minecraft:chest");
         }
-        return TaskJsonFactory.firstPresent(json, "icon", "item", "fallback_item", TaskJsonDefaults.rewardFallback(path));
+        return QuestTaskJsonFactory.firstPresent(json, "icon", "item", "fallback_item", QuestTaskJsonDefaults.rewardFallback(path));
     }
 
     public static String displayName(JsonObject json, String type) {
-        String path = TaskJsonFactory.typePath(type);
-        String title = TaskJsonFactory.asString(json, "title", "");
+        String path = QuestTaskJsonFactory.typePath(type);
+        String title = QuestTaskJsonFactory.asString(json, "title", "");
         if (!title.isBlank()) {
             return title;
         }
         if ("biome".equals(path)) {
-            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "target", "")));
+            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(QuestTaskJsonFactory.asString(json, "target", "")));
         }
         if ("advancement".equals(path)) {
             String advancementName = DisplayNameFormatter.advancement(
-                    TaskJsonFactory.asString(json, "target", ""),
+                    QuestTaskJsonFactory.asString(json, "target", ""),
                     ClientQuestStateFacade.advancementDisplays()
             );
             return advancementName.isBlank() ? typeLabel(type) : advancementName;
         }
         if ("recipe".equals(path)) {
-            String recipeTarget = TaskJsonFactory.asString(json, "target", "");
+            String recipeTarget = QuestTaskJsonFactory.asString(json, "target", "");
             if (recipeTarget.startsWith("#")) {
                 return readableTagName(recipeTarget);
             }
@@ -106,86 +106,86 @@ public final class QuestTaskDisplayText {
             return recipeName.isBlank() ? typeLabel(type) : recipeName;
         }
         if ("structure".equals(path)) {
-            String structureName = DisplayNameFormatter.resourceLeaf(TaskJsonFactory.asString(json, "target", ""));
+            String structureName = DisplayNameFormatter.resourceLeaf(QuestTaskJsonFactory.asString(json, "target", ""));
             return structureName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, structureName);
         }
         if ("block_interact".equals(path) || "block_interaction".equals(path)) {
-            String blockName = blockTargetName(TaskJsonFactory.asString(json, "target", ""));
+            String blockName = blockTargetName(QuestTaskJsonFactory.asString(json, "target", ""));
             return blockName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, blockName);
         }
         if ("stat".equals(path)) {
-            String statName = StatTargetFormatter.displayName(TaskJsonFactory.asString(json, "target", ""));
+            String statName = StatTargetFormatter.displayName(QuestTaskJsonFactory.asString(json, "target", ""));
             return statName.isBlank() ? typeLabel(type) : statName;
         }
         if ("location".equals(path)) {
-            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(TaskJsonFactory.asString(json, "dimension", "")));
+            return TabletTranslationKeys.text(QuestTranslationKeys.VISIT_TARGET, readableIdName(QuestTaskJsonFactory.asString(json, "dimension", "")));
         }
         if ("kill_entity".equals(path)) {
-            String entityId = TaskJsonFactory.asString(json, "target", "");
+            String entityId = QuestTaskJsonFactory.asString(json, "target", "");
             String entityName = EntityPreviewRenderer.entityDisplayName(entityId);
             return entityName.isBlank()
                     ? TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY)
                     : TabletTranslationKeys.text(QuestTranslationKeys.KILL_ENTITY_NAMED, entityName);
         }
         if ("scan_entity".equals(path)) {
-            String entityId = TaskJsonFactory.asString(json, "target", "");
+            String entityId = QuestTaskJsonFactory.asString(json, "target", "");
             String entityName = EntityPreviewRenderer.entityDisplayName(entityId);
             return entityName.isBlank()
                     ? TabletTranslationKeys.text(QuestTranslationKeys.SCAN_ENTITY)
                     : TabletTranslationKeys.text(QuestTranslationKeys.SCAN_ENTITY_NAMED, entityName);
         }
         if ("entity_interact".equals(path) || "entity_interaction".equals(path)) {
-            String entityName = EntityPreviewRenderer.entityDisplayName(TaskJsonFactory.asString(json, "target", ""));
+            String entityName = EntityPreviewRenderer.entityDisplayName(QuestTaskJsonFactory.asString(json, "target", ""));
             return entityName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, entityName);
         }
         if ("item_interact".equals(path) || "item_interaction".equals(path)) {
-            String itemName = itemTargetName(TaskJsonFactory.asString(json, "target", ""));
+            String itemName = itemTargetName(QuestTaskJsonFactory.asString(json, "target", ""));
             return itemName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.INTERACT_TARGET, itemName);
         }
         if ("item_use".equals(path)) {
-            String itemName = itemTargetName(TaskJsonFactory.asString(json, "target", ""));
+            String itemName = itemTargetName(QuestTaskJsonFactory.asString(json, "target", ""));
             return itemName.isBlank() ? typeLabel(type) : TabletTranslationKeys.text(QuestTranslationKeys.USE_TARGET, itemName);
         }
         if ("loot_table".equals(path) || "loot".equals(path)) {
-            String lootName = QuestTaskLootTableRewardEditor.displayName(TaskJsonFactory.asString(json, "loot_table", ""));
+            String lootName = QuestTaskLootTableRewardEditor.displayName(QuestTaskJsonFactory.asString(json, "loot_table", ""));
             if (!lootName.isBlank()) {
                 return lootName;
             }
         }
-        String tag = TaskJsonFactory.asString(json, "tag", "");
+        String tag = QuestTaskJsonFactory.asString(json, "tag", "");
         if (!tag.isBlank()) {
             return readableTagName(tag);
         }
-        String item = TaskJsonFactory.firstPresent(json, "item", "fallback_item", "icon");
+        String item = QuestTaskJsonFactory.firstPresent(json, "item", "fallback_item", "icon");
         if (!item.isBlank()) {
             String name = itemName(item);
             if (!name.isBlank()) {
                 return name;
             }
         }
-        String subtitle = TaskJsonFactory.firstPresent(json, "target", "dimension", "loot_table", "command");
+        String subtitle = QuestTaskJsonFactory.firstPresent(json, "target", "dimension", "loot_table", "command");
         return subtitle.isBlank() ? typeLabel(type) : subtitle;
     }
 
     public static String typeLabel(String type) {
-        String path = TaskJsonFactory.typePath(type);
+        String path = QuestTaskJsonFactory.typePath(type);
         String spaced = path.replace('_', ' ');
         return spaced.isBlank() ? TabletTranslationKeys.text(TabletTranslationKeys.COMMON_UNKNOWN) : Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
     }
 
     public static boolean isManualTask(JsonObject json) {
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
         return "check".equals(path) || "dummy".equals(path);
     }
 
     public static boolean isManualXpTask(JsonObject json) {
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
-        String collection = TaskJsonFactory.asString(json, "collection", "automatic");
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
+        String collection = QuestTaskJsonFactory.asString(json, "collection", "automatic");
         return "xp".equals(path) && ("manual".equals(collection) || "consume".equals(collection));
     }
 
     public static boolean usesAmountField(JsonObject json, boolean task) {
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
         if (task) {
             return !isManualTask(json)
                     && !"biome".equals(path)

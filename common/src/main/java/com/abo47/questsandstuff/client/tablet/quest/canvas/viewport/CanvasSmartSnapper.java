@@ -50,7 +50,7 @@ final class CanvasSmartSnapper {
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
             Set<String> movingTextIds,
-            Set<String> movingEcIds
+            Set<String> movingExclusiveChoiceIds
     ) {
         state.canvas.snapGuideXVisible = false;
         state.canvas.snapGuideYVisible = false;
@@ -60,7 +60,7 @@ final class CanvasSmartSnapper {
 
         CanvasSnapEngine.SnapResult result = CanvasSnapEngine.snap(new CanvasSnapEngine.SnapContext(
                 moving,
-                snapTargets(state, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, movingEcIds),
+                snapTargets(state, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, movingExclusiveChoiceIds),
                 new CanvasSnapEngine.SnapSettings(
                         state.canvas.centerSnapXEnabled,
                         state.canvas.centerSnapYEnabled,
@@ -81,7 +81,7 @@ final class CanvasSmartSnapper {
             Set<String> movingQuestIds,
             Set<String> movingImageIds,
             Set<String> movingTextIds,
-            Set<String> movingEcIds
+            Set<String> movingExclusiveChoiceIds
     ) {
         if (!state.canvas.objectSnapEnabled) {
             return List.of();
@@ -103,7 +103,7 @@ final class CanvasSmartSnapper {
             }
         }
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (!movingEcIds.contains(ec.id())) {
+            if (!movingExclusiveChoiceIds.contains(ec.id())) {
                 targets.add(CanvasSnapBounds.forExclusiveChoice(ec));
             }
         }

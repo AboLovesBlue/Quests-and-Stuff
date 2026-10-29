@@ -8,11 +8,11 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestDetailsTypeChoice;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeChoice;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalog;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonDefaults;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -23,15 +23,15 @@ public final class QuestTaskRewardEditActions {
     }
 
     public static void beginRewardAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
-        QuestDetailsTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
-        String type = choice == null ? TaskJsonFactory.MOD + typePath : choice.fullType();
-        String id = TaskJsonFactory.nextId(quest.getCompound("rewards"), "reward_" + typePath);
+        QuestTaskTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
+        String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
+        String id = QuestTaskJsonFactory.nextId(quest.getCompound("rewards"), "reward_" + typePath);
         beginReward(player, state, questId, id, type, typePath, choice, true);
     }
 
     public static void beginRewardChange(Player player, TabletUiState state, String questId, String id, String typePath) {
-        QuestDetailsTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
-        String type = choice == null ? TaskJsonFactory.MOD + typePath : choice.fullType();
+        QuestTaskTypeChoice choice = QuestTaskTypeCatalog.rewardChoice(typePath);
+        String type = choice == null ? QuestTaskJsonFactory.MOD + typePath : choice.fullType();
         beginReward(player, state, questId, id, type, typePath, choice, false);
     }
 
@@ -42,14 +42,14 @@ public final class QuestTaskRewardEditActions {
     public static void openExistingCommandRewardEditor(TabletUiState state, String questId, String id) {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag reward = quest.getCompound("rewards").getCompound(id);
-        JsonObject json = TaskJsonFactory.readRewardForEdit(questId, id, reward.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.readRewardForEdit(questId, id, reward.getString("json"));
         openCommandRewardEditor(
                 state,
                 questId,
                 id,
-                TaskJsonFactory.asString(json, "command", ""),
-                TaskJsonFactory.asString(json, "title", "Command"),
-                TaskJsonFactory.asString(json, "icon", "minecraft:command_block")
+                QuestTaskJsonFactory.asString(json, "command", ""),
+                QuestTaskJsonFactory.asString(json, "title", "Command"),
+                QuestTaskJsonFactory.asString(json, "icon", "minecraft:command_block")
         );
     }
 
@@ -57,13 +57,13 @@ public final class QuestTaskRewardEditActions {
         CompoundTag reward = ClientQuestStateFacade.quest(questId)
                 .getCompound("rewards")
                 .getCompound(rewardId);
-        JsonObject existing = TaskJsonFactory.readRewardForEdit(questId, rewardId, reward.getString("json"));
+        JsonObject existing = QuestTaskJsonFactory.readRewardForEdit(questId, rewardId, reward.getString("json"));
         if (QuestTaskSelectableRewards.isSelectable(existing)) {
             next.addProperty("selectable", true);
         }
     }
 
-    private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestDetailsTypeChoice choice, boolean add) {
+    private static void beginReward(Player player, TabletUiState state, String questId, String id, String type, String typePath, QuestTaskTypeChoice choice, boolean add) {
         QuestTaskEditFlow flow = choice == null ? QuestTaskEditFlow.DIRECT_JSON : choice.editFlow();
         if (flow == QuestTaskEditFlow.ITEM_SOURCE_PICKER) {
             QuestDetailsTransientManager.openItemSourcePicker(state, ModalTargets.rewardItem(questId, id, type));
@@ -87,7 +87,7 @@ public final class QuestTaskRewardEditActions {
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details {} reward quest={} reward={} type={}", add ? "add" : "change", questId, id, typePath);
     }
 
-    private static JsonObject defaultRewardJson(String id, String typePath, QuestDetailsTypeChoice choice) {
-        return choice == null ? TaskJsonDefaults.defaultReward(id, typePath) : choice.defaultJson(id);
+    private static JsonObject defaultRewardJson(String id, String typePath, QuestTaskTypeChoice choice) {
+        return choice == null ? QuestTaskJsonDefaults.defaultReward(id, typePath) : choice.defaultJson(id);
     }
 }

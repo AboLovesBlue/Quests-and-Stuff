@@ -8,12 +8,12 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestState;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.TaskSections;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -58,7 +58,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         }
         boolean detailsContextWasOpen = state.questDetails.questDetailsContextOpen;
         boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
-        boolean textStyleWasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state);
+        boolean textStyleWasOpen = CanvasTextStyleSession.questDetailsOpenOrEditingFont(state);
         boolean textStyleHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
         boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
         boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
@@ -71,9 +71,9 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
                 && !textStyleHit
                 && !textOwnerHit
                 && !motionEditorHit
-                && !QuestDetailsTasksPanel.isCardHit(state, mouseX, mouseY);
+                && !QuestTaskListPanel.isCardHit(state, mouseX, mouseY);
         if (textStyleHit) {
-            TextStyleSession.markQuestDetailsInteraction(state);
+            CanvasTextStyleSession.markQuestDetailsInteraction(state);
         }
         super.mouseClicked(mouseX, mouseY, button);
         if (clearTaskSelection && taskInteractionStarted(
@@ -85,7 +85,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         )) {
             clearTaskSelection = false;
         }
-        if (QuestDetailsTasksPanel.isCardHit(state, mouseX, mouseY)) {
+        if (QuestTaskListPanel.isCardHit(state, mouseX, mouseY)) {
             clearTaskSelection = false;
         }
         if (motionEditorWasOpen && (motionEditorHit || EntityMotionEditor.isDragging(state))) {
@@ -93,7 +93,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
         }
         if (motionEditorWasOpen && (button == 0 || button == 1)) {
             if (clearTaskSelection) {
-                QuestDetailsTasksPanel.clearSelection(state, "outside_card_click");
+                QuestTaskListPanel.clearSelection(state, "outside_card_click");
             }
             EntityMotionEditor.close(state);
             refresh.run();
@@ -105,7 +105,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             return true;
         }
         boolean selectionCleared = clearTaskSelection
-                && QuestDetailsTasksPanel.clearSelection(state, "outside_card_click");
+                && QuestTaskListPanel.clearSelection(state, "outside_card_click");
         if (!QuestDetailsWindow.isInside(state, mouseX, mouseY)) {
             closeFloatingDetailsState();
             refresh.run();
@@ -137,7 +137,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             return true;
         }
         if (!detailsContextWasOpen && state.questDetails.questDetailsContextOpen) {
-            return TaskSections.isTask(state.questDetails.questDetailsContextKind) || TaskSections.isReward(state.questDetails.questDetailsContextKind);
+            return QuestTaskSections.isTask(state.questDetails.questDetailsContextKind) || QuestTaskSections.isReward(state.questDetails.questDetailsContextKind);
         }
         return false;
     }
@@ -193,7 +193,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             return true;
         }
         super.keyPressed(keyCode, scanCode, modifiers);
-        boolean isEditing = TextEditSession.isQuestDetailsEditing(state);
+        boolean isEditing = CanvasTextEditSession.isQuestDetailsEditing(state);
         boolean hasFontFocus = state.questDetails.questDetailsTextFontSizeFieldTarget != null && !state.questDetails.questDetailsTextFontSizeFieldTarget.isBlank();
         QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed key={} editing={} fontFieldOpen={}", keyCode, isEditing, hasFontFocus);
         return true;
@@ -218,15 +218,15 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
     }
 
     private void closeTextStyle(String reason) {
-        boolean wasOpen = TextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetails.questDetailsTextStyleTarget.isBlank();
+        boolean wasOpen = CanvasTextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetails.questDetailsTextStyleTarget.isBlank();
         String target = state.questDetails.questDetailsTextStyleTarget == null ? "" : state.questDetails.questDetailsTextStyleTarget;
-        TextStyleSession.closeQuestDetails(state);
+        CanvasTextStyleSession.closeQuestDetails(state);
         if (wasOpen) {
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason={}", target, reason);
         }
     }
 
     private boolean recentlyHandledTextStyleClick() {
-        return TextStyleSession.recentlyHandledQuestDetailsClick(state, System.currentTimeMillis(), 350L);
+        return CanvasTextStyleSession.recentlyHandledQuestDetailsClick(state, System.currentTimeMillis(), 350L);
     }
 }

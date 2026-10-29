@@ -17,7 +17,7 @@ public record S2CTeamJoinResultPacket(String messageKey, boolean success) {
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundTeamPacketDispatch.handleJoinResult(messageKey, success));
+        context.enqueueWork(() -> S2CTeamPacketDispatch.handleJoinResult(messageKey, success));
     }
 
     public static void send(ServerPlayer player, String messageKey, boolean success) {

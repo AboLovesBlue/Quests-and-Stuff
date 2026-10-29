@@ -1,5 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -49,7 +49,7 @@ public final class QuestTaskHudDisplay {
     }
 
     private static JsonObject jsonWithType(CompoundTag taskTag, String type) {
-        JsonObject json = TaskJsonFactory.read(taskTag == null ? "" : taskTag.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.read(taskTag == null ? "" : taskTag.getString("json"));
         if (!json.has("type") && type != null && !type.isBlank()) {
             json.addProperty("type", type);
         }

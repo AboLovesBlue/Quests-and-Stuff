@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -46,18 +46,18 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.setPrimaryTextId(textId);
     }
 
-    public static void toggleCanvasExclusiveChoiceSelection(TabletUiState state, String ecId) {
-        if (ecId == null || ecId.isBlank()) {
+    public static void toggleCanvasExclusiveChoiceSelection(TabletUiState state, String exclusiveChoiceId) {
+        if (exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return;
         }
-        if (!state.canvas.canvasSelection.ecIds().add(ecId)) {
-            state.canvas.canvasSelection.ecIds().remove(ecId);
-            if (ecId.equals(state.canvas.canvasSelection.primaryEcId())) {
-                state.canvas.canvasSelection.setPrimaryEcId(state.canvas.canvasSelection.ecIds().stream().findFirst().orElse(""));
+        if (!state.canvas.canvasSelection.exclusiveChoiceIds().add(exclusiveChoiceId)) {
+            state.canvas.canvasSelection.exclusiveChoiceIds().remove(exclusiveChoiceId);
+            if (exclusiveChoiceId.equals(state.canvas.canvasSelection.primaryExclusiveChoiceId())) {
+                state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(state.canvas.canvasSelection.exclusiveChoiceIds().stream().findFirst().orElse(""));
             }
             return;
         }
-        state.canvas.canvasSelection.setPrimaryEcId(ecId);
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(exclusiveChoiceId);
     }
 
     public static void beginBoxSelection(TabletUiState state, boolean additive, int localX, int localY) {
@@ -92,7 +92,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.imageIds().addAll(state.canvas.boxSelectionBaseCanvasImageIds);
         String lastImageId = "";
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBoundsAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
                 state.canvas.canvasSelection.imageIds().add(image.id());
@@ -104,7 +104,7 @@ public final class CanvasBoxSelectionController {
         state.canvas.canvasSelection.textIds().addAll(state.canvas.boxSelectionBaseCanvasTextIds);
         String lastTextId = "";
         for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBounds(state, text.x(), text.y(), text.w(), text.h(), text.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
                 state.canvas.canvasSelection.textIds().add(text.id());
@@ -112,18 +112,18 @@ public final class CanvasBoxSelectionController {
             }
         }
         state.canvas.canvasSelection.setPrimaryTextId(primarySelection(lastTextId, state.canvas.boxSelectionBaseCanvasTextId, state.canvas.canvasSelection.textIds()));
-        state.canvas.canvasSelection.ecIds().clear();
-        state.canvas.canvasSelection.ecIds().addAll(state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds);
-        String lastEcId = "";
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().addAll(state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds);
+        String lastExclusiveChoiceId = "";
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBoundsAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
             boolean intersects = intersects(bounds[0], bounds[1], bounds[2], bounds[3], minX, minY, maxX, maxY);
             if (intersects) {
-                state.canvas.canvasSelection.ecIds().add(ec.id());
-                lastEcId = ec.id();
+                state.canvas.canvasSelection.exclusiveChoiceIds().add(ec.id());
+                lastExclusiveChoiceId = ec.id();
             }
         }
-        state.canvas.canvasSelection.setPrimaryEcId(primarySelection(lastEcId, state.canvas.boxSelectionBaseCanvasExclusiveChoiceId, state.canvas.canvasSelection.ecIds()));
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(primarySelection(lastExclusiveChoiceId, state.canvas.boxSelectionBaseCanvasExclusiveChoiceId, state.canvas.canvasSelection.exclusiveChoiceIds()));
     }
 
     public static void finishBoxSelection(TabletUiState state, List<QuestCardLayout> cards) {
@@ -140,10 +140,10 @@ public final class CanvasBoxSelectionController {
         state.canvas.boxSelectionBaseQuestIds.addAll(state.canvas.canvasSelection.questIds());
         state.canvas.boxSelectionBaseCanvasImageIds.addAll(CanvasSelectionActions.selectedImageIds(state));
         state.canvas.boxSelectionBaseCanvasTextIds.addAll(CanvasSelectionActions.selectedTextIds(state));
-        state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds.addAll(CanvasSelectionActions.selectedEcIds(state));
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceIds.addAll(CanvasSelectionActions.selectedExclusiveChoiceIds(state));
         state.canvas.boxSelectionBaseCanvasImageId = state.canvas.canvasSelection.primaryImageId();
         state.canvas.boxSelectionBaseCanvasTextId = state.canvas.canvasSelection.primaryTextId();
-        state.canvas.boxSelectionBaseCanvasExclusiveChoiceId = state.canvas.canvasSelection.primaryEcId();
+        state.canvas.boxSelectionBaseCanvasExclusiveChoiceId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
     }
 
     private static void clearBoxSelectionBase(TabletUiState state) {

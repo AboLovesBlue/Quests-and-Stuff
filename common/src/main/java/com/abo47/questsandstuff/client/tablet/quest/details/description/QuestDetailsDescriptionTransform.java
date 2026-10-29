@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelec
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
@@ -145,7 +145,7 @@ public final class QuestDetailsDescriptionTransform {
             applySelectionRotate(model, mouseX, mouseY);
             return;
         }
-        CanvasPoint delta = LayerTransformEngine.dragDelta(dx, dy, snapSettings());
+        CanvasPoint delta = CanvasTransformEngine.dragDelta(dx, dy, snapSettings());
         for (Map.Entry<String, CanvasPoint> entry : state.canvas.dragStartTextPositions.entrySet()) {
             CanvasTextLayer text = model.text(entry.getKey());
             if (text != null) {
@@ -269,7 +269,7 @@ public final class QuestDetailsDescriptionTransform {
             case "resize" -> resizedText(text, mouseX, mouseY, 1, 1);
             case "rotate" -> clampRotationPreviewText(text.rotateTo(rotation(mouseX, mouseY)));
             default -> {
-                CanvasPoint delta = LayerTransformEngine.dragDelta(dx, dy, snapSettings());
+                CanvasPoint delta = CanvasTransformEngine.dragDelta(dx, dy, snapSettings());
                 int x = state.questDetails.questDetailsTransformStartX + delta.x;
                 int y = state.questDetails.questDetailsTransformStartY + delta.y;
                 CanvasPoint snapped = snapMove(model, text.id(), x, y, text.w(), text.h(), CanvasElementGeometry.defaultPivot(text.w()), CanvasElementGeometry.defaultPivot(text.h()), text.rotation());
@@ -286,13 +286,13 @@ public final class QuestDetailsDescriptionTransform {
             default -> {
                 CanvasPoint delta = CanvasTransformGizmoAxis.supports(image.asset())
                         ? modelMoveDelta(dx, dy)
-                        : LayerTransformEngine.dragDelta(dx, dy, snapSettings());
+                        : CanvasTransformEngine.dragDelta(dx, dy, snapSettings());
                 int x = state.questDetails.questDetailsTransformStartX + delta.x;
                 int y = state.questDetails.questDetailsTransformStartY + delta.y;
                 CanvasPoint snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
                 String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
                 if (!CanvasTransformGizmoAxis.AXIS_MOVE_FREE.equals(axis)) {
-                    CanvasPoint offset = LayerTransformEngine.axisDelta(snapped.x - x, snapped.y - y, state.questDetails.questDetailsTransformStartRotation, axis, new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
+                    CanvasPoint offset = CanvasTransformEngine.axisDelta(snapped.x - x, snapped.y - y, state.questDetails.questDetailsTransformStartRotation, axis, new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
                     snapped = new CanvasPoint(x + offset.x, y + offset.y);
                     state.canvas.snapGuideXVisible = state.canvas.snapGuideXVisible && offset.x != 0;
                     state.canvas.snapGuideYVisible = state.canvas.snapGuideYVisible && offset.y != 0;
@@ -305,7 +305,7 @@ public final class QuestDetailsDescriptionTransform {
 
     private CanvasPoint modelMoveDelta(int dx, int dy) {
         String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
-        return LayerTransformEngine.modelMoveDelta(new LayerTransformEngine.ModelMoveRequest(
+        return CanvasTransformEngine.modelMoveDelta(new CanvasTransformEngine.ModelMoveRequest(
                 dx,
                 dy,
                 state.questDetails.questDetailsTransformStartRotation,
@@ -316,8 +316,8 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int mouseX, int mouseY) {
-        LayerTransformEngine.ModelRotation rotation = LayerTransformEngine.modelRotation(new LayerTransformEngine.ModelRotationRequest(
-                new LayerTransformEngine.ModelRotation(state.questDetails.questDetailsTransformStartYaw, state.questDetails.questDetailsTransformStartPitch),
+        CanvasTransformEngine.ModelRotation rotation = CanvasTransformEngine.modelRotation(new CanvasTransformEngine.ModelRotationRequest(
+                new CanvasTransformEngine.ModelRotation(state.questDetails.questDetailsTransformStartYaw, state.questDetails.questDetailsTransformStartPitch),
                 CanvasTransformGizmoAxis.AXIS_PITCH.equals(state.questDetails.questDetailsTransformAxis),
                 state.questDetails.questDetailsTransformPivotX,
                 state.questDetails.questDetailsTransformPivotY,
@@ -343,7 +343,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasGeometry.ResizedBox resizedBox(int mouseX, int mouseY, int minW, int minH, int pivotX, int pivotY, int cornerX, int cornerY, boolean preserveAspect) {
-        return LayerTransformEngine.resizeFromCorner(new LayerTransformEngine.ResizeRequest(
+        return CanvasTransformEngine.resizeFromCorner(new CanvasTransformEngine.ResizeRequest(
                 layerRect(
                         state.questDetails.questDetailsTransformStartX,
                         state.questDetails.questDetailsTransformStartY,
@@ -409,7 +409,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private int rotation(int mouseX, int mouseY) {
-        return LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
+        return CanvasTransformEngine.layerRotation(new CanvasTransformEngine.RotationRequest(
                 state.questDetails.questDetailsTransformStartRotation,
                 state.questDetails.questDetailsTransformPivotX,
                 state.questDetails.questDetailsTransformPivotY,
@@ -493,12 +493,12 @@ public final class QuestDetailsDescriptionTransform {
         return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
     }
 
-    private LayerTransformEngine.LayerRect layerRect(int x, int y, int width, int height, int pivotX, int pivotY, int rotation) {
-        return new LayerTransformEngine.LayerRect(x, y, width, height, pivotX, pivotY, rotation);
+    private CanvasTransformEngine.LayerRect layerRect(int x, int y, int width, int height, int pivotX, int pivotY, int rotation) {
+        return new CanvasTransformEngine.LayerRect(x, y, width, height, pivotX, pivotY, rotation);
     }
 
-    private LayerTransformEngine.SnapSettings snapSettings() {
-        return new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.questDetails.questDetailsGridSnapLocked, TabletModifierKeys.shiftDown());
+    private CanvasTransformEngine.SnapSettings snapSettings() {
+        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.questDetails.questDetailsGridSnapLocked, TabletModifierKeys.shiftDown());
     }
 
     record ElementRect(int x, int y, int w, int h, int rotation) {

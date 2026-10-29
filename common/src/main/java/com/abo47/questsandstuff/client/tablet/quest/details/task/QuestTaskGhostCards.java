@@ -8,16 +8,16 @@ final class QuestTaskGhostCards {
     private QuestTaskGhostCards() {
     }
 
-    static void render(WidgetGroup parent, QuestDetailsTaskEntry entry, boolean task, int x, int y, int w) {
+    static void render(WidgetGroup parent, QuestTaskEntry entry, boolean task, int x, int y, int w) {
         if (entry == null) {
             return;
         }
         float progress = task ? entry.tag().getFloat("progress") : 0.0f;
         String icon = task ? QuestTaskDisplayText.taskIcon(entry.json()) : QuestTaskDisplayText.rewardIcon(entry.json());
-        CardDragGhosts.renderTask(parent, x, y, w, QuestDetailsTasksPanel.CARD_H, icon, QuestTaskDisplayText.displayName(entry.json(), entry.type()), amount(entry, task), progress);
+        CardDragGhosts.renderTask(parent, x, y, w, QuestTaskListPanel.CARD_H, icon, QuestTaskDisplayText.displayName(entry.json(), entry.type()), amount(entry, task), progress);
     }
 
-    private static String amount(QuestDetailsTaskEntry entry, boolean task) {
+    private static String amount(QuestTaskEntry entry, boolean task) {
         int amount = QuestTaskDisplayText.amount(entry.json());
         if (!QuestTaskDisplayText.usesAmountField(entry.json(), task)) {
             return "";

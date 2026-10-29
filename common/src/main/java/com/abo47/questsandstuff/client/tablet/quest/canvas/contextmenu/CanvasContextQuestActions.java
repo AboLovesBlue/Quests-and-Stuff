@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 import com.abo47.questsandstuff.client.tablet.modal.SoundPickerOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.ArrayList;
 import java.util.List;
@@ -230,7 +230,7 @@ final class CanvasContextQuestActions {
 
     private static void addQuestPrerequisiteActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, CompoundTag questTag) {
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_PREREQUISITES_MANAGER), "share-2", TabletColors.INTERACTIVE, withCleanup(canvasViewport, state, () -> {
-            AppModalOpenActions.openPrerequisitesManager(state, state.contextMenu.contextQuestId);
+            AppOpenActions.openPrerequisitesManager(state, state.contextMenu.contextQuestId);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager quest={}", state.contextMenu.contextQuestId);
         })));
     }

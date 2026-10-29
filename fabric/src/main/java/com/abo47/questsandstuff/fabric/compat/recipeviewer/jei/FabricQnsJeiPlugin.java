@@ -7,7 +7,7 @@ import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.resources.ResourceLocation;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
+import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerSync;
 import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerBridges;
 
 @JeiPlugin
@@ -23,8 +23,8 @@ public final class FabricQnsJeiPlugin implements IModPlugin {
     public void onRuntimeAvailable(IJeiRuntime runtime) {
         bridge.onRuntimeAvailable(runtime);
         LockViewerBridges.setJei(bridge);
-        ItemLockViewerSync.requestRefresh();
-        ItemLockViewerSync.ensureSubscribed();
+        LockViewerSync.requestRefresh();
+        LockViewerSync.ensureSubscribed();
     }
 
     @Override

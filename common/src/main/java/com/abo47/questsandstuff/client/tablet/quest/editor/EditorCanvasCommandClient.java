@@ -214,52 +214,52 @@ public final class EditorCanvasCommandClient {
                 });
     }
 
-    private static String resolveEcId(TabletUiState state, String chapter, String idA, String idB) {
+    private static String resolveExclusiveChoiceId(TabletUiState state, String chapter, String idA, String idB) {
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idA) != null) return idA;
         if (CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, idB) != null) return idB;
         return "";
     }
 
-    private static String resolveQuestId(String ecId, String idA, String idB) {
-        return idA.equals(ecId) ? idB : idA;
+    private static String resolveQuestId(String exclusiveChoiceId, String idA, String idB) {
+        return idA.equals(exclusiveChoiceId) ? idB : idA;
     }
 
     @FunctionalInterface
-    private interface EcConnectionAction {
-        void run(String chapter, String ecId, String questId);
+    private interface ExclusiveChoiceConnectionAction {
+        void run(String chapter, String exclusiveChoiceId, String questId);
     }
 
-    private static void runEcConnectionAction(TabletUiState state, String sourceId, String targetId, EcConnectionAction action) {
+    private static void runExclusiveChoiceConnectionAction(TabletUiState state, String sourceId, String targetId, ExclusiveChoiceConnectionAction action) {
         String chapter = EditorChapterCommandClient.selectedChapterName(state);
         if (chapter.isBlank()) return;
-        String ecId = resolveEcId(state, chapter, sourceId, targetId);
-        if (ecId.isBlank()) return;
-        String questId = resolveQuestId(ecId, sourceId, targetId);
-        action.run(chapter, ecId, questId);
+        String exclusiveChoiceId = resolveExclusiveChoiceId(state, chapter, sourceId, targetId);
+        if (exclusiveChoiceId.isBlank()) return;
+        String questId = resolveQuestId(exclusiveChoiceId, sourceId, targetId);
+        action.run(chapter, exclusiveChoiceId, questId);
     }
 
-    public static void runEcConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
-        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color));
+    public static void runExclusiveChoiceConnectionColorAction(Player player, TabletUiState state, String sourceId, String targetId, int color) {
+        runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
+                ConnectionRenderer.setExclusiveChoiceConnectionColor(state, chapter, exclusiveChoiceId, questId, color));
     }
 
-    public static void runEcConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
-        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionMode(state, chapter, ecId, questId, direct));
+    public static void runExclusiveChoiceConnectionModeAction(Player player, TabletUiState state, String sourceId, String targetId, boolean direct) {
+        runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
+                ConnectionRenderer.setExclusiveChoiceConnectionMode(state, chapter, exclusiveChoiceId, questId, direct));
     }
 
-    public static void runEcConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
-        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionHidden(state, chapter, ecId, questId, hidden));
+    public static void runExclusiveChoiceConnectionHiddenAction(Player player, TabletUiState state, String sourceId, String targetId, boolean hidden) {
+        runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
+                ConnectionRenderer.setExclusiveChoiceConnectionHidden(state, chapter, exclusiveChoiceId, questId, hidden));
     }
 
-    public static void runEcConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
-        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTexture(state, chapter, ecId, questId, texture));
+    public static void runExclusiveChoiceConnectionTextureAction(TabletUiState state, String sourceId, String targetId, String texture) {
+        runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
+                ConnectionRenderer.setExclusiveChoiceConnectionTexture(state, chapter, exclusiveChoiceId, questId, texture));
     }
 
-    public static void runEcConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
-        runEcConnectionAction(state, sourceId, targetId, (chapter, ecId, questId) ->
-                ConnectionRenderer.setEcConnectionTextureSpacing(state, chapter, ecId, questId, spacing));
+    public static void runExclusiveChoiceConnectionTextureSpacingAction(TabletUiState state, String sourceId, String targetId, int spacing) {
+        runExclusiveChoiceConnectionAction(state, sourceId, targetId, (chapter, exclusiveChoiceId, questId) ->
+                ConnectionRenderer.setExclusiveChoiceConnectionTextureSpacing(state, chapter, exclusiveChoiceId, questId, spacing));
     }
 }

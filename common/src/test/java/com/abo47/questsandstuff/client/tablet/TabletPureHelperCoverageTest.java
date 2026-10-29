@@ -39,7 +39,7 @@ class TabletPureHelperCoverageTest {
                 entry("description layer selection", "com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionSelectionStateTest"),
                 entry("context action tones", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionToneTest"),
                 entry("context action layout", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionLayoutTest"),
-                entry("task json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactoryTest"),
+                entry("task json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactoryTest"),
                 entry("task defaults", "com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalogTest")
         );
 

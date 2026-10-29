@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
@@ -46,8 +46,8 @@ public final class TabletRootWindowController {
             return true;
         }
         if (state.canvas.canvasTextMenuOpen) {
-            TextEditSession.closeMainCanvas(state, true);
-            TextStyleSession.closeMainCanvas(state);
+            CanvasTextEditSession.closeMainCanvas(state, true);
+            CanvasTextStyleSession.closeMainCanvas(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] closeFrontmostWindow: closed canvas text menu");
             return true;
         }
@@ -148,14 +148,14 @@ public final class TabletRootWindowController {
                 || state.questDetails.questDetailsCommandRewardEditorOpen
                 || state.questDetails.questDetailsTaskRenameOpen
                 || isFontSizeFieldOpen(state)
-                || TextEditSession.isAnyEditing(state)
+                || CanvasTextEditSession.isAnyEditing(state)
                 || !state.questDetails.pendingQuestTitleChangeId.isBlank()
                 || !state.canvas.pendingChapterRename.isBlank()
                 || root != null && hasFocusedTextField(root);
     }
 
     public static boolean isFontSizeFieldOpen(TabletUiState state) {
-        return TextStyleSession.isAnyFontSizeFieldOpen(state);
+        return CanvasTextStyleSession.isAnyFontSizeFieldOpen(state);
     }
 
     private static boolean hasVisibleQuestDetailsSubState(TabletUiState state) {
@@ -166,8 +166,8 @@ public final class TabletRootWindowController {
                 || state.questDetails.questDetailsToolsOpen
                 || state.questDetails.questDetailsToolsClosing
                 || EntityMotionEditor.isQuestDetailsOpen(state)
-                || TextStyleSession.questDetailsOpenOrEditingFont(state)
-                || TextEditSession.isAnyEditing(state);
+                || CanvasTextStyleSession.questDetailsOpenOrEditingFont(state)
+                || CanvasTextEditSession.isAnyEditing(state);
         QuestsAndStuffMod.debugLog("[QnS:UI] hasVisibleQuestDetailsSubState={}", visible);
         return visible;
     }
@@ -179,13 +179,13 @@ public final class TabletRootWindowController {
             QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed entity editor");
             changed = true;
         }
-        if (TextStyleSession.questDetailsOpenOrEditingFont(state)) {
-            TextStyleSession.closeQuestDetails(state);
+        if (CanvasTextStyleSession.questDetailsOpenOrEditingFont(state)) {
+            CanvasTextStyleSession.closeQuestDetails(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed text style session");
             changed = true;
         }
-        if (TextEditSession.isAnyEditing(state)) {
-            TextEditSession.closeAny(state, true);
+        if (CanvasTextEditSession.isAnyEditing(state)) {
+            CanvasTextEditSession.closeAny(state, true);
             QuestsAndStuffMod.debugLog("[QnS:UI] closeQuestDetailsFrontState: closed text edit session");
             changed = true;
         }

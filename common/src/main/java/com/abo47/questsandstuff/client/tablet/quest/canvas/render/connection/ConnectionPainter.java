@@ -169,7 +169,7 @@ final class ConnectionPainter {
         float zoom = state.canvas.canvasZoom;
         float safeScale = clampScale(zoom);
         int[] glyph = glyphSize(texture, rawTextureStr, safeScale);
-        CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
+        ConnectionAnimation.AnimationState animation = ConnectionAnimation.current(state, line.connectionId(), now);
         ItemStack gameStack = AssetLibrary.gameItemStack(rawTextureStr);
         if (gameStack != null && !gameStack.isEmpty()) {
             int itemGlyph = scaledGlyphDim(ITEM_GLYPH_BASE, safeScale);
@@ -209,7 +209,7 @@ final class ConnectionPainter {
 
     private static boolean inSelection(TabletUiState state, String elementId) {
         return state.canvas.canvasSelection.questIds().contains(elementId)
-                || state.canvas.canvasSelection.ecIds().contains(elementId);
+                || state.canvas.canvasSelection.exclusiveChoiceIds().contains(elementId);
     }
 
     private static int selectionDragOffsetX(TabletUiState state, String elementId) {

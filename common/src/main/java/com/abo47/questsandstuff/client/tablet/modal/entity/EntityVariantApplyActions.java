@@ -82,10 +82,10 @@ final class EntityVariantApplyActions {
     }
 
     private static boolean applyTaskIcon(Player player, ModalTargetParser.Target parsed, String variantKey) {
-        if (!parsed.hasAtLeast(3) || (!parsed.isTaskTask() && !parsed.isTaskReward())) {
+        if (!parsed.hasAtLeast(3) || (!parsed.isTask() && !parsed.isTaskReward())) {
             return false;
         }
-        boolean task = parsed.isTaskTask();
+        boolean task = parsed.isTask();
         String icon = QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), task);
         if (!EntityPreviewRenderer.isEntityAsset(icon)) {
             return true;

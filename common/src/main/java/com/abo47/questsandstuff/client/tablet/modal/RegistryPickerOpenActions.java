@@ -18,7 +18,7 @@ public final class RegistryPickerOpenActions {
     }
 
     public static void openRecipePicker(TabletUiState state, String target) {
-        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.RECIPE_PICKER, () -> PickerOpenSupport.resetRecipePicker(state));
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.RECIPE_PICKER, () -> ModalOpenSupport.resetRecipePicker(state));
     }
 
     public static void openStructurePicker(TabletUiState state, String target) {
@@ -26,7 +26,7 @@ public final class RegistryPickerOpenActions {
     }
 
     public static void openBlockPicker(TabletUiState state, String target) {
-        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.BLOCK_PICKER, () -> PickerOpenSupport.resetBlockPicker(state));
+        openQuestDetailsPicker(state, target, ModalWindowManager.ModalType.BLOCK_PICKER, () -> ModalOpenSupport.resetBlockPicker(state));
     }
 
     public static void openStatPicker(TabletUiState state, String target) {
@@ -50,25 +50,25 @@ public final class RegistryPickerOpenActions {
     }
 
     public static void openCanvasBlockPicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        PickerOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.BLOCK_PICKER, () -> {
-            state.modal.modalCanvasModelTarget = PickerOpenSupport.clean(target);
-            PickerOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
-            PickerOpenSupport.resetBlockPicker(state);
+        ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.BLOCK_PICKER, () -> {
+            state.modal.modalCanvasModelTarget = ModalOpenSupport.clean(target);
+            ModalOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
+            ModalOpenSupport.resetBlockPicker(state);
         });
     }
 
     public static void openCanvasRecipePicker(TabletUiState state, String target, int logicalX, int logicalY) {
-        PickerOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.RECIPE_PICKER, () -> {
-            state.questDetails.questDetailsPickTarget = PickerOpenSupport.clean(target);
-            PickerOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
-            PickerOpenSupport.resetRecipePicker(state);
+        ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.RECIPE_PICKER, () -> {
+            state.questDetails.questDetailsPickTarget = ModalOpenSupport.clean(target);
+            ModalOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
+            ModalOpenSupport.resetRecipePicker(state);
         });
     }
 
     public static void openEntityVariantPicker(TabletUiState state, String target, String icon) {
-        PickerOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, () -> {
-            state.pickers.entityVariantTarget = PickerOpenSupport.clean(target);
-            state.pickers.entityVariantSelected = EntityPreviewRenderer.entityVariant(PickerOpenSupport.clean(icon));
+        ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.ENTITY_VARIANT_PICKER, () -> {
+            state.pickers.entityVariantTarget = ModalOpenSupport.clean(target);
+            state.pickers.entityVariantSelected = EntityPreviewRenderer.entityVariant(ModalOpenSupport.clean(icon));
             state.pickers.entityVariantFolder = "";
             ModalPickerStates.entityVariant(state).reset();
             ContextMenuController.clearDeleteConfirm(state);
@@ -76,8 +76,8 @@ public final class RegistryPickerOpenActions {
     }
 
     static void openQuestDetailsPicker(TabletUiState state, String target, ModalWindowManager.ModalType type, Runnable reset) {
-        PickerOpenSupport.openPickerModal(state, type, () -> {
-            state.questDetails.questDetailsPickTarget = PickerOpenSupport.clean(target);
+        ModalOpenSupport.openPickerModal(state, type, () -> {
+            state.questDetails.questDetailsPickTarget = ModalOpenSupport.clean(target);
             reset.run();
         });
     }

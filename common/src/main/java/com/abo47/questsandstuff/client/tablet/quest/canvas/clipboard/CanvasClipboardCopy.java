@@ -72,7 +72,7 @@ public final class CanvasClipboardCopy {
             }
         }
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (selection.ecIds().contains(ec.id())) {
+            if (selection.exclusiveChoiceIds().contains(ec.id())) {
                 return true;
             }
         }
@@ -102,7 +102,7 @@ public final class CanvasClipboardCopy {
                 yield ClipboardSelection.ofText(state.contextMenu.contextCanvasTextId);
             }
             case EXCLUSIVE_CHOICE -> {
-                if (current.ecIds().contains(state.contextMenu.contextCanvasExclusiveChoiceId) && !current.isEmpty()) {
+                if (current.exclusiveChoiceIds().contains(state.contextMenu.contextCanvasExclusiveChoiceId) && !current.isEmpty()) {
                     yield current;
                 }
                 yield ClipboardSelection.ofExclusiveChoice(state.contextMenu.contextCanvasExclusiveChoiceId);
@@ -116,7 +116,7 @@ public final class CanvasClipboardCopy {
                 new LinkedHashSet<>(state.canvas.canvasSelection.questIds()),
                 CanvasSelectionActions.selectedImageIds(state),
                 CanvasSelectionActions.selectedTextIds(state),
-                CanvasSelectionActions.selectedEcIds(state)
+                CanvasSelectionActions.selectedExclusiveChoiceIds(state)
         );
     }
 
@@ -128,7 +128,7 @@ public final class CanvasClipboardCopy {
         Set<String> copiedQuestIds = copiedQuestIds(canvasViewport, selection.questIds());
         List<CanvasImageLayer> copiedImages = copiedImages(state, chapter, selection.imageIds());
         List<CanvasTextLayer> copiedTexts = copiedTexts(state, chapter, selection.textIds());
-        List<CanvasExclusiveChoice> copiedEcs = copiedExclusiveChoices(state, chapter, selection.ecIds());
+        List<CanvasExclusiveChoice> copiedEcs = copiedExclusiveChoices(state, chapter, selection.exclusiveChoiceIds());
         if (copiedQuestIds.isEmpty() && copiedImages.isEmpty() && copiedTexts.isEmpty() && copiedEcs.isEmpty()) {
             QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] copy skipped source={} chapter={} reason=no_canvas_selection", source, chapter);
             return false;
@@ -187,13 +187,13 @@ public final class CanvasClipboardCopy {
         return copied;
     }
 
-    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String chapter, Set<String> ecIds) {
-        if (ecIds.isEmpty()) {
+    private static List<CanvasExclusiveChoice> copiedExclusiveChoices(TabletUiState state, String chapter, Set<String> exclusiveChoiceIds) {
+        if (exclusiveChoiceIds.isEmpty()) {
             return List.of();
         }
         List<CanvasExclusiveChoice> copied = new ArrayList<>();
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (ecIds.contains(ec.id())) {
+            if (exclusiveChoiceIds.contains(ec.id())) {
                 copied.add(ec);
             }
         }
@@ -238,7 +238,7 @@ public final class CanvasClipboardCopy {
         return new CanvasPoint(minX, minY);
     }
 
-    private record ClipboardSelection(Set<String> questIds, Set<String> imageIds, Set<String> textIds, Set<String> ecIds) {
+    private record ClipboardSelection(Set<String> questIds, Set<String> imageIds, Set<String> textIds, Set<String> exclusiveChoiceIds) {
         private static ClipboardSelection empty() {
             return new ClipboardSelection(Set.of(), Set.of(), Set.of(), Set.of());
         }
@@ -255,12 +255,12 @@ public final class CanvasClipboardCopy {
             return new ClipboardSelection(Set.of(), Set.of(), single(textId), Set.of());
         }
 
-        private static ClipboardSelection ofExclusiveChoice(String ecId) {
-            return new ClipboardSelection(Set.of(), Set.of(), Set.of(), single(ecId));
+        private static ClipboardSelection ofExclusiveChoice(String exclusiveChoiceId) {
+            return new ClipboardSelection(Set.of(), Set.of(), Set.of(), single(exclusiveChoiceId));
         }
 
         private boolean isEmpty() {
-            return questIds.isEmpty() && imageIds.isEmpty() && textIds.isEmpty() && ecIds.isEmpty();
+            return questIds.isEmpty() && imageIds.isEmpty() && textIds.isEmpty() && exclusiveChoiceIds.isEmpty();
         }
 
         private static Set<String> single(String value) {

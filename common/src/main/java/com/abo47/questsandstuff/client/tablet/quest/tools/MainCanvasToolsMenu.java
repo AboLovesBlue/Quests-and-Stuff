@@ -26,8 +26,8 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.persistUiState;
 
-final class MainCanvasToolsMenu {
-    private MainCanvasToolsMenu() {
+final class CanvasToolsMenu {
+    private CanvasToolsMenu() {
     }
 
     static void rebuild(WidgetGroup toolsMenu, TabletUiState state, Player player, Runnable refresh, int canvasX, int toolsX, int topY, int headerH, int toolsW) {

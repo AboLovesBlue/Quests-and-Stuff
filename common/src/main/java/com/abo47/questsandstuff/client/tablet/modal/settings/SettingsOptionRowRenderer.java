@@ -29,7 +29,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 
 public final class SettingsOptionRowRenderer {
     public static final int ROW_H = ROW_H_26;
@@ -72,7 +72,7 @@ public final class SettingsOptionRowRenderer {
         int textW = Math.max(16, switchX - 14);
         int crop = Math.max(14, textW / 6);
         int titleColor = enabled ? TabletColors.TEXT_PRIMARY : TabletColors.TEXT_SECONDARY;
-        list.addWidget(label(8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), titleColor));
+        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), titleColor));
         list.addWidget(new ToggleSwitchWidget(
                 option.id(),
                 switchX,
@@ -108,7 +108,7 @@ public final class SettingsOptionRowRenderer {
         }
         int textW = Math.max(16, iconX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
+        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_PRIMARY));
         if (!skinEditMode) {
             ButtonWidget hit = flatHitButton(0, rowY, cardW, rowH, click -> option.runAction());
             GlowShaderHelper.glowHit(hit, tooltips);
@@ -130,7 +130,7 @@ public final class SettingsOptionRowRenderer {
         int fieldX = Math.max(104, cardW - fieldW - unitW - SWITCH_GAP);
         int textW = Math.max(16, fieldX - 14);
         int crop = Math.max(14, textW / 6);
-        list.addWidget(label(8, rowY + 7, SearchFilter.crop(TabletModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_SECONDARY));
+        list.addWidget(label(8, rowY + 7, SearchFilter.crop(ModalPanel.tr(option.labelKey()), crop), TabletColors.TEXT_SECONDARY));
 
         final String[] live = { Integer.toString(option.intValue()) };
         Runnable commit = () -> {
@@ -167,7 +167,7 @@ public final class SettingsOptionRowRenderer {
         } else {
             list.addWidget(label(fieldX, rowY + 7, Integer.toString(option.intValue()), TabletColors.TEXT_SECONDARY));
         }
-        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, TabletModalPanel.tr(option.unitKey()), TabletColors.TEXT_MUTED));
+        list.addWidget(label(fieldX + fieldW + 4, rowY + 7, ModalPanel.tr(option.unitKey()), TabletColors.TEXT_MUTED));
     }
 
     private static void renderThemeOptionRow(WidgetGroup list, SettingsOptionDescriptor option, int rowY, int rowW, Runnable refresh, boolean skinEditMode, TabletUiState state) {

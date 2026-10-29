@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.client.tablet.modal.SoundPickerOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.Con
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -74,7 +74,7 @@ final class CanvasContextSelectionActions {
             if (totalCount > 1
                     && state.canvas.canvasSelection.questIds().isEmpty()
                     && state.canvas.canvasSelection.textIds().isEmpty()
-                    && state.canvas.canvasSelection.ecIds().isEmpty()
+                    && state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()
                     && !entityImageIds.isEmpty()
                     && entityImageIds.size() == totalCount) {
                 String batchTarget = ModalTargets.canvasEntityChangeBatch(selectedChapter, entityImageIds.toArray(new String[0]));
@@ -145,7 +145,7 @@ final class CanvasContextSelectionActions {
                 sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CONNECTION_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
                     CanvasContextMenuController.ConnectionRef first = connectedConnections.get(0);
                     int color = CanvasRenderer.connectionColor(state, selectedChapter, first.prerequisiteId(), first.questId());
-                    AppModalOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedChapter), color);
+                    AppOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedChapter), color);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors chapter={} connections={}", selectedChapter, connectedConnections.size());
                     canvasViewport.refresh();
                 }));
@@ -199,7 +199,7 @@ final class CanvasContextSelectionActions {
     private static boolean selectionSupportsGizmo(TabletUiState state, String selectedChapter) {
         if (!state.canvas.canvasSelection.questIds().isEmpty()) return false;
         if (!state.canvas.canvasSelection.textIds().isEmpty()) return false;
-        if (!state.canvas.canvasSelection.ecIds().isEmpty()) return false;
+        if (!state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()) return false;
         boolean hasGizmoImage = false;
         for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of())) {
             if (CanvasSelectionActions.isImageSelected(state, image.id())) {
@@ -370,9 +370,9 @@ final class CanvasContextSelectionActions {
         for (var connection : connections) {
             String prereq = connection.prerequisiteId();
             String quest = connection.questId();
-            boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq) || ConnectionRenderer.isEcId(state, chapter, quest);
-            String texture = isEc
-                    ? ConnectionRenderer.ecConnectionTexture(state, chapter, prereq, quest)
+            boolean isExclusiveChoice = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq) || ConnectionRenderer.isExclusiveChoiceId(state, chapter, quest);
+            String texture = isExclusiveChoice
+                    ? ConnectionRenderer.exclusiveChoiceConnectionTexture(state, chapter, prereq, quest)
                     : ConnectionRenderer.connectionTexture(state, chapter, prereq, quest);
             if (!texture.isBlank()) return true;
         }
@@ -434,11 +434,11 @@ final class CanvasContextSelectionActions {
     private static void addBatchElementActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter) {
         Set<String> imageIds = state.canvas.canvasSelection.imageIds();
         Set<String> textIds = state.canvas.canvasSelection.textIds();
-        Set<String> ecIds = state.canvas.canvasSelection.ecIds();
+        Set<String> exclusiveChoiceIds = state.canvas.canvasSelection.exclusiveChoiceIds();
 
         boolean hasImages = !imageIds.isEmpty();
         boolean hasTexts = !textIds.isEmpty();
-        boolean hasEcs = !ecIds.isEmpty();
+        boolean hasEcs = !exclusiveChoiceIds.isEmpty();
 
         if (hasImages) {
             addBatchImageOnlyActions(sections, canvasViewport, state, selectedChapter, imageIds);
@@ -447,7 +447,7 @@ final class CanvasContextSelectionActions {
             addBatchTextOnlyActions(sections, canvasViewport, state, selectedChapter, textIds);
         }
         if (hasEcs) {
-            addBatchEcOnlyActions(sections, canvasViewport, state, selectedChapter, ecIds);
+            addBatchExclusiveChoiceOnlyActions(sections, canvasViewport, state, selectedChapter, exclusiveChoiceIds);
         }
     }
 
@@ -466,7 +466,7 @@ final class CanvasContextSelectionActions {
         boolean isBlock = ModelAssetPreviewRenderer.isBlockModelAsset(primary.asset());
         boolean allEntitySelection = state.canvas.canvasSelection.questIds().isEmpty()
                 && state.canvas.canvasSelection.textIds().isEmpty()
-                && state.canvas.canvasSelection.ecIds().isEmpty()
+                && state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()
                 && !imageIds.isEmpty()
                 && selectedEntityImageIds(state, selectedChapter).size() == imageIds.size();
 
@@ -518,10 +518,10 @@ final class CanvasContextSelectionActions {
         }
     }
 
-    private static void addBatchEcOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter, Set<String> ecIds) {
-        String primaryId = state.canvas.canvasSelection.primaryEcId();
+    private static void addBatchExclusiveChoiceOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, String selectedChapter, Set<String> exclusiveChoiceIds) {
+        String primaryId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
         if (primaryId.isBlank()) {
-            primaryId = ecIds.iterator().next();
+            primaryId = exclusiveChoiceIds.iterator().next();
         }
         String finalPrimaryId = primaryId;
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, finalPrimaryId);
@@ -529,28 +529,28 @@ final class CanvasContextSelectionActions {
 
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
-                    AssetPickerOpenActions.openEcBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
+                    AssetPickerOpenActions.openExclusiveChoiceBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
                     ContextMenuController.close(state);
                     canvasViewport.refresh();
                 }),
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
-                    IconPickerOpenActions.openEcGameTexturePicker(state, selectedChapter, finalPrimaryId);
+                    IconPickerOpenActions.openExclusiveChoiceGameTexturePicker(state, selectedChapter, finalPrimaryId);
                     ContextMenuController.close(state);
                     canvasViewport.refresh();
                 })
         )));
         if (!ec.background().isBlank()) {
-            String selEcBgKey = "sel_remove_ec_bg:" + selectedChapter;
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selEcBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
-                for (String batchEcId : ecIds) {
-                    CanvasExclusiveChoice batchEc = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, batchEcId);
-                    if (batchEc != null && !batchEc.background().isBlank()) {
-                        CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedChapter, batchEc.withBackground(""));
-                        CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedChapter, batchEcId);
+            String selExclusiveChoiceBgKey = "sel_remove_ec_bg:" + selectedChapter;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selExclusiveChoiceBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
+                for (String batchExclusiveChoiceId : exclusiveChoiceIds) {
+                    CanvasExclusiveChoice batchExclusiveChoice = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoiceId);
+                    if (batchExclusiveChoice != null && !batchExclusiveChoice.background().isBlank()) {
+                        CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoice.withBackground(""));
+                        CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoiceId);
                     }
                 }
                 ContextMenuController.close(state);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_ec_background ecs={}", ecIds);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_ec_background ecs={}", exclusiveChoiceIds);
                 canvasViewport.refresh();
             }));
         }
@@ -563,7 +563,7 @@ final class CanvasContextSelectionActions {
         }
         String finalPrimaryId = primaryId;
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", TabletColors.INTERACTIVE, false, () -> {
-            TextStyleSession.openMainCanvas(state, finalPrimaryId);
+            CanvasTextStyleSession.openMainCanvas(state, finalPrimaryId);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_text_style id={}", finalPrimaryId);
             canvasViewport.refresh();

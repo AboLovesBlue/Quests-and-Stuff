@@ -14,7 +14,7 @@ public final class AssetPickerOpenActions {
     }
 
     public static void openQuestDetailsAssetIconPicker(TabletUiState state, String target) {
-        openAssetPickerSession(state, "", () -> state.questDetails.questDetailsPickTarget = PickerOpenSupport.clean(target));
+        openAssetPickerSession(state, "", () -> state.questDetails.questDetailsPickTarget = ModalOpenSupport.clean(target));
     }
 
     public static void openChapterAssetIconPicker(TabletUiState state, String chapter) {
@@ -30,7 +30,7 @@ public final class AssetPickerOpenActions {
     }
 
     public static void openAssetPicker(TabletUiState state, String target, String selectedAsset) {
-        openAssetPickerSession(state, selectedAsset, () -> state.questDetails.questDetailsAssetPickTarget = PickerOpenSupport.clean(target));
+        openAssetPickerSession(state, selectedAsset, () -> state.questDetails.questDetailsAssetPickTarget = ModalOpenSupport.clean(target));
     }
 
     public static void openBlueprintPicker(TabletUiState state, String selectedBlueprint) {
@@ -41,24 +41,24 @@ public final class AssetPickerOpenActions {
     }
 
     public static void openChapterBackgroundPicker(TabletUiState state, String chapter, String currentBackground) {
-        openAssetPickerSession(state, currentBackground, () -> state.modal.modalChapterTarget = PickerOpenSupport.clean(chapter));
+        openAssetPickerSession(state, currentBackground, () -> state.modal.modalChapterTarget = ModalOpenSupport.clean(chapter));
     }
 
     public static void openQuestBackgroundPicker(TabletUiState state, String questId, String currentBackground, boolean grayscale) {
         openAssetPickerSession(state, currentBackground, () -> {
-            state.modal.modalQuestBackgroundTarget = PickerOpenSupport.clean(questId);
+            state.modal.modalQuestBackgroundTarget = ModalOpenSupport.clean(questId);
             state.modal.modalQuestBackgroundGrayscale = grayscale;
         });
     }
 
-    public static void openEcBackgroundPicker(TabletUiState state, String chapter, String ecId, String currentBackground) {
+    public static void openExclusiveChoiceBackgroundPicker(TabletUiState state, String chapter, String exclusiveChoiceId, String currentBackground) {
         openAssetPickerSession(state, currentBackground, () -> {
-            state.modal.modalEcBackgroundTarget = chapter + ":" + ecId;
+            state.modal.modalExclusiveChoiceBackgroundTarget = chapter + ":" + exclusiveChoiceId;
         });
     }
 
     public static void openBatchQuestBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground, boolean grayscale) {
-        Set<String> targets = PickerOpenSupport.normalizedTargets(questIds);
+        Set<String> targets = ModalOpenSupport.normalizedTargets(questIds);
         openAssetPickerSession(state, currentBackground, () -> {
             state.modal.modalQuestBackgroundTargets.addAll(targets);
             state.modal.modalQuestBackgroundGrayscale = grayscale;
@@ -66,21 +66,21 @@ public final class AssetPickerOpenActions {
     }
 
     public static void openQuestCompletionHudBackgroundPicker(TabletUiState state, String questId, String currentBackground) {
-        openAssetPickerSession(state, currentBackground, () -> state.modal.modalQuestCompletionHudBackgroundTarget = PickerOpenSupport.clean(questId));
+        openAssetPickerSession(state, currentBackground, () -> state.modal.modalQuestCompletionHudBackgroundTarget = ModalOpenSupport.clean(questId));
     }
 
     public static void openBatchQuestCompletionHudBackgroundPicker(TabletUiState state, Collection<String> questIds, String currentBackground) {
-        Set<String> targets = PickerOpenSupport.normalizedTargets(questIds);
+        Set<String> targets = ModalOpenSupport.normalizedTargets(questIds);
         openAssetPickerSession(state, currentBackground, () -> state.modal.modalQuestCompletionHudBackgroundTargets.addAll(targets));
     }
 
     public static void openCanvasBackgroundPicker(TabletUiState state, String chapter, String currentBackground) {
-        openAssetPickerSession(state, currentBackground, () -> state.modal.modalCanvasBackgroundTarget = PickerOpenSupport.clean(chapter));
+        openAssetPickerSession(state, currentBackground, () -> state.modal.modalCanvasBackgroundTarget = ModalOpenSupport.clean(chapter));
     }
 
     public static void openHudBackgroundPicker(TabletUiState state, String target, String currentBackground, int currentOpacity) {
         openAssetPickerSession(state, currentBackground, () -> {
-            state.modal.modalHudBackgroundTarget = PickerOpenSupport.clean(target).trim();
+            state.modal.modalHudBackgroundTarget = ModalOpenSupport.clean(target).trim();
             state.modal.modalHudBackgroundOpacityDraft = Math.max(0, Math.min(100, currentOpacity));
             state.modal.modalHudBackgroundOpacityDragging = false;
         });
@@ -88,8 +88,8 @@ public final class AssetPickerOpenActions {
 
     public static void openCanvasImagePicker(TabletUiState state, String chapter, int logicalX, int logicalY) {
         openAssetPickerSession(state, "", () -> {
-            state.modal.modalCanvasImageTarget = PickerOpenSupport.clean(chapter);
-            PickerOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
+            state.modal.modalCanvasImageTarget = ModalOpenSupport.clean(chapter);
+            ModalOpenSupport.setCanvasPickPoint(state, logicalX, logicalY);
         });
     }
 
@@ -122,10 +122,10 @@ public final class AssetPickerOpenActions {
     }
 
     static void openAssetPickerSession(TabletUiState state, String selectedAsset, Runnable configure) {
-        PickerOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.ASSET_PICKER, () -> {
+        ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.ASSET_PICKER, () -> {
             resetAssetPicker(state);
             configure.run();
-            state.pickers.assetSelected = PickerOpenSupport.clean(selectedAsset);
+            state.pickers.assetSelected = ModalOpenSupport.clean(selectedAsset);
         });
     }
 }

@@ -11,8 +11,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.InlineRenameField;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -83,9 +83,9 @@ final class QuestDetailsHeader {
                 ToolMenuAnimation.finishQuestDetails(state);
                 if (!state.questDetails.questDetailsEditMode) {
                     QuestDetailsTransientManager.closeFloatingPopups(state);
-                    TextStyleSession.closeQuestDetails(state);
+                    CanvasTextStyleSession.closeQuestDetails(state);
                     state.questDetails.questDetailsTitleFocused = false;
-                    TextEditSession.closeQuestDetails(state, true);
+                    CanvasTextEditSession.closeQuestDetails(state, true);
                     if (questId.equals(state.questDetails.pendingQuestTitleChangeId)) {
                         state.questDetails.pendingQuestTitleChangeId = "";
                     }

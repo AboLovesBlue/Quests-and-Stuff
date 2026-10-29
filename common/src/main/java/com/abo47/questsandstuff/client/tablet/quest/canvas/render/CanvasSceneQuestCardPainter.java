@@ -22,11 +22,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasInteractionGate;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasGlowEffect;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestGlowEffect;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestHoverExpand;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasQuestEffectBadges;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestEffectBadges;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -66,11 +66,11 @@ final class CanvasSceneQuestCardPainter {
         renderQuestIcon(cardLayer, localCard);
         renderLockedPreviewState(cardLayer, localCard);
         if (!ClientQuestStateFacade.questLockedPreview(card.tag())) {
-            renderECConnectionLockedPreview(cardLayer, state, card);
+            renderExclusiveChoiceConnectionLockedPreview(cardLayer, state, card);
         }
         renderSearchState(cardLayer, state, localCard);
         renderHiddenEditState(cardLayer, state, localCard);
-        CanvasQuestEffectBadges.render(cardLayer, state, localCard);
+        QuestEffectBadges.render(cardLayer, state, localCard);
         canvasViewport.addWidget(cardLayer);
         if (state.root.canEdit
                 && !card.questId().equals(state.questDetails.pendingQuestTitleChangeId)) {
@@ -89,9 +89,9 @@ final class CanvasSceneQuestCardPainter {
                                 - CanvasGeometry.screenY(state, state.canvas.dragStartBoundsTop);
                     }
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
-                        CanvasElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                        QuestElementSelectionSlot.drawScreenRectResizeOnly(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
                     } else {
-                        CanvasElementSelectionSlot.drawFillAndOutlineScreenRect(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
+                        QuestElementSelectionSlot.drawFillAndOutlineScreenRect(graphics, originX, originY, card.x(), card.y(), card.width(), card.height());
                     }
                 }
             });
@@ -103,7 +103,7 @@ final class CanvasSceneQuestCardPainter {
             renderQuestRenameField(canvasViewport, state, player, refresh, card, viewportW, viewportH);
             return;
         }
-        cardLayer.addWidget(CanvasGlowEffect.overlay(0, 0, card.width(), card.height(), state));
+        cardLayer.addWidget(QuestGlowEffect.overlay(0, 0, card.width(), card.height(), state));
         addQuestTooltipHit(cardLayer, localCard, state);
     }
 
@@ -170,14 +170,14 @@ final class CanvasSceneQuestCardPainter {
         }
     }
 
-    private static void renderECConnectionLockedPreview(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
+    private static void renderExclusiveChoiceConnectionLockedPreview(WidgetGroup canvasViewport, TabletUiState state, QuestCardLayout card) {
         if (state.root.canEdit) {
             return;
         }
         String chapter = selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            if (drawEc.connectionQuestIds().contains(card.questId()) && !drawEc.prerequisiteQuestIds().isEmpty()) {
+            CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            if (drawExclusiveChoice.connectionQuestIds().contains(card.questId()) && !drawExclusiveChoice.prerequisiteQuestIds().isEmpty()) {
                 addSolidRect(canvasViewport, card.x(), card.y(), card.width(), card.height(), withAlpha(TabletColors.SURFACE_BASE, 150));
                 return;
             }

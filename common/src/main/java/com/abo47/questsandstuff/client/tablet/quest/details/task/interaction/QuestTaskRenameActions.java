@@ -7,7 +7,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -20,13 +20,13 @@ public final class QuestTaskRenameActions {
     public static void openTaskRenameEditor(TabletUiState state, String questId, String id, boolean task) {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
-        JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
+        JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
         QuestDetailsTransientManager.openTaskRename(
                 state,
                 questId,
                 id,
                 task,
-                QuestTaskDisplayText.displayName(json, TaskJsonFactory.asString(json, "type", ""))
+                QuestTaskDisplayText.displayName(json, QuestTaskJsonFactory.asString(json, "type", ""))
         );
     }
 
@@ -34,7 +34,7 @@ public final class QuestTaskRenameActions {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
-        JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
+        JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
         if (!json.has("id")) {
             json.addProperty("id", id);
         }

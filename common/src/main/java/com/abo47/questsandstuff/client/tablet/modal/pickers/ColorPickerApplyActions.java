@@ -75,10 +75,10 @@ public final class ColorPickerApplyActions {
             String chapter = connection[0];
             String sourceId = connection[1];
             String targetId = connection[2];
-            boolean isEc = ConnectionRenderer.isEcId(state, chapter, sourceId)
-                    || ConnectionRenderer.isEcId(state, chapter, targetId);
-            if (isEc) {
-                EditorCanvasCommandClient.runEcConnectionColorAction(player, state, sourceId, targetId, color);
+            boolean isExclusiveChoice = ConnectionRenderer.isExclusiveChoiceId(state, chapter, sourceId)
+                    || ConnectionRenderer.isExclusiveChoiceId(state, chapter, targetId);
+            if (isExclusiveChoice) {
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionColorAction(player, state, sourceId, targetId, color);
             } else {
                 ConnectionRenderer.setConnectionColor(state, chapter, sourceId, targetId, color);
                 EditorCanvasCommandClient.runConnectionColorAction(player, targetId, sourceId, color);
@@ -94,13 +94,13 @@ public final class ColorPickerApplyActions {
             for (var connectionRef : CanvasOverlayController.selectedConnections(state, chapter)) {
                 String prereq = connectionRef.prerequisiteId();
                 String quest = connectionRef.questId();
-                boolean isEc = ConnectionRenderer.isEcId(state, chapter, prereq)
-                        || ConnectionRenderer.isEcId(state, chapter, quest);
-                if (isEc) {
-                    String ecId = ConnectionRenderer.isEcId(state, chapter, prereq) ? prereq : quest;
-                    String questId = ConnectionRenderer.isEcId(state, chapter, prereq) ? quest : prereq;
-                    ConnectionRenderer.setEcConnectionColor(state, chapter, ecId, questId, color);
-                    EditorCanvasCommandClient.runEcConnectionColorAction(player, state, ecId, questId, color);
+                boolean isExclusiveChoice = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq)
+                        || ConnectionRenderer.isExclusiveChoiceId(state, chapter, quest);
+                if (isExclusiveChoice) {
+                    String exclusiveChoiceId = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq) ? prereq : quest;
+                    String questId = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq) ? quest : prereq;
+                    ConnectionRenderer.setExclusiveChoiceConnectionColor(state, chapter, exclusiveChoiceId, questId, color);
+                    EditorCanvasCommandClient.runExclusiveChoiceConnectionColorAction(player, state, exclusiveChoiceId, questId, color);
                 } else {
                     ConnectionRenderer.setConnectionColor(state, chapter, prereq, quest, color);
                     EditorCanvasCommandClient.runConnectionColorAction(player, quest, prereq, color);

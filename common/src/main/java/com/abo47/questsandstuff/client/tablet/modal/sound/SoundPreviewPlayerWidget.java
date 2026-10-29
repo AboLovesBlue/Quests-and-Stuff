@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 
 public final class SoundPreviewPlayerWidget extends WidgetGroup {
     private static final int MIN_ICON_SIZE = ICON_22;
@@ -74,7 +74,7 @@ public final class SoundPreviewPlayerWidget extends WidgetGroup {
 
     private void updateTooltip() {
         setHoverTooltips(new Component[]{
-                Component.literal(TabletModalPanel.tr(QuestSoundPreview.isPlaying(soundId)
+                Component.literal(ModalPanel.tr(QuestSoundPreview.isPlaying(soundId)
                         ? "ui.questsandstuff.common.pause"
                         : "ui.questsandstuff.common.play")),
                 Component.literal(soundId)

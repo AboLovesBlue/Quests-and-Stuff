@@ -108,8 +108,8 @@ public final class ClientQuestPropertyMutator {
         ClientCanvasMutator.putCanvasExclusiveChoiceLocal(chapter, ec);
     }
 
-    public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
-        ClientCanvasMutator.removeCanvasExclusiveChoiceLocal(chapter, ecId);
+    public static void removeCanvasExclusiveChoiceLocal(String chapter, String exclusiveChoiceId) {
+        ClientCanvasMutator.removeCanvasExclusiveChoiceLocal(chapter, exclusiveChoiceId);
     }
 
     public static void setCanvasLayerOrderLocal(String chapter, List<String> order) {

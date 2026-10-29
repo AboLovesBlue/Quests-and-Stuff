@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.fabric;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
+import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerSync;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.quest.lock.LockedItemTooltips;
@@ -29,7 +29,7 @@ public final class QuestsAndStuffFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         TabletLifecycle.prewarmClientAtGameLaunch();
         FabricModNetworkClient.register();
-        ItemLockViewerSync.ensureSubscribed();
+        LockViewerSync.ensureSubscribed();
         TabletKeybindings.registerKeyMappings(KeyBindingHelper::registerKeyBinding);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> TabletLifecycle.onClientLogin());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> TabletLifecycle.onClientLogout());

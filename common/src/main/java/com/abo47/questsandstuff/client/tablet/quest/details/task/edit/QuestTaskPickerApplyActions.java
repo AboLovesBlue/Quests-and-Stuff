@@ -15,8 +15,8 @@ import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetState;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskIconActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskLockJson;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonDefaults;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -62,13 +62,13 @@ public final class QuestTaskPickerApplyActions {
             EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task item picked quest={} task={} entry={}", questId, id, entry);
         } else if (parsed.isTaskSimpleIcon()) {
-            JsonObject json = TaskJsonDefaults.simpleTask(id, type, entry, entry);
+            JsonObject json = QuestTaskJsonDefaults.simpleTask(id, type, entry, entry);
             EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details task icon picked quest={} task={} entry={}", questId, id, entry);
         } else if (parsed.isTaskEntity()) {
             String entityId = EntityPreviewRenderer.entityIdFromSpawnEgg(entry);
             if (!entityId.isBlank()) {
-                JsonObject json = TaskJsonDefaults.simpleTask(id, type, entityId, "");
+                JsonObject json = QuestTaskJsonDefaults.simpleTask(id, type, entityId, "");
                 EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details task entity picked quest={} task={} entity={} egg={}", questId, id, entityId, entry);
             } else {
@@ -183,7 +183,7 @@ public final class QuestTaskPickerApplyActions {
         if (!ModalTargetState.requireParts("task_biome", parsed, 4) || !parsed.isTaskBiome()) {
             return;
         }
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), biome, "biome");
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), biome, "biome");
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details biome picked quest={} task={} biome={} defaultIcon=biome", parsed.questId(), parsed.entryId(), biome);
@@ -197,7 +197,7 @@ public final class QuestTaskPickerApplyActions {
         if (!ModalTargetState.requireParts("task_advancement", parsed, 4) || !parsed.isTaskAdvancement()) {
             return;
         }
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), advancement.trim(), "trophy");
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details advancement picked quest={} task={} advancement={}", parsed.questId(), parsed.entryId(), advancement.trim());
@@ -212,7 +212,7 @@ public final class QuestTaskPickerApplyActions {
             return;
         }
         String recipeTarget = recipe.trim();
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), recipeTarget, QuestTaskIconActions.recipeIcon(recipeTarget));
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), recipeTarget, QuestTaskIconActions.recipeIcon(recipeTarget));
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details recipe picked quest={} task={} recipe={}", parsed.questId(), parsed.entryId(), recipeTarget);
@@ -226,7 +226,7 @@ public final class QuestTaskPickerApplyActions {
         if (!ModalTargetState.requireParts("task_structure", parsed, 4) || !parsed.isTaskStructure()) {
             return;
         }
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), structure.trim(), "pyramid");
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details structure picked quest={} task={} structure={}", parsed.questId(), parsed.entryId(), structure.trim());
@@ -241,7 +241,7 @@ public final class QuestTaskPickerApplyActions {
             return;
         }
         String blockId = block.trim();
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), blockId, QuestTaskIconActions.blockIcon(blockId));
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), blockId, QuestTaskIconActions.blockIcon(blockId));
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details block picked quest={} task={} block={}", parsed.questId(), parsed.entryId(), blockId);
@@ -256,7 +256,7 @@ public final class QuestTaskPickerApplyActions {
             return;
         }
         String statTarget = stat.trim();
-        JsonObject json = TaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), statTarget, QuestTaskIconActions.statIcon(statTarget));
+        JsonObject json = QuestTaskJsonDefaults.simpleTask(parsed.entryId(), parsed.type(), statTarget, QuestTaskIconActions.statIcon(statTarget));
         EditorQuestCommandClient.putQuestTaskJson(player, parsed.questId(), json.toString());
         state.questDetails.questDetailsPickTarget = "";
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details stat picked quest={} task={} stat={}", parsed.questId(), parsed.entryId(), statTarget);
@@ -270,7 +270,7 @@ public final class QuestTaskPickerApplyActions {
         if (!ModalTargetState.requireParts("task_dimension", parsed, 4) || !parsed.isTaskDimension()) {
             return;
         }
-        JsonObject json = TaskJsonDefaults.defaultTask(parsed.entryId(), "location");
+        JsonObject json = QuestTaskJsonDefaults.defaultTask(parsed.entryId(), "location");
         json.addProperty("type", parsed.type());
         json.addProperty("dimension", dimension.trim());
         json.addProperty("icon", "minecraft:compass");
@@ -290,7 +290,7 @@ public final class QuestTaskPickerApplyActions {
         String questId = parsed.questId();
         String taskId = parsed.entryId();
         CompoundTag task = ClientQuestStateFacade.quest(questId).getCompound("tasks").getCompound(taskId);
-        JsonObject json = TaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
         QuestTaskLockJson.add(json, entry);
         EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
         state.questDetails.questDetailsPickTarget = "";
@@ -299,7 +299,7 @@ public final class QuestTaskPickerApplyActions {
 
     public static void removeItemLock(Player player, TabletUiState state, String questId, String taskId, String entry) {
         CompoundTag task = ClientQuestStateFacade.quest(questId).getCompound("tasks").getCompound(taskId);
-        JsonObject json = TaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.readTaskForEdit(questId, taskId, task.getString("json"));
         QuestTaskLockJson.remove(json, entry);
         EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details item lock removed quest={} task={} entry={}", questId, taskId, entry);
@@ -315,11 +315,11 @@ public final class QuestTaskPickerApplyActions {
         }
         CompoundTag quest = ClientQuestStateFacade.quest(parsed.questId());
         CompoundTag reward = quest.getCompound("rewards").getCompound(parsed.entryId());
-        JsonObject existing = TaskJsonFactory.readRewardForEdit(parsed.questId(), parsed.entryId(), reward.getString("json"));
-        String type = !parsed.type().isBlank() ? parsed.type() : TaskJsonFactory.MOD + "loot_table";
+        JsonObject existing = QuestTaskJsonFactory.readRewardForEdit(parsed.questId(), parsed.entryId(), reward.getString("json"));
+        String type = !parsed.type().isBlank() ? parsed.type() : QuestTaskJsonFactory.MOD + "loot_table";
         JsonObject json = QuestTaskLootTableRewardEditor.isLootTable(existing)
                 ? existing.deepCopy()
-                : TaskJsonDefaults.defaultReward(parsed.entryId(), TaskJsonFactory.typePath(type));
+                : QuestTaskJsonDefaults.defaultReward(parsed.entryId(), QuestTaskJsonFactory.typePath(type));
         json.addProperty("id", parsed.entryId());
         json.addProperty("type", type);
         json.remove("fallback_item");

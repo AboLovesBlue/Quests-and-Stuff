@@ -6,8 +6,8 @@ import com.lowdragmc.lowdraglib.gui.texture.TextTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -21,11 +21,11 @@ public final class QuestTaskLootTableRewardEditor {
     }
 
     public static boolean isLootTable(JsonObject json) {
-        String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
+        String path = QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", ""));
         return "loot_table".equals(path) || "loot".equals(path);
     }
 
-    public static void render(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int rightX) {
+    public static void render(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int rightX) {
         renderSummary(parent, entry.json(), x, y, Math.max(18, rightX - x));
     }
 
@@ -36,7 +36,7 @@ public final class QuestTaskLootTableRewardEditor {
     private static void renderSummary(WidgetGroup parent, JsonObject json, int x, int y, int w) {
         String lootTable = lootTable(json);
         String naturalName = displayName(lootTable);
-        String title = TaskJsonFactory.asString(json, "title", "");
+        String title = QuestTaskJsonFactory.asString(json, "title", "");
         String lootTableLabel = TabletTranslationKeys.text(QuestTranslationKeys.TYPE_LOOT_TABLE);
         if (title.isBlank() || "Loot table".equalsIgnoreCase(title) || lootTableLabel.equalsIgnoreCase(title)) {
             title = naturalName;
@@ -48,6 +48,6 @@ public final class QuestTaskLootTableRewardEditor {
     }
 
     private static String lootTable(JsonObject json) {
-        return TaskJsonFactory.asString(json, "loot_table", "");
+        return QuestTaskJsonFactory.asString(json, "loot_table", "");
     }
 }

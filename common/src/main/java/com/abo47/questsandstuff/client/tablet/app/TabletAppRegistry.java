@@ -10,20 +10,20 @@ public final class TabletAppRegistry {
     public static final String APP_CHUNKCLAIMER = "chunkclaimer";
     public static final String APP_SETTINGS = "settings";
 
-    private static final LinkedHashMap<String, AppDescriptor> APPS = new LinkedHashMap<>();
+    private static final LinkedHashMap<String, TabletAppDescriptor> APPS = new LinkedHashMap<>();
 
     private TabletAppRegistry() {
     }
 
-    public static void register(AppDescriptor app) {
+    public static void register(TabletAppDescriptor app) {
         APPS.put(app.id(), app);
     }
 
-    public static AppDescriptor get(String id) {
+    public static TabletAppDescriptor get(String id) {
         return APPS.get(id);
     }
 
-    public static Map<String, AppDescriptor> all() {
+    public static Map<String, TabletAppDescriptor> all() {
         return Map.copyOf(APPS);
     }
 

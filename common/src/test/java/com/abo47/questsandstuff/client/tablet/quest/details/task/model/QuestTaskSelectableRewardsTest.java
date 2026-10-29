@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import net.minecraft.nbt.CompoundTag;
 
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,10 +64,10 @@ class QuestTaskSelectableRewardsTest {
 
     @Test
     void claimChoiceEntriesIncludeStandaloneAndDisplayedWrapperChoicesOnly() {
-        QuestDetailsTaskEntry standalone = entry("reward_item_0001", reward("reward_item_0001", true));
-        QuestDetailsTaskEntry wrapper = entry("reward_selectable_0001", wrapperReward("reward_selectable_0001"));
-        QuestDetailsTaskEntry wrapperChoice = entry("reward_selectable_0001\u001Fchoice_a", reward("choice_a", false));
-        QuestDetailsTaskEntry normal = entry("reward_item_0002", reward("reward_item_0002", false));
+        QuestTaskEntry standalone = entry("reward_item_0001", reward("reward_item_0001", true));
+        QuestTaskEntry wrapper = entry("reward_selectable_0001", wrapperReward("reward_selectable_0001"));
+        QuestTaskEntry wrapperChoice = entry("reward_selectable_0001\u001Fchoice_a", reward("choice_a", false));
+        QuestTaskEntry normal = entry("reward_item_0002", reward("reward_item_0002", false));
 
         assertTrue(QuestTaskSelectableRewards.isClaimChoiceEntry(standalone));
         assertTrue(QuestTaskSelectableRewards.isClaimChoiceEntry(wrapperChoice));
@@ -119,7 +119,7 @@ class QuestTaskSelectableRewardsTest {
         return reward;
     }
 
-    private static QuestDetailsTaskEntry entry(String id, CompoundTag tag) {
-        return new QuestDetailsTaskEntry(id, tag, TaskJsonFactory.read(tag.getString("json")));
+    private static QuestTaskEntry entry(String id, CompoundTag tag) {
+        return new QuestTaskEntry(id, tag, QuestTaskJsonFactory.read(tag.getString("json")));
     }
 }

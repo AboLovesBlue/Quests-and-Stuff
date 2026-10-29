@@ -17,9 +17,9 @@ import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.WorldPortalCapture;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasWorldPortalCapture;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.tools.TabletToolsMenu;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
@@ -93,9 +93,9 @@ final class QuestDetailsWindowLayout {
                 if (bg != null && !bg.equals(IGuiTexture.EMPTY)) {
                     bg.draw(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
                 } else {
-                    boolean portal = WorldPortalCapture.shouldCaptureDetails(state) && WorldPortalCapture.hasUiTexture();
+                    boolean portal = CanvasWorldPortalCapture.shouldCaptureDetails(state) && CanvasWorldPortalCapture.hasUiTexture();
                     if (portal) {
-                        WorldPortalCapture.drawUiInto(graphics, this, state);
+                        CanvasWorldPortalCapture.drawUiInto(graphics, this, state);
                     }
                     int percent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
                     if (percent > 0) {
@@ -142,8 +142,8 @@ final class QuestDetailsWindowLayout {
 
         int toolsX = QuestDetailsHeader.renderCanvasHeader(canvasPanel, state, player, refresh, questId, viewport[0], viewport[2]);
         QuestDetailsDescriptionPanel.rebuild(viewportBg, state, player, refresh, questId, quest, 0, 0, viewport[2], viewport[3]);
-        QuestDetailsTasksPanel.renderContextMenu(modal, state, player, refresh, questId);
-        QuestDetailsTasksPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
+        QuestTaskListPanel.renderContextMenu(modal, state, player, refresh, questId);
+        QuestTaskListPanel.renderTypePicker(modal, state, player, refresh, questId, quest, frame.w(), frame.h());
         TabletToolsMenu.rebuildQuestDetails(modal, state, player, refresh, questId, canvasX + toolsX, QuestDetailsWindow.TOP_Y, QuestDetailsWindow.HEADER_H, QuestDetailsWindow.TOOL_SIZE);
     }
 
@@ -206,7 +206,7 @@ final class QuestDetailsWindowLayout {
         int contentY = QuestDetailsWindow.CONTENT_INSET;
         int contentW = Math.max(1, leftW - contentX * 2);
         int contentH = Math.max(1, frameH - contentY - CHAPTER_PANEL_GUTTER_BOTTOM);
-        QuestDetailsTasksPanel.rebuild(
+        QuestTaskListPanel.rebuild(
                 taskPanel,
                 state,
                 player,

@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransien
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskXpEditor;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -35,7 +35,7 @@ final class QuestTaskRewardMenuActions {
                 .getCompound(contextId);
         JsonObject rewardJson = QuestTaskMenuSupport.parseTaskJson(rewardTag.getString("json"));
         boolean selectable = QuestTaskSelectableRewards.isSelectable(rewardJson);
-        if ("command".equals(TaskJsonFactory.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
+        if ("command".equals(QuestTaskJsonFactory.typePath(rewardJson.has("type") ? rewardJson.get("type").getAsString() : ""))) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.rename(TabletTranslationKeys.text(QuestTranslationKeys.EDIT_COMMAND_REWARD), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestTaskEditActions.openExistingCommandRewardEditor(state, questId, contextId);

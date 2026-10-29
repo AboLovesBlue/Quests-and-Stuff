@@ -1,5 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,12 +16,12 @@ public final class QuestTaskEntries {
     private QuestTaskEntries() {
     }
 
-    public static List<QuestDetailsTaskEntry> entries(CompoundTag tag) {
+    public static List<QuestTaskEntry> entries(CompoundTag tag) {
         return entries(tag, new ListTag());
     }
 
-    public static List<QuestDetailsTaskEntry> entries(CompoundTag tag, ListTag order) {
-        List<QuestDetailsTaskEntry> entries = new ArrayList<>();
+    public static List<QuestTaskEntry> entries(CompoundTag tag, ListTag order) {
+        List<QuestTaskEntry> entries = new ArrayList<>();
         Set<String> added = new HashSet<>();
         for (int i = 0; i < order.size(); i++) {
             String key = order.getString(i);
@@ -33,16 +33,16 @@ public final class QuestTaskEntries {
         return entries;
     }
 
-    private static boolean addEntry(List<QuestDetailsTaskEntry> entries, Set<String> added, CompoundTag tag, String key) {
+    private static boolean addEntry(List<QuestTaskEntry> entries, Set<String> added, CompoundTag tag, String key) {
         if (key == null || key.isBlank() || added.contains(key) || !tag.contains(key, Tag.TAG_COMPOUND)) {
             return false;
         }
         CompoundTag entry = tag.getCompound(key);
-        JsonObject json = TaskJsonFactory.read(entry.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.read(entry.getString("json"));
         if (!json.has("id")) {
             json.addProperty("id", key);
         }
-        entries.add(new QuestDetailsTaskEntry(key, entry, json));
+        entries.add(new QuestTaskEntry(key, entry, json));
         added.add(key);
         return true;
     }

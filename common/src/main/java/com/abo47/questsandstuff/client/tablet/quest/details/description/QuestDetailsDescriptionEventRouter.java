@@ -8,8 +8,8 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
@@ -116,13 +116,13 @@ final class QuestDetailsDescriptionEventRouter {
         if (button == 0 && selection.count() > 1) {
             if (selection.selectionRotateHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "rotate");
-                TextStyleSession.closeQuestDetails(state);
+                CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
             if (selection.selectionResizeHandleHit(model, lx, visibleY)) {
                 transforms.beginSelectionTransform(model, lx, visibleY, "resize");
-                TextStyleSession.closeQuestDetails(state);
+                CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
@@ -157,13 +157,13 @@ final class QuestDetailsDescriptionEventRouter {
         if (!resizeHit && !rotateHit && !shiftMoveHit) {
             if (TabletModifierKeys.ctrlDown()) {
                 toggleSelection(hit);
-                TextStyleSession.closeQuestDetails(state);
+                CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
             if (TabletModifierKeys.shiftDown()) {
                 rangeSelect(model, hit);
-                TextStyleSession.closeQuestDetails(state);
+                CanvasTextStyleSession.closeQuestDetails(state);
                 refresh.run();
                 return true;
             }
@@ -175,7 +175,7 @@ final class QuestDetailsDescriptionEventRouter {
             return true;
         }
         select(hit);
-        if ("desc_text".equals(hit.kind()) && TextEditSession.isEditingTarget(state, hit.id())) {
+        if ("desc_text".equals(hit.kind()) && CanvasTextEditSession.isEditingTarget(state, hit.id())) {
             textEdit.updateCursor(model, hit.id(), lx, visibleY, true);
             surface.focus(true);
             refresh.run();
@@ -266,7 +266,7 @@ final class QuestDetailsDescriptionEventRouter {
             return surface.mouseReleasedFallback(mouseX, mouseY, button);
         }
         if (state.canvas.selectingCanvasTextRange && textEdit.isEditing()) {
-            TextEditSession.finishRangeSelection(state);
+            CanvasTextEditSession.finishRangeSelection(state);
             refresh.run();
             return true;
         }
@@ -307,7 +307,7 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if (editingText != null && textEdit.hitTextEditor(editingText, lx, visibleY)) {
             textEdit.updateCursor(model, editingText.id(), lx, visibleY, !TabletModifierKeys.shiftDown());
-            TextEditSession.startRangeSelection(state);
+            CanvasTextEditSession.startRangeSelection(state);
             surface.focus(true);
             refresh.run();
             return true;
@@ -336,7 +336,7 @@ final class QuestDetailsDescriptionEventRouter {
     private boolean handleCanvasClick(QuestDetailsDescriptionModel model, int lx, int visibleY) {
         if (selection.selectionBoundsHit(model, lx, visibleY)) {
             transforms.beginSelectionTransform(model, lx, visibleY);
-            TextStyleSession.closeQuestDetails(state);
+            CanvasTextStyleSession.closeQuestDetails(state);
             refresh.run();
             return true;
         }
@@ -408,7 +408,7 @@ final class QuestDetailsDescriptionEventRouter {
                 state.questDetails.questDetailsDescriptionSelection.setPrimaryTextId("");
             }
             state.questDetails.questDetailsDescriptionSelection.setPrimaryImageId(hit.id());
-            TextStyleSession.closeQuestDetails(state);
+            CanvasTextStyleSession.closeQuestDetails(state);
         }
     }
 

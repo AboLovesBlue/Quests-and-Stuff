@@ -20,7 +20,7 @@ import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTileText;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
 import com.abo47.questsandstuff.client.tablet.theme.render.ChromeFactory;
@@ -142,7 +142,7 @@ final class EntityVariantTiles {
         addTileHit(surface, tileX, tileY, tileW, tileH, click -> {
             state.pickers.entityVariantSelected = entry.key();
             QuestsAndStuffMod.debugLog("[QnS:UI] entity variant selected target={} entity={} variant={}", model.target(), model.entityId(), entry.key());
-            if (click.button == 0 && TabletModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
+            if (click.button == 0 && ModalPanel.acceptPickerDoubleClick(state, ModalTargets.doubleClickKey("entity_variant", model.target(), entry.key()))) {
                 EntityVariantApplyActions.apply(player, state, model.target(), entry.key());
                 closeAll(state);
             }

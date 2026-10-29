@@ -12,7 +12,7 @@ import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
@@ -68,10 +68,10 @@ public class TabletHomeOverviewPanel extends WidgetGroup {
         homeBtn.setClickedTexture(SurfaceFactory.bordered(TabletColors.SURFACE_PANEL_ALT, TabletColors.BORDER_ACCENT));
         addWidget(homeBtn);
 
-        List<AppDescriptor> apps = TabletAppRegistry.all().values().stream()
+        List<TabletAppDescriptor> apps = TabletAppRegistry.all().values().stream()
                 .filter(a -> !"home".equals(a.id()))
                 .sorted(Comparator.comparingInt(TabletHomeOverviewPanel::appAnchorOrder)
-                        .thenComparing(AppDescriptor::id))
+                        .thenComparing(TabletAppDescriptor::id))
                 .toList();
         int appCount = apps.size();
         int iconPairW = APP_ICON_SIZE * appCount + Math.max(0, appCount - 1) * GRID_16;
@@ -79,7 +79,7 @@ public class TabletHomeOverviewPanel extends WidgetGroup {
         int iconY = innerY + (innerH - APP_ICON_SIZE) / 2;
 
         int col = 0;
-        for (AppDescriptor app : apps) {
+        for (TabletAppDescriptor app : apps) {
             int ix = iconsStartX + col * (APP_ICON_SIZE + GRID_16);
             IGuiTexture tex = app.iconKey() != null ? IconAtlas.iconTexture(app.iconKey()) : new ResourceTexture(app.iconTexture());
             ButtonWidget appBtn = new ButtonWidget(ix, iconY, APP_ICON_SIZE, APP_ICON_SIZE,
@@ -93,7 +93,7 @@ public class TabletHomeOverviewPanel extends WidgetGroup {
         }
     }
 
-    private static int appAnchorOrder(AppDescriptor app) {
+    private static int appAnchorOrder(TabletAppDescriptor app) {
         if ("QUESTS".equals(app.id())) return 0;
         if ("TEAMS".equals(app.id())) return 1;
         if ("CHUNKCLAIMER".equals(app.id())) return 2;

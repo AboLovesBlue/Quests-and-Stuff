@@ -15,6 +15,6 @@ public record S2CTeamSyncPacket(CompoundTag payload) {
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundTeamPacketDispatch.handle(payload));
+        context.enqueueWork(() -> S2CTeamPacketDispatch.handle(payload));
     }
 }

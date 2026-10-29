@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -108,7 +108,7 @@ public final class QuestDetailsDescriptionSelection {
         int top = Math.min(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
         int right = Math.max(state.questDetails.questDetailsBoxStartX, state.questDetails.questDetailsBoxCurrentX);
         int bottom = Math.max(state.questDetails.questDetailsBoxStartY, state.questDetails.questDetailsBoxCurrentY);
-        CanvasElementSelectionSlot.drawBoxSelection(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom);
+        QuestElementSelectionSlot.drawBoxSelection(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom);
     }
 
     void drawMultiSelectionBounds(GuiGraphics graphics, QuestDetailsDescriptionModel model) {
@@ -120,7 +120,7 @@ public final class QuestDetailsDescriptionSelection {
         int top = bounds.top() - SELECTION_PAD;
         int right = bounds.right() + SELECTION_PAD;
         int bottom = bounds.bottom() + SELECTION_PAD;
-        CanvasElementSelectionSlot.drawCombinedBounds(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom, true);
+        QuestElementSelectionSlot.drawCombinedBounds(graphics, contentX.getAsInt(), contentY.getAsInt(), contentW.getAsInt(), contentH.getAsInt(), left, top, right, bottom, true);
     }
 
     boolean selectionBoundsHit(QuestDetailsDescriptionModel model, int lx, int visibleY) {

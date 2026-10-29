@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCa
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -27,15 +27,15 @@ final class QuestDetailsWindowActions {
         if (QuestDetailsDescriptionPanel.applyIconPick(player, state, entry)) {
             return;
         }
-        QuestDetailsTasksPanel.applyIconPick(player, state, entry);
+        QuestTaskListPanel.applyIconPick(player, state, entry);
     }
 
     static void applyBiomePick(Player player, TabletUiState state, String biome) {
-        QuestDetailsTasksPanel.applyBiomePick(player, state, biome);
+        QuestTaskListPanel.applyBiomePick(player, state, biome);
     }
 
     static void applyAdvancementPick(Player player, TabletUiState state, String advancement) {
-        QuestDetailsTasksPanel.applyAdvancementPick(player, state, advancement);
+        QuestTaskListPanel.applyAdvancementPick(player, state, advancement);
     }
 
     static void applyRecipePick(Player player, TabletUiState state, String recipe) {
@@ -45,38 +45,38 @@ final class QuestDetailsWindowActions {
         if (CanvasRecipeCardActions.applyRecipePick(player, state, recipe)) {
             return;
         }
-        QuestDetailsTasksPanel.applyRecipePick(player, state, recipe);
+        QuestTaskListPanel.applyRecipePick(player, state, recipe);
     }
 
     static void applyStructurePick(Player player, TabletUiState state, String structure) {
-        QuestDetailsTasksPanel.applyStructurePick(player, state, structure);
+        QuestTaskListPanel.applyStructurePick(player, state, structure);
     }
 
     static void applyBlockPick(Player player, TabletUiState state, String block) {
         if (QuestDetailsDescriptionPanel.applyBlockPick(player, state, block)) {
             return;
         }
-        QuestDetailsTasksPanel.applyBlockPick(player, state, block);
+        QuestTaskListPanel.applyBlockPick(player, state, block);
     }
 
     static void applyStatPick(Player player, TabletUiState state, String stat) {
-        QuestDetailsTasksPanel.applyStatPick(player, state, stat);
+        QuestTaskListPanel.applyStatPick(player, state, stat);
     }
 
     static void applyDimensionPick(Player player, TabletUiState state, String dimension) {
-        QuestDetailsTasksPanel.applyDimensionPick(player, state, dimension);
+        QuestTaskListPanel.applyDimensionPick(player, state, dimension);
     }
 
     static void applyLootTablePick(Player player, TabletUiState state, String lootTable) {
-        QuestDetailsTasksPanel.applyLootTablePick(player, state, lootTable);
+        QuestTaskListPanel.applyLootTablePick(player, state, lootTable);
     }
 
     static void applyItemLockPick(Player player, TabletUiState state, String entry) {
-        QuestDetailsTasksPanel.applyItemLockPick(player, state, entry);
+        QuestTaskListPanel.applyItemLockPick(player, state, entry);
     }
 
     static void applyInventoryItemPick(Player player, TabletUiState state, ItemStack stack) {
-        QuestDetailsTasksPanel.applyInventoryItemPick(player, state, stack);
+        QuestTaskListPanel.applyInventoryItemPick(player, state, stack);
     }
 
     static void applyAssetPick(Player player, TabletUiState state, String asset) {
@@ -125,7 +125,7 @@ final class QuestDetailsWindowActions {
         }
         String questId = questId(state);
         if (!state.questDetails.questDetailsSelectedTaskId.isBlank()) {
-            QuestDetailsTasksPanel.openTaskRenameEditor(
+            QuestTaskListPanel.openTaskRenameEditor(
                     state,
                     questId,
                     state.questDetails.questDetailsSelectedTaskId,
@@ -149,7 +149,7 @@ final class QuestDetailsWindowActions {
         if (questId.isBlank()) {
             return false;
         }
-        if (QuestDetailsTasksPanel.deleteSelectedTask(player, state, questId)) {
+        if (QuestTaskListPanel.deleteSelectedTask(player, state, questId)) {
             return true;
         }
         QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));

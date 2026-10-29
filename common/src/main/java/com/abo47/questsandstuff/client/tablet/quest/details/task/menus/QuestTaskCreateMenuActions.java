@@ -5,7 +5,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.TaskSections;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
@@ -15,13 +15,13 @@ final class QuestTaskCreateMenuActions {
     }
 
     static void addSections(ContextMenuSections sections, TabletUiState state, String kind) {
-        if (TaskSections.isTask(kind)) {
+        if (QuestTaskSections.isTask(kind)) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_TASK), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "task", "");
             }));
         }
-        if (TaskSections.isReward(kind)) {
+        if (QuestTaskSections.isReward(kind)) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REWARD), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "reward", "");

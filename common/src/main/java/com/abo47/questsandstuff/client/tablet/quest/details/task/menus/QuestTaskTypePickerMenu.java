@@ -17,7 +17,7 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestDetailsTypeChoice;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeChoice;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalog;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -35,7 +35,7 @@ final class QuestTaskTypePickerMenu {
         }
         boolean rewards = picker.kind().startsWith("reward");
         boolean change = picker.kind().endsWith("_change");
-        List<QuestDetailsTypeChoice> choices = rewards ? QuestTaskTypeCatalog.rewardChoices() : QuestTaskTypeCatalog.taskChoices();
+        List<QuestTaskTypeChoice> choices = rewards ? QuestTaskTypeCatalog.rewardChoices() : QuestTaskTypeCatalog.taskChoices();
         List<ContextAction> typeActions = actions(choices, rewards, change, player, state, questId, quest, picker.targetId());
         int rowCount = typeActions.size();
         int menuW = 130;
@@ -47,7 +47,7 @@ final class QuestTaskTypePickerMenu {
     }
 
     private static List<ContextAction> actions(
-            List<QuestDetailsTypeChoice> choices,
+            List<QuestTaskTypeChoice> choices,
             boolean rewards,
             boolean change,
             Player player,
@@ -58,7 +58,7 @@ final class QuestTaskTypePickerMenu {
     ) {
         ContextMenuSections sections = new ContextMenuSections();
         if (rewards) {
-            for (QuestDetailsTypeChoice choice : choices) {
+            for (QuestTaskTypeChoice choice : choices) {
                 sections.add(ContextMenuSection.PRIMARY, typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
             }
             return sections.build();
@@ -76,7 +76,7 @@ final class QuestTaskTypePickerMenu {
             ContextMenuSection section,
             String labelKey,
             String icon,
-            List<QuestDetailsTypeChoice> choices,
+            List<QuestTaskTypeChoice> choices,
             List<String> types,
             boolean rewards,
             boolean change,
@@ -88,7 +88,7 @@ final class QuestTaskTypePickerMenu {
     ) {
         List<ContextAction> children = new ArrayList<>();
         for (String type : types) {
-            QuestDetailsTypeChoice choice = typeChoice(choices, type);
+            QuestTaskTypeChoice choice = typeChoice(choices, type);
             if (choice != null) {
                 children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest, targetId));
             }
@@ -98,8 +98,8 @@ final class QuestTaskTypePickerMenu {
         }
     }
 
-    private static QuestDetailsTypeChoice typeChoice(List<QuestDetailsTypeChoice> choices, String type) {
-        for (QuestDetailsTypeChoice choice : choices) {
+    private static QuestTaskTypeChoice typeChoice(List<QuestTaskTypeChoice> choices, String type) {
+        for (QuestTaskTypeChoice choice : choices) {
             if (choice.type().equals(type)) {
                 return choice;
             }
@@ -108,7 +108,7 @@ final class QuestTaskTypePickerMenu {
     }
 
     private static ContextAction typeChoiceAction(
-            QuestDetailsTypeChoice choice,
+            QuestTaskTypeChoice choice,
             boolean rewards,
             boolean change,
             Player player,

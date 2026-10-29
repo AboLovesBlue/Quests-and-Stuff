@@ -41,8 +41,8 @@ public final class CanvasLayerMutations {
         CanvasElementStore.persistLayerOrder(state, chapter);
     }
 
-    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String ecId, boolean front) {
-        CanvasLayerOrdering.moveExclusiveChoiceLayer(state, chapter, ecId, front);
+    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String exclusiveChoiceId, boolean front) {
+        CanvasLayerOrdering.moveExclusiveChoiceLayer(state, chapter, exclusiveChoiceId, front);
         CanvasElementStore.persistLayerOrder(state, chapter);
     }
 
@@ -58,12 +58,12 @@ public final class CanvasLayerMutations {
         CanvasElementStore.putCanvasExclusiveChoices(state, chapter, ecs, syncServer);
     }
 
-    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        return CanvasElementStore.removeCanvasExclusiveChoice(state, chapter, ecId);
+    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        return CanvasElementStore.removeCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
     }
 
-    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        return CanvasElementStore.findCanvasExclusiveChoice(state, chapter, ecId);
+    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        return CanvasElementStore.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
     }
 
     public static void putCanvasImage(TabletUiState state, String chapter, CanvasImageLayer image) {
@@ -110,8 +110,8 @@ public final class CanvasLayerMutations {
         CanvasElementStore.persistCanvasText(state, chapter, textId);
     }
 
-    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        CanvasElementStore.persistCanvasExclusiveChoice(state, chapter, ecId);
+    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        CanvasElementStore.persistCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
     }
 
     public static CanvasImageLayer effectiveCanvasImage(TabletUiState state, CanvasImageLayer image) {
@@ -208,11 +208,11 @@ public final class CanvasLayerMutations {
         return true;
     }
 
-    public static boolean commitTransientCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        if (state == null || chapter == null || chapter.isBlank() || ecId == null || ecId.isBlank()) {
+    public static boolean commitTransientCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        if (state == null || chapter == null || chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return false;
         }
-        CanvasExclusiveChoice preview = state.canvas.transientCanvasExclusiveChoices.remove(ecId);
+        CanvasExclusiveChoice preview = state.canvas.transientCanvasExclusiveChoices.remove(exclusiveChoiceId);
         if (preview == null) {
             return false;
         }
@@ -227,8 +227,8 @@ public final class CanvasLayerMutations {
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             commitTransientCanvasText(state, chapter, textId);
         }
-        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            commitTransientCanvasExclusiveChoice(state, chapter, ecId);
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            commitTransientCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
         }
     }
 }

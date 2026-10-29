@@ -21,7 +21,7 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestCardBackgroundRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionLine;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
@@ -112,9 +112,9 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, viewportW, viewportH) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                boolean portal = WorldPortalCapture.shouldCapture(state) && WorldPortalCapture.hasTexture();
+                boolean portal = CanvasWorldPortalCapture.shouldCapture(state) && CanvasWorldPortalCapture.hasTexture();
                 if (portal) {
-                    WorldPortalCapture.drawInto(graphics, canvasViewport, state);
+                    CanvasWorldPortalCapture.drawInto(graphics, canvasViewport, state);
                 }
                 int percent = Math.max(0, Math.min(100, state.canvas.canvasBgOpacityPercent));
                 if (percent == 0) {
@@ -239,11 +239,11 @@ final class CanvasSceneRenderer {
                 CanvasImageLayerRenderer.drawAtPivot(graphics, mouseX, mouseY, drawImage, originX + box.centerX(), originY + box.centerY(), w, h, pivotX, pivotY);
                 if (state.root.canEdit && CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                        QuestElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                     } else if (CanvasTransformGizmoAxis.supports(drawImage.asset())) {
                         CanvasTransformGizmo.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation(), drawImage.entityYaw(), drawImage.modelPitch());
                     } else {
-                        CanvasElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                        QuestElementSelectionSlot.drawAtPivot(graphics, state, originX, originY, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                     }
                 }
             }
@@ -255,20 +255,20 @@ final class CanvasSceneRenderer {
             TabletUiState state,
             CanvasExclusiveChoice ec
     ) {
-        WidgetGroup ecLayer = new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
+        WidgetGroup exclusiveChoiceLayer = new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-                CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+                CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
                 int originX = getPositionX();
                 int originY = getPositionY();
-                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), 0, 0, drawExclusiveChoice.rotation());
                 int w = box.width();
                 int h = box.height();
                 graphics.pose().pushPose();
                 graphics.pose().translate(originX + box.centerX(), originY + box.centerY(), 0.0f);
-                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawEc.rotation())));
-                String bg = QuestDisplay.normalizeQuestBackground(drawEc.background());
+                graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(drawExclusiveChoice.rotation())));
+                String bg = QuestDisplay.normalizeQuestBackground(drawExclusiveChoice.background());
                 if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(bg)) {
                     IGuiTexture bgTexture = chapterBackgroundTexture(bg, false);
                     if (bgTexture != null) {
@@ -278,15 +278,15 @@ final class CanvasSceneRenderer {
                     EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, -box.left(), -box.top(), w, h);
                 }
                 graphics.pose().popPose();
-                if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+                if (state.root.canEdit && CanvasSelectionActions.isExclusiveChoiceSelected(state, drawExclusiveChoice.id())) {
                     if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1) {
-                        CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                        QuestElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, originX, originY, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), 0, 0, drawExclusiveChoice.rotation());
                     } else {
-                        CanvasElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
+                        QuestElementSelectionSlot.drawResizeOnlyAtPivot(graphics, state, originX, originY, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), 0, 0, drawExclusiveChoice.rotation());
                     }
                 }
             }
         };
-        canvasViewport.addWidget(ecLayer);
+        canvasViewport.addWidget(exclusiveChoiceLayer);
     }
 }

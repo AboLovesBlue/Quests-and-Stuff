@@ -126,7 +126,7 @@ record EntityVariantPickerModel(
         if (parsed.hasAtLeast(2) && parsed.isChapterIcon()) {
             return ClientQuestStateFacade.chapterIcon(parsed.questId());
         }
-        if (parsed.hasAtLeast(3) && parsed.isTaskTask()) {
+        if (parsed.hasAtLeast(3) && parsed.isTask()) {
             return QuestTaskEditActions.taskIcon(parsed.questId(), parsed.entryId(), true);
         }
         if (parsed.hasAtLeast(3) && parsed.isTaskReward()) {

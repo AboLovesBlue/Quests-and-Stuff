@@ -11,10 +11,10 @@ public final class CanvasLayerSelectionState {
     private final LinkedHashSet<String> questIds = new LinkedHashSet<>();
     private final LinkedHashSet<String> imageIds = new LinkedHashSet<>();
     private final LinkedHashSet<String> textIds = new LinkedHashSet<>();
-    private final LinkedHashSet<String> ecIds = new LinkedHashSet<>();
+    private final LinkedHashSet<String> exclusiveChoiceIds = new LinkedHashSet<>();
     private String primaryImageId = "";
     private String primaryTextId = "";
-    private String primaryEcId = "";
+    private String primaryExclusiveChoiceId = "";
 
     public Set<String> questIds() {
         return questIds;
@@ -28,8 +28,8 @@ public final class CanvasLayerSelectionState {
         return textIds;
     }
 
-    public Set<String> ecIds() {
-        return ecIds;
+    public Set<String> exclusiveChoiceIds() {
+        return exclusiveChoiceIds;
     }
 
     public Set<String> ids(CanvasLayerKind kind) {
@@ -37,7 +37,7 @@ public final class CanvasLayerSelectionState {
             case QUEST -> questIds;
             case IMAGE -> imageIds;
             case TEXT -> textIds;
-            case EXCLUSIVE_CHOICE -> ecIds;
+            case EXCLUSIVE_CHOICE -> exclusiveChoiceIds;
             case CONNECTION -> Set.of();
         };
     }
@@ -50,8 +50,8 @@ public final class CanvasLayerSelectionState {
         return textIds.contains(primaryTextId) ? primaryTextId : "";
     }
 
-    public String primaryEcId() {
-        return ecIds.contains(primaryEcId) ? primaryEcId : "";
+    public String primaryExclusiveChoiceId() {
+        return exclusiveChoiceIds.contains(primaryExclusiveChoiceId) ? primaryExclusiveChoiceId : "";
     }
 
     public boolean hasQuest(String id) {
@@ -68,17 +68,17 @@ public final class CanvasLayerSelectionState {
         return !clean.isBlank() && (clean.equals(primaryTextId) || textIds.contains(clean));
     }
 
-    public boolean hasEc(String id) {
+    public boolean hasExclusiveChoice(String id) {
         String clean = clean(id);
-        return !clean.isBlank() && (clean.equals(primaryEcId) || ecIds.contains(clean));
+        return !clean.isBlank() && (clean.equals(primaryExclusiveChoiceId) || exclusiveChoiceIds.contains(clean));
     }
 
     public boolean hasAny() {
-        return !questIds.isEmpty() || !imageIds.isEmpty() || !textIds.isEmpty() || !ecIds.isEmpty();
+        return !questIds.isEmpty() || !imageIds.isEmpty() || !textIds.isEmpty() || !exclusiveChoiceIds.isEmpty();
     }
 
     public int size() {
-        return questIds.size() + imageIds.size() + textIds.size() + ecIds.size();
+        return questIds.size() + imageIds.size() + textIds.size() + exclusiveChoiceIds.size();
     }
 
     public void clear() {
@@ -103,8 +103,8 @@ public final class CanvasLayerSelectionState {
     }
 
     public void clearExclusiveChoices() {
-        ecIds.clear();
-        primaryEcId = "";
+        exclusiveChoiceIds.clear();
+        primaryExclusiveChoiceId = "";
     }
 
     public void clearPrimaryImage() {
@@ -115,8 +115,8 @@ public final class CanvasLayerSelectionState {
         primaryTextId = firstOrBlank(textIds);
     }
 
-    public void clearPrimaryEc() {
-        primaryEcId = firstOrBlank(ecIds);
+    public void clearPrimaryExclusiveChoice() {
+        primaryExclusiveChoiceId = firstOrBlank(exclusiveChoiceIds);
     }
 
     public void addQuest(String id) {
@@ -141,13 +141,13 @@ public final class CanvasLayerSelectionState {
         primaryTextId = clean;
     }
 
-    public void addEc(String id) {
+    public void addExclusiveChoice(String id) {
         String clean = clean(id);
         if (clean.isBlank()) {
             return;
         }
-        ecIds.add(clean);
-        primaryEcId = clean;
+        exclusiveChoiceIds.add(clean);
+        primaryExclusiveChoiceId = clean;
     }
 
     public void addQuests(Collection<String> ids) {
@@ -165,8 +165,8 @@ public final class CanvasLayerSelectionState {
     }
 
     public void addEcs(Collection<String> ids) {
-        addAllClean(ecIds, ids);
-        primaryEcId = firstOrBlankReversed(ecIds);
+        addAllClean(exclusiveChoiceIds, ids);
+        primaryExclusiveChoiceId = firstOrBlankReversed(exclusiveChoiceIds);
     }
 
     public void selectOnlyQuest(String id) {
@@ -184,9 +184,9 @@ public final class CanvasLayerSelectionState {
         addText(id);
     }
 
-    public void selectOnlyEc(String id) {
+    public void selectOnlyExclusiveChoice(String id) {
         clear();
-        addEc(id);
+        addExclusiveChoice(id);
     }
 
     public void setPrimaryImageId(String id) {
@@ -209,14 +209,14 @@ public final class CanvasLayerSelectionState {
         primaryTextId = clean;
     }
 
-    public void setPrimaryEcId(String id) {
+    public void setPrimaryExclusiveChoiceId(String id) {
         String clean = clean(id);
         if (clean.isBlank()) {
-            primaryEcId = "";
+            primaryExclusiveChoiceId = "";
             return;
         }
-        ecIds.add(clean);
-        primaryEcId = clean;
+        exclusiveChoiceIds.add(clean);
+        primaryExclusiveChoiceId = clean;
     }
 
     public void removeQuest(String id) {
@@ -239,11 +239,11 @@ public final class CanvasLayerSelectionState {
         }
     }
 
-    public void removeEc(String id) {
+    public void removeExclusiveChoice(String id) {
         String clean = clean(id);
-        ecIds.remove(clean);
-        if (clean.equals(primaryEcId)) {
-            primaryEcId = firstOrBlank(ecIds);
+        exclusiveChoiceIds.remove(clean);
+        if (clean.equals(primaryExclusiveChoiceId)) {
+            primaryExclusiveChoiceId = firstOrBlank(exclusiveChoiceIds);
         }
     }
 
@@ -275,22 +275,22 @@ public final class CanvasLayerSelectionState {
         addText(clean);
     }
 
-    public void toggleEc(String id) {
+    public void toggleExclusiveChoice(String id) {
         String clean = clean(id);
         if (clean.isBlank()) {
             return;
         }
-        if (ecIds.remove(clean)) {
-            if (clean.equals(primaryEcId)) {
-                primaryEcId = firstOrBlank(ecIds);
+        if (exclusiveChoiceIds.remove(clean)) {
+            if (clean.equals(primaryExclusiveChoiceId)) {
+                primaryExclusiveChoiceId = firstOrBlank(exclusiveChoiceIds);
             }
             return;
         }
-        addEc(clean);
+        addExclusiveChoice(clean);
     }
 
     public CanvasLayerSelection snapshot() {
-        return CanvasLayerSelection.fromIds(questIds, imageIds, textIds, ecIds);
+        return CanvasLayerSelection.fromIds(questIds, imageIds, textIds, exclusiveChoiceIds);
     }
 
     public CanvasSelectionSet selectionSet() {

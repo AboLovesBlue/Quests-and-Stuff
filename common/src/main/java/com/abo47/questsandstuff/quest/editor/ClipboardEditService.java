@@ -237,8 +237,8 @@ public final class ClipboardEditService {
         Map<String, String> allocatedQuestIds = allocateQuestIds(chapter, blueprint);
         Map<String, String> allocatedImageIds = allocateImageIds(chapter, blueprint);
         Map<String, String> allocatedTextIds = allocateTextIds(chapter, blueprint);
-        Map<String, String> allocatedEcIds = allocateEcIds(chapter, blueprint);
-        if (allocatedQuestIds.isEmpty() && allocatedImageIds.isEmpty() && allocatedTextIds.isEmpty() && allocatedEcIds.isEmpty()) {
+        Map<String, String> allocatedExclusiveChoiceIds = allocateExclusiveChoiceIds(chapter, blueprint);
+        if (allocatedQuestIds.isEmpty() && allocatedImageIds.isEmpty() && allocatedTextIds.isEmpty() && allocatedExclusiveChoiceIds.isEmpty()) {
             return;
         }
 
@@ -250,11 +250,11 @@ public final class ClipboardEditService {
         }
         List<CanvasImageLayer> pastedImages = pasteBlueprintImages(chapter, anchorX, anchorY, blueprint, allocatedImageIds);
         List<CanvasTextLayer> pastedTexts = pasteBlueprintTexts(chapter, anchorX, anchorY, blueprint, allocatedTextIds);
-        List<CanvasExclusiveChoice> pastedEcs = pasteBlueprintEcs(chapter, anchorX, anchorY, blueprint, allocatedEcIds, allocatedQuestIds);
+        List<CanvasExclusiveChoice> pastedEcs = pasteBlueprintEcs(chapter, anchorX, anchorY, blueprint, allocatedExclusiveChoiceIds, allocatedQuestIds);
         for (CanvasExclusiveChoice ec : pastedEcs) {
             owner.definitionStore().putCanvasExclusiveChoice(chapter, ec);
         }
-        owner.definitionStore().putCanvasLayers(chapter, pastedImages, pastedTexts, remappedLayerOrder(chapter, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds, allocatedEcIds));
+        owner.definitionStore().putCanvasLayers(chapter, pastedImages, pastedTexts, remappedLayerOrder(chapter, blueprint, allocatedQuestIds, allocatedImageIds, allocatedTextIds, allocatedExclusiveChoiceIds));
         owner.definitionStore().saveNow(allocatedQuestIds.values());
         session.currentChapter = chapter;
         owner.postMutationDelta(player, Set.copyOf(allocatedQuestIds.values()), Set.of(chapter));
@@ -396,12 +396,12 @@ public final class ClipboardEditService {
             Map<String, String> questIds,
             Map<String, String> imageIds,
             Map<String, String> textIds,
-            Map<String, String> ecIds
+            Map<String, String> exclusiveChoiceIds
     ) {
         List<String> existing = new ArrayList<>(owner.definitionStore().canvasLayerOrder(chapter));
         List<String> pasted = new ArrayList<>();
         for (String key : blueprint.layerOrder()) {
-            String remapped = remapLayerKey(key, questIds, imageIds, textIds, ecIds);
+            String remapped = remapLayerKey(key, questIds, imageIds, textIds, exclusiveChoiceIds);
             if (!remapped.isBlank() && !pasted.contains(remapped)) {
                 pasted.add(remapped);
             }
@@ -415,8 +415,8 @@ public final class ClipboardEditService {
         for (String id : questIds.values()) {
             addLayerKey(pasted, questKey(id));
         }
-        for (String id : ecIds.values()) {
-            addLayerKey(pasted, ecKey(id));
+        for (String id : exclusiveChoiceIds.values()) {
+            addLayerKey(pasted, exclusiveChoiceKey(id));
         }
         existing.removeIf(pasted::contains);
         existing.addAll(pasted);
@@ -429,7 +429,7 @@ public final class ClipboardEditService {
         }
     }
 
-    private static String remapLayerKey(String key, Map<String, String> questIds, Map<String, String> imageIds, Map<String, String> textIds, Map<String, String> ecIds) {
+    private static String remapLayerKey(String key, Map<String, String> questIds, Map<String, String> imageIds, Map<String, String> textIds, Map<String, String> exclusiveChoiceIds) {
         if (key == null || key.isBlank()) {
             return "";
         }
@@ -446,13 +446,13 @@ public final class ClipboardEditService {
             return id == null || id.isBlank() ? "" : textKey(id);
         }
         if (key.startsWith("exclusive_choice:")) {
-            String id = ecIds.get(key.substring("exclusive_choice:".length()));
-            return id == null || id.isBlank() ? "" : ecKey(id);
+            String id = exclusiveChoiceIds.get(key.substring("exclusive_choice:".length()));
+            return id == null || id.isBlank() ? "" : exclusiveChoiceKey(id);
         }
         return "";
     }
 
-    private static String ecKey(String id) {
+    private static String exclusiveChoiceKey(String id) {
         return "exclusive_choice:" + id;
     }
 
@@ -468,7 +468,7 @@ public final class ClipboardEditService {
         return "text:" + id;
     }
 
-    private Map<String, String> allocateEcIds(String chapter, CanvasBlueprint blueprint) {
+    private Map<String, String> allocateExclusiveChoiceIds(String chapter, CanvasBlueprint blueprint) {
         Map<String, String> allocatedIds = new LinkedHashMap<>();
         Set<String> reservedIds = new HashSet<>();
         for (CanvasExclusiveChoice ec : owner.definitionStore().canvasExclusiveChoices(chapter)) {
@@ -485,10 +485,10 @@ public final class ClipboardEditService {
         return allocatedIds;
     }
 
-    private List<CanvasExclusiveChoice> pasteBlueprintEcs(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedEcIds, Map<String, String> allocatedQuestIds) {
+    private List<CanvasExclusiveChoice> pasteBlueprintEcs(String chapter, int anchorX, int anchorY, CanvasBlueprint blueprint, Map<String, String> allocatedExclusiveChoiceIds, Map<String, String> allocatedQuestIds) {
         List<CanvasExclusiveChoice> pasted = new ArrayList<>();
         for (CanvasBlueprint.ExclusiveChoiceEntry entry : blueprint.exclusiveChoices()) {
-            String newId = allocatedEcIds.get(entry.sourceId());
+            String newId = allocatedExclusiveChoiceIds.get(entry.sourceId());
             if (newId == null || newId.isBlank()) {
                 continue;
             }
@@ -548,7 +548,7 @@ public final class ClipboardEditService {
         selection.put("quests", questSelectionIds(quests));
         selection.put("images", imageSelectionIds(images));
         selection.put("texts", textSelectionIds(texts));
-        selection.put("ecs", ecSelectionIds(ecs));
+        selection.put("ecs", exclusiveChoiceSelectionIds(ecs));
         return selection;
     }
 
@@ -576,7 +576,7 @@ public final class ClipboardEditService {
         return ids;
     }
 
-    private static ListTag ecSelectionIds(List<CanvasExclusiveChoice> ecs) {
+    private static ListTag exclusiveChoiceSelectionIds(List<CanvasExclusiveChoice> ecs) {
         ListTag ids = new ListTag();
         for (CanvasExclusiveChoice ec : ecs) {
             ids.add(StringTag.valueOf(ec.id()));

@@ -15,8 +15,8 @@ public final class CanvasSelectionSet {
         this(CanvasLayerSelection.fromIds(questIds, imageIds, textIds));
     }
 
-    public CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set<String> textIds, Set<String> ecIds) {
-        this(CanvasLayerSelection.fromIds(questIds, imageIds, textIds, ecIds));
+    public CanvasSelectionSet(Set<String> questIds, Set<String> imageIds, Set<String> textIds, Set<String> exclusiveChoiceIds) {
+        this(CanvasLayerSelection.fromIds(questIds, imageIds, textIds, exclusiveChoiceIds));
     }
 
     public CanvasSelectionSet(CanvasLayerSelection layers) {
@@ -32,11 +32,11 @@ public final class CanvasSelectionSet {
         if (!state.canvas.canvasSelection.primaryTextId().isBlank()) {
             textIds.add(state.canvas.canvasSelection.primaryTextId());
         }
-        Set<String> ecIds = new LinkedHashSet<>(state.canvas.canvasSelection.ecIds());
-        if (!state.canvas.canvasSelection.primaryEcId().isBlank()) {
-            ecIds.add(state.canvas.canvasSelection.primaryEcId());
+        Set<String> exclusiveChoiceIds = new LinkedHashSet<>(state.canvas.canvasSelection.exclusiveChoiceIds());
+        if (!state.canvas.canvasSelection.primaryExclusiveChoiceId().isBlank()) {
+            exclusiveChoiceIds.add(state.canvas.canvasSelection.primaryExclusiveChoiceId());
         }
-        return new CanvasSelectionSet(state.canvas.canvasSelection.questIds(), imageIds, textIds, ecIds);
+        return new CanvasSelectionSet(state.canvas.canvasSelection.questIds(), imageIds, textIds, exclusiveChoiceIds);
     }
 
     public Set<String> questIds() {
@@ -51,7 +51,7 @@ public final class CanvasSelectionSet {
         return layers.ids(CanvasLayerKind.TEXT);
     }
 
-    public Set<String> ecIds() {
+    public Set<String> exclusiveChoiceIds() {
         return layers.ids(CanvasLayerKind.EXCLUSIVE_CHOICE);
     }
 

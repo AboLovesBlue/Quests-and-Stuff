@@ -14,7 +14,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -71,7 +71,7 @@ public final class CanvasInlineTextEditor {
     }
 
     public void begin(CanvasTextLayer text) {
-        TextEditSession.beginMainCanvas(state, text.id(), text.text());
+        CanvasTextEditSession.beginMainCanvas(state, text.id(), text.text());
         state.canvas.canvasSelection.setPrimaryTextId(text.id());
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.textIds().add(text.id());
@@ -87,22 +87,22 @@ public final class CanvasInlineTextEditor {
 
     public void close(String reason) {
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit close id={} reason={} length={}", state.canvas.canvasTextEditTarget, reason, state.canvas.canvasTextEditDraft.length());
-        TextEditSession.closeMainCanvas(state, false);
+        CanvasTextEditSession.closeMainCanvas(state, false);
     }
 
     public CanvasTextLayer activeText() {
-        if (!TextEditSession.isMainCanvasEditing(state)) {
+        if (!CanvasTextEditSession.isMainCanvasEditing(state)) {
             return null;
         }
         return CanvasLayerMutations.findCanvasText(state, TabletStateQueries.selectedChapterName(state), state.canvas.canvasTextEditTarget);
     }
 
     public boolean handleKeyPressed(int keyCode) {
-        if (!TextEditSession.isMainCanvasEditing(state)) {
+        if (!CanvasTextEditSession.isMainCanvasEditing(state)) {
             return false;
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
-            TextEditSession.selectAll(state);
+            CanvasTextEditSession.selectAll(state);
             refresh.run();
             return true;
         }
@@ -135,46 +135,46 @@ public final class CanvasInlineTextEditor {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-            if (applyReplacement(TextEditSession.deleteSelection(state))) {
+            if (applyReplacement(CanvasTextEditSession.deleteSelection(state))) {
                 refresh.run();
             } else {
-                int cursor = TextEditSession.clampedCursor(state);
+                int cursor = CanvasTextEditSession.clampedCursor(state);
                 if (cursor > 0) {
-                    applyReplacement(TextEditSession.replaceRange(state, cursor - 1, cursor, ""));
+                    applyReplacement(CanvasTextEditSession.replaceRange(state, cursor - 1, cursor, ""));
                     refresh.run();
                 }
             }
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            if (applyReplacement(TextEditSession.deleteSelection(state))) {
+            if (applyReplacement(CanvasTextEditSession.deleteSelection(state))) {
                 refresh.run();
             } else {
-                int cursor = TextEditSession.clampedCursor(state);
-                if (cursor < TextEditSession.draftLength(state)) {
-                    applyReplacement(TextEditSession.replaceRange(state, cursor, cursor + 1, ""));
+                int cursor = CanvasTextEditSession.clampedCursor(state);
+                if (cursor < CanvasTextEditSession.draftLength(state)) {
+                    applyReplacement(CanvasTextEditSession.replaceRange(state, cursor, cursor + 1, ""));
                     refresh.run();
                 }
             }
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_LEFT) {
-            TextEditSession.moveCursor(state, Math.max(0, TextEditSession.clampedCursor(state) - 1), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, Math.max(0, CanvasTextEditSession.clampedCursor(state) - 1), isShiftDown());
             refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_RIGHT) {
-            TextEditSession.moveCursor(state, Math.min(TextEditSession.draftLength(state), TextEditSession.clampedCursor(state) + 1), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, Math.min(CanvasTextEditSession.draftLength(state), CanvasTextEditSession.clampedCursor(state) + 1), isShiftDown());
             refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_HOME) {
-            TextEditSession.moveCursor(state, 0, isShiftDown());
+            CanvasTextEditSession.moveCursor(state, 0, isShiftDown());
             refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_END) {
-            TextEditSession.moveCursor(state, TextEditSession.draftLength(state), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, CanvasTextEditSession.draftLength(state), isShiftDown());
             refresh.run();
             return true;
         }
@@ -182,7 +182,7 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean handleCharTyped(char codePoint) {
-        if (!TextEditSession.isMainCanvasEditing(state)) {
+        if (!CanvasTextEditSession.isMainCanvasEditing(state)) {
             return false;
         }
         if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
@@ -194,22 +194,22 @@ public final class CanvasInlineTextEditor {
     }
 
     public boolean dragSelectionTo(int localX, int localY) {
-        if (!state.canvas.selectingCanvasTextRange || !TextEditSession.isMainCanvasEditing(state)) {
+        if (!state.canvas.selectingCanvasTextRange || !CanvasTextEditSession.isMainCanvasEditing(state)) {
             return false;
         }
         CanvasTextLayer editingText = activeText();
         if (editingText != null) {
-            TextEditSession.moveCursor(state, CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY), true);
+            CanvasTextEditSession.moveCursor(state, CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY), true);
             refresh.run();
         }
         return true;
     }
 
     public boolean finishSelectionDrag() {
-        if (!TextEditSession.isMainCanvasEditing(state)) {
+        if (!CanvasTextEditSession.isMainCanvasEditing(state)) {
             return false;
         }
-        if (!TextEditSession.finishRangeSelection(state)) {
+        if (!CanvasTextEditSession.finishRangeSelection(state)) {
             return false;
         }
         refresh.run();
@@ -217,20 +217,20 @@ public final class CanvasInlineTextEditor {
     }
 
     public void moveCursor(int cursor, boolean extendSelection) {
-        TextEditSession.moveCursor(state, cursor, extendSelection);
+        CanvasTextEditSession.moveCursor(state, cursor, extendSelection);
     }
 
     public boolean deleteSelection() {
-        return applyReplacement(TextEditSession.deleteSelection(state));
+        return applyReplacement(CanvasTextEditSession.deleteSelection(state));
     }
 
     public boolean copySelection() {
-        if (!TextEditSession.hasSelection(state)) {
+        if (!CanvasTextEditSession.hasSelection(state)) {
             return false;
         }
-        int start = TextEditSession.selectionStart(state);
-        int end = TextEditSession.selectionEnd(state);
-        String value = TextEditSession.selectedText(state);
+        int start = CanvasTextEditSession.selectionStart(state);
+        int end = CanvasTextEditSession.selectionEnd(state);
+        String value = CanvasTextEditSession.selectedText(state);
         Minecraft.getInstance().keyboardHandler.setClipboard(value);
         QuestsAndStuffMod.debugLog("[QnS:UI] canvas text inline edit copy range={}..{} length={}", start, end, value.length());
         return true;
@@ -240,10 +240,10 @@ public final class CanvasInlineTextEditor {
         if (value == null || value.isEmpty()) {
             return;
         }
-        applyReplacement(TextEditSession.insert(state, value));
+        applyReplacement(CanvasTextEditSession.insert(state, value));
     }
 
-    private boolean applyReplacement(TextEditSession.Replacement replacement) {
+    private boolean applyReplacement(CanvasTextEditSession.Replacement replacement) {
         if (!replacement.changed()) {
             return false;
         }

@@ -10,8 +10,8 @@ public final class ConnectionOps {
     }
 
     public static void applyTexture(TabletUiState state, Player player, String chapter, String prerequisiteId, String questId, String texture) {
-        if (ConnectionRenderer.isEcId(state, chapter, prerequisiteId) || ConnectionRenderer.isEcId(state, chapter, questId)) {
-            EditorCanvasCommandClient.runEcConnectionTextureAction(state, prerequisiteId, questId, texture);
+        if (ConnectionRenderer.isExclusiveChoiceId(state, chapter, prerequisiteId) || ConnectionRenderer.isExclusiveChoiceId(state, chapter, questId)) {
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, prerequisiteId, questId, texture);
             return;
         }
         EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prerequisiteId, texture);
@@ -19,8 +19,8 @@ public final class ConnectionOps {
     }
 
     public static void applyTextureSpacing(TabletUiState state, Player player, String chapter, String prerequisiteId, String questId, int spacing) {
-        if (ConnectionRenderer.isEcId(state, chapter, prerequisiteId) || ConnectionRenderer.isEcId(state, chapter, questId)) {
-            EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
+        if (ConnectionRenderer.isExclusiveChoiceId(state, chapter, prerequisiteId) || ConnectionRenderer.isExclusiveChoiceId(state, chapter, questId)) {
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
             return;
         }
         EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);

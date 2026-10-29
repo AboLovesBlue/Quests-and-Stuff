@@ -5,8 +5,8 @@ public record CanvasLayerKey(CanvasLayerKind kind, String id) {
         id = id == null ? "" : id.trim();
     }
 
-    public static CanvasLayerKey exclusiveChoice(String ecId) {
-        return new CanvasLayerKey(CanvasLayerKind.EXCLUSIVE_CHOICE, ecId);
+    public static CanvasLayerKey exclusiveChoice(String exclusiveChoiceId) {
+        return new CanvasLayerKey(CanvasLayerKind.EXCLUSIVE_CHOICE, exclusiveChoiceId);
     }
 
     public static CanvasLayerKey quest(String questId) {

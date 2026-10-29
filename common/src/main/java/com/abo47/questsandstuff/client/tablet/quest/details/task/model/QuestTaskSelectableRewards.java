@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
@@ -26,11 +26,11 @@ public final class QuestTaskSelectableRewards {
     }
 
     public static boolean isSelectable(JsonObject json) {
-        return TaskJsonFactory.asBoolean(json, "selectable", false) || isSelectableWrapper(json);
+        return QuestTaskJsonFactory.asBoolean(json, "selectable", false) || isSelectableWrapper(json);
     }
 
     private static boolean isSelectableWrapper(JsonObject json) {
-        return "selectable".equals(TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", "")));
+        return "selectable".equals(QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", "")));
     }
 
     public static JsonObject displayJson(JsonObject json) {
@@ -49,12 +49,12 @@ public final class QuestTaskSelectableRewards {
         return json;
     }
 
-    public static List<QuestDetailsTaskEntry> displayEntries(List<QuestDetailsTaskEntry> entries, boolean editMode) {
+    public static List<QuestTaskEntry> displayEntries(List<QuestTaskEntry> entries, boolean editMode) {
         if (editMode) {
             return entries;
         }
-        List<QuestDetailsTaskEntry> displayEntries = new ArrayList<>();
-        for (QuestDetailsTaskEntry entry : entries) {
+        List<QuestTaskEntry> displayEntries = new ArrayList<>();
+        for (QuestTaskEntry entry : entries) {
             if (!isSelectableWrapper(entry.json())) {
                 displayEntries.add(entry);
                 continue;
@@ -71,9 +71,9 @@ public final class QuestTaskSelectableRewards {
                 }
                 JsonObject child = choice.getValue().getAsJsonObject();
                 CompoundTag tag = entry.tag().copy();
-                tag.putString("type", TaskJsonFactory.asString(child, "type", ""));
+                tag.putString("type", QuestTaskJsonFactory.asString(child, "type", ""));
                 tag.putString("json", child.toString());
-                displayEntries.add(new QuestDetailsTaskEntry(choiceEntryId(entry.id(), choice.getKey()), tag, child));
+                displayEntries.add(new QuestTaskEntry(choiceEntryId(entry.id(), choice.getKey()), tag, child));
                 added++;
             }
             if (added == 0) {
@@ -87,7 +87,7 @@ public final class QuestTaskSelectableRewards {
         return id != null && id.contains(CHOICE_SEPARATOR);
     }
 
-    public static boolean isClaimChoiceEntry(QuestDetailsTaskEntry entry) {
+    public static boolean isClaimChoiceEntry(QuestTaskEntry entry) {
         if (entry == null) {
             return false;
         }
@@ -139,7 +139,7 @@ public final class QuestTaskSelectableRewards {
 
     public static void makeSelectable(Player player, String questId, String rewardId) {
         CompoundTag rewards = ClientQuestStateFacade.quest(questId).getCompound("rewards");
-        JsonObject reward = TaskJsonFactory.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
+        JsonObject reward = QuestTaskJsonFactory.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
         if (isSelectable(reward)) {
             return;
         }
@@ -155,7 +155,7 @@ public final class QuestTaskSelectableRewards {
         CompoundTag rewards = ClientQuestStateFacade.quest(questId).getCompound("rewards");
         boolean claimedAny = false;
         for (String rewardId : rewards.getAllKeys()) {
-            JsonObject json = TaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
+            JsonObject json = QuestTaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
             if (!isSelectable(json)) {
                 continue;
             }
@@ -189,7 +189,7 @@ public final class QuestTaskSelectableRewards {
         boolean hasStandaloneSelectable = false;
         boolean hasSelectedStandalone = false;
         for (String rewardId : rewards.getAllKeys()) {
-            JsonObject json = TaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
+            JsonObject json = QuestTaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
             if (!isSelectable(json)) {
                 continue;
             }
@@ -220,7 +220,7 @@ public final class QuestTaskSelectableRewards {
         }
         CompoundTag rewards = quest.getCompound("rewards");
         for (String rewardId : rewards.getAllKeys()) {
-            JsonObject json = TaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
+            JsonObject json = QuestTaskJsonFactory.read(rewards.getCompound(rewardId).getString("json"));
             if (isSelectable(json)) {
                 return true;
             }
@@ -256,7 +256,7 @@ public final class QuestTaskSelectableRewards {
             return false;
         }
         CompoundTag rewards = ClientQuestStateFacade.quest(questId).getCompound("rewards");
-        JsonObject selectable = TaskJsonFactory.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
+        JsonObject selectable = QuestTaskJsonFactory.readRewardForEdit(questId, rewardId, rewards.getCompound(rewardId).getString("json"));
         if (!isSelectableWrapper(selectable)) {
             return false;
         }

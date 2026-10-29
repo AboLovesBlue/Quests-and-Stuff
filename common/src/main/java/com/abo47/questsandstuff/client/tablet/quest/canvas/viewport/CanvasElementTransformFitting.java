@@ -10,7 +10,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -100,7 +100,7 @@ final class CanvasElementTransformFitting {
         if (CanvasTransformGizmoAxis.AXIS_MOVE_FREE.equals(axis)) {
             return new CanvasPoint(offsetX, offsetY);
         }
-        return LayerTransformEngine.axisDelta(offsetX, offsetY, rotation, axis, new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
+        return CanvasTransformEngine.axisDelta(offsetX, offsetY, rotation, axis, new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
     }
 
     static void clearSnapGuides(TabletUiState state) {

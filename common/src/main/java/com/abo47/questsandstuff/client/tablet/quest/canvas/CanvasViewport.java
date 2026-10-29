@@ -23,7 +23,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.CanvasConnectionAnimation;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
@@ -174,12 +174,12 @@ public final class CanvasViewport extends WidgetGroup {
 
     public boolean selectionDragPreviewSupported() {
         return !state.canvas.canvasSelection.questIds().isEmpty()
-                || !state.canvas.canvasSelection.primaryEcId().isBlank()
+                || !state.canvas.canvasSelection.primaryExclusiveChoiceId().isBlank()
                 || !state.canvas.canvasSelection.primaryImageId().isBlank()
                 || !state.canvas.canvasSelection.primaryTextId().isBlank()
                 || !state.canvas.canvasSelection.imageIds().isEmpty()
                 || !state.canvas.canvasSelection.textIds().isEmpty()
-                || !state.canvas.canvasSelection.ecIds().isEmpty();
+                || !state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty();
     }
 
     public boolean previewSelectionDrag() {
@@ -352,7 +352,7 @@ public final class CanvasViewport extends WidgetGroup {
     public void updateScreen() {
         super.updateScreen();
         boolean animationFinished = CanvasMinimapController.finishAnimationIfDone(state);
-        animationFinished |= CanvasConnectionAnimation.finishIfDone(state);
+        animationFinished |= ConnectionAnimation.finishIfDone(state);
         animationFinished |= CanvasChapterSwitchAnimation.finishIfDone(state);
         if (animationFinished || canvasRefreshQueued) {
             canvasRefreshQueued = false;

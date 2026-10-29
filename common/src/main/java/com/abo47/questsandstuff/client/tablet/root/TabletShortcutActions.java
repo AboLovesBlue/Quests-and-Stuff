@@ -105,7 +105,7 @@ final class TabletShortcutActions {
             return true;
         }
         if (!TabletStateQueries.hasSelectedQuests(state) && CanvasSelectionActions.selectedImageIds(state).isEmpty()
-                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && CanvasSelectionActions.selectedEcIds(state).isEmpty()
+                && CanvasSelectionActions.selectedTextIds(state).isEmpty() && CanvasSelectionActions.selectedExclusiveChoiceIds(state).isEmpty()
                 && state.root.selectedChapter != null && !state.root.selectedChapter.isBlank()) {
             state.canvas.pendingChapterRename = state.root.selectedChapter;
             state.chapterPanel.chapterDraftName = state.root.selectedChapter;
@@ -130,8 +130,8 @@ final class TabletShortcutActions {
         for (String textId : CanvasSelectionActions.selectedTextIds(state)) {
             changed |= CanvasLayerMutations.removeCanvasText(state, chapter, textId);
         }
-        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            changed |= CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, ecId);
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            changed |= CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
         }
         if (changed) {
             CanvasSelectionActions.clearCanvasSelection(state);
@@ -160,13 +160,13 @@ final class TabletShortcutActions {
             state.canvas.canvasSelection.textIds().add(text.id());
             state.canvas.canvasSelection.setPrimaryTextId(text.id());
         }
-        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            state.canvas.canvasSelection.ecIds().add(ec.id());
-            state.canvas.canvasSelection.setPrimaryEcId(ec.id());
+            state.canvas.canvasSelection.exclusiveChoiceIds().add(ec.id());
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(ec.id());
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] shortcut select all canvas chapter={} quests={} images={} texts={} ecs={}",
-                chapter, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size(), state.canvas.canvasSelection.ecIds().size());
+                chapter, state.canvas.canvasSelection.questIds().size(), state.canvas.canvasSelection.imageIds().size(), state.canvas.canvasSelection.textIds().size(), state.canvas.canvasSelection.exclusiveChoiceIds().size());
         return true;
     }
 
@@ -220,8 +220,8 @@ final class TabletShortcutActions {
                 changed = true;
             }
         }
-        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, ecId);
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
             if (ec != null) {
                 CanvasPoint point = CanvasGeometry.clampRotatedAnchorToCanvas(state, ec.x() + dx, ec.y() + dy, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
                 CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, ec.moveTo(point.x, point.y));

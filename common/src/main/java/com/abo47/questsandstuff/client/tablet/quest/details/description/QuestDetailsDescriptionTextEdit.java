@@ -12,8 +12,8 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
@@ -40,9 +40,9 @@ public final class QuestDetailsDescriptionTextEdit {
         if (text == null) {
             return;
         }
-        TextEditSession.beginQuestDetails(state, id, text.text());
-        TextStyleSession.openQuestDetails(state, id);
-        TextStyleSession.setFontSizeTarget(state, TextStyleSession.Surface.QUEST_DETAILS, "");
+        CanvasTextEditSession.beginQuestDetails(state, id, text.text());
+        CanvasTextStyleSession.openQuestDetails(state, id);
+        CanvasTextStyleSession.setFontSizeTarget(state, CanvasTextStyleSession.Surface.QUEST_DETAILS, "");
         focus.run();
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details text inline edit start quest={} text={}", questId, id);
     }
@@ -53,7 +53,7 @@ public final class QuestDetailsDescriptionTextEdit {
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details textEdit handleKey keyCode={}", keyCode);
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_A) {
-            TextEditSession.selectAll(state);
+            CanvasTextEditSession.selectAll(state);
             return true;
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_C) {
@@ -62,13 +62,13 @@ public final class QuestDetailsDescriptionTextEdit {
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_X) {
             copySelection();
-            if (applyReplacement(TextEditSession.deleteSelection(state))) {
+            if (applyReplacement(CanvasTextEditSession.deleteSelection(state))) {
                 previewTextDraft();
             }
             return true;
         }
         if (isCtrlDown() && keyCode == GLFW.GLFW_KEY_V) {
-            applyReplacement(TextEditSession.insert(state, Minecraft.getInstance().keyboardHandler.getClipboard()));
+            applyReplacement(CanvasTextEditSession.insert(state, Minecraft.getInstance().keyboardHandler.getClipboard()));
             previewTextDraft();
             return true;
         }
@@ -78,45 +78,45 @@ public final class QuestDetailsDescriptionTextEdit {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
-            applyReplacement(TextEditSession.insert(state, "\n"));
+            applyReplacement(CanvasTextEditSession.insert(state, "\n"));
             previewTextDraft();
             refresh.run();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-            if (!applyReplacement(TextEditSession.deleteSelection(state))) {
-                int cursor = TextEditSession.clampedCursor(state);
+            if (!applyReplacement(CanvasTextEditSession.deleteSelection(state))) {
+                int cursor = CanvasTextEditSession.clampedCursor(state);
                 if (cursor > 0) {
-                    applyReplacement(TextEditSession.replaceRange(state, cursor - 1, cursor, ""));
+                    applyReplacement(CanvasTextEditSession.replaceRange(state, cursor - 1, cursor, ""));
                 }
             }
             previewTextDraft();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_DELETE) {
-            if (!applyReplacement(TextEditSession.deleteSelection(state))) {
-                int cursor = TextEditSession.clampedCursor(state);
-                if (cursor < TextEditSession.draftLength(state)) {
-                    applyReplacement(TextEditSession.replaceRange(state, cursor, cursor + 1, ""));
+            if (!applyReplacement(CanvasTextEditSession.deleteSelection(state))) {
+                int cursor = CanvasTextEditSession.clampedCursor(state);
+                if (cursor < CanvasTextEditSession.draftLength(state)) {
+                    applyReplacement(CanvasTextEditSession.replaceRange(state, cursor, cursor + 1, ""));
                 }
             }
             previewTextDraft();
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_LEFT) {
-            TextEditSession.moveCursor(state, Math.max(0, TextEditSession.clampedCursor(state) - 1), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, Math.max(0, CanvasTextEditSession.clampedCursor(state) - 1), isShiftDown());
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_RIGHT) {
-            TextEditSession.moveCursor(state, Math.min(TextEditSession.draftLength(state), TextEditSession.clampedCursor(state) + 1), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, Math.min(CanvasTextEditSession.draftLength(state), CanvasTextEditSession.clampedCursor(state) + 1), isShiftDown());
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_HOME) {
-            TextEditSession.moveCursor(state, 0, isShiftDown());
+            CanvasTextEditSession.moveCursor(state, 0, isShiftDown());
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_END) {
-            TextEditSession.moveCursor(state, TextEditSession.draftLength(state), isShiftDown());
+            CanvasTextEditSession.moveCursor(state, CanvasTextEditSession.draftLength(state), isShiftDown());
             return true;
         }
         return true;
@@ -129,13 +129,13 @@ public final class QuestDetailsDescriptionTextEdit {
         if (!SharedConstants.isAllowedChatCharacter(codePoint)) {
             return true;
         }
-        applyReplacement(TextEditSession.insert(state, String.valueOf(codePoint)));
+        applyReplacement(CanvasTextEditSession.insert(state, String.valueOf(codePoint)));
         previewTextDraft();
         return true;
     }
 
     boolean isEditing() {
-        return TextEditSession.isQuestDetailsEditing(state);
+        return CanvasTextEditSession.isQuestDetailsEditing(state);
     }
 
     boolean hitTextEditor(CanvasTextLayer text, int lx, int visibleY) {
@@ -167,9 +167,9 @@ public final class QuestDetailsDescriptionTextEdit {
         CanvasTextLayer draft = text.withText(state.canvas.canvasTextEditDraft);
         final int[] cursor = new int[]{state.canvas.canvasTextEditCursor};
         withSelectionGeometry(() -> cursor[0] = CanvasTextRenderer.canvasTextCursorAt(state, draft, lx, visibleY));
-        TextEditSession.moveCursor(state, cursor[0], !resetAnchor);
+        CanvasTextEditSession.moveCursor(state, cursor[0], !resetAnchor);
         if (resetAnchor) {
-            TextEditSession.moveCursor(state, state.canvas.canvasTextEditCursor, false);
+            CanvasTextEditSession.moveCursor(state, state.canvas.canvasTextEditCursor, false);
         }
     }
 
@@ -185,7 +185,7 @@ public final class QuestDetailsDescriptionTextEdit {
         } else {
             previewTextDraft();
         }
-        TextEditSession.closeQuestDetails(state, true);
+        CanvasTextEditSession.closeQuestDetails(state, true);
     }
 
     private void previewTextDraft() {
@@ -203,13 +203,13 @@ public final class QuestDetailsDescriptionTextEdit {
     }
 
     private void copySelection() {
-        if (!TextEditSession.hasSelection(state)) {
+        if (!CanvasTextEditSession.hasSelection(state)) {
             return;
         }
-        Minecraft.getInstance().keyboardHandler.setClipboard(TextEditSession.selectedText(state));
+        Minecraft.getInstance().keyboardHandler.setClipboard(CanvasTextEditSession.selectedText(state));
     }
 
-    private boolean applyReplacement(TextEditSession.Replacement replacement) {
+    private boolean applyReplacement(CanvasTextEditSession.Replacement replacement) {
         if (!replacement.changed()) {
             return false;
         }

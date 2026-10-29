@@ -17,7 +17,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.TabletModifierKeys;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
@@ -42,11 +42,11 @@ public final class CanvasElementTransformController {
         CanvasTransformMode gizmoMode = imageTransformMode(image, localX, localY);
         state.canvas.canvasSelection.setPrimaryImageId(image.id());
         state.canvas.canvasSelection.setPrimaryTextId("");
-        state.canvas.canvasSelection.setPrimaryEcId("");
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().add(image.id());
         state.canvas.canvasSelection.textIds().clear();
-        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
         state.canvas.canvasImageDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvas.canvasImageDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
         state.canvas.canvasImageStartX = image.x();
@@ -132,8 +132,8 @@ public final class CanvasElementTransformController {
     }
 
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int logicalX, int logicalY) {
-        LayerTransformEngine.ModelRotation rotation = LayerTransformEngine.modelRotation(new LayerTransformEngine.ModelRotationRequest(
-                new LayerTransformEngine.ModelRotation(state.canvas.canvasImageStartYaw, state.canvas.canvasImageStartPitch),
+        CanvasTransformEngine.ModelRotation rotation = CanvasTransformEngine.modelRotation(new CanvasTransformEngine.ModelRotationRequest(
+                new CanvasTransformEngine.ModelRotation(state.canvas.canvasImageStartYaw, state.canvas.canvasImageStartPitch),
                 CanvasTransformGizmoAxis.AXIS_PITCH.equals(state.canvas.canvasImageTransformAxis),
                 state.canvas.canvasImageRotatePivotX,
                 state.canvas.canvasImageRotatePivotY,
@@ -146,7 +146,7 @@ public final class CanvasElementTransformController {
     }
 
     private int layerRotation(int logicalX, int logicalY) {
-        return LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
+        return CanvasTransformEngine.layerRotation(new CanvasTransformEngine.RotationRequest(
                 state.canvas.canvasImageStartRotation,
                 state.canvas.canvasImageRotatePivotX,
                 state.canvas.canvasImageRotatePivotY,
@@ -171,11 +171,11 @@ public final class CanvasElementTransformController {
         CanvasTransformSessions.clearMainCanvasSession(state);
         state.canvas.canvasSelection.setPrimaryTextId(text.id());
         state.canvas.canvasSelection.setPrimaryImageId("");
-        state.canvas.canvasSelection.setPrimaryEcId("");
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.textIds().add(text.id());
         state.canvas.canvasSelection.imageIds().clear();
-        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
         state.canvas.canvasTextMenuTarget = text.id();
         state.canvas.canvasTextDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvas.canvasTextDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
@@ -200,29 +200,29 @@ public final class CanvasElementTransformController {
 
     public void beginExclusiveChoiceTransform(CanvasExclusiveChoice ec, int localX, int localY) {
         CanvasTransformSessions.clearMainCanvasSession(state);
-        state.canvas.canvasSelection.setPrimaryEcId(ec.id());
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(ec.id());
         state.canvas.canvasSelection.setPrimaryImageId("");
         state.canvas.canvasSelection.setPrimaryTextId("");
-        state.canvas.canvasSelection.ecIds().clear();
-        state.canvas.canvasSelection.ecIds().add(ec.id());
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().add(ec.id());
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.textIds().clear();
-        state.canvas.canvasEcDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
-        state.canvas.canvasEcDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
+        state.canvas.canvasExclusiveChoiceDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
+        state.canvas.canvasExclusiveChoiceDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
         CanvasExclusiveChoice effective = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-        state.canvas.canvasEcStartX = effective.x();
-        state.canvas.canvasEcStartY = effective.y();
-        state.canvas.canvasEcStartW = effective.w();
-        state.canvas.canvasEcStartH = effective.h();
-        state.canvas.canvasEcStartRotation = effective.rotation();
+        state.canvas.canvasExclusiveChoiceStartX = effective.x();
+        state.canvas.canvasExclusiveChoiceStartY = effective.y();
+        state.canvas.canvasExclusiveChoiceStartW = effective.w();
+        state.canvas.canvasExclusiveChoiceStartH = effective.h();
+        state.canvas.canvasExclusiveChoiceStartRotation = effective.rotation();
         state.canvas.resizingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceResizeHandleHit(state, ec, localX, localY);
         state.canvas.rotatingCanvasExclusiveChoice = CanvasRenderer.isCanvasExclusiveChoiceRotateHandleHit(state, ec, localX, localY);
         if (state.canvas.rotatingCanvasExclusiveChoice) {
-            state.canvas.canvasEcRotatePivotX = CanvasElementGeometry.logicalPivotX(ec.x(), ec.w(), ec.pivotX());
-            state.canvas.canvasEcRotatePivotY = CanvasElementGeometry.logicalPivotY(ec.y(), ec.h(), ec.pivotY());
+            state.canvas.canvasExclusiveChoiceRotatePivotX = CanvasElementGeometry.logicalPivotX(ec.x(), ec.w(), ec.pivotX());
+            state.canvas.canvasExclusiveChoiceRotatePivotY = CanvasElementGeometry.logicalPivotY(ec.y(), ec.h(), ec.pivotY());
             double logicalMouseX = CanvasGeometry.screenToLogicalX(state, localX);
             double logicalMouseY = CanvasGeometry.screenToLogicalY(state, localY);
-            state.canvas.canvasEcRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasEcRotatePivotY, logicalMouseX - state.canvas.canvasEcRotatePivotX);
+            state.canvas.canvasExclusiveChoiceRotateStartAngle = Math.atan2(logicalMouseY - state.canvas.canvasExclusiveChoiceRotatePivotY, logicalMouseX - state.canvas.canvasExclusiveChoiceRotatePivotX);
         }
         state.canvas.draggingCanvasExclusiveChoice = !state.canvas.resizingCanvasExclusiveChoice && !state.canvas.rotatingCanvasExclusiveChoice;
         state.canvas.canvasSelection.questIds().clear();
@@ -231,18 +231,18 @@ public final class CanvasElementTransformController {
 
     public void updateExclusiveChoiceTransform(int localX, int localY, List<QuestCardLayout> cards) {
         String chapter = TabletStateQueries.selectedChapterName(state);
-        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryExclusiveChoiceId());
         if (ec == null) {
             return;
         }
         int logicalX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         int logicalY = CanvasGeometry.screenToNearestLogicalY(state, localY);
-        int dx = logicalX - state.canvas.canvasEcDragStartX;
-        int dy = logicalY - state.canvas.canvasEcDragStartY;
+        int dx = logicalX - state.canvas.canvasExclusiveChoiceDragStartX;
+        int dy = logicalY - state.canvas.canvasExclusiveChoiceDragStartY;
         CanvasExclusiveChoice next = ec;
         if (state.canvas.draggingCanvasExclusiveChoice) {
-            CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH), state.canvas.canvasEcStartRotation, dx, dy);
-            next = ec.withBounds(anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH);
+            CanvasPoint anchor = dragAnchor(state.canvas.canvasExclusiveChoiceStartX, state.canvas.canvasExclusiveChoiceStartY, state.canvas.canvasExclusiveChoiceStartW, state.canvas.canvasExclusiveChoiceStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasExclusiveChoiceStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasExclusiveChoiceStartH), state.canvas.canvasExclusiveChoiceStartRotation, dx, dy);
+            next = ec.withBounds(anchor.x, anchor.y, state.canvas.canvasExclusiveChoiceStartW, state.canvas.canvasExclusiveChoiceStartH);
             next = CanvasElementTransformFitting.fittedExclusiveChoiceIfGridLocked(state, next);
             next = CanvasElementTransformFitting.applySmartSnapToExclusiveChoice(state, next, cards, chapter);
         } else if (state.canvas.resizingCanvasExclusiveChoice) {
@@ -250,11 +250,11 @@ public final class CanvasElementTransformController {
             next = resizeExclusiveChoiceFromHandle(ec, localX, localY);
         } else if (state.canvas.rotatingCanvasExclusiveChoice) {
             CanvasElementTransformFitting.clearSnapGuides(state);
-            int angle = LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
-                    state.canvas.canvasEcStartRotation,
-                    state.canvas.canvasEcRotatePivotX,
-                    state.canvas.canvasEcRotatePivotY,
-                    state.canvas.canvasEcRotateStartAngle,
+            int angle = CanvasTransformEngine.layerRotation(new CanvasTransformEngine.RotationRequest(
+                    state.canvas.canvasExclusiveChoiceStartRotation,
+                    state.canvas.canvasExclusiveChoiceRotatePivotX,
+                    state.canvas.canvasExclusiveChoiceRotatePivotY,
+                    state.canvas.canvasExclusiveChoiceRotateStartAngle,
                     logicalX,
                     logicalY,
                     TabletModifierKeys.shiftDown()
@@ -284,7 +284,7 @@ public final class CanvasElementTransformController {
             next = resizeTextFromHandle(text, localX, localY);
         } else if (state.canvas.rotatingCanvasText) {
             CanvasElementTransformFitting.clearSnapGuides(state);
-            int angle = LayerTransformEngine.layerRotation(new LayerTransformEngine.RotationRequest(
+            int angle = CanvasTransformEngine.layerRotation(new CanvasTransformEngine.RotationRequest(
                     state.canvas.canvasTextStartRotation,
                     state.canvas.canvasTextRotatePivotX,
                     state.canvas.canvasTextRotatePivotY,
@@ -300,15 +300,15 @@ public final class CanvasElementTransformController {
 
 
     private CanvasPoint dragAnchor(int startX, int startY, int width, int height, int pivotX, int pivotY, int rotation, int dx, int dy) {
-        return LayerTransformEngine.moveAnchor(
-                new LayerTransformEngine.MoveRequest(layerRect(startX, startY, width, height, pivotX, pivotY, rotation), dx, dy, snapSettings()),
+        return CanvasTransformEngine.moveAnchor(
+                new CanvasTransformEngine.MoveRequest(layerRect(startX, startY, width, height, pivotX, pivotY, rotation), dx, dy, snapSettings()),
                 (x, y, rect) -> CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, rect.width(), rect.height(), rect.pivotX(), rect.pivotY(), rect.rotation())
         );
     }
 
     private CanvasPoint modelDragAnchor(int startX, int startY, int width, int height, int dx, int dy) {
         String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.canvas.canvasImageTransformAxis);
-        CanvasPoint delta = LayerTransformEngine.modelMoveDelta(new LayerTransformEngine.ModelMoveRequest(
+        CanvasPoint delta = CanvasTransformEngine.modelMoveDelta(new CanvasTransformEngine.ModelMoveRequest(
                 dx,
                 dy,
                 state.canvas.canvasImageStartRotation,
@@ -364,15 +364,15 @@ public final class CanvasElementTransformController {
         ResizedBox box = resizeFromSelectionBox(
                 localX,
                 localY,
-                state.canvas.canvasEcStartX,
-                state.canvas.canvasEcStartY,
-                state.canvas.canvasEcStartW,
-                state.canvas.canvasEcStartH,
-                state.canvas.canvasEcStartRotation,
+                state.canvas.canvasExclusiveChoiceStartX,
+                state.canvas.canvasExclusiveChoiceStartY,
+                state.canvas.canvasExclusiveChoiceStartW,
+                state.canvas.canvasExclusiveChoiceStartH,
+                state.canvas.canvasExclusiveChoiceStartRotation,
                 8,
                 8,
-                CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW),
-                CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH),
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasExclusiveChoiceStartW),
+                CanvasElementGeometry.defaultPivot(state.canvas.canvasExclusiveChoiceStartH),
                 1,
                 1,
                 TabletModifierKeys.shiftDown()
@@ -381,7 +381,7 @@ public final class CanvasElementTransformController {
     }
 
     private ResizedBox resizeFromSelectionBox(int localX, int localY, int startX, int startY, int startW, int startH, int rotation, int minW, int minH, int pivotX, int pivotY, int cornerX, int cornerY, boolean preserveAspect) {
-        CanvasGeometry.ResizedBox resized = LayerTransformEngine.resizeFromCorner(new LayerTransformEngine.ResizeRequest(
+        CanvasGeometry.ResizedBox resized = CanvasTransformEngine.resizeFromCorner(new CanvasTransformEngine.ResizeRequest(
                 layerRect(startX, startY, startW, startH, pivotX, pivotY, rotation),
                 CanvasGeometry.screenToLogicalX(state, localX),
                 CanvasGeometry.screenToLogicalY(state, localY),
@@ -395,12 +395,12 @@ public final class CanvasElementTransformController {
         return new ResizedBox(resized.x(), resized.y(), resized.width(), resized.height());
     }
 
-    private LayerTransformEngine.LayerRect layerRect(int x, int y, int width, int height, int pivotX, int pivotY, int rotation) {
-        return new LayerTransformEngine.LayerRect(x, y, width, height, pivotX, pivotY, rotation);
+    private CanvasTransformEngine.LayerRect layerRect(int x, int y, int width, int height, int pivotX, int pivotY, int rotation) {
+        return new CanvasTransformEngine.LayerRect(x, y, width, height, pivotX, pivotY, rotation);
     }
 
-    private LayerTransformEngine.SnapSettings snapSettings() {
-        return new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, TabletModifierKeys.shiftDown());
+    private CanvasTransformEngine.SnapSettings snapSettings() {
+        return new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, TabletModifierKeys.shiftDown());
     }
 
 

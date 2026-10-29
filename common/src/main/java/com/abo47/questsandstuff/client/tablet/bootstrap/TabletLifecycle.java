@@ -11,14 +11,14 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudLayoutEditScreen;
-import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
+import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerSync;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletBlockPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.sound.TabletSoundPickerModal;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletStatPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.BlockPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.sound.SoundPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.StatPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiStatePersistence;
@@ -37,9 +37,9 @@ public final class TabletLifecycle {
 
     public static void prewarmClientAtGameLaunch() {
         DisplayIconProvider.prewarm();
-        TabletStatPickerModal.prewarm();
-        TabletSoundPickerModal.prewarm();
-        TabletBlockPickerModal.prewarm();
+        StatPickerModal.prewarm();
+        SoundPickerModal.prewarm();
+        BlockPickerModal.prewarm();
     }
 
     public static void onClientLogin() {
@@ -61,7 +61,7 @@ public final class TabletLifecycle {
             uiPrewarmed = true;
             QuestsAndStuffMod.debugLog("[QnS:UI] prewarmed tablet ui caches");
         }
-        ItemLockViewerSync.tick();
+        LockViewerSync.tick();
         if (minecraft.gameMode == null || minecraft.screen != null) {
             return;
         }
@@ -126,7 +126,7 @@ public final class TabletLifecycle {
             TabletUiFactory.persistUiState(currentState);
         }
         TabletBootstrap.ensureAppsRegistered();
-        AppDescriptor app = TabletAppRegistry.get(appId);
+        TabletAppDescriptor app = TabletAppRegistry.get(appId);
         if (app == null) {
             QuestsAndStuffMod.debugLog("[QnS:UI] unknown app id={}", appId);
             return;
@@ -198,7 +198,7 @@ public final class TabletLifecycle {
 
     private static void resetSessionLocalState() {
         ClientQuestStateFacade.resetStateForTests();
-        ItemLockViewerSync.reset();
+        LockViewerSync.reset();
         rememberedQuestDetailsOpen = false;
         rememberedQuestDetailsQuestId = "";
         suppressNextOpenClick = false;

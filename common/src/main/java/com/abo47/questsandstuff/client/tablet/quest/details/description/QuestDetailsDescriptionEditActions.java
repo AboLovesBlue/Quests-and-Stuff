@@ -10,8 +10,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -35,8 +35,8 @@ final class QuestDetailsDescriptionEditActions {
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
         QuestDetailsDescriptionModel.save(player, questId, model);
         QuestDetailsDescriptionSelectionState.selectOnlyText(state, id);
-        TextEditSession.beginQuestDetails(state, id, text.text());
-        TextStyleSession.openQuestDetails(state, id);
+        CanvasTextEditSession.beginQuestDetails(state, id, text.text());
+        CanvasTextStyleSession.openQuestDetails(state, id);
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add text quest={} text={} pos={},{}", questId, id, x, y);
     }
 

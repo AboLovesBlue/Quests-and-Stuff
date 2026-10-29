@@ -247,10 +247,10 @@ public final class ChapterContextMenuActions {
         }
         for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {
             for (String connectedId : ec.connectionQuestIds()) {
-                EditorCanvasCommandClient.runEcConnectionTextureAction(state, ec.id(), connectedId, "");
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, ec.id(), connectedId, "");
             }
             for (String prereqId : ec.prerequisiteQuestIds()) {
-                EditorCanvasCommandClient.runEcConnectionTextureAction(state, ec.id(), prereqId, "");
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, ec.id(), prereqId, "");
             }
         }
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove connection textures target={} quests={}", target, questIds.size());

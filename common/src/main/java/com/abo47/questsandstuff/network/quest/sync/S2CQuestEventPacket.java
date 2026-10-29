@@ -17,6 +17,6 @@ public record S2CQuestEventPacket(long sequence, String eventType, String questI
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleQuestEvent(sequence, eventType, questId, rewardId));
+        context.enqueueWork(() -> S2CSyncPacketDispatch.handleQuestEvent(sequence, eventType, questId, rewardId));
     }
 }

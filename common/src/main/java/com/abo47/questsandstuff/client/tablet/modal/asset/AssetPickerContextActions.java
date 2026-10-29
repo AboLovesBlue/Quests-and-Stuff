@@ -21,7 +21,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.deleteAssetFile;
@@ -50,7 +50,7 @@ final class AssetPickerContextActions {
         state.pickers.assetContextOpen = false;
         state.pickers.assetContextFile = relative == null ? "" : relative;
         state.pickers.assetRenameOpen = !state.pickers.assetContextFile.isBlank();
-        state.pickers.assetRenameDraft = TabletModalPanel.fileNameFromRelativePath(state.pickers.assetContextFile);
+        state.pickers.assetRenameDraft = ModalPanel.fileNameFromRelativePath(state.pickers.assetContextFile);
         state.pickers.assetSearchFocused = false;
         ContextMenuController.clearDeleteConfirm(state);
     }
@@ -80,7 +80,7 @@ final class AssetPickerContextActions {
         renameRef[0] = rename;
         rename.setClientSideWidget();
         rename.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
-        rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? TabletModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
+        rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? ModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
         StyledTextFields.applyStandardStyle(rename, TabletColors.SURFACE_BASE, TabletColors.BORDER_ACCENT);
         rename.setFocus(true);
         return rename;
@@ -123,27 +123,27 @@ final class AssetPickerContextActions {
 
     static List<ContextAction> assetContextActions(TabletUiState state, Player player, AssetLibrary.AssetEntry contextEntry, boolean isDir) {
         ContextMenuSections sections = new ContextMenuSections();
-        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.common.use"), isDir ? "open" : "background", TabletColors.INTERACTIVE, () -> {
             if (isDir) {
                 state.pickers.assetBrowseDir = state.pickers.assetContextFile;
                 state.pickers.saveBrowseDirForMode();
                 state.pickers.assetGridScroll = 0;
             } else {
                 state.pickers.assetSelected = state.pickers.assetContextFile;
-                TabletModalPanel.runAssetBackgroundAction(player, state, state.pickers.assetContextFile);
+                ModalPanel.runAssetBackgroundAction(player, state, state.pickers.assetContextFile);
                 closeAll(state);
             }
         }));
         if (contextEntry != null && contextEntry.kind() == AssetLibrary.AssetKind.BLUEPRINT) {
-            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TabletModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
-                    TabletBlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(ModalPanel.tr("ui.questsandstuff.blueprints.export"), "file-up", TabletColors.INTERACTIVE, () ->
+                    BlueprintCodeModal.openExport(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
-            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.rename(TabletModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
+            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.rename(ModalPanel.tr("ui.questsandstuff.menu.rename"), () -> beginInlineRename(state, state.pickers.assetContextFile)));
         }
         if (!isDir) {
             String deleteKey = "asset:delete:" + state.pickers.assetContextFile;
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, deleteKey, TabletModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, deleteKey, ModalPanel.tr("ui.questsandstuff.menu.remove"), () -> {
                 deleteAssetFile(state.pickers.assetContextFile);
                 state.pickers.assetContextOpen = false;
                 state.pickers.assetRenameOpen = false;
@@ -154,7 +154,7 @@ final class AssetPickerContextActions {
 
     static void commitAssetRename(TabletUiState state, TextFieldWidget rename) {
         String oldRelative = state.pickers.assetContextFile;
-        String parent = TabletModalPanel.parentRelativePath(oldRelative);
+        String parent = ModalPanel.parentRelativePath(oldRelative);
         String name = rename == null || rename.getCurrentString() == null ? state.pickers.assetRenameDraft : rename.getCurrentString().trim();
         if (oldRelative == null || oldRelative.isBlank() || name.isBlank()) {
             state.pickers.assetRenameOpen = false;
@@ -172,7 +172,7 @@ final class AssetPickerContextActions {
     static String renamedAssetPath(String oldRelative, String parent, String name) {
         String nextName = name;
         if (!nextName.contains(".")) {
-            String oldName = TabletModalPanel.fileNameFromRelativePath(oldRelative);
+            String oldName = ModalPanel.fileNameFromRelativePath(oldRelative);
             int dot = oldName.lastIndexOf('.');
             if (dot > 0) {
                 nextName = nextName + oldName.substring(dot);

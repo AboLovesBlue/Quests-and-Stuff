@@ -118,8 +118,8 @@ public final class CanvasGridFitController {
                 return true;
             }
         }
-        for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-            if (canFitExclusiveChoiceToGrid(state, chapter, ecId)) {
+        for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+            if (canFitExclusiveChoiceToGrid(state, chapter, exclusiveChoiceId)) {
                 return true;
             }
         }
@@ -173,9 +173,9 @@ public final class CanvasGridFitController {
             }
         }
 
-        Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
+        Set<String> exclusiveChoiceIds = CanvasSelectionActions.selectedExclusiveChoiceIds(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (!ecIds.contains(ec.id())) {
+            if (!exclusiveChoiceIds.contains(ec.id())) {
                 continue;
             }
             CanvasExclusiveChoice fitted = fittedExclusiveChoice(state, ec);
@@ -194,13 +194,13 @@ public final class CanvasGridFitController {
         return changed;
     }
 
-    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
-        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, ecId);
+    public static boolean canFitExclusiveChoiceToGrid(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, exclusiveChoiceId);
         return ec != null && !ec.equals(fittedExclusiveChoice(state, ec));
     }
 
-    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String chapter, String ecId) {
-        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, ecId);
+    public static boolean fitExclusiveChoiceToGrid(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, exclusiveChoiceId);
         if (ec == null) {
             return false;
         }
@@ -209,9 +209,9 @@ public final class CanvasGridFitController {
             return false;
         }
         CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, fitted);
-        state.canvas.canvasSelection.setPrimaryEcId(ecId);
-        state.canvas.canvasSelection.ecIds().clear();
-        state.canvas.canvasSelection.ecIds().add(ecId);
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(exclusiveChoiceId);
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().add(exclusiveChoiceId);
         state.canvas.canvasSelection.setPrimaryImageId("");
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.setPrimaryTextId("");
@@ -254,12 +254,12 @@ public final class CanvasGridFitController {
         return new FittedQuest(clamped.x, clamped.y, scale);
     }
 
-    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        if (chapter == null || chapter.isBlank() || ecId == null || ecId.isBlank()) {
+    private static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        if (chapter == null || chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return null;
         }
         return state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()).stream()
-                .filter(ec -> ec.id().equals(ecId))
+                .filter(ec -> ec.id().equals(exclusiveChoiceId))
                 .findFirst()
                 .orElse(null);
     }

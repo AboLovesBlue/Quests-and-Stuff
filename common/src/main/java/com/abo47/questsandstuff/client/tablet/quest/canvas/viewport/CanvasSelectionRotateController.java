@@ -60,12 +60,12 @@ final class CanvasSelectionRotateController {
         String chapter = TabletStateQueries.selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
-                state.canvas.rotateStartEcLayers.put(ec.id(), ec);
-                CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);
-                minX = Math.min(minX, ecBounds.left());
-                minY = Math.min(minY, ecBounds.top());
-                maxX = Math.max(maxX, ecBounds.right());
-                maxY = Math.max(maxY, ecBounds.bottom());
+                state.canvas.rotateStartExclusiveChoiceLayers.put(ec.id(), ec);
+                CanvasSnapEngine.Bounds exclusiveChoiceBounds = CanvasSnapBounds.forExclusiveChoice(ec);
+                minX = Math.min(minX, exclusiveChoiceBounds.left());
+                minY = Math.min(minY, exclusiveChoiceBounds.top());
+                maxX = Math.max(maxX, exclusiveChoiceBounds.right());
+                maxY = Math.max(maxY, exclusiveChoiceBounds.bottom());
             }
         }
         if (snapshot.hasBounds()) {
@@ -155,24 +155,24 @@ final class CanvasSelectionRotateController {
         for (CanvasTextLayer text : result.texts().values()) {
             CanvasLayerMutations.putTransientCanvasText(state, clampRotationPreviewText(text));
         }
-        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.rotateStartEcLayers.entrySet()) {
+        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.rotateStartExclusiveChoiceLayers.entrySet()) {
             CanvasExclusiveChoice ec = entry.getValue();
-            double ecCenterX = ec.x() + ec.w() / 2.0D;
-            double ecCenterY = ec.y() + ec.h() / 2.0D;
-            double relX = ecCenterX - state.canvas.rotatePivotX;
-            double relY = ecCenterY - state.canvas.rotatePivotY;
+            double exclusiveChoiceCenterX = ec.x() + ec.w() / 2.0D;
+            double exclusiveChoiceCenterY = ec.y() + ec.h() / 2.0D;
+            double relX = exclusiveChoiceCenterX - state.canvas.rotatePivotX;
+            double relY = exclusiveChoiceCenterY - state.canvas.rotatePivotY;
             double rotatedCenterX = state.canvas.rotatePivotX + relX * cos - relY * sin;
             double rotatedCenterY = state.canvas.rotatePivotY + relX * sin + relY * cos;
             int targetX = (int) Math.round(rotatedCenterX - ec.w() / 2.0D);
             int targetY = (int) Math.round(rotatedCenterY - ec.h() / 2.0D);
-            CanvasExclusiveChoice ecResult = ec.moveTo(targetX, targetY);
+            CanvasExclusiveChoice exclusiveChoiceResult = ec.moveTo(targetX, targetY);
             if (state.canvas.gridSnapLocked) {
-                ecResult = CanvasGridFitController.fittedExclusiveChoice(state, ecResult);
+                exclusiveChoiceResult = CanvasGridFitController.fittedExclusiveChoice(state, exclusiveChoiceResult);
             } else {
-                CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, ecResult.x(), ecResult.y(), ecResult.w(), ecResult.h());
-                ecResult = ecResult.moveTo(clamped.x, clamped.y);
+                CanvasPoint clamped = CanvasGeometry.clampAnchorToCanvas(state, exclusiveChoiceResult.x(), exclusiveChoiceResult.y(), exclusiveChoiceResult.w(), exclusiveChoiceResult.h());
+                exclusiveChoiceResult = exclusiveChoiceResult.moveTo(clamped.x, clamped.y);
             }
-            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ecResult);
+            CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, exclusiveChoiceResult);
         }
     }
 

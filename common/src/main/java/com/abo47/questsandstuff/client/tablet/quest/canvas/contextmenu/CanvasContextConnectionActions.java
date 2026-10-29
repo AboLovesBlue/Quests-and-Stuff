@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.List;
 
@@ -36,10 +36,10 @@ final class CanvasContextConnectionActions {
         }
         String sourceId = state.contextMenu.contextConnectionSource;
         String targetId = state.contextMenu.contextConnectionTarget;
-        boolean isEcConnection = ConnectionRenderer.isEcId(state, selectedChapter, sourceId)
-                || ConnectionRenderer.isEcId(state, selectedChapter, targetId);
-        if (isEcConnection) {
-            addConnectionEcActions(sections, canvasViewport, state, player, selectedChapter, sourceId, targetId);
+        boolean isExclusiveChoiceConnection = ConnectionRenderer.isExclusiveChoiceId(state, selectedChapter, sourceId)
+                || ConnectionRenderer.isExclusiveChoiceId(state, selectedChapter, targetId);
+        if (isExclusiveChoiceConnection) {
+            addConnectionExclusiveChoiceActions(sections, canvasViewport, state, player, selectedChapter, sourceId, targetId);
         } else {
             addConnectionQuestActions(sections, canvasViewport, state, player, selectedChapter, sourceId, targetId);
         }
@@ -70,7 +70,7 @@ final class CanvasContextConnectionActions {
         }));
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = CanvasRenderer.connectionColor(state, selectedChapter, sourceId, targetId);
-            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            AppOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
@@ -100,24 +100,24 @@ final class CanvasContextConnectionActions {
         }
     }
 
-    private static void addConnectionEcActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
-        boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, selectedChapter, sourceId, targetId);
+    private static void addConnectionExclusiveChoiceActions(ContextMenuSections sections, CanvasViewport canvasViewport, TabletUiState state, Player player, String selectedChapter, String sourceId, String targetId) {
+        boolean direct = ConnectionRenderer.exclusiveChoiceIsConnectionDirect(state, selectedChapter, sourceId, targetId);
         boolean hidden = ConnectionRenderer.isConnectionHidden(state, selectedChapter, sourceId, targetId);
         sections.add(ContextMenuSection.ARRANGE, new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", TabletColors.INTERACTIVE, () -> {
-            EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionModeAction(player, state, sourceId, targetId, !direct);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_ec_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
             canvasViewport.refresh();
         }));
         sections.add(ContextMenuSection.ARRANGE, new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? TabletColors.INTERACTIVE : TabletColors.WARNING, () -> {
-            EditorCanvasCommandClient.runEcConnectionHiddenAction(player, state, sourceId, targetId, !hidden);
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionHiddenAction(player, state, sourceId, targetId, !hidden);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
             canvasViewport.refresh();
         }));
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
-            int color = ConnectionRenderer.ecConnectionColor(state, selectedChapter, sourceId, targetId);
-            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            int color = ConnectionRenderer.exclusiveChoiceConnectionColor(state, selectedChapter, sourceId, targetId);
+            AppOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
@@ -135,10 +135,10 @@ final class CanvasContextConnectionActions {
                     canvasViewport.refresh();
                 })
         )));
-        if (!ConnectionRenderer.ecConnectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
-            String ecConnTexKey = "ec_conn_remove_tex:" + sourceId + ":" + targetId;
-            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, ecConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
-                EditorCanvasCommandClient.runEcConnectionTextureAction(state, sourceId, targetId, "");
+        if (!ConnectionRenderer.exclusiveChoiceConnectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
+            String exclusiveChoiceConnTexKey = "ec_conn_remove_tex:" + sourceId + ":" + targetId;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, exclusiveChoiceConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, sourceId, targetId, "");
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_ec_connection_texture source={} target={}", sourceId, targetId);
                 canvasViewport.refresh();

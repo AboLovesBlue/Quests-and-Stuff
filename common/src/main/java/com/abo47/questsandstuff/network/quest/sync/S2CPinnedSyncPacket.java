@@ -28,6 +28,6 @@ public record S2CPinnedSyncPacket(long sequence, List<String> pinned) {
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handlePinned(sequence, pinned));
+        context.enqueueWork(() -> S2CSyncPacketDispatch.handlePinned(sequence, pinned));
     }
 }

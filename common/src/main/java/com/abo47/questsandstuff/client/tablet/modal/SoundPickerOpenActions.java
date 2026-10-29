@@ -19,21 +19,21 @@ public final class SoundPickerOpenActions {
     }
 
     public static void openQuestGameSoundPicker(TabletUiState state, String questId, String currentSound) {
-        openSoundPickerSession(state, currentSound, questId, () -> state.modal.modalQuestCompletionSoundTarget = PickerOpenSupport.clean(questId));
+        openSoundPickerSession(state, currentSound, questId, () -> state.modal.modalQuestCompletionSoundTarget = ModalOpenSupport.clean(questId));
     }
 
     public static void openQuestCustomCompletionSoundPicker(TabletUiState state, String questId, String currentSound) {
-        openAssetSoundPickerSession(state, currentSound, questId, () -> state.modal.modalQuestCompletionSoundTarget = PickerOpenSupport.clean(questId));
+        openAssetSoundPickerSession(state, currentSound, questId, () -> state.modal.modalQuestCompletionSoundTarget = ModalOpenSupport.clean(questId));
     }
 
     public static void openBatchQuestGameSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
-        Set<String> targets = PickerOpenSupport.normalizedTargets(questIds);
-        openSoundPickerSession(state, currentSound, PickerOpenSupport.firstTarget(targets), () -> state.modal.modalQuestCompletionSoundTargets.addAll(targets));
+        Set<String> targets = ModalOpenSupport.normalizedTargets(questIds);
+        openSoundPickerSession(state, currentSound, ModalOpenSupport.firstTarget(targets), () -> state.modal.modalQuestCompletionSoundTargets.addAll(targets));
     }
 
     public static void openBatchQuestCustomCompletionSoundPicker(TabletUiState state, Collection<String> questIds, String currentSound) {
-        Set<String> targets = PickerOpenSupport.normalizedTargets(questIds);
-        openAssetSoundPickerSession(state, currentSound, PickerOpenSupport.firstTarget(targets), () -> state.modal.modalQuestCompletionSoundTargets.addAll(targets));
+        Set<String> targets = ModalOpenSupport.normalizedTargets(questIds);
+        openAssetSoundPickerSession(state, currentSound, ModalOpenSupport.firstTarget(targets), () -> state.modal.modalQuestCompletionSoundTargets.addAll(targets));
     }
 
     static void resetSoundPicker(TabletUiState state) {
@@ -45,18 +45,18 @@ public final class SoundPickerOpenActions {
     }
 
     static void openSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
-        PickerOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.SOUND_PICKER, () -> {
+        ModalOpenSupport.openPickerModal(state, ModalWindowManager.ModalType.SOUND_PICKER, () -> {
             resetSoundPicker(state);
             configureTargets.run();
             ContextMenuController.clearDeleteConfirm(state);
             state.pickers.soundVolumeDraft = completionSoundVolume(volumeQuestId);
             state.pickers.soundVolumeDragging = false;
-            state.pickers.soundSelected = PickerOpenSupport.clean(currentSound).isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
+            state.pickers.soundSelected = ModalOpenSupport.clean(currentSound).isBlank() || QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound;
         });
     }
 
     static void openAssetSoundPickerSession(TabletUiState state, String currentSound, String volumeQuestId, Runnable configureTargets) {
-        AssetPickerOpenActions.openAssetPickerSession(state, PickerOpenSupport.clean(currentSound).isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound, () -> {
+        AssetPickerOpenActions.openAssetPickerSession(state, ModalOpenSupport.clean(currentSound).isBlank() || !QuestCompletionSoundPlayer.isAssetSoundId(currentSound) ? "" : currentSound, () -> {
             configureTargets.run();
             ContextMenuController.clearDeleteConfirm(state);
             state.pickers.soundVolumeDraft = completionSoundVolume(volumeQuestId);

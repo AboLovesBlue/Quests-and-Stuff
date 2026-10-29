@@ -55,7 +55,7 @@ public final class CanvasContextDeleteController {
                 + "|" + String.join(",", state.canvas.canvasSelection.questIds())
                 + "|" + String.join(",", CanvasSelectionActions.selectedImageIds(state))
                 + "|" + String.join(",", CanvasSelectionActions.selectedTextIds(state))
-                + "|" + String.join(",", CanvasSelectionActions.selectedEcIds(state));
+                + "|" + String.join(",", CanvasSelectionActions.selectedExclusiveChoiceIds(state));
     }
 
     public static void runDeleteAction(Player player, TabletUiState state) {
@@ -69,9 +69,9 @@ public final class CanvasContextDeleteController {
                 boolean removed = CanvasLayerMutations.removeCanvasText(state, chapter, textId);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas text delete chapter={} id={} removed={}", chapter, textId, removed);
             }
-            for (String ecId : CanvasSelectionActions.selectedEcIds(state)) {
-                boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, ecId);
-                QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete chapter={} id={} removed={}", chapter, ecId, removed);
+            for (String exclusiveChoiceId : CanvasSelectionActions.selectedExclusiveChoiceIds(state)) {
+                boolean removed = CanvasLayerMutations.removeCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas exclusive choice delete chapter={} id={} removed={}", chapter, exclusiveChoiceId, removed);
             }
         }
 
@@ -107,9 +107,9 @@ public final class CanvasContextDeleteController {
                 ConnectionRenderer.removeConnectionTransientState(state, chapter, source, target);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas ec connection delete ec={} quest={}", source, target);
             } else {
-                CanvasExclusiveChoice ecTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, target);
-                if (ecTarget != null) {
-                    CanvasExclusiveChoice updated = ecTarget.removeAllEdgeState(source);
+                CanvasExclusiveChoice exclusiveChoiceTarget = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, target);
+                if (exclusiveChoiceTarget != null) {
+                    CanvasExclusiveChoice updated = exclusiveChoiceTarget.removeAllEdgeState(source);
                     CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, updated);
                     CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, updated.id());
                     ConnectionRenderer.removeConnectionTransientState(state, chapter, source, target);

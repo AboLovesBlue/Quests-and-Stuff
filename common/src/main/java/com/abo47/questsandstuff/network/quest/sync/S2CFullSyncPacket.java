@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 
 import com.abo47.questsandstuff.network.ModPacketContext;
 
-public final class S2CFullSyncPacket extends ChunkedSyncPacket {
+public final class S2CFullSyncPacket extends S2CChunkedSyncPacket {
     public S2CFullSyncPacket(long sequence, int chunkIndex, int chunkCount, CompoundTag payload) {
         super(sequence, chunkIndex, chunkCount, payload);
     }
@@ -15,11 +15,11 @@ public final class S2CFullSyncPacket extends ChunkedSyncPacket {
     }
 
     public static S2CFullSyncPacket decode(FriendlyByteBuf buf) {
-        return ChunkedSyncPacket.decode(buf, S2CFullSyncPacket::new);
+        return S2CChunkedSyncPacket.decode(buf, S2CFullSyncPacket::new);
     }
 
     @Override
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleFull(sequence, chunkIndex, chunkCount, payload));
+        context.enqueueWork(() -> S2CSyncPacketDispatch.handleFull(sequence, chunkIndex, chunkCount, payload));
     }
 }

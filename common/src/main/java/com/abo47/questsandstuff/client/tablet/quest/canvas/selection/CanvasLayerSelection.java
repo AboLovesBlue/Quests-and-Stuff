@@ -29,12 +29,12 @@ public record CanvasLayerSelection(Set<CanvasLayerKey> keys) {
         return fromIds(questIds, imageIds, textIds, List.of());
     }
 
-    public static CanvasLayerSelection fromIds(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, Collection<String> ecIds) {
+    public static CanvasLayerSelection fromIds(Collection<String> questIds, Collection<String> imageIds, Collection<String> textIds, Collection<String> exclusiveChoiceIds) {
         LinkedHashSet<CanvasLayerKey> keys = new LinkedHashSet<>();
         addAll(keys, CanvasLayerKind.QUEST, questIds);
         addAll(keys, CanvasLayerKind.IMAGE, imageIds);
         addAll(keys, CanvasLayerKind.TEXT, textIds);
-        addAll(keys, CanvasLayerKind.EXCLUSIVE_CHOICE, ecIds);
+        addAll(keys, CanvasLayerKind.EXCLUSIVE_CHOICE, exclusiveChoiceIds);
         return new CanvasLayerSelection(keys);
     }
 

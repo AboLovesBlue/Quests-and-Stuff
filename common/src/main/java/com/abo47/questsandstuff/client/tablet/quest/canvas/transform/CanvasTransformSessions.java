@@ -23,8 +23,8 @@ public final class CanvasTransformSessions {
         state.canvas.draggingCanvasExclusiveChoice = false;
         state.canvas.resizingCanvasExclusiveChoice = false;
         state.canvas.rotatingCanvasExclusiveChoice = false;
-        state.canvas.connectEcId = "";
-        state.canvas.quickConnectEcId = "";
+        state.canvas.connectExclusiveChoiceId = "";
+        state.canvas.quickConnectExclusiveChoiceId = "";
 
         state.canvas.transientQuestPositions.clear();
         state.canvas.transientQuestScales.clear();
@@ -59,16 +59,16 @@ public final class CanvasTransformSessions {
         state.canvas.canvasTextRotatePivotY = 0.0;
         state.canvas.canvasTextRotateStartAngle = 0.0;
 
-        state.canvas.canvasEcDragStartX = 0;
-        state.canvas.canvasEcDragStartY = 0;
-        state.canvas.canvasEcStartX = 0;
-        state.canvas.canvasEcStartY = 0;
-        state.canvas.canvasEcStartW = 0;
-        state.canvas.canvasEcStartH = 0;
-        state.canvas.canvasEcStartRotation = 0;
-        state.canvas.canvasEcRotatePivotX = 0.0;
-        state.canvas.canvasEcRotatePivotY = 0.0;
-        state.canvas.canvasEcRotateStartAngle = 0.0;
+        state.canvas.canvasExclusiveChoiceDragStartX = 0;
+        state.canvas.canvasExclusiveChoiceDragStartY = 0;
+        state.canvas.canvasExclusiveChoiceStartX = 0;
+        state.canvas.canvasExclusiveChoiceStartY = 0;
+        state.canvas.canvasExclusiveChoiceStartW = 0;
+        state.canvas.canvasExclusiveChoiceStartH = 0;
+        state.canvas.canvasExclusiveChoiceStartRotation = 0;
+        state.canvas.canvasExclusiveChoiceRotatePivotX = 0.0;
+        state.canvas.canvasExclusiveChoiceRotatePivotY = 0.0;
+        state.canvas.canvasExclusiveChoiceRotateStartAngle = 0.0;
         clearSnapGuides(state);
     }
 
@@ -139,9 +139,9 @@ public final class CanvasTransformSessions {
         state.canvas.rotateStartCenters.clear();
         state.canvas.rotateStartImageLayers.clear();
         state.canvas.rotateStartTextLayers.clear();
-        state.canvas.dragStartEcLayers.clear();
-        state.canvas.resizeStartEcLayers.clear();
-        state.canvas.rotateStartEcLayers.clear();
+        state.canvas.dragStartExclusiveChoiceLayers.clear();
+        state.canvas.resizeStartExclusiveChoiceLayers.clear();
+        state.canvas.rotateStartExclusiveChoiceLayers.clear();
         state.canvas.resizeStartLeft = 0;
         state.canvas.resizeStartTop = 0;
         state.canvas.resizeStartRight = 0;

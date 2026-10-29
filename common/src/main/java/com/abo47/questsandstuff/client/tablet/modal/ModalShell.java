@@ -29,7 +29,7 @@ public final class ModalShell {
 
     public static void addTitleAndClose(WidgetGroup modal, String title, int w, TabletUiState state, Runnable refresh) {
         modal.addWidget(label(8, 6, title, TabletColors.TEXT_PRIMARY));
-        TabletModalPanel.addModalClose(modal, w - 26, 4, 18, state, refresh);
+        ModalPanel.addModalClose(modal, w - 26, 4, 18, state, refresh);
     }
 
     public static TextFieldWidget addSearchField(

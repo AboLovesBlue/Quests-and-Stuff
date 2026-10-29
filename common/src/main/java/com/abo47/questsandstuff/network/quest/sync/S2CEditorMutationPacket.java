@@ -21,6 +21,6 @@ public record S2CEditorMutationPacket(long sequence, String action, String quest
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleEditorMutation(sequence, action, questId, questTag));
+        context.enqueueWork(() -> S2CSyncPacketDispatch.handleEditorMutation(sequence, action, questId, questTag));
     }
 }

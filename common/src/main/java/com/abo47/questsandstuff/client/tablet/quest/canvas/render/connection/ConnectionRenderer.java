@@ -126,40 +126,40 @@ public final class ConnectionRenderer {
         ConnectionPainter.drawTexturedChevrons(graphics, path, color, alpha, scale, textureStr, clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
-    public static CanvasExclusiveChoice findEc(TabletUiState state, String chapter, String id) {
-        return ConnectionStyleResolver.findEc(state, chapter, id);
+    public static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String id) {
+        return ConnectionStyleResolver.findExclusiveChoice(state, chapter, id);
     }
 
-    public static boolean isEcId(TabletUiState state, String chapter, String id) {
-        return ConnectionStyleResolver.isEcId(state, chapter, id);
+    public static boolean isExclusiveChoiceId(TabletUiState state, String chapter, String id) {
+        return ConnectionStyleResolver.isExclusiveChoiceId(state, chapter, id);
     }
 
-    public static int ecConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.ecConnectionColor(state, chapter, sourceQuestId, targetQuestId);
+    public static int exclusiveChoiceConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.exclusiveChoiceConnectionColor(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static boolean ecIsConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
+    public static boolean exclusiveChoiceIsConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.exclusiveChoiceIsConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static void setEcConnectionColor(TabletUiState state, String chapter, String ecId, String questId, int color) {
-        ConnectionStateMutations.setEcConnectionColor(state, chapter, ecId, questId, color);
+    public static void setExclusiveChoiceConnectionColor(TabletUiState state, String chapter, String exclusiveChoiceId, String questId, int color) {
+        ConnectionStateMutations.setExclusiveChoiceConnectionColor(state, chapter, exclusiveChoiceId, questId, color);
     }
 
-    public static void setEcConnectionTexture(TabletUiState state, String chapter, String ecId, String questId, String texture) {
-        ConnectionStateMutations.setEcConnectionTexture(state, chapter, ecId, questId, texture);
+    public static void setExclusiveChoiceConnectionTexture(TabletUiState state, String chapter, String exclusiveChoiceId, String questId, String texture) {
+        ConnectionStateMutations.setExclusiveChoiceConnectionTexture(state, chapter, exclusiveChoiceId, questId, texture);
     }
 
-    public static void setEcConnectionTextureSpacing(TabletUiState state, String chapter, String ecId, String questId, int spacing) {
-        ConnectionStateMutations.setEcConnectionTextureSpacing(state, chapter, ecId, questId, spacing);
+    public static void setExclusiveChoiceConnectionTextureSpacing(TabletUiState state, String chapter, String exclusiveChoiceId, String questId, int spacing) {
+        ConnectionStateMutations.setExclusiveChoiceConnectionTextureSpacing(state, chapter, exclusiveChoiceId, questId, spacing);
     }
 
-    public static void setEcConnectionMode(TabletUiState state, String chapter, String ecId, String questId, boolean direct) {
-        ConnectionStateMutations.setEcConnectionMode(state, chapter, ecId, questId, direct);
+    public static void setExclusiveChoiceConnectionMode(TabletUiState state, String chapter, String exclusiveChoiceId, String questId, boolean direct) {
+        ConnectionStateMutations.setExclusiveChoiceConnectionMode(state, chapter, exclusiveChoiceId, questId, direct);
     }
 
-    public static void setEcConnectionHidden(TabletUiState state, String chapter, String ecId, String questId, boolean hidden) {
-        ConnectionStateMutations.setEcConnectionHidden(state, chapter, ecId, questId, hidden);
+    public static void setExclusiveChoiceConnectionHidden(TabletUiState state, String chapter, String exclusiveChoiceId, String questId, boolean hidden) {
+        ConnectionStateMutations.setExclusiveChoiceConnectionHidden(state, chapter, exclusiveChoiceId, questId, hidden);
     }
 
     public static void setConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, String texture) {
@@ -174,12 +174,12 @@ public final class ConnectionRenderer {
         return ConnectionStyleResolver.connectionTexture(state, chapter, sourceQuestId, targetQuestId, ClientQuestStateFacade.quest(targetQuestId));
     }
 
-    public static String ecConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.ecConnectionTexture(state, chapter, sourceQuestId, targetQuestId);
+    public static String exclusiveChoiceConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.exclusiveChoiceConnectionTexture(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    public static int ecConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        return ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, sourceQuestId, targetQuestId);
+    public static int exclusiveChoiceConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        return ConnectionStyleResolver.exclusiveChoiceConnectionTextureSpacing(state, chapter, sourceQuestId, targetQuestId);
     }
 
     public static void removeConnectionTransientState(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {

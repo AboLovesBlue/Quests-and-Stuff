@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.animation.ProgressAnimations;
 import com.abo47.questsandstuff.client.tablet.controls.IconOnlyButton;
 import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -36,7 +36,7 @@ public final class QuestTaskActionWidgets {
     private QuestTaskActionWidgets() {
     }
 
-    public static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, boolean done) {
+    public static void renderManualDoneButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, boolean done) {
         int iconSize = 16;
         int iconX = x + Math.max(0, (w - iconSize) / 2);
         int iconY = y - GRID_1;
@@ -51,7 +51,7 @@ public final class QuestTaskActionWidgets {
         parent.addWidget(hit.tooltips(new Component[]{TabletTranslationKeys.component(QuestTranslationKeys.MARK_TASK_DONE)}));
     }
 
-    public static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, int count, int amount) {
+    public static void renderManualXpButton(WidgetGroup parent, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, int count, int amount) {
         parent.addWidget(TabletTextTextures.flatLiteral(x - 46, y, 42, 16, count + " / " + amount, TabletColors.TEXT_PRIMARY, TextTexture.TextType.RIGHT_HIDE));
         boolean done = count >= amount;
         int iconSize = 16;

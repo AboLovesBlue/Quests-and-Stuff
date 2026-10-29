@@ -104,13 +104,13 @@ final class PrerequisiteRowsPanel {
         }
         int textW = Math.max(10, cellW - 34);
         String role = TabletTranslationKeys.text(row.kind() == PrerequisiteConnectionKind.INCOMING ? QuestTranslationKeys.PREREQUISITES_INCOMING : QuestTranslationKeys.PREREQUISITES_OUTGOING);
-        String ecLabel = TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_EXCLUSIVE_CHOICE);
+        String exclusiveChoiceLabel = TabletTranslationKeys.text(QuestTranslationKeys.PREREQUISITES_EXCLUSIVE_CHOICE);
         if (row.exclusiveChoice()) {
-            card.addWidget(label(26, 4, crop(role + ": " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
+            card.addWidget(label(26, 4, crop(role + ": " + exclusiveChoiceLabel, Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));
             if (row.kind() == PrerequisiteConnectionKind.INCOMING) {
-                card.addWidget(label(26, 17, crop(ecLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(exclusiveChoiceLabel + " -> " + row.targetTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             } else {
-                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + ecLabel, Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
+                card.addWidget(label(26, 17, crop(row.sourceTitle() + " -> " + exclusiveChoiceLabel, Math.max(8, textW / 6)), TabletColors.TEXT_MUTED));
             }
         } else {
             card.addWidget(label(26, 4, crop(role + ": " + row.otherTitle(), Math.max(8, textW / 6)), TabletColors.TEXT_SECONDARY));

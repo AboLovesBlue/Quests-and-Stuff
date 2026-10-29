@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
@@ -103,7 +103,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasSelectionActions.isImageSelected(state, drawImage.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBoundsAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -115,7 +115,7 @@ public final class CanvasSelectionRenderer {
             if (!CanvasSelectionActions.isTextSelected(state, drawText.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBounds(state, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -123,11 +123,11 @@ public final class CanvasSelectionRenderer {
             maxY = Math.max(maxY, bounds[3]);
         }
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawEc.id())) {
+            CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            if (!CanvasSelectionActions.isExclusiveChoiceSelected(state, drawExclusiveChoice.id())) {
                 continue;
             }
-            int[] bounds = CanvasElementSelectionSlot.screenBoundsAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), drawEc.pivotX(), drawEc.pivotY(), drawEc.rotation());
+            int[] bounds = QuestElementSelectionSlot.screenBoundsAtPivot(state, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), drawExclusiveChoice.pivotX(), drawExclusiveChoice.pivotY(), drawExclusiveChoice.rotation());
             count++;
             minX = Math.min(minX, bounds[0]);
             minY = Math.min(minY, bounds[1]);
@@ -216,7 +216,7 @@ public final class CanvasSelectionRenderer {
         if (!state.canvas.boxSelecting) {
             return;
         }
-        CanvasElementSelectionSlot.drawBoxSelection(
+        QuestElementSelectionSlot.drawBoxSelection(
                 graphics,
                 originX,
                 originY,
@@ -250,6 +250,6 @@ public final class CanvasSelectionRenderer {
         int top = state.canvas.selectionBoundsTop;
         int right = state.canvas.selectionBoundsRight;
         int bottom = state.canvas.selectionBoundsBottom;
-        CanvasElementSelectionSlot.drawCombinedBounds(graphics, originX, originY, maxW, maxH, left, top, right, bottom, CanvasSelectionActions.totalCanvasSelectionCount(state) > 1);
+        QuestElementSelectionSlot.drawCombinedBounds(graphics, originX, originY, maxW, maxH, left, top, right, bottom, CanvasSelectionActions.totalCanvasSelectionCount(state) > 1);
     }
 }

@@ -36,8 +36,8 @@ public final class CanvasSelectionActions {
         return textId != null && (textId.equals(state.canvas.canvasSelection.primaryTextId()) || state.canvas.canvasSelection.textIds().contains(textId));
     }
 
-    public static boolean isExclusiveChoiceSelected(TabletUiState state, String ecId) {
-        return ecId != null && (ecId.equals(state.canvas.canvasSelection.primaryEcId()) || state.canvas.canvasSelection.ecIds().contains(ecId));
+    public static boolean isExclusiveChoiceSelected(TabletUiState state, String exclusiveChoiceId) {
+        return exclusiveChoiceId != null && (exclusiveChoiceId.equals(state.canvas.canvasSelection.primaryExclusiveChoiceId()) || state.canvas.canvasSelection.exclusiveChoiceIds().contains(exclusiveChoiceId));
     }
 
     public static Set<String> selectedImageIds(TabletUiState state) {
@@ -56,10 +56,10 @@ public final class CanvasSelectionActions {
         return texts;
     }
 
-    public static Set<String> selectedEcIds(TabletUiState state) {
-        Set<String> ecs = new LinkedHashSet<>(state.canvas.canvasSelection.ecIds());
-        if (!state.canvas.canvasSelection.primaryEcId().isBlank()) {
-            ecs.add(state.canvas.canvasSelection.primaryEcId());
+    public static Set<String> selectedExclusiveChoiceIds(TabletUiState state) {
+        Set<String> ecs = new LinkedHashSet<>(state.canvas.canvasSelection.exclusiveChoiceIds());
+        if (!state.canvas.canvasSelection.primaryExclusiveChoiceId().isBlank()) {
+            ecs.add(state.canvas.canvasSelection.primaryExclusiveChoiceId());
         }
         return ecs;
     }
@@ -72,10 +72,10 @@ public final class CanvasSelectionActions {
         state.canvas.canvasSelection.questIds().clear();
         state.canvas.canvasSelection.setPrimaryImageId("");
         state.canvas.canvasSelection.setPrimaryTextId("");
-        state.canvas.canvasSelection.setPrimaryEcId("");
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.textIds().clear();
-        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
         CanvasTransformSessions.clearMainCanvasSession(state);
     }
 
@@ -136,9 +136,9 @@ public final class CanvasSelectionActions {
             }
         }
 
-        Set<String> ecIds = selectedEcIds(state);
+        Set<String> exclusiveChoiceIds = selectedExclusiveChoiceIds(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (!ecIds.contains(ec.id())) {
+            if (!exclusiveChoiceIds.contains(ec.id())) {
                 continue;
             }
             CanvasExclusiveChoice aligned = movedExclusiveChoice(state, ec, offset, verticalCenterLine);
@@ -186,9 +186,9 @@ public final class CanvasSelectionActions {
             bounds.include(box[0], box[1], box[2], box[3]);
         }
 
-        Set<String> ecIds = selectedEcIds(state);
+        Set<String> exclusiveChoiceIds = selectedExclusiveChoiceIds(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (!ecIds.contains(ec.id())) {
+            if (!exclusiveChoiceIds.contains(ec.id())) {
                 continue;
             }
             int[] box = CanvasElementGeometry.logicalBounds(ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation());

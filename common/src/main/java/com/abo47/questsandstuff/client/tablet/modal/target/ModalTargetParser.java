@@ -95,7 +95,7 @@ public final class ModalTargetParser {
             return is(ModalTargets.REWARD_COMMAND_EDITOR_ICON);
         }
 
-        public boolean isTaskTask() {
+        public boolean isTask() {
             return is(ModalTargets.TASK_TASK);
         }
 

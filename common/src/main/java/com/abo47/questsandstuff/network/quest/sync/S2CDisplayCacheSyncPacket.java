@@ -17,6 +17,6 @@ public record S2CDisplayCacheSyncPacket(long sequence, CompoundTag payload) {
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundSyncPacketDispatch.handleDisplayCache(sequence, payload));
+        context.enqueueWork(() -> S2CSyncPacketDispatch.handleDisplayCache(sequence, payload));
     }
 }

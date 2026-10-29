@@ -9,7 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrder;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.editor.C2SEditorCommandPacket;
@@ -166,12 +166,12 @@ public final class CanvasElementStore {
         }
     }
 
-    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        if (chapter == null || chapter.isBlank() || ecId == null || ecId.isBlank()) {
+    public static boolean removeCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        if (chapter == null || chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return false;
         }
         List<CanvasExclusiveChoice> choices = new ArrayList<>(state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()));
-        boolean removed = choices.removeIf(ec -> ec.id().equals(ecId));
+        boolean removed = choices.removeIf(ec -> ec.id().equals(exclusiveChoiceId));
         if (!removed) {
             return false;
         }
@@ -180,23 +180,23 @@ public final class CanvasElementStore {
         } else {
             state.canvas.canvasExclusiveChoicesByChapter.put(chapter, choices);
         }
-        if (ecId.equals(state.canvas.canvasSelection.primaryEcId())) {
-            state.canvas.canvasSelection.setPrimaryEcId("");
+        if (exclusiveChoiceId.equals(state.canvas.canvasSelection.primaryExclusiveChoiceId())) {
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
         }
-        state.canvas.canvasSelection.ecIds().remove(ecId);
-        CanvasLayerOrdering.remove(state, chapter, CanvasLayerOrdering.exclusiveChoiceKey(ecId));
-        ClientQuestStateFacade.removeCanvasExclusiveChoiceLocal(chapter, ecId);
+        state.canvas.canvasSelection.exclusiveChoiceIds().remove(exclusiveChoiceId);
+        CanvasLayerOrdering.remove(state, chapter, CanvasLayerOrdering.exclusiveChoiceKey(exclusiveChoiceId));
+        ClientQuestStateFacade.removeCanvasExclusiveChoiceLocal(chapter, exclusiveChoiceId);
         persistLayerOrderLocal(state, chapter);
-        sendCanvasExclusiveChoiceRemove(chapter, ecId);
+        sendCanvasExclusiveChoiceRemove(chapter, exclusiveChoiceId);
         return true;
     }
 
-    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        if (chapter == null || chapter.isBlank() || ecId == null || ecId.isBlank()) {
+    public static CanvasExclusiveChoice findCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        if (chapter == null || chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return null;
         }
         return state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of()).stream()
-                .filter(ec -> ec.id().equals(ecId))
+                .filter(ec -> ec.id().equals(exclusiveChoiceId))
                 .findFirst()
                 .orElse(null);
     }
@@ -220,7 +220,7 @@ public final class CanvasElementStore {
         }
         state.canvas.canvasSelection.textIds().remove(textId);
         if (textId.equals(state.canvas.canvasTextMenuTarget)) {
-            TextStyleSession.closeMainCanvas(state);
+            CanvasTextStyleSession.closeMainCanvas(state);
         }
         CanvasLayerOrdering.remove(state, chapter, CanvasLayerOrdering.textKey(textId));
         ClientQuestStateFacade.removeCanvasTextLocal(chapter, textId);
@@ -268,8 +268,8 @@ public final class CanvasElementStore {
         sendCanvasText(chapter, text);
     }
 
-    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String ecId) {
-        CanvasExclusiveChoice ec = findCanvasExclusiveChoice(state, chapter, ecId);
+    public static void persistCanvasExclusiveChoice(TabletUiState state, String chapter, String exclusiveChoiceId) {
+        CanvasExclusiveChoice ec = findCanvasExclusiveChoice(state, chapter, exclusiveChoiceId);
         if (ec == null) {
             return;
         }
@@ -306,8 +306,8 @@ public final class CanvasElementStore {
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_PUT_MANY, payload));
     }
 
-    private static void sendCanvasExclusiveChoiceRemove(String chapter, String ecId) {
-        CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoiceRemove(chapter, ecId);
+    private static void sendCanvasExclusiveChoiceRemove(String chapter, String exclusiveChoiceId) {
+        CompoundTag payload = EditorCommandPayloads.canvasExclusiveChoiceRemove(chapter, exclusiveChoiceId);
         ModNetwork.sendToServer(new C2SEditorCommandPacket(EditorCommandType.CANVAS_EXCLUSIVE_CHOICE_REMOVE, payload));
     }
 

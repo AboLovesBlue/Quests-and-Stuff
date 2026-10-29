@@ -38,7 +38,7 @@ public final class CanvasViewportContextRouter {
             QuestCardLayout hit,
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit,
-            CanvasExclusiveChoice ecHit
+            CanvasExclusiveChoice exclusiveChoiceHit
     ) {
         ConnectionHit connectionHit = TabletUiFactory.hitTestConnection(state, cards, byQuestId, localX, localY);
         CanvasPoint anchor = CanvasGeometry.anchorForScreenVisualCenter(state, localX, localY, 1.0f);
@@ -51,20 +51,20 @@ public final class CanvasViewportContextRouter {
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) > 1 && CanvasRenderer.isSelectionBoundsHit(state, localX, localY)) {
             ContextMenuController.targetSelection(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=selection count={}", CanvasSelectionActions.totalCanvasSelectionCount(state));
-        } else if (connectionHit != null && connectionAboveHits(state, connectionHit, hit, imageHit, textHit, ecHit)) {
+        } else if (connectionHit != null && connectionAboveHits(state, connectionHit, hit, imageHit, textHit, exclusiveChoiceHit)) {
             ContextMenuController.targetConnection(state, connectionHit.sourceQuestId(), connectionHit.targetQuestId());
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=connection source={} target={}", state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget);
-        } else if (ecHit != null) {
-            ContextMenuController.targetExclusiveChoice(state, ecHit.id());
-            state.canvas.canvasSelection.setPrimaryEcId(ecHit.id());
-            state.canvas.canvasSelection.ecIds().clear();
-            state.canvas.canvasSelection.ecIds().add(ecHit.id());
+        } else if (exclusiveChoiceHit != null) {
+            ContextMenuController.targetExclusiveChoice(state, exclusiveChoiceHit.id());
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(exclusiveChoiceHit.id());
+            state.canvas.canvasSelection.exclusiveChoiceIds().clear();
+            state.canvas.canvasSelection.exclusiveChoiceIds().add(exclusiveChoiceHit.id());
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.imageIds().clear();
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.textIds().clear();
             state.canvas.canvasSelection.questIds().clear();
-            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=exclusive_choice id={}", ecHit.id());
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=exclusive_choice id={}", exclusiveChoiceHit.id());
         } else if (textHit != null) {
             ContextMenuController.targetText(state, textHit.id());
             state.canvas.canvasSelection.setPrimaryTextId(textHit.id());
@@ -72,8 +72,8 @@ public final class CanvasViewportContextRouter {
             state.canvas.canvasSelection.textIds().add(textHit.id());
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.imageIds().clear();
-            state.canvas.canvasSelection.setPrimaryEcId("");
-            state.canvas.canvasSelection.ecIds().clear();
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
+            state.canvas.canvasSelection.exclusiveChoiceIds().clear();
             state.canvas.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=text id={}", textHit.id());
         } else if (imageHit != null) {
@@ -83,8 +83,8 @@ public final class CanvasViewportContextRouter {
             state.canvas.canvasSelection.imageIds().add(imageHit.id());
             state.canvas.canvasSelection.setPrimaryTextId("");
             state.canvas.canvasSelection.textIds().clear();
-            state.canvas.canvasSelection.setPrimaryEcId("");
-            state.canvas.canvasSelection.ecIds().clear();
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
+            state.canvas.canvasSelection.exclusiveChoiceIds().clear();
             state.canvas.canvasSelection.questIds().clear();
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context menu open target=image id={}", imageHit.id());
         } else if (hit != null) {
@@ -93,8 +93,8 @@ public final class CanvasViewportContextRouter {
                 state.canvas.canvasSelection.questIds().clear();
                 state.canvas.canvasSelection.questIds().add(hit.questId());
             }
-            state.canvas.canvasSelection.setPrimaryEcId("");
-            state.canvas.canvasSelection.ecIds().clear();
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
+            state.canvas.canvasSelection.exclusiveChoiceIds().clear();
             state.canvas.canvasSelection.setPrimaryImageId("");
             state.canvas.canvasSelection.imageIds().clear();
             state.canvas.canvasSelection.setPrimaryTextId("");
@@ -113,7 +113,7 @@ public final class CanvasViewportContextRouter {
         refresher.run();
     }
 
-    private static boolean connectionAboveHits(TabletUiState state, ConnectionHit connectionHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice ecHit) {
+    private static boolean connectionAboveHits(TabletUiState state, ConnectionHit connectionHit, QuestCardLayout questHit, CanvasImageLayer imageHit, CanvasTextLayer textHit, CanvasExclusiveChoice exclusiveChoiceHit) {
         if (state == null || connectionHit == null) {
             return false;
         }
@@ -127,7 +127,7 @@ public final class CanvasViewportContextRouter {
         return above(order, connectionIndex, questHit == null ? "" : CanvasLayerOrdering.questKey(questHit.questId()))
                 && above(order, connectionIndex, imageHit == null ? "" : CanvasLayerOrdering.imageKey(imageHit.id()))
                 && above(order, connectionIndex, textHit == null ? "" : CanvasLayerOrdering.textKey(textHit.id()))
-                && above(order, connectionIndex, ecHit == null ? "" : CanvasLayerOrdering.exclusiveChoiceKey(ecHit.id()));
+                && above(order, connectionIndex, exclusiveChoiceHit == null ? "" : CanvasLayerOrdering.exclusiveChoiceKey(exclusiveChoiceHit.id()));
     }
 
     private static boolean above(List<String> order, int connectionIndex, String otherKey) {

@@ -49,8 +49,8 @@ public final class CanvasClipboardPaste {
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.setPrimaryTextId("");
         state.canvas.canvasSelection.textIds().clear();
-        state.canvas.canvasSelection.setPrimaryEcId("");
-        state.canvas.canvasSelection.ecIds().clear();
+        state.canvas.canvasSelection.setPrimaryExclusiveChoiceId("");
+        state.canvas.canvasSelection.exclusiveChoiceIds().clear();
         state.clipboard.canvasClipboard.clearPendingPastedLayers();
 
         boolean pastedElements = pasteCanvasElements(state, chapter, anchorX, anchorY);
@@ -67,7 +67,7 @@ public final class CanvasClipboardPaste {
         boolean pasted = false;
         Set<String> existingImageIds = existingImageIds(state, chapter);
         Set<String> existingTextIds = existingTextIds(state, chapter);
-        Set<String> existingEcIds = existingExclusiveChoiceIds(state, chapter);
+        Set<String> existingExclusiveChoiceIds = existingExclusiveChoiceIds(state, chapter);
         int index = 0;
         for (CanvasImageLayer image : state.clipboard.canvasClipboard.imageLayers()) {
             String id = uniqueLayerId("img", existingImageIds);
@@ -102,7 +102,7 @@ public final class CanvasClipboardPaste {
             index++;
         }
         for (CanvasExclusiveChoice ec : state.clipboard.canvasClipboard.exclusiveChoiceLayers()) {
-            String id = uniqueLayerId("ec", existingEcIds);
+            String id = uniqueLayerId("ec", existingExclusiveChoiceIds);
             int x = TabletUiFactory.snapToGrid(state, anchorX + ec.x() - state.clipboard.canvasClipboard.originX());
             int y = TabletUiFactory.snapToGrid(state, anchorY + ec.y() - state.clipboard.canvasClipboard.originY());
             CanvasPoint clamped = CanvasGeometry.clampRotatedAnchorToCanvas(state, x, y, ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation());
@@ -111,8 +111,8 @@ public final class CanvasClipboardPaste {
                 duplicate = CanvasGridFitController.fittedExclusiveChoice(state, duplicate);
             }
             CanvasLayerMutations.putCanvasExclusiveChoice(state, chapter, duplicate);
-            state.canvas.canvasSelection.ecIds().add(id);
-            state.canvas.canvasSelection.setPrimaryEcId(id);
+            state.canvas.canvasSelection.exclusiveChoiceIds().add(id);
+            state.canvas.canvasSelection.setPrimaryExclusiveChoiceId(id);
             state.clipboard.canvasClipboard.recordPastedExclusiveChoice(id);
             pasted = true;
             index++;
@@ -194,9 +194,9 @@ public final class CanvasClipboardPaste {
                 minY = Math.min(minY, text.y());
             }
         }
-        Set<String> ecIds = CanvasSelectionActions.selectedEcIds(state);
+        Set<String> exclusiveChoiceIds = CanvasSelectionActions.selectedExclusiveChoiceIds(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (ecIds.contains(ec.id())) {
+            if (exclusiveChoiceIds.contains(ec.id())) {
                 minX = Math.min(minX, ec.x());
                 minY = Math.min(minY, ec.y());
             }

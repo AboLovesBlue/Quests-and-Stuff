@@ -20,12 +20,12 @@ public final class ClientCanvasMutator {
         ClientCanvasLayerState.putExclusiveChoice(normalized, ec);
     }
 
-    public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
+    public static void removeCanvasExclusiveChoiceLocal(String chapter, String exclusiveChoiceId) {
         String normalized = ClientChapterState.normalizeChapter(chapter);
-        if (normalized.isBlank() || ecId == null || ecId.isBlank()) {
+        if (normalized.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return;
         }
-        ClientCanvasLayerState.removeExclusiveChoice(normalized, ecId);
+        ClientCanvasLayerState.removeExclusiveChoice(normalized, exclusiveChoiceId);
     }
 
     public static void putCanvasImageLocal(String chapter, CanvasImageLayer image) {

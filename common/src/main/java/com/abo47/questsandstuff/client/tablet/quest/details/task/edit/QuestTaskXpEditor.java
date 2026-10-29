@@ -19,8 +19,8 @@ import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditCont
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonDefaults;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonDefaults;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -30,7 +30,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.google.gson.JsonObject;
 
 public final class QuestTaskXpEditor {
-    private static final String XP_TYPE = TaskJsonFactory.MOD + "xp";
+    private static final String XP_TYPE = QuestTaskJsonFactory.MOD + "xp";
 
     private QuestTaskXpEditor() {
     }
@@ -53,7 +53,7 @@ public final class QuestTaskXpEditor {
     }
 
     public static boolean isXp(JsonObject json) {
-        return "xp".equals(TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", "")));
+        return "xp".equals(QuestTaskJsonFactory.typePath(QuestTaskJsonFactory.asString(json, "type", "")));
     }
 
     private static List<ContextAction> taskActions(Player player, TabletUiState state) {
@@ -112,22 +112,22 @@ public final class QuestTaskXpEditor {
     }
 
     private static JsonObject xpBase(JsonObject existing, String id) {
-        JsonObject json = TaskJsonDefaults.base(id, XP_TYPE);
+        JsonObject json = QuestTaskJsonDefaults.base(id, XP_TYPE);
         json.addProperty("amount", QuestTaskDisplayText.amount(existing));
         copyIfPresent(existing, json, "title");
-        String icon = TaskJsonFactory.asString(existing, "icon", "");
-        json.addProperty("icon", icon.isBlank() || "xp".equals(icon) ? TaskJsonFactory.XP_CARD_ICON : icon);
+        String icon = QuestTaskJsonFactory.asString(existing, "icon", "");
+        json.addProperty("icon", icon.isBlank() || "xp".equals(icon) ? QuestTaskJsonFactory.XP_CARD_ICON : icon);
         return json;
     }
 
     private static JsonObject existingJson(String questId, String id, boolean task) {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
-        return TaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
+        return QuestTaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
     }
 
     private static void copyIfPresent(JsonObject source, JsonObject target, String key) {
-        String value = TaskJsonFactory.asString(source, key, "");
+        String value = QuestTaskJsonFactory.asString(source, key, "");
         if (!value.isBlank()) {
             target.addProperty(key, value);
         }

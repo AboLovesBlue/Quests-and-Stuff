@@ -92,7 +92,7 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
         CanvasLayerKey questKey = quest == null ? null : CanvasLayerKey.quest(quest != null ? quest.questId() : "");
         CanvasLayerKey imageKey = image == null ? null : CanvasLayerKey.image(image.id());
         CanvasLayerKey textKey = text == null ? null : CanvasLayerKey.text(text.id());
-        CanvasLayerKey ecKey = exclusiveChoice == null ? null : CanvasLayerKey.exclusiveChoice(exclusiveChoice.id());
+        CanvasLayerKey exclusiveChoiceKey = exclusiveChoice == null ? null : CanvasLayerKey.exclusiveChoice(exclusiveChoice.id());
         if (questKey != null) {
             candidates.add(questKey);
         }
@@ -102,8 +102,8 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
         if (textKey != null) {
             candidates.add(textKey);
         }
-        if (ecKey != null) {
-            candidates.add(ecKey);
+        if (exclusiveChoiceKey != null) {
+            candidates.add(exclusiveChoiceKey);
         }
         CanvasLayerKey top = topMost(candidates);
         if (top == null) {
@@ -113,7 +113,7 @@ public record CanvasLayerOrder(List<CanvasLayerKey> backToFront) {
                 top.equals(questKey) ? quest : null,
                 top.equals(imageKey) ? image : null,
                 top.equals(textKey) ? text : null,
-                top.equals(ecKey) ? exclusiveChoice : null
+                top.equals(exclusiveChoiceKey) ? exclusiveChoice : null
         );
     }
 

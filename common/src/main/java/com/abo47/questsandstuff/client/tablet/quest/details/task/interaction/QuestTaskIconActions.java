@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.Block;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 
 import com.google.gson.JsonObject;
@@ -24,7 +24,7 @@ public final class QuestTaskIconActions {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
-        JsonObject json = TaskJsonFactory.read(entry.getString("json"));
+        JsonObject json = QuestTaskJsonFactory.read(entry.getString("json"));
         if (!json.has("id")) {
             json.addProperty("id", id);
         }
@@ -43,7 +43,7 @@ public final class QuestTaskIconActions {
         CompoundTag quest = ClientQuestStateFacade.quest(questId);
         CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
         CompoundTag entry = entries.getCompound(id);
-        JsonObject json = TaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
+        JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
         if (!json.has("id")) {
             json.addProperty("id", id);
         }

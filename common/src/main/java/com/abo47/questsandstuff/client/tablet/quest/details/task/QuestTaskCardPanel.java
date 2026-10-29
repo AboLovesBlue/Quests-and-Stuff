@@ -29,8 +29,8 @@ final class QuestTaskCardPanel {
     private QuestTaskCardPanel() {
     }
 
-    static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry, boolean itemLocked) {
-        WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsTasksPanel.CARD_H) {
+    static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry, boolean itemLocked) {
+        WidgetGroup card = new WidgetGroup(x, y, w, QuestTaskListPanel.CARD_H) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 return false;
@@ -38,7 +38,7 @@ final class QuestTaskCardPanel {
 
             @Override
             public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-                int localY = listY + y + QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), QuestDetailsTasksPanel.CARD_H);
+                int localY = listY + y + QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), QuestTaskListPanel.CARD_H);
                 if (QuestTaskListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, listBottom, localY, mouseX, mouseY, button)) {
                     return true;
                 }
@@ -62,18 +62,18 @@ final class QuestTaskCardPanel {
             }
         };
         if (claimChoiceEntry && !claimedReward) {
-            card.addWidget(flatHitButton(0, 0, w, QuestDetailsTasksPanel.CARD_H, click -> {
+            card.addWidget(flatHitButton(0, 0, w, QuestTaskListPanel.CARD_H, click -> {
                 QuestTaskSelectableRewards.selectChoice(state, id);
                 state.questDetails.questDetailsTaskDragRefreshQueued = true;
             }));
         }
-        boolean editSelected = TaskSections.normalize(kind).equals(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
+        boolean editSelected = QuestTaskSections.normalize(kind).equals(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
         boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
         int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING)
                 : itemLocked ? TabletColors.LOCKED : TabletColors.INTERACTIVE;
 
-        String skinKey = TaskSections.isTask(kind) ? "quests_task_cards" : "quests_reward_cards";
+        String skinKey = QuestTaskSections.isTask(kind) ? "quests_task_cards" : "quests_reward_cards";
         SkinAnchorRegistry.registerShared(skinKey, card);
         String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
         if (rawOverride == null) {
@@ -85,7 +85,7 @@ final class QuestTaskCardPanel {
             if (parsed != null) {
                 IGuiTexture tex = parsed.createTexture();
                 if (tex != null) {
-                    card.addWidget(new ImageWidget(-1, -1, w + 2, QuestDetailsTasksPanel.CARD_H + 2, tex));
+                    card.addWidget(new ImageWidget(-1, -1, w + 2, QuestTaskListPanel.CARD_H + 2, tex));
                 }
             }
             card.setBackground(SurfaceFactory.transparentFill());
@@ -108,7 +108,7 @@ final class QuestTaskCardPanel {
 
         int fillW = Math.round(w * Math.max(0.0f, Math.min(1.0f, progress)));
         if (fillW > 0) {
-            WidgetGroup fill = new WidgetGroup(0, 0, Math.max(1, fillW), QuestDetailsTasksPanel.CARD_H);
+            WidgetGroup fill = new WidgetGroup(0, 0, Math.max(1, fillW), QuestTaskListPanel.CARD_H);
             fill.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
             card.addWidget(fill);
         }
@@ -126,13 +126,13 @@ final class QuestTaskCardPanel {
     }
 
     private static void addCardFill(WidgetGroup card, int w, int fill) {
-        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
+        WidgetGroup g = new WidgetGroup(0, 0, w, QuestTaskListPanel.CARD_H);
         g.setBackground(SurfaceFactory.fill(fill));
         card.addWidget(g);
     }
 
     private static WidgetGroup borderQuad(int w, int color) {
-        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
+        WidgetGroup g = new WidgetGroup(0, 0, w, QuestTaskListPanel.CARD_H);
         g.setBackground(new ColorBorderTexture(1, color));
         return g;
     }

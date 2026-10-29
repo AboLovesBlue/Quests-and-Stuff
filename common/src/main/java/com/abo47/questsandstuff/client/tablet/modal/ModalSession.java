@@ -114,7 +114,7 @@ public final class ModalSession {
         setTarget(TargetSlot.QUEST_COMPLETION_SOUND, state.modal.modalQuestCompletionSoundTarget);
         setTarget(TargetSlot.ENTITY_VARIANT, state.pickers.entityVariantTarget);
         setTarget(TargetSlot.COLOR_PICKER, state.pickers.colorPickerTarget);
-        setTarget(TargetSlot.EC_BACKGROUND, state.modal.modalEcBackgroundTarget);
+        setTarget(TargetSlot.EXCLUSIVE_CHOICE_BACKGROUND, state.modal.modalExclusiveChoiceBackgroundTarget);
         setTarget(TargetSlot.CONNECTION_TEXTURE, state.modal.modalConnectionTextureTarget);
         setTarget(TargetSlot.PREREQUISITES_MANAGER, state.modal.prerequisitesManagerQuestId);
         setTargetSet(TargetSetSlot.QUEST_BACKGROUND, state.modal.modalQuestBackgroundTargets);
@@ -201,7 +201,7 @@ public final class ModalSession {
         QUEST_COMPLETION_SOUND,
         ENTITY_VARIANT,
         COLOR_PICKER,
-        EC_BACKGROUND,
+        EXCLUSIVE_CHOICE_BACKGROUND,
         CONNECTION_TEXTURE,
         PREREQUISITES_MANAGER
     }

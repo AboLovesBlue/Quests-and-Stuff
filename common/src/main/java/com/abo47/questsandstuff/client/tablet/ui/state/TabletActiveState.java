@@ -147,7 +147,7 @@ public final class TabletActiveState {
             boolean anyUpdated = false;
             if (existingEcs != null) {
                 for (CanvasExclusiveChoice ec : existingEcs) {
-                    if (!activeTabletState.clipboard.canvasClipboard.pendingPastedEcIds().contains(ec.id())) {
+                    if (!activeTabletState.clipboard.canvasClipboard.pendingPastedExclusiveChoiceIds().contains(ec.id())) {
                         updatedEcs.add(ec);
                         continue;
                     }
@@ -169,19 +169,19 @@ public final class TabletActiveState {
             if (anyUpdated) {
                 activeTabletState.canvas.canvasExclusiveChoicesByChapter.put(chapter, updatedEcs);
             }
-            activeTabletState.canvas.canvasSelection.ecIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedEcIds());
-            String pendingEc = activeTabletState.clipboard.canvasClipboard.lastPendingPastedEcId();
-            if (!pendingEc.isBlank()) {
-                activeTabletState.canvas.canvasSelection.setPrimaryEcId(pendingEc);
+            activeTabletState.canvas.canvasSelection.exclusiveChoiceIds().addAll(activeTabletState.clipboard.canvasClipboard.pendingPastedExclusiveChoiceIds());
+            String pendingExclusiveChoice = activeTabletState.clipboard.canvasClipboard.lastPendingPastedExclusiveChoiceId();
+            if (!pendingExclusiveChoice.isBlank()) {
+                activeTabletState.canvas.canvasSelection.setPrimaryExclusiveChoiceId(pendingExclusiveChoice);
             }
         }
 
         if (!ecs.isEmpty()) {
             for (int i = 0; i < ecs.size(); i++) {
-                String ecId = ecs.getString(i);
-                if (ecId != null && !ecId.isBlank()) {
-                    activeTabletState.canvas.canvasSelection.ecIds().add(ecId);
-                    activeTabletState.canvas.canvasSelection.setPrimaryEcId(ecId);
+                String exclusiveChoiceId = ecs.getString(i);
+                if (exclusiveChoiceId != null && !exclusiveChoiceId.isBlank()) {
+                    activeTabletState.canvas.canvasSelection.exclusiveChoiceIds().add(exclusiveChoiceId);
+                    activeTabletState.canvas.canvasSelection.setPrimaryExclusiveChoiceId(exclusiveChoiceId);
                 }
             }
         }
@@ -189,7 +189,7 @@ public final class TabletActiveState {
         activeTabletState.clipboard.canvasClipboard.clearPendingPastedLayers();
         activeTabletState.chapterPanel.recentlyCreatedChapters.remove(EditorChapterCommandClient.selectedChapterName(activeTabletState));
         QuestsAndStuffMod.debugLog("[QnS:UI:Clipboard] paste selection applied chapter={} quests={} images={} texts={} ecs={}",
-                EditorChapterCommandClient.selectedChapterName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.ecIds().size());
+                EditorChapterCommandClient.selectedChapterName(activeTabletState), activeTabletState.canvas.canvasSelection.questIds().size(), activeTabletState.canvas.canvasSelection.imageIds().size(), activeTabletState.canvas.canvasSelection.textIds().size(), activeTabletState.canvas.canvasSelection.exclusiveChoiceIds().size());
         refreshActiveTablet();
     }
 

@@ -12,7 +12,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.selection.CanvasSelectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.LayerTransformEngine;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformEngine;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -58,7 +58,7 @@ final class CanvasSelectionDragController {
         }
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
-                state.canvas.dragStartEcLayers.put(ec.id(), ec);
+                state.canvas.dragStartExclusiveChoiceLayers.put(ec.id(), ec);
             }
         }
         CanvasSelectionRenderer.updateSelectionBounds(state, List.copyOf(byQuestId.values()));
@@ -76,7 +76,7 @@ final class CanvasSelectionDragController {
                 state.canvas.dragStartPositions.size(),
                 state.canvas.dragStartImagePositions.size(),
                 state.canvas.dragStartTextPositions.size(),
-                state.canvas.dragStartEcLayers.size(),
+                state.canvas.dragStartExclusiveChoiceLayers.size(),
                 Math.max(0, state.canvas.dragStartBoundsRight - state.canvas.dragStartBoundsLeft),
                 Math.max(0, state.canvas.dragStartBoundsBottom - state.canvas.dragStartBoundsTop)
         );
@@ -127,7 +127,7 @@ final class CanvasSelectionDragController {
                 CanvasLayerMutations.putTransientCanvasText(state, text.moveTo(entry.getValue().x + dx, entry.getValue().y + dy));
             }
         }
-        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.dragStartEcLayers.entrySet()) {
+        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.dragStartExclusiveChoiceLayers.entrySet()) {
             CanvasExclusiveChoice ec = entry.getValue();
             CanvasLayerMutations.putTransientCanvasExclusiveChoice(state, ec.moveTo(ec.x() + dx, ec.y() + dy));
         }
@@ -141,10 +141,10 @@ final class CanvasSelectionDragController {
     }
 
     private CanvasPoint snappedSelectionDelta(int dx, int dy) {
-        CanvasPoint delta = LayerTransformEngine.freeDelta(
+        CanvasPoint delta = CanvasTransformEngine.freeDelta(
                 dx,
                 dy,
-                new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, false)
+                new CanvasTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), state.canvas.gridSnapLocked, false)
         );
         return CanvasSelectionBounds.clampSelectionDelta(state, delta.x, delta.y);
     }
@@ -159,7 +159,7 @@ final class CanvasSelectionDragController {
                 state.canvas.canvasSelection.questIds(),
                 state.canvas.dragStartImagePositions.keySet(),
                 state.canvas.dragStartTextPositions.keySet(),
-                state.canvas.dragStartEcLayers.keySet()
+                state.canvas.dragStartExclusiveChoiceLayers.keySet()
         );
     }
 

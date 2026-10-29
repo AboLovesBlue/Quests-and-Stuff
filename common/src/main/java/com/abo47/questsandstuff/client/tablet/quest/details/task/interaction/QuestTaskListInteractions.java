@@ -11,10 +11,10 @@ import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.TaskSections;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -23,7 +23,7 @@ public final class QuestTaskListInteractions {
     }
 
     public static void select(TabletUiState state, String kind, String id) {
-        state.questDetails.questDetailsSelectedTaskKind = TaskSections.normalize(kind);
+        state.questDetails.questDetailsSelectedTaskKind = QuestTaskSections.normalize(kind);
         state.questDetails.questDetailsSelectedTaskId = id == null ? "" : id;
     }
 
@@ -58,14 +58,14 @@ public final class QuestTaskListInteractions {
         state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
         state.questDetails.questDetailsTaskDragPending = true;
         state.questDetails.questDetailsTaskDragActive = false;
-        state.questDetails.questDetailsTaskDragKind = TaskSections.isTask(kind) ? "tasks" : "rewards";
+        state.questDetails.questDetailsTaskDragKind = QuestTaskSections.isTask(kind) ? "tasks" : "rewards";
         state.questDetails.questDetailsTaskDragId = id;
         state.questDetails.questDetailsTaskDragStartX = (int) Math.round(mouseX);
         state.questDetails.questDetailsTaskDragStartY = (int) Math.round(mouseY);
         state.questDetails.questDetailsTaskDragTargetIndex = -1;
     }
 
-    public static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
+    public static boolean handleDrag(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY, double mouseX, double mouseY, int button) {
         if (!QuestDetailsEditController.canEdit(state)) {
             clearDrag(state);
             return false;
@@ -94,7 +94,7 @@ public final class QuestTaskListInteractions {
         return false;
     }
 
-    public static boolean handleRelease(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind) {
+    public static boolean handleRelease(Player player, TabletUiState state, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind) {
         if (!QuestDetailsEditController.canEdit(state)) {
             clearDrag(state);
             return false;
@@ -176,12 +176,12 @@ public final class QuestTaskListInteractions {
         state.questDetails.questDetailsTaskDragTargetIndex = -1;
     }
 
-    private static int taskInsertIndexAtY(TabletUiState state, List<QuestDetailsTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
+    private static int taskInsertIndexAtY(TabletUiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
         int scroll = "tasks".equals(kind) ? state.questDetails.questDetailsTaskScroll : state.questDetails.questDetailsRewardScroll;
-        return CardDragSortUtil.insertIndexAtY(localY, listY, listBottom, scroll, QuestDetailsTasksPanel.LIST_PAD, QuestDetailsTasksPanel.CARD_H, QuestDetailsTasksPanel.CARD_GAP, entries.size());
+        return CardDragSortUtil.insertIndexAtY(localY, listY, listBottom, scroll, QuestTaskListPanel.LIST_PAD, QuestTaskListPanel.CARD_H, QuestTaskListPanel.CARD_GAP, entries.size());
     }
 
-    private static void finishDrag(Player player, TabletUiState state, String questId, List<QuestDetailsTaskEntry> entries) {
+    private static void finishDrag(Player player, TabletUiState state, String questId, List<QuestTaskEntry> entries) {
         String moving = state.questDetails.questDetailsTaskDragId;
         int target = Math.max(0, state.questDetails.questDetailsTaskDragTargetIndex);
         boolean task = "tasks".equals(state.questDetails.questDetailsTaskDragKind);
@@ -193,7 +193,7 @@ public final class QuestTaskListInteractions {
         if (moving.isBlank()) {
             return;
         }
-        int offset = CardDragSortUtil.offsetForDrop(moving, entries, QuestDetailsTaskEntry::id, target);
+        int offset = CardDragSortUtil.offsetForDrop(moving, entries, QuestTaskEntry::id, target);
         QuestsAndStuffMod.debugLog("[QnS:UI] task drag finish kind={} quest={} moving={} target={} offset={} entries={}", task ? "task" : "reward", questId, moving, target, offset, entries.size());
         if (offset == 0) {
             return;

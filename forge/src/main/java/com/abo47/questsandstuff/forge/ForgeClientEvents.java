@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.forge;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
-import com.abo47.questsandstuff.client.compat.recipeviewer.ItemLockViewerSync;
+import com.abo47.questsandstuff.client.compat.recipeviewer.LockViewerSync;
 import com.abo47.questsandstuff.client.compat.recipeviewer.RecipeViewerPickOverlays;
 import com.abo47.questsandstuff.client.quest.hud.QuestHudOverlayRenderer;
 import com.abo47.questsandstuff.client.quest.lock.LockClientRefresh;
@@ -43,7 +43,7 @@ public final class ForgeClientEvents {
         public static void onClientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 TabletLifecycle.prewarmClientAtGameLaunch();
-                ItemLockViewerSync.ensureSubscribed();
+                LockViewerSync.ensureSubscribed();
             });
         }
     }

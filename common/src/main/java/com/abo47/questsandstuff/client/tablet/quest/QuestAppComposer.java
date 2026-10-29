@@ -18,7 +18,7 @@ import com.abo47.questsandstuff.client.tablet.controls.TabletScissoredWidgetGrou
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.ChapterPanel;
@@ -239,7 +239,7 @@ public final class QuestAppComposer {
             TabletToolsMenu.rebuild(toolsMenu, state, player, refresh[0], canvasX, headers.toolsX(), topY, headerH, toolsW);
             TabletUiPerfProfiler.profile("ui.rebuildQuestDetails", () -> QuestDetailsWindow.rebuild(questDetailsLayer, state, player, refresh[0]));
             refreshChapterViews[0].run();
-            TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> TabletModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
+            TabletUiPerfProfiler.profile("ui.rebuildChapterModal", () -> ModalPanel.rebuildChapterModal(modalLayer, state, player, refresh[0]));
             if (!QuestDetailsWindow.isVisible(state)) {
                 refreshCanvas[0].run();
             }

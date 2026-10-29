@@ -112,7 +112,7 @@ final class CanvasBlueprintMiniPainter {
                 if (ec != null) {
                     CanvasBlueprintMiniGeometry.BlueprintRect rect = questBoxes.get(ec.sourceId());
                     if (rect != null) {
-                        drawEc(graphics, mouseX, mouseY, ec, rect, highlightedQuestIds.contains(ec.sourceId()), safeAlpha);
+                        drawExclusiveChoice(graphics, mouseX, mouseY, ec, rect, highlightedQuestIds.contains(ec.sourceId()), safeAlpha);
                     }
                 }
             }
@@ -126,7 +126,7 @@ final class CanvasBlueprintMiniPainter {
             drawEntryConnections(graphics, questBoxes, highlightedConnectionKeys, connectionAlpha, target.sourceId(), target.definition(), alpha);
         }
         for (CanvasBlueprint.ExclusiveChoiceEntry target : blueprint.exclusiveChoices()) {
-            drawEcConnections(graphics, questBoxes, highlightedConnectionKeys, connectionAlpha, target, alpha);
+            drawExclusiveChoiceConnections(graphics, questBoxes, highlightedConnectionKeys, connectionAlpha, target, alpha);
         }
     }
 
@@ -157,7 +157,7 @@ final class CanvasBlueprintMiniPainter {
         }
     }
 
-    private static void drawEcConnections(GuiGraphics graphics, Map<String, CanvasBlueprintMiniGeometry.BlueprintRect> questBoxes, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, int alpha) {
+    private static void drawExclusiveChoiceConnections(GuiGraphics graphics, Map<String, CanvasBlueprintMiniGeometry.BlueprintRect> questBoxes, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, int alpha) {
         CanvasBlueprintMiniGeometry.BlueprintRect targetBox = questBoxes.get(target.sourceId());
         if (targetBox == null) {
             return;
@@ -167,7 +167,7 @@ final class CanvasBlueprintMiniPainter {
             if (sourceBox == null) {
                 continue;
             }
-            drawOneEcConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
+            drawOneExclusiveChoiceConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
                     prerequisiteId, sourceBox, targetBox, connectionKey(prerequisiteId, target.sourceId()), alpha);
         }
         for (String connectedId : target.connections()) {
@@ -175,12 +175,12 @@ final class CanvasBlueprintMiniPainter {
             if (connectedBox == null) {
                 continue;
             }
-            drawOneEcConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
+            drawOneExclusiveChoiceConnection(graphics, highlightedConnectionKeys, connectionAlpha, target,
                     connectedId, targetBox, connectedBox, connectionKey(target.sourceId(), connectedId), alpha);
         }
     }
 
-    private static void drawOneEcConnection(GuiGraphics graphics, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, String otherId, CanvasBlueprintMiniGeometry.BlueprintRect sourceBox, CanvasBlueprintMiniGeometry.BlueprintRect targetBox, String key, int alpha) {
+    private static void drawOneExclusiveChoiceConnection(GuiGraphics graphics, Set<String> highlightedConnectionKeys, int connectionAlpha, CanvasBlueprint.ExclusiveChoiceEntry target, String otherId, CanvasBlueprintMiniGeometry.BlueprintRect sourceBox, CanvasBlueprintMiniGeometry.BlueprintRect targetBox, String key, int alpha) {
         boolean highlighted = highlightedConnectionKeys.contains(key);
         int color = highlighted ? TabletColors.BORDER_ACCENT : target.connectionColors().getOrDefault(otherId, TabletColors.TEXT_SECONDARY);
         int drawAlpha = highlighted ? Math.min(255, alpha) : connectionAlpha;
@@ -225,7 +225,7 @@ final class CanvasBlueprintMiniPainter {
         QuestMiniCardRenderer.drawDisplayCard(graphics, display, gated, rect.x(), rect.y(), rect.w(), rect.h(), mouseX, mouseY, partialTicks, alpha, highlighted);
     }
 
-    private static void drawEc(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint.ExclusiveChoiceEntry ec, CanvasBlueprintMiniGeometry.BlueprintRect rect, boolean highlighted, int alpha) {
+    private static void drawExclusiveChoice(GuiGraphics graphics, int mouseX, int mouseY, CanvasBlueprint.ExclusiveChoiceEntry ec, CanvasBlueprintMiniGeometry.BlueprintRect rect, boolean highlighted, int alpha) {
         String bg = QuestDisplay.normalizeQuestBackground(ec.background());
         if (!QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(bg)) {
             IGuiTexture bgTexture = chapterBackgroundTexture(bg, false);

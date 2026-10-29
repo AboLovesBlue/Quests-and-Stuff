@@ -76,34 +76,34 @@ final class ConnectionLayout {
         }
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
-            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
-            int ecBoxLeft = (int) Math.floor(ecBox.centerX() + ecBox.left());
-            int ecBoxTop = (int) Math.floor(ecBox.centerY() + ecBox.top());
-            int ecBoxRight = (int) Math.ceil(ecBox.centerX() + ecBox.right());
-            int ecBoxBottom = (int) Math.ceil(ecBox.centerY() + ecBox.bottom());
-            int ecScreenW = Math.max(1, ecBoxRight - ecBoxLeft);
-            int ecScreenH = Math.max(1, ecBoxBottom - ecBoxTop);
-            double ecRot = Math.toRadians(drawEc.rotation());
-            double ecCos = Math.cos(ecRot);
-            double ecSin = Math.sin(ecRot);
-            int ecCenterX = (int) (ecBox.centerX() + ecBox.width() / 2.0 * ecCos - ecBox.height() / 2.0 * ecSin);
-            int ecCenterY = (int) (ecBox.centerY() + ecBox.width() / 2.0 * ecSin + ecBox.height() / 2.0 * ecCos);
-            for (String connectedQuestId : drawEc.connectionQuestIds()) {
+            CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            CanvasElementGeometry.Box exclusiveChoiceBox = CanvasElementGeometry.screenBoxAtPivot(state, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), 0, 0, drawExclusiveChoice.rotation());
+            int exclusiveChoiceBoxLeft = (int) Math.floor(exclusiveChoiceBox.centerX() + exclusiveChoiceBox.left());
+            int exclusiveChoiceBoxTop = (int) Math.floor(exclusiveChoiceBox.centerY() + exclusiveChoiceBox.top());
+            int exclusiveChoiceBoxRight = (int) Math.ceil(exclusiveChoiceBox.centerX() + exclusiveChoiceBox.right());
+            int exclusiveChoiceBoxBottom = (int) Math.ceil(exclusiveChoiceBox.centerY() + exclusiveChoiceBox.bottom());
+            int exclusiveChoiceScreenW = Math.max(1, exclusiveChoiceBoxRight - exclusiveChoiceBoxLeft);
+            int exclusiveChoiceScreenH = Math.max(1, exclusiveChoiceBoxBottom - exclusiveChoiceBoxTop);
+            double exclusiveChoiceRot = Math.toRadians(drawExclusiveChoice.rotation());
+            double exclusiveChoiceCos = Math.cos(exclusiveChoiceRot);
+            double exclusiveChoiceSin = Math.sin(exclusiveChoiceRot);
+            int exclusiveChoiceCenterX = (int) (exclusiveChoiceBox.centerX() + exclusiveChoiceBox.width() / 2.0 * exclusiveChoiceCos - exclusiveChoiceBox.height() / 2.0 * exclusiveChoiceSin);
+            int exclusiveChoiceCenterY = (int) (exclusiveChoiceBox.centerY() + exclusiveChoiceBox.width() / 2.0 * exclusiveChoiceSin + exclusiveChoiceBox.height() / 2.0 * exclusiveChoiceCos);
+            for (String connectedQuestId : drawExclusiveChoice.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
                     continue;
                 }
-                addEcConnectionLine(lines, rendered, state, chapter, ec.id(), connectedQuestId, connectedQuest,
-                        true, viewportW, viewportH, ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, ecCenterX, ecCenterY);
+                addExclusiveChoiceConnectionLine(lines, rendered, state, chapter, ec.id(), connectedQuestId, connectedQuest,
+                        true, viewportW, viewportH, exclusiveChoiceBoxLeft, exclusiveChoiceBoxTop, exclusiveChoiceScreenW, exclusiveChoiceScreenH, exclusiveChoiceCenterX, exclusiveChoiceCenterY);
             }
-            for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
+            for (String prerequisiteQuestId : drawExclusiveChoice.prerequisiteQuestIds()) {
                 QuestCardLayout prerequisiteQuest = byQuestId.get(prerequisiteQuestId);
                 if (prerequisiteQuest == null) {
                     continue;
                 }
-                addEcConnectionLine(lines, rendered, state, chapter, ec.id(), prerequisiteQuestId, prerequisiteQuest,
-                        false, viewportW, viewportH, ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, ecCenterX, ecCenterY);
+                addExclusiveChoiceConnectionLine(lines, rendered, state, chapter, ec.id(), prerequisiteQuestId, prerequisiteQuest,
+                        false, viewportW, viewportH, exclusiveChoiceBoxLeft, exclusiveChoiceBoxTop, exclusiveChoiceScreenW, exclusiveChoiceScreenH, exclusiveChoiceCenterX, exclusiveChoiceCenterY);
             }
         }
         return lines;
@@ -168,37 +168,37 @@ final class ConnectionLayout {
         return lines;
     }
 
-    private static void addEcConnectionLine(List<ConnectionLine> lines, Set<String> rendered, TabletUiState state, String chapter,
-            String ecId, String questId, QuestCardLayout quest, boolean ecSource, int viewportW, int viewportH,
-            int ecBoxLeft, int ecBoxTop, int ecScreenW, int ecScreenH, int ecCenterX, int ecCenterY) {
-        String fromId = ecSource ? ecId : questId;
-        String toId = ecSource ? questId : ecId;
-        String connectionId = CanvasConnectionAnimation.connectionKey(fromId, toId);
+    private static void addExclusiveChoiceConnectionLine(List<ConnectionLine> lines, Set<String> rendered, TabletUiState state, String chapter,
+            String exclusiveChoiceId, String questId, QuestCardLayout quest, boolean exclusiveChoiceSource, int viewportW, int viewportH,
+            int exclusiveChoiceBoxLeft, int exclusiveChoiceBoxTop, int exclusiveChoiceScreenW, int exclusiveChoiceScreenH, int exclusiveChoiceCenterX, int exclusiveChoiceCenterY) {
+        String fromId = exclusiveChoiceSource ? exclusiveChoiceId : questId;
+        String toId = exclusiveChoiceSource ? questId : exclusiveChoiceId;
+        String connectionId = ConnectionAnimation.connectionKey(fromId, toId);
         if (!rendered.add(connectionId)) {
             return;
         }
-        if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
+        if (!intersectsViewport(exclusiveChoiceBoxLeft, exclusiveChoiceBoxTop, exclusiveChoiceScreenW, exclusiveChoiceScreenH, viewportW, viewportH)
                 && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
             return;
         }
-        boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, fromId, toId);
-        int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, fromId, toId);
-        String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, fromId, toId);
-        int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, fromId, toId);
-        boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, fromId, toId);
+        boolean direct = ConnectionStyleResolver.exclusiveChoiceIsConnectionDirect(state, chapter, fromId, toId);
+        int color = ConnectionStyleResolver.exclusiveChoiceConnectionColor(state, chapter, fromId, toId);
+        String texture = ConnectionStyleResolver.exclusiveChoiceConnectionTexture(state, chapter, fromId, toId);
+        int textureSpacing = ConnectionStyleResolver.exclusiveChoiceConnectionTextureSpacing(state, chapter, fromId, toId);
+        boolean hidden = ConnectionStyleResolver.exclusiveChoiceIsConnectionHidden(state, chapter, fromId, toId);
         int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
-        int sourceX = ecSource ? ecBoxLeft : quest.x();
-        int sourceY = ecSource ? ecBoxTop : quest.y();
-        int sourceW = ecSource ? ecScreenW : quest.width();
-        int sourceH = ecSource ? ecScreenH : quest.height();
-        int sourceCenterX = ecSource ? ecCenterX : quest.centerX();
-        int sourceCenterY = ecSource ? ecCenterY : quest.centerY();
-        int targetX = ecSource ? quest.x() : ecBoxLeft;
-        int targetY = ecSource ? quest.y() : ecBoxTop;
-        int targetW = ecSource ? quest.width() : ecScreenW;
-        int targetH = ecSource ? quest.height() : ecScreenH;
-        int targetCenterX = ecSource ? quest.centerX() : ecCenterX;
-        int targetCenterY = ecSource ? quest.centerY() : ecCenterY;
+        int sourceX = exclusiveChoiceSource ? exclusiveChoiceBoxLeft : quest.x();
+        int sourceY = exclusiveChoiceSource ? exclusiveChoiceBoxTop : quest.y();
+        int sourceW = exclusiveChoiceSource ? exclusiveChoiceScreenW : quest.width();
+        int sourceH = exclusiveChoiceSource ? exclusiveChoiceScreenH : quest.height();
+        int sourceCenterX = exclusiveChoiceSource ? exclusiveChoiceCenterX : quest.centerX();
+        int sourceCenterY = exclusiveChoiceSource ? exclusiveChoiceCenterY : quest.centerY();
+        int targetX = exclusiveChoiceSource ? quest.x() : exclusiveChoiceBoxLeft;
+        int targetY = exclusiveChoiceSource ? quest.y() : exclusiveChoiceBoxTop;
+        int targetW = exclusiveChoiceSource ? quest.width() : exclusiveChoiceScreenW;
+        int targetH = exclusiveChoiceSource ? quest.height() : exclusiveChoiceScreenH;
+        int targetCenterX = exclusiveChoiceSource ? quest.centerX() : exclusiveChoiceCenterX;
+        int targetCenterY = exclusiveChoiceSource ? quest.centerY() : exclusiveChoiceCenterY;
         lines.add(new ConnectionLine(
                 connectionId, fromId, toId,
                 sourceX, sourceY, sourceW, sourceH,

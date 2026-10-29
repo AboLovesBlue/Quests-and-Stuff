@@ -61,12 +61,12 @@ final class CanvasSelectionResizeController {
         String chapter = TabletStateQueries.selectedChapterName(state);
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
             if (CanvasSelectionActions.isExclusiveChoiceSelected(state, ec.id())) {
-                state.canvas.resizeStartEcLayers.put(ec.id(), ec);
-                CanvasSnapEngine.Bounds ecBounds = CanvasSnapBounds.forExclusiveChoice(ec);
-                minX = Math.min(minX, ecBounds.left());
-                minY = Math.min(minY, ecBounds.top());
-                maxX = Math.max(maxX, ecBounds.right());
-                maxY = Math.max(maxY, ecBounds.bottom());
+                state.canvas.resizeStartExclusiveChoiceLayers.put(ec.id(), ec);
+                CanvasSnapEngine.Bounds exclusiveChoiceBounds = CanvasSnapBounds.forExclusiveChoice(ec);
+                minX = Math.min(minX, exclusiveChoiceBounds.left());
+                minY = Math.min(minY, exclusiveChoiceBounds.top());
+                maxX = Math.max(maxX, exclusiveChoiceBounds.right());
+                maxY = Math.max(maxY, exclusiveChoiceBounds.bottom());
             }
         }
         if (snapshot.hasBounds()) {
@@ -132,7 +132,7 @@ final class CanvasSelectionResizeController {
         for (CanvasTextLayer text : resize.texts().values()) {
             CanvasLayerMutations.putTransientCanvasText(state, fitAndClampText(text));
         }
-        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.resizeStartEcLayers.entrySet()) {
+        for (Map.Entry<String, CanvasExclusiveChoice> entry : state.canvas.resizeStartExclusiveChoiceLayers.entrySet()) {
             CanvasExclusiveChoice ec = entry.getValue();
             double centerX = resize.bounds().left() + (ec.x() + ec.w() / 2.0D - state.canvas.resizeStartLeft) * resize.scaleX();
             double centerY = resize.bounds().top() + (ec.y() + ec.h() / 2.0D - state.canvas.resizeStartTop) * resize.scaleY();

@@ -13,8 +13,8 @@ import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -139,8 +139,8 @@ final class QuestDetailsWindowLifecycle {
         clearSelectionState(state);
         state.canvas.boxSelecting = false;
         state.questDetails.questDetailsBoxSelecting = false;
-        TextEditSession.closeAny(state, true);
-        TextStyleSession.closeQuestDetails(state);
+        CanvasTextEditSession.closeAny(state, true);
+        CanvasTextStyleSession.closeQuestDetails(state);
         state.questDetails.questDetailsTextLastClickId = "";
         state.questDetails.questDetailsTextLastClickAtMs = 0L;
         state.questDetails.questDetailsTextColorQuestId = "";
@@ -177,7 +177,7 @@ final class QuestDetailsWindowLifecycle {
     private static void resetOpenTransientState(TabletUiState state) {
         QuestDetailsTransientManager.closeFloatingPopups(state);
         ToolMenuAnimation.finishQuestDetails(state);
-        TextStyleSession.closeQuestDetails(state);
+        CanvasTextStyleSession.closeQuestDetails(state);
         state.questDetails.questDetailsTextLastClickId = "";
         state.questDetails.questDetailsTextLastClickAtMs = 0L;
         state.questDetails.questDetailsDraggingSplitter = false;
@@ -190,7 +190,7 @@ final class QuestDetailsWindowLifecycle {
         state.canvas.resizingSelection = false;
         state.canvas.rotatingSelection = false;
         ContextMenuController.close(state);
-        TextStyleSession.closeMainCanvas(state);
+        CanvasTextStyleSession.closeMainCanvas(state);
         state.canvas.selectionBoundsVisible = false;
         state.questDetails.questDetailsBoxSelecting = false;
         state.questDetails.questDetailsTextColorQuestId = "";

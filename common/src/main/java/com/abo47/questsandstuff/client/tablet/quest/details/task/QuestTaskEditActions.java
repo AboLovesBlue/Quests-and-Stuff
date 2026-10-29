@@ -6,7 +6,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskRewardEditActions;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskTaskEditActions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskTypeEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskIconActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskRenameActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -64,11 +64,11 @@ public final class QuestTaskEditActions {
     }
 
     public static void beginTaskAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {
-        QuestTaskTaskEditActions.beginTaskAdd(player, state, questId, quest, typePath);
+        QuestTaskTypeEditActions.beginTaskAdd(player, state, questId, quest, typePath);
     }
 
     public static void beginTaskChange(Player player, TabletUiState state, String questId, String id, String typePath) {
-        QuestTaskTaskEditActions.beginTaskChange(player, state, questId, id, typePath);
+        QuestTaskTypeEditActions.beginTaskChange(player, state, questId, id, typePath);
     }
 
     public static void beginRewardAdd(Player player, TabletUiState state, String questId, CompoundTag quest, String typePath) {

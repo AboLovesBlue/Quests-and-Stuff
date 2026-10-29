@@ -2,7 +2,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -70,7 +70,7 @@ final class TabletRootDismissals {
             changed = true;
         }
         if (clickState.canvasTextMenuWasOpen() && state.canvas.canvasTextMenuOpen && !clickState.canvasTextMenuHit()) {
-            TextStyleSession.closeMainCanvas(state);
+            CanvasTextStyleSession.closeMainCanvas(state);
             changed = true;
         }
         if (state.pickers.assetContextOpen && !clickState.assetContextHit()) {

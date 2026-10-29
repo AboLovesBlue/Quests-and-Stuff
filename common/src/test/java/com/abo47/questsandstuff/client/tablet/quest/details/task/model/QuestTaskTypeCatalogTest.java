@@ -24,7 +24,7 @@ class QuestTaskTypeCatalogTest {
     void taskCatalogExposesItemInteractionTasks() {
         Set<String> types = QuestTaskTypeCatalog.taskChoices()
                 .stream()
-                .map(QuestDetailsTypeChoice::type)
+                .map(QuestTaskTypeChoice::type)
                 .collect(Collectors.toSet());
 
         assertTrue(types.contains("item_interact"));
@@ -35,7 +35,7 @@ class QuestTaskTypeCatalogTest {
     void taskCatalogHidesScanEntityWithoutOresAndStuff() {
         Set<String> types = QuestTaskTypeCatalog.taskChoices()
                 .stream()
-                .map(QuestDetailsTypeChoice::type)
+                .map(QuestTaskTypeChoice::type)
                 .collect(Collectors.toSet());
 
         assertFalse(types.contains("scan_entity"));
@@ -43,7 +43,7 @@ class QuestTaskTypeCatalogTest {
 
     @Test
     void catalogDefaultsParseThroughServerCodecs() {
-        for (QuestDetailsTypeChoice choice : QuestTaskTypeCatalog.taskChoices()) {
+        for (QuestTaskTypeChoice choice : QuestTaskTypeCatalog.taskChoices()) {
             String id = "task_" + choice.type();
             JsonObject json = choice.defaultJson(id);
 
@@ -52,7 +52,7 @@ class QuestTaskTypeCatalogTest {
             assertEquals(id, parsed.id(), choice.type());
         }
 
-        for (QuestDetailsTypeChoice choice : QuestTaskTypeCatalog.rewardChoices()) {
+        for (QuestTaskTypeChoice choice : QuestTaskTypeCatalog.rewardChoices()) {
             String id = "reward_" + choice.type();
             JsonObject json = choice.defaultJson(id);
 
@@ -68,7 +68,7 @@ class QuestTaskTypeCatalogTest {
         assertEquals("loot_table", QuestTaskTypeCatalog.rewardChoice("questsandstuff:loot_table").type());
     }
 
-    private static void assertChoiceMetadata(QuestDetailsTypeChoice choice, String id, JsonObject json) {
+    private static void assertChoiceMetadata(QuestTaskTypeChoice choice, String id, JsonObject json) {
         assertNotNull(choice.editFlow(), choice.type());
         assertFalse(choice.labelKey().isBlank(), choice.type());
         assertFalse(choice.icon().isBlank(), choice.type());

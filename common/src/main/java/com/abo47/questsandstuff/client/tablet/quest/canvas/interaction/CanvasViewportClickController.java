@@ -17,8 +17,8 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapController;
@@ -134,11 +134,11 @@ public final class CanvasViewportClickController {
         boolean textEditorHit = state.canvas.canvasTextMenuOpen && textEditor.isEditorHit(localX, localY);
         boolean textOwnerHit = state.canvas.canvasTextMenuOpen && textEditor.isOwnerHit(localX, localY);
         if (state.canvas.canvasTextMenuOpen && !textMenuHit && !textEditorHit && !textOwnerHit) {
-            TextStyleSession.closeMainCanvas(state);
+            CanvasTextStyleSession.closeMainCanvas(state);
             refresher.run();
         }
 
-        if (TextEditSession.isMainCanvasEditing(state) && button == 0) {
+        if (CanvasTextEditSession.isMainCanvasEditing(state) && button == 0) {
             CanvasTextLayer editingText = textEditor.activeText();
             boolean transformHandleHit = editingText != null
                     && (CanvasRenderer.isCanvasTextResizeHandleHit(state, editingText, localX, localY)
@@ -148,8 +148,8 @@ public final class CanvasViewportClickController {
             } else {
                 if (textEditorHit) {
                     int cursor = editingText == null ? state.canvas.canvasTextEditDraft.length() : CanvasRenderer.canvasTextCursorAt(state, editingText, localX, localY);
-                    TextEditSession.moveCursor(state, cursor, canvasViewport.shiftDown());
-                    TextEditSession.startRangeSelection(state);
+                    CanvasTextEditSession.moveCursor(state, cursor, canvasViewport.shiftDown());
+                    CanvasTextEditSession.startRangeSelection(state);
                     canvasViewport.setFocus(true);
                     refresher.run();
                     return true;
@@ -184,9 +184,9 @@ public final class CanvasViewportClickController {
         if (textHit == null && state.root.canEdit) {
             textHit = CanvasRenderer.hitTestSelectedCanvasTextControls(state, localX, localY);
         }
-        CanvasExclusiveChoice ecHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasExclusiveChoice(state, localX, localY) : null;
-        if (ecHit == null && state.root.canEdit) {
-            ecHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
+        CanvasExclusiveChoice exclusiveChoiceHit = state.root.canEdit ? CanvasRenderer.hitTestCanvasExclusiveChoice(state, localX, localY) : null;
+        if (exclusiveChoiceHit == null && state.root.canEdit) {
+            exclusiveChoiceHit = CanvasRenderer.hitTestSelectedCanvasExclusiveChoiceControls(state, localX, localY);
         }
         String selectedChapter = TabletStateQueries.selectedChapterName(state);
         List<CanvasImageLayer> canvasImages = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
@@ -200,13 +200,13 @@ public final class CanvasViewportClickController {
                 canvasViewport.getSize().height
         );
         CanvasLayerHit layerHit = CanvasLayerOrdering.normalizedOrder(state, selectedChapter, cards, canvasImages, canvasTexts, connectionKeys, canvasExclusiveChoices)
-                .resolveElementHit(hit, imageHit, textHit, ecHit);
+                .resolveElementHit(hit, imageHit, textHit, exclusiveChoiceHit);
         hit = layerHit.quest();
         imageHit = layerHit.image();
         textHit = layerHit.text();
-        ecHit = layerHit.exclusiveChoice();
+        exclusiveChoiceHit = layerHit.exclusiveChoice();
         if (state.root.canEdit && button == 1) {
-            CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit, ecHit);
+            CanvasViewportContextRouter.openContextMenu(state, refresher, cards, byQuestId, localX, localY, hit, imageHit, textHit, exclusiveChoiceHit);
             return true;
         }
 
@@ -240,11 +240,11 @@ public final class CanvasViewportClickController {
             return canvasViewport.callSuperMouseClicked(mouseX, mouseY, button);
         }
 
-        if (CanvasConnectionClickActions.handleQuickConnect(state, player, refresher, hit, ecHit, button)) {
+        if (CanvasConnectionClickActions.handleQuickConnect(state, player, refresher, hit, exclusiveChoiceHit, button)) {
             return true;
         }
 
-        if (CanvasConnectionClickActions.handlePendingConnect(state, player, refresher, hit, ecHit, button)) {
+        if (CanvasConnectionClickActions.handlePendingConnect(state, player, refresher, hit, exclusiveChoiceHit, button)) {
             return true;
         }
 
@@ -279,7 +279,7 @@ public final class CanvasViewportClickController {
         }
 
         if (state.canvas.mouseMode == CanvasMouseMode.SELECT_MOVE) {
-            CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit, ecHit);
+            CanvasSelectMoveClickActions.handleSelectMove(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, button, hit, imageHit, textHit, exclusiveChoiceHit);
             return true;
         }
 

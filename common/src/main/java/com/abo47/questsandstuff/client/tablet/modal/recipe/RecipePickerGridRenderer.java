@@ -28,8 +28,8 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.modal.pickers.TabletItemInventoryPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ItemInventoryPickerModal;
 
 final class RecipePickerGridRenderer {
     private static final int TILE = GRID_18;
@@ -47,7 +47,7 @@ final class RecipePickerGridRenderer {
     }
 
     private static void addInventoryGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH) {
-        List<ItemStack> entries = TabletItemInventoryPickerModal.inventoryEntries(player, state.pickers.recipeSearch);
+        List<ItemStack> entries = ItemInventoryPickerModal.inventoryEntries(player, state.pickers.recipeSearch);
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -63,7 +63,7 @@ final class RecipePickerGridRenderer {
                 TabletTranslationKeys.text(QuestTranslationKeys.NO_INVENTORY_ITEMS),
                 scrollState(state),
                 null,
-                (surface, stack, index, x, y, tileW, tileH, layout) -> TabletItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> RecipePickerApplyActions.trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
+                (surface, stack, index, x, y, tileW, tileH, layout) -> ItemInventoryPickerModal.renderStackTile(surface, stack, x, y, picked -> applyInventoryRecipePick(player, state, picked, refresh), hovered -> RecipePickerApplyActions.trackRecipeHover(state, ItemStackIconCodec.iconFromStack(hovered)))
         );
     }
 
@@ -89,7 +89,7 @@ final class RecipePickerGridRenderer {
     }
 
     private static void addRecipeGrid(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int gridX, int gridY, int gridW, int gridH, RecipePickerMode mode) {
-        List<RecipeChoiceIndex.RecipeChoice> entries = RecipeChoiceIndex.recipes(state.pickers.recipeSearch, mode.showingTags(state.pickers.recipeSearch));
+        List<RecipePickerChoiceIndex.RecipeChoice> entries = RecipePickerChoiceIndex.recipes(state.pickers.recipeSearch, mode.showingTags(state.pickers.recipeSearch));
         TiledPickerPanel.add(
                 modal,
                 gridX,
@@ -118,7 +118,7 @@ final class RecipePickerGridRenderer {
         );
     }
 
-    private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, RecipeChoiceIndex.RecipeChoice entry, int x, int y) {
+    private static void renderTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, RecipePickerChoiceIndex.RecipeChoice entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         if (entry.previews().length == 0) {
             surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry.tag() ? "name_tag" : "recipe"));
@@ -131,7 +131,7 @@ final class RecipePickerGridRenderer {
     private static void renderFluidTile(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, String entry, int x, int y) {
         surface.addWidget(new ImageWidget(x, y, TILE, TILE, SlotWidget.ITEM_SLOT_TEXTURE));
         surface.addWidget(new DisplayIconWidget(x + GRID_1, y + GRID_1, GRID_16, GRID_16, entry));
-        addHoverHit(surface, player, state, refresh, x, y, entry, TabletModalPanel.iconTooltip(entry), "fluid");
+        addHoverHit(surface, player, state, refresh, x, y, entry, ModalPanel.iconTooltip(entry), "fluid");
     }
 
     private static void addHoverHit(WidgetGroup surface, Player player, TabletUiState state, Runnable refresh, int x, int y, String value, Component[] tooltip, String logKind) {

@@ -27,7 +27,7 @@ import static com.abo47.questsandstuff.util.MathUtils.clamp;
 final class CanvasMinimapSnapshotBuilder {
     private static final int MIN_QUEST_SIZE = 4;
     private static final int MIN_EC_SIZE = 2;
-    private static final int EC_ALPHA = 200;
+    private static final int EXCLUSIVE_CHOICE_ALPHA = 200;
     private static final int LOGICAL_GRID_STEP = 16;
 
     private CanvasMinimapSnapshotBuilder() {
@@ -45,7 +45,7 @@ final class CanvasMinimapSnapshotBuilder {
         Set<String> rendered = new HashSet<>();
         List<CanvasMinimapRect> rects = snapshotQuestBoxes(state, cards, projection, boxes, logicalCenters);
         List<CanvasMinimapConnection> connections = snapshotQuestConnections(state, chapter, cards, byQuestId, projection, boxes, logicalCenters, rendered);
-        snapshotEcStage(state, chapter, projection, boxes, logicalCenters, rendered, rects, connections);
+        snapshotExclusiveChoiceStage(state, chapter, projection, boxes, logicalCenters, rendered, rects, connections);
         return new CanvasMinimapSnapshot(List.copyOf(rects), List.copyOf(connections), projection);
     }
 
@@ -136,7 +136,7 @@ final class CanvasMinimapSnapshotBuilder {
         return connections;
     }
 
-    private static void snapshotEcStage(
+    private static void snapshotExclusiveChoiceStage(
             TabletUiState state,
             String chapter,
             CanvasMinimapGeometry.Projection projection,
@@ -148,12 +148,12 @@ final class CanvasMinimapSnapshotBuilder {
     ) {
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
-            net.minecraft.nbt.CompoundTag ecTag = null;
+            net.minecraft.nbt.CompoundTag exclusiveChoiceTag = null;
             if (!ec.background().isBlank()) {
-                ecTag = new CompoundTag();
-                ecTag.putString("ec_background", ec.background());
+                exclusiveChoiceTag = new CompoundTag();
+                exclusiveChoiceTag.putString("ec_background", ec.background());
             }
-            CanvasMinimapRect ecBox = projectRect(
+            CanvasMinimapRect exclusiveChoiceBox = projectRect(
                     projection,
                     ec.x(),
                     ec.y(),
@@ -161,27 +161,27 @@ final class CanvasMinimapSnapshotBuilder {
                     ec.h(),
                     MIN_EC_SIZE,
                     TabletColors.WARNING,
-                    EC_ALPHA,
+                    EXCLUSIVE_CHOICE_ALPHA,
                     ec.id(),
-                    ecTag
+                    exclusiveChoiceTag
             );
-            double[] ecLogicalCenter = new double[]{ec.x() + ec.w() / 2.0, ec.y() + ec.h() / 2.0};
-            logicalCenters.put(ec.id(), ecLogicalCenter);
-            boxes.put(ec.id(), ecBox);
-            rects.add(ecBox);
+            double[] exclusiveChoiceLogicalCenter = new double[]{ec.x() + ec.w() / 2.0, ec.y() + ec.h() / 2.0};
+            logicalCenters.put(ec.id(), exclusiveChoiceLogicalCenter);
+            boxes.put(ec.id(), exclusiveChoiceBox);
+            rects.add(exclusiveChoiceBox);
 
-            float ecCenterX = (float) CanvasMinimapGeometry.mapX(projection, ecLogicalCenter[0]);
-            float ecCenterY = (float) CanvasMinimapGeometry.mapY(projection, ecLogicalCenter[1]);
+            float exclusiveChoiceCenterX = (float) CanvasMinimapGeometry.mapX(projection, exclusiveChoiceLogicalCenter[0]);
+            float exclusiveChoiceCenterY = (float) CanvasMinimapGeometry.mapY(projection, exclusiveChoiceLogicalCenter[1]);
             for (String connectedId : ec.connectionQuestIds()) {
-                addEcConnection(connections, rendered, projection, ec, connectedId, boxes.get(connectedId), logicalCenters.get(connectedId), ecLogicalCenter, ecCenterX, ecCenterY, true);
+                addExclusiveChoiceConnection(connections, rendered, projection, ec, connectedId, boxes.get(connectedId), logicalCenters.get(connectedId), exclusiveChoiceLogicalCenter, exclusiveChoiceCenterX, exclusiveChoiceCenterY, true);
             }
             for (String prerequisiteId : ec.prerequisiteQuestIds()) {
-                addEcConnection(connections, rendered, projection, ec, prerequisiteId, boxes.get(prerequisiteId), logicalCenters.get(prerequisiteId), ecLogicalCenter, ecCenterX, ecCenterY, false);
+                addExclusiveChoiceConnection(connections, rendered, projection, ec, prerequisiteId, boxes.get(prerequisiteId), logicalCenters.get(prerequisiteId), exclusiveChoiceLogicalCenter, exclusiveChoiceCenterX, exclusiveChoiceCenterY, false);
             }
         }
     }
 
-    private static void addEcConnection(
+    private static void addExclusiveChoiceConnection(
             List<CanvasMinimapConnection> connections,
             Set<String> rendered,
             CanvasMinimapGeometry.Projection projection,
@@ -189,31 +189,31 @@ final class CanvasMinimapSnapshotBuilder {
             String otherId,
             CanvasMinimapRect otherBox,
             double[] otherCenter,
-            double[] ecLogicalCenter,
-            float ecCenterX,
-            float ecCenterY,
-            boolean ecIsSource
+            double[] exclusiveChoiceLogicalCenter,
+            float exclusiveChoiceCenterX,
+            float exclusiveChoiceCenterY,
+            boolean exclusiveChoiceIsSource
     ) {
         if (otherBox == null) {
             return;
         }
-        String sourceId = ecIsSource ? ec.id() : otherId;
-        String targetId = ecIsSource ? otherId : ec.id();
+        String sourceId = exclusiveChoiceIsSource ? ec.id() : otherId;
+        String targetId = exclusiveChoiceIsSource ? otherId : ec.id();
         if (!rendered.add("ec:" + sourceId + "->" + targetId)) return;
         float otherCX = otherCenter == null ? otherBox.x() + otherBox.w() / 2.0f : (float) CanvasMinimapGeometry.mapX(projection, otherCenter[0]);
         float otherCY = otherCenter == null ? otherBox.y() + otherBox.h() / 2.0f : (float) CanvasMinimapGeometry.mapY(projection, otherCenter[1]);
-        float srcCX = ecIsSource ? ecCenterX : otherCX;
-        float srcCY = ecIsSource ? ecCenterY : otherCY;
-        float tgtCX = ecIsSource ? otherCX : ecCenterX;
-        float tgtCY = ecIsSource ? otherCY : ecCenterY;
-        double[] srcCenter = ecIsSource ? ecLogicalCenter : otherCenter;
-        double[] tgtCenter = ecIsSource ? otherCenter : ecLogicalCenter;
+        float srcCX = exclusiveChoiceIsSource ? exclusiveChoiceCenterX : otherCX;
+        float srcCY = exclusiveChoiceIsSource ? exclusiveChoiceCenterY : otherCY;
+        float tgtCX = exclusiveChoiceIsSource ? otherCX : exclusiveChoiceCenterX;
+        float tgtCY = exclusiveChoiceIsSource ? otherCY : exclusiveChoiceCenterY;
+        double[] srcCenter = exclusiveChoiceIsSource ? exclusiveChoiceLogicalCenter : otherCenter;
+        double[] tgtCenter = exclusiveChoiceIsSource ? otherCenter : exclusiveChoiceLogicalCenter;
         String tex = ec.connectionTextures().getOrDefault(otherId, "");
         connections.add(new CanvasMinimapConnection(
                 srcCX, srcCY, tgtCX, tgtCY,
                 ec.connectionColors().getOrDefault(otherId, TabletColors.TEXT_SECONDARY),
-                EC_ALPHA, isEcDirect(ec, otherId),
-                isEcDirect(ec, otherId) || otherCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1]),
+                EXCLUSIVE_CHOICE_ALPHA, isExclusiveChoiceDirect(ec, otherId),
+                isExclusiveChoiceDirect(ec, otherId) || otherCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1]),
                 tex.isBlank() ? null : tex
         ));
     }
@@ -235,7 +235,7 @@ final class CanvasMinimapSnapshotBuilder {
         return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
     }
 
-    private static boolean isEcDirect(CanvasExclusiveChoice ec, String targetId) {
+    private static boolean isExclusiveChoiceDirect(CanvasExclusiveChoice ec, String targetId) {
         String mode = ec.connectionModes().get(targetId);
         return mode == null || !"grid".equals(mode);
     }

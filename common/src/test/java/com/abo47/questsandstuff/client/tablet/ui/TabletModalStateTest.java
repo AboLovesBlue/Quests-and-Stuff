@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
@@ -202,7 +202,7 @@ class TabletModalStateTest {
         assertEquals("", state.modal.blueprintCodeMessage);
         assertFalse(state.pickers.iconSearchFocused);
         assertFalse(state.pickers.iconScrollDragging);
-        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ITEMS, state.pickers.iconMode);
         assertFalse(state.pickers.recipeSearchFocused);
         assertFalse(state.pickers.recipeScrollDragging);
         assertEquals(RecipePickerMode.ITEMS, state.pickers.recipeMode);
@@ -270,7 +270,7 @@ class TabletModalStateTest {
         state.modal.blueprintCodeMessage = "message";
         state.pickers.iconSearchFocused = true;
         state.pickers.iconScrollDragging = true;
-        state.pickers.iconMode = IconPickerMode.INVENTORY;
+        state.pickers.iconMode = ModalIconPickerMode.INVENTORY;
         state.pickers.recipeSearchFocused = true;
         state.pickers.recipeScrollDragging = true;
         state.pickers.recipeMode = RecipePickerMode.INVENTORY;

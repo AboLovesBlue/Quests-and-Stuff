@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import net.minecraft.world.entity.player.Player;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
@@ -71,7 +71,7 @@ final class ChapterTextStyleMenu {
                 }),
                 traceC(++clickId, "color_open", () -> {
                     QuestsAndStuffMod.debugLog("[QnS:UI] chapter text color open picker target={}", target);
-                    AppModalOpenActions.openColorPicker(state, target, textColor);
+                    AppOpenActions.openColorPicker(state, target, textColor);
                     refresh.run();
                 }),
                 traceC(++clickId, "bold", () -> {

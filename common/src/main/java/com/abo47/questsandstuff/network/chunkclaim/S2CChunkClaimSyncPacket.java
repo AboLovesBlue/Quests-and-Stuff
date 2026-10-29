@@ -15,6 +15,6 @@ public record S2CChunkClaimSyncPacket(CompoundTag payload) {
     }
 
     public void handle(ModPacketContext context) {
-        context.enqueueWork(() -> ClientboundChunkClaimPacketDispatch.handle(payload));
+        context.enqueueWork(() -> S2CChunkClaimPacketDispatch.handle(payload));
     }
 }

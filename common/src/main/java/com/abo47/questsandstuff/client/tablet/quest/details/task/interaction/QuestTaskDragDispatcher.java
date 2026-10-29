@@ -7,8 +7,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntries;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
@@ -67,8 +67,8 @@ public final class QuestTaskDragDispatcher {
         if (quest == null || quest.isEmpty()) {
             return TaskDragScope.invalid();
         }
-        int panelY = TabletUiFactory.CHAPTER_Y + QuestDetailsTasksPanel.leftPanelContentY();
-        int panelH = QuestDetailsTasksPanel.leftPanelContentH();
+        int panelY = TabletUiFactory.CHAPTER_Y + QuestTaskListPanel.leftPanelContentY();
+        int panelH = QuestTaskListPanel.leftPanelContentH();
         int sectionsY = HEADER_H + SECTION_GAP;
         int sectionsH = panelH - HEADER_H - SECTION_GAP;
         int sectionH = Math.max(20, (sectionsH - SECTION_GAP) / 2);
@@ -81,7 +81,7 @@ public final class QuestTaskDragDispatcher {
         return TaskDragScope.invalid();
     }
 
-    private record TaskDragScope(String kind, List<QuestDetailsTaskEntry> entries, int sectionY, int sectionH) {
+    private record TaskDragScope(String kind, List<QuestTaskEntry> entries, int sectionY, int sectionH) {
         private static TaskDragScope invalid() {
             return new TaskDragScope("", List.of(), 0, 0);
         }

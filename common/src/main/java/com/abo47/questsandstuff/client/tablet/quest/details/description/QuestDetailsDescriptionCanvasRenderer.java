@@ -12,11 +12,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeomet
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
@@ -116,7 +116,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
                 if (selectedCount(state) <= 1) {
                     drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
                 } else {
-                    CanvasElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, contentX, contentY,
+                    QuestElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, contentX, contentY,
                         drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(),
                         drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
                 }
@@ -126,7 +126,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
 
     private static void drawText(GuiGraphics graphics, TabletUiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
         CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
-        boolean inlineEditing = TextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
+        boolean inlineEditing = CanvasTextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
         CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
         withSelectionGeometry(state, contentW, contentH, () -> {
             drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing);
@@ -134,7 +134,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
                 if (selectedCount(state) <= 1) {
                     drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 } else {
-                    CanvasElementSelectionSlot.drawFillAndOutline(graphics, state, contentX, contentY,
+                    QuestElementSelectionSlot.drawFillAndOutline(graphics, state, contentX, contentY,
                         drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
                 }
             }
@@ -164,7 +164,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
     }
 
     private static void drawSelection(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH, int x, int y, int w, int h, int rotation) {
-        withSelectionGeometry(state, contentW, contentH, () -> CanvasElementSelectionSlot.draw(graphics, state, contentX, contentY, x, y, w, h, rotation));
+        withSelectionGeometry(state, contentW, contentH, () -> QuestElementSelectionSlot.draw(graphics, state, contentX, contentY, x, y, w, h, rotation));
     }
 
     private static void drawImageSelection(GuiGraphics graphics, TabletUiState state, int contentX, int contentY, int contentW, int contentH, CanvasImageLayer image) {
@@ -172,7 +172,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             if (CanvasTransformGizmoAxis.supports(image.asset())) {
                 CanvasTransformGizmo.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
             } else {
-                CanvasElementSelectionSlot.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+                QuestElementSelectionSlot.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
             }
         });
     }

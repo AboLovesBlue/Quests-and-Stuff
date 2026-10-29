@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.app.AppDescriptor;
+import com.abo47.questsandstuff.client.tablet.app.TabletAppDescriptor;
 import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.chunkclaimer.ChunkClaimerAppComposer;
 import com.abo47.questsandstuff.client.tablet.home.TabletHomeComposer;
@@ -46,26 +46,26 @@ public final class TabletBootstrap {
     static void ensureAppsRegistered() {
         if (appsRegistered) return;
         appsRegistered = true;
-        TabletAppRegistry.register(new AppDescriptor("home",
+        TabletAppRegistry.register(new TabletAppDescriptor("home",
                 "ui.questsandstuff.app.home",
                 new ResourceLocation("questsandstuff", "textures/gui/home.png"),
                 TabletHomeComposer::create));
-        TabletAppRegistry.register(new AppDescriptor("QUESTS",
+        TabletAppRegistry.register(new TabletAppDescriptor("QUESTS",
                 "ui.questsandstuff.app.quests",
                 IconAtlas.icon("app_quests"),
                 "app_quests",
                 QuestAppComposer::create));
-        TabletAppRegistry.register(new AppDescriptor("TEAMS",
+        TabletAppRegistry.register(new TabletAppDescriptor("TEAMS",
                 "ui.questsandstuff.app.teams",
                 IconAtlas.icon("app_teams"),
                 "app_teams",
                 TeamsAppComposer::create));
-        TabletAppRegistry.register(new AppDescriptor("CHUNKCLAIMER",
+        TabletAppRegistry.register(new TabletAppDescriptor("CHUNKCLAIMER",
                 "ui.questsandstuff.app.chunkclaimer",
                 IconAtlas.icon("app_chunkclaimer"),
                 "app_chunkclaimer",
                 ChunkClaimerAppComposer::create));
-        TabletAppRegistry.register(new AppDescriptor("SETTINGS",
+        TabletAppRegistry.register(new TabletAppDescriptor("SETTINGS",
                 "ui.questsandstuff.app.settings",
                 IconAtlas.icon("app_settings"),
                 "app_settings",

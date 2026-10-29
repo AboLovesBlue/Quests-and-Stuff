@@ -55,17 +55,17 @@ public final class CanvasEditService {
         }
     }
 
-    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String ecId) {
+    public void removeCanvasExclusiveChoice(ServerPlayer player, String chapterName, String exclusiveChoiceId) {
         String chapter = EditorSessionService.normalizeChapter(chapterName);
-        if (chapter.isBlank() || ecId == null || ecId.isBlank()) {
+        if (chapter.isBlank() || exclusiveChoiceId == null || exclusiveChoiceId.isBlank()) {
             return;
         }
         CanvasExclusiveChoice removed = owner.definitionStore().canvasExclusiveChoices(chapter).stream()
-                .filter(ec -> ec.id().equals(ecId))
+                .filter(ec -> ec.id().equals(exclusiveChoiceId))
                 .findFirst()
                 .orElse(null);
         owner.captureUndo(owner.session(player));
-        if (owner.definitionStore().removeCanvasExclusiveChoice(chapter, ecId)) {
+        if (owner.definitionStore().removeCanvasExclusiveChoice(chapter, exclusiveChoiceId)) {
             if (removed != null && !removed.connectionQuestIds().isEmpty()) {
                 owner.runtimeEngine().clearExclusiveChoiceDisabled(new HashSet<>(removed.connectionQuestIds()));
             }
@@ -73,7 +73,7 @@ public final class CanvasEditService {
         }
     }
 
-    public void ecConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
+    public void exclusiveChoiceConnectionHidden(ServerPlayer player, String chapterName, String sourceId, String targetId, boolean hidden) {
         String chapter = EditorSessionService.normalizeChapter(chapterName);
         if (chapter.isBlank() || sourceId.isBlank() || targetId.isBlank()) {
             return;

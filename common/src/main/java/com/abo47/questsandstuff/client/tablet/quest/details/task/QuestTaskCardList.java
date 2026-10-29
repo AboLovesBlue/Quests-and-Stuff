@@ -28,11 +28,11 @@ final class QuestTaskCardList {
         return Math.max(0, sectionW - DragScrollBarWidget.RESERVED_WIDTH / 2);
     }
 
-    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, int w, int h, int listY, boolean tasks) {
+    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks) {
         renderCards(section, state, player, refresh, questId, entries, w, h, listY, tasks, false);
     }
 
-    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, int w, int h, int listY, boolean tasks, boolean rewardsClaimed) {
+    static void renderCards(WidgetGroup section, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, int w, int h, int listY, boolean tasks, boolean rewardsClaimed) {
         int visibleH = Math.max(1, h - listY - 4);
         int maxStart = scrollMax(entries, visibleH);
         if (tasks) {
@@ -51,26 +51,26 @@ final class QuestTaskCardList {
             return;
         }
         int cardW = maxStart > 0 ? w - 12 - DragScrollBarWidget.RESERVED_WIDTH : w - 12;
-        int y = QuestDetailsTasksPanel.LIST_PAD - scroll;
+        int y = QuestTaskListPanel.LIST_PAD - scroll;
         int ghostIndex = Math.max(0, Math.min(entries.size(), state.questDetails.questDetailsTaskDragTargetIndex));
         boolean showGhost = state.questDetails.questDetailsTaskDragActive
                 && kind.equals(state.questDetails.questDetailsTaskDragKind)
                 && !state.questDetails.questDetailsTaskDragId.isBlank();
-        QuestDetailsTaskEntry ghostEntry = draggedEntry(entries, state.questDetails.questDetailsTaskDragId);
+        QuestTaskEntry ghostEntry = draggedEntry(entries, state.questDetails.questDetailsTaskDragId);
         for (int index = 0; index < entries.size(); index++) {
             if (showGhost && index == ghostIndex) {
                 QuestTaskGhostCards.render(list, ghostEntry, tasks, 6, y, cardW);
-                y += QuestDetailsTasksPanel.CARD_H + QuestDetailsTasksPanel.CARD_GAP;
+                y += QuestTaskListPanel.CARD_H + QuestTaskListPanel.CARD_GAP;
             }
-            QuestDetailsTaskEntry entry = entries.get(index);
-            if (y < visibleH && y + QuestDetailsTasksPanel.CARD_H > 0) {
+            QuestTaskEntry entry = entries.get(index);
+            if (y < visibleH && y + QuestTaskListPanel.CARD_H > 0) {
                 if (tasks) {
                     QuestTaskCardRenderer.renderTaskCard(list, state, player, refresh, questId, entry, 6, y, cardW, entries, listY, h - 4);
                 } else {
                     QuestTaskCardRenderer.renderRewardCard(list, state, player, refresh, questId, entry, 6, y, cardW, entries, listY, h - 4, rewardsClaimed);
                 }
             }
-            y += QuestDetailsTasksPanel.CARD_H + QuestDetailsTasksPanel.CARD_GAP;
+            y += QuestTaskListPanel.CARD_H + QuestTaskListPanel.CARD_GAP;
         }
         if (showGhost && ghostIndex == entries.size()) {
             QuestTaskGhostCards.render(list, ghostEntry, tasks, 6, y, cardW);
@@ -78,8 +78,8 @@ final class QuestTaskCardList {
         renderScrollbar(section, state, refresh, tasks, w, listY, visibleH, maxStart);
     }
 
-    private static QuestDetailsTaskEntry draggedEntry(List<QuestDetailsTaskEntry> entries, String id) {
-        for (QuestDetailsTaskEntry entry : entries) {
+    private static QuestTaskEntry draggedEntry(List<QuestTaskEntry> entries, String id) {
+        for (QuestTaskEntry entry : entries) {
             if (entry.id().equals(id)) {
                 return entry;
             }
@@ -87,7 +87,7 @@ final class QuestTaskCardList {
         return null;
     }
 
-    private static WidgetGroup clippedList(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, int listY, int listBottom) {
+    private static WidgetGroup clippedList(int x, int y, int w, int h, TabletUiState state, Player player, Runnable refresh, String questId, List<QuestTaskEntry> entries, String kind, int listY, int listBottom) {
         return new WidgetGroup(x, y, w, h) {
             @Override
             public boolean isMouseOverElement(double mouseX, double mouseY) {
@@ -147,13 +147,13 @@ final class QuestTaskCardList {
         };
     }
 
-    static int scrollMax(List<QuestDetailsTaskEntry> entries, int visibleH) {
+    static int scrollMax(List<QuestTaskEntry> entries, int visibleH) {
         if (entries.isEmpty()) {
             return 0;
         }
-        int contentH = QuestDetailsTasksPanel.LIST_PAD * 2
-                + entries.size() * QuestDetailsTasksPanel.CARD_H
-                + Math.max(0, entries.size() - 1) * QuestDetailsTasksPanel.CARD_GAP;
+        int contentH = QuestTaskListPanel.LIST_PAD * 2
+                + entries.size() * QuestTaskListPanel.CARD_H
+                + Math.max(0, entries.size() - 1) * QuestTaskListPanel.CARD_GAP;
         return Math.max(0, contentH - visibleH);
     }
 
@@ -190,18 +190,18 @@ final class QuestTaskCardList {
         ));
     }
 
-    static QuestDetailsTaskEntry hitEntry(TabletUiState state, List<QuestDetailsTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
+    static QuestTaskEntry hitEntry(TabletUiState state, List<QuestTaskEntry> entries, String kind, int listY, int listBottom, int localY) {
         if (localY < listY || localY > listBottom || entries.isEmpty()) {
             return null;
         }
         int scroll = "tasks".equals(kind) ? state.questDetails.questDetailsTaskScroll : state.questDetails.questDetailsRewardScroll;
-        int contentY = localY - listY + scroll - QuestDetailsTasksPanel.LIST_PAD;
+        int contentY = localY - listY + scroll - QuestTaskListPanel.LIST_PAD;
         if (contentY < 0) {
             return null;
         }
-        int slot = contentY / (QuestDetailsTasksPanel.CARD_H + QuestDetailsTasksPanel.CARD_GAP);
-        int inSlot = contentY % (QuestDetailsTasksPanel.CARD_H + QuestDetailsTasksPanel.CARD_GAP);
-        if (slot < 0 || slot >= entries.size() || inSlot >= QuestDetailsTasksPanel.CARD_H) {
+        int slot = contentY / (QuestTaskListPanel.CARD_H + QuestTaskListPanel.CARD_GAP);
+        int inSlot = contentY % (QuestTaskListPanel.CARD_H + QuestTaskListPanel.CARD_GAP);
+        if (slot < 0 || slot >= entries.size() || inSlot >= QuestTaskListPanel.CARD_H) {
             return null;
         }
         return entries.get(slot);

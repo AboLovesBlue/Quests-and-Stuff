@@ -9,7 +9,7 @@ import net.minecraft.world.item.Items;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
 
 import com.google.gson.JsonObject;
 
@@ -18,15 +18,15 @@ final class QuestTaskItemStacks {
     }
 
     static ItemStack iconStack(JsonObject json) {
-        String itemId = TaskJsonFactory.firstPresent(json, "item", "fallback_item");
-        String icon = TaskJsonFactory.asString(json, "icon", "");
+        String itemId = QuestTaskJsonFactory.firstPresent(json, "item", "fallback_item");
+        String icon = QuestTaskJsonFactory.asString(json, "icon", "");
         if (ItemStackIconCodec.isStackIcon(icon)) {
             return ItemStackIconCodec.stackFromIcon(icon);
         }
         if (hasCustomIcon(json, itemId)) {
             return ItemStack.EMPTY;
         }
-        String nbt = TaskJsonFactory.asString(json, "nbt", "");
+        String nbt = QuestTaskJsonFactory.asString(json, "nbt", "");
         if (nbt.isBlank()) {
             return ItemStack.EMPTY;
         }
@@ -34,16 +34,16 @@ final class QuestTaskItemStacks {
     }
 
     static ItemStack viewerStack(JsonObject json) {
-        String icon = TaskJsonFactory.asString(json, "icon", "");
+        String icon = QuestTaskJsonFactory.asString(json, "icon", "");
         if (ItemStackIconCodec.isStackIcon(icon)) {
             return ItemStackIconCodec.stackFromIcon(icon);
         }
-        String itemId = TaskJsonFactory.firstPresent(json, "item", "fallback_item", "icon");
+        String itemId = QuestTaskJsonFactory.firstPresent(json, "item", "fallback_item", "icon");
         if (itemId.isBlank() || itemId.startsWith("#")) {
             return ItemStack.EMPTY;
         }
         int amount = Math.max(1, asInt(json, "amount", 1));
-        return stackFromItemData(itemId, TaskJsonFactory.asString(json, "nbt", ""), amount);
+        return stackFromItemData(itemId, QuestTaskJsonFactory.asString(json, "nbt", ""), amount);
     }
 
     private static int asInt(JsonObject json, String key, int fallback) {
@@ -91,10 +91,10 @@ final class QuestTaskItemStacks {
     }
 
     private static boolean hasCustomIcon(JsonObject json, String itemId) {
-        String icon = TaskJsonFactory.asString(json, "icon", "");
+        String icon = QuestTaskJsonFactory.asString(json, "icon", "");
         if (icon.isBlank()) {
             return false;
         }
-        return !icon.equals(itemId) && !icon.equals(TaskJsonFactory.asString(json, "fallback_item", ""));
+        return !icon.equals(itemId) && !icon.equals(QuestTaskJsonFactory.asString(json, "fallback_item", ""));
     }
 }

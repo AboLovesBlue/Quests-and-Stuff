@@ -316,8 +316,8 @@ public final class ClientQuestStateFacade {
         ClientQuestMutator.putCanvasExclusiveChoiceLocal(chapter, ec);
     }
 
-    public static void removeCanvasExclusiveChoiceLocal(String chapter, String ecId) {
-        ClientQuestMutator.removeCanvasExclusiveChoiceLocal(chapter, ecId);
+    public static void removeCanvasExclusiveChoiceLocal(String chapter, String exclusiveChoiceId) {
+        ClientQuestMutator.removeCanvasExclusiveChoiceLocal(chapter, exclusiveChoiceId);
     }
 
     public static void putCanvasImageLocal(String chapter, CanvasImageLayer image) {

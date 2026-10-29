@@ -19,7 +19,7 @@ import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.modal.asset.TabletAssetPickerModal;
+import com.abo47.questsandstuff.client.tablet.modal.asset.AssetPickerModal;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
@@ -28,7 +28,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.Canva
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
@@ -134,7 +134,7 @@ final class TabletRootKeyboardRouter {
             return true;
         }
         if (root.isAnyModalOpen()) {
-            if (!TabletRootWindowController.isTextInputActive(state, root) && TabletAssetPickerModal.handleKeyPressed(state, refresher, keyCode)) {
+            if (!TabletRootWindowController.isTextInputActive(state, root) && AssetPickerModal.handleKeyPressed(state, refresher, keyCode)) {
                 return true;
             }
             if (modalLayer != null) {
@@ -245,7 +245,7 @@ final class TabletRootKeyboardRouter {
         if (frontWindowLayer != null) {
             frontWindowLayer.keyPressed(keyCode, scanCode, modifiers);
         }
-        if (QuestDetailsTasksPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
+        if (QuestTaskListPanel.handleRenameKey(root.resolvePlayer(), state, keyCode, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
             refresher.run();
         }
         return true;
@@ -332,7 +332,7 @@ final class TabletRootKeyboardRouter {
 
     private static boolean handleQuestDetailsRecipeViewerShortcut(TabletUiState state, int keyCode, int scanCode) {
         double[] mouse = currentMousePosition();
-        return QuestDetailsTasksPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
+        return QuestTaskListPanel.handleRecipeViewerShortcut(state, keyCode, scanCode, mouse[0], mouse[1]);
     }
 
     private static boolean handleGizmoModeShortcut(TabletUiState state, Runnable refresher, int keyCode, int scanCode) {
@@ -422,8 +422,8 @@ final class TabletRootKeyboardRouter {
         if (!state.canvas.connectSourceQuestId.isBlank() || !state.canvas.connectSourceQuestIds.isEmpty()) {
             state.canvas.connectSourceQuestId = "";
             state.canvas.connectSourceQuestIds.clear();
-            state.canvas.connectEcId = "";
-            state.canvas.quickConnectEcId = "";
+            state.canvas.connectExclusiveChoiceId = "";
+            state.canvas.quickConnectExclusiveChoiceId = "";
             return true;
         }
         if (state.canvas.blueprintPlacement.active()) {
@@ -452,7 +452,7 @@ final class TabletRootKeyboardRouter {
         if (TabletKeybindings.quickConnectMatches(keyCode, scanCode)) {
             state.canvas.quickConnectHeld = false;
             state.canvas.quickConnectSourceQuestId = "";
-            state.canvas.quickConnectEcId = "";
+            state.canvas.quickConnectExclusiveChoiceId = "";
             refresher.run();
             return true;
         }
@@ -483,7 +483,7 @@ final class TabletRootKeyboardRouter {
             if (frontWindowLayer != null) {
                 frontWindowLayer.charTyped(c, modifiers);
             }
-            if (QuestDetailsTasksPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
+            if (QuestTaskListPanel.handleRenameChar(state, c, renameDraftBefore.equals(state.questDetails.questDetailsTaskRenameDraft))) {
                 refresher.run();
             }
             return true;

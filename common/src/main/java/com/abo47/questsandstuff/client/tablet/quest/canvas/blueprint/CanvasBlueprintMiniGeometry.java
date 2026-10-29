@@ -57,7 +57,7 @@ final class CanvasBlueprintMiniGeometry {
             maxY = Math.max(maxY, rotated[3]);
         }
         for (CanvasBlueprint.ExclusiveChoiceEntry ec : blueprint.exclusiveChoices()) {
-            BlueprintRect rect = ecRect(ec.sourceId(), ec.sourceX(), ec.sourceY(), ec.sourceW(), ec.sourceH(), blueprint.originX(), blueprint.originY());
+            BlueprintRect rect = exclusiveChoiceRect(ec.sourceId(), ec.sourceX(), ec.sourceY(), ec.sourceW(), ec.sourceH(), blueprint.originX(), blueprint.originY());
             minX = Math.min(minX, rect.x());
             minY = Math.min(minY, rect.y());
             maxX = Math.max(maxX, rect.x() + rect.w());
@@ -76,7 +76,7 @@ final class CanvasBlueprintMiniGeometry {
             questBoxes.put(quest.sourceId(), rect);
         }
         for (CanvasBlueprint.ExclusiveChoiceEntry ec : blueprint.exclusiveChoices()) {
-            BlueprintRect rect = ecRect(ec.sourceId(), ec.sourceX(), ec.sourceY(), ec.sourceW(), ec.sourceH(), blueprint.originX(), blueprint.originY());
+            BlueprintRect rect = exclusiveChoiceRect(ec.sourceId(), ec.sourceX(), ec.sourceY(), ec.sourceW(), ec.sourceH(), blueprint.originX(), blueprint.originY());
             questBoxes.put(ec.sourceId(), rect);
         }
         return questBoxes;
@@ -92,7 +92,7 @@ final class CanvasBlueprintMiniGeometry {
         return new BlueprintRect(x, y, visualW, visualH);
     }
 
-    private static BlueprintRect ecRect(String id, int sourceX, int sourceY, int w, int h, int originX, int originY) {
+    private static BlueprintRect exclusiveChoiceRect(String id, int sourceX, int sourceY, int w, int h, int originX, int originY) {
         return new BlueprintRect(sourceX - originX, sourceY - originY, w, h);
     }
 

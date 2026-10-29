@@ -36,10 +36,10 @@ public final class CanvasSelectMoveClickActions {
             QuestCardLayout hit,
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit,
-            CanvasExclusiveChoice ecHit
+            CanvasExclusiveChoice exclusiveChoiceHit
     ) {
         if (button == 0 && state.root.canEdit) {
-            if (CanvasTransformHandleClicks.handleElementTransformStart(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, imageHit, textHit, ecHit)) {
+            if (CanvasTransformHandleClicks.handleElementTransformStart(canvasViewport, state, refresher, byQuestId, textEditor, elementTransforms, selectionTransforms, localX, localY, imageHit, textHit, exclusiveChoiceHit)) {
                 return;
             }
         }

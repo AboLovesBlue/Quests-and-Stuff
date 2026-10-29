@@ -3,7 +3,7 @@ package com.abo47.questsandstuff.client.tablet.quest.details;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -71,7 +71,7 @@ final class QuestDetailsWindowHitTest {
     }
 
     static boolean isTextEditorHit(TabletUiState state, double mouseX, double mouseY) {
-        if (state == null || !state.questDetails.questDetailsOpen || !TextEditSession.isQuestDetailsEditing(state)) {
+        if (state == null || !state.questDetails.questDetailsOpen || !CanvasTextEditSession.isQuestDetailsEditing(state)) {
             return false;
         }
         return isQuestDetailsTextHit(state, state.questDetails.questDetailsTextEditTarget, mouseX, mouseY, true);
@@ -102,7 +102,7 @@ final class QuestDetailsWindowHitTest {
             return false;
         }
         CanvasTextLayer hitText = useDraftWhenEditing
-                && TextEditSession.isEditingTarget(state, normalizedTextId)
+                && CanvasTextEditSession.isEditingTarget(state, normalizedTextId)
                 ? text.withText(state.canvas.canvasTextEditDraft)
                 : text;
         return isTextLayerLocalHit(state, hitText, lx, ly, viewport[2], viewport[3]);

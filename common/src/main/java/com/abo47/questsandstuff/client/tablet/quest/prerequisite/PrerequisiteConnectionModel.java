@@ -29,10 +29,10 @@ record PrerequisiteConnectionModel(
         List<PrerequisiteConnectionRow> modeRows,
         List<PrerequisiteConnectionRow> rows,
         boolean isExclusiveChoice,
-        int ecX,
-        int ecY,
-        int ecW,
-        int ecH
+        int exclusiveChoiceX,
+        int exclusiveChoiceY,
+        int exclusiveChoiceW,
+        int exclusiveChoiceH
 ) {
     static PrerequisiteConnectionModel build(String questId, CompoundTag questTag, String chapter, String query, boolean externalMode) {
         String safeQuestId = safe(questId);
@@ -53,7 +53,7 @@ record PrerequisiteConnectionModel(
         );
     }
 
-    static PrerequisiteConnectionModel buildForEc(CanvasExclusiveChoice ec, String chapter, String query) {
+    static PrerequisiteConnectionModel buildForExclusiveChoice(CanvasExclusiveChoice ec, String chapter, String query) {
         if (ec == null) {
             return new PrerequisiteConnectionModel("", new CompoundTag(), "", List.of(), List.of(), List.of(), false, 0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         }
@@ -113,22 +113,22 @@ record PrerequisiteConnectionModel(
         Map<String, PrerequisiteConnectionRow> rows = new LinkedHashMap<>();
         addIncomingRows(rows, questId, questTag, targetTitle);
         addOutgoingRows(rows, questId, targetTitle);
-        addEcConnectionRows(rows, questId, targetTitle);
+        addExclusiveChoiceConnectionRows(rows, questId, targetTitle);
         return List.copyOf(rows.values());
     }
 
-    private static void addEcConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
+    private static void addExclusiveChoiceConnectionRows(Map<String, PrerequisiteConnectionRow> rows, String questId, String targetTitle) {
         for (List<CanvasExclusiveChoice> ecs : ClientQuestStateFacade.canvasExclusiveChoicesByChapter().values()) {
             for (CanvasExclusiveChoice ec : ecs) {
-                String ecId = safe(ec.id());
-                if (ecId.isBlank()) continue;
+                String exclusiveChoiceId = safe(ec.id());
+                if (exclusiveChoiceId.isBlank()) continue;
                 if (ec.connectionQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.connectionKey(ecId, questId);
-                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(ecId, questId, ecId, targetTitle, ecId, "", PrerequisiteConnectionKind.INCOMING, true));
+                    String key = QuestConnectionMetadata.connectionKey(exclusiveChoiceId, questId);
+                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(exclusiveChoiceId, questId, exclusiveChoiceId, targetTitle, exclusiveChoiceId, "", PrerequisiteConnectionKind.INCOMING, true));
                 }
                 if (ec.prerequisiteQuestIds().contains(questId)) {
-                    String key = QuestConnectionMetadata.connectionKey(questId, ecId);
-                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(questId, ecId, targetTitle, ecId, ecId, "", PrerequisiteConnectionKind.OUTGOING, true));
+                    String key = QuestConnectionMetadata.connectionKey(questId, exclusiveChoiceId);
+                    rows.putIfAbsent(key, new PrerequisiteConnectionRow(questId, exclusiveChoiceId, targetTitle, exclusiveChoiceId, exclusiveChoiceId, "", PrerequisiteConnectionKind.OUTGOING, true));
                 }
             }
         }

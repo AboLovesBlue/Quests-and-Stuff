@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 
 class ModalOpenActionsTest {
     @Test
@@ -77,7 +77,7 @@ class ModalOpenActionsTest {
         state.pickers.iconSearchFocused = true;
         state.pickers.iconScroll = 12;
         state.pickers.iconScrollDragging = true;
-        state.pickers.iconMode = IconPickerMode.INVENTORY;
+        state.pickers.iconMode = ModalIconPickerMode.INVENTORY;
 
         IconPickerOpenActions.openQuestDetailsIconPicker(state, ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"));
 
@@ -89,14 +89,14 @@ class ModalOpenActionsTest {
         assertFalse(state.pickers.iconSearchFocused);
         assertEquals(0, state.pickers.iconScroll);
         assertFalse(state.pickers.iconScrollDragging);
-        assertEquals(IconPickerMode.USABLE_ITEMS, state.pickers.iconMode);
-        assertEquals(IconPickerMode.USABLE_ITEMS.name(), state.modal.modalSession.mode());
+        assertEquals(ModalIconPickerMode.USABLE_ITEMS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.USABLE_ITEMS.name(), state.modal.modalSession.mode());
     }
 
     @Test
     void canvasEntityIconPickerStartsInEntityMode() {
         TabletUiState state = new TabletUiState();
-        state.pickers.iconMode = IconPickerMode.FLUIDS;
+        state.pickers.iconMode = ModalIconPickerMode.FLUIDS;
 
         IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
 
@@ -106,7 +106,7 @@ class ModalOpenActionsTest {
         assertEquals(ModalTargets.canvasEntityNew("chapter"), state.modal.modalSession.target(ModalSession.TargetSlot.CANVAS_ENTITY));
         assertEquals(5, state.canvas.canvasImageLogicalX);
         assertEquals(9, state.canvas.canvasImageLogicalY);
-        assertEquals(IconPickerMode.ENTITIES, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ENTITIES, state.pickers.iconMode);
     }
 
     @Test
@@ -158,7 +158,7 @@ class ModalOpenActionsTest {
         state.canvas.snapGuideXVisible = true;
         state.canvas.snapGuideYVisible = true;
 
-        AppModalOpenActions.openColorPicker(state, "theme", 0xFF00AA);
+        AppOpenActions.openColorPicker(state, "theme", 0xFF00AA);
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.COLOR_PICKER));
         assertFalse(state.canvas.draggingCanvasImage);

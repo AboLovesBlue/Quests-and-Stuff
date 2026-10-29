@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMuta
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
@@ -33,7 +33,7 @@ public final class CanvasTextStyleMenu {
         String chapter = selectedChapterName(state);
         CanvasTextLayer text = CanvasLayerMutations.findCanvasText(state, chapter, state.canvas.canvasTextMenuTarget);
         if (text == null) {
-            TextStyleSession.closeMainCanvas(state);
+            CanvasTextStyleSession.closeMainCanvas(state);
             return;
         }
         int toolCount = TextStyleButtons.TOOL_COUNT;
@@ -50,7 +50,7 @@ public final class CanvasTextStyleMenu {
             CanvasTextLayer fresh = freshLookup.get();
             CanvasTextLayer colorSource = fresh == null ? text : fresh;
             String freshChapter = selectedChapterName(state);
-            AppModalOpenActions.openColorPicker(state, ModalTargets.canvasText(freshChapter, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
+            AppOpenActions.openColorPicker(state, ModalTargets.canvasText(freshChapter, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", freshChapter, colorSource.id());
             refresh.run();
         }, freshLookup);
@@ -78,7 +78,7 @@ public final class CanvasTextStyleMenu {
         int y = viewportY + bounds[1];
         int hitX = state.questDetails.questDetailsViewportOriginX + bounds[0];
         int hitY = state.questDetails.questDetailsViewportOriginY + bounds[1];
-        TextStyleSession.setQuestDetailsBounds(state, hitX, hitY, bounds[2], bounds[3]);
+        CanvasTextStyleSession.setQuestDetailsBounds(state, hitX, hitY, bounds[2], bounds[3]);
         Supplier<CanvasTextLayer> effectiveFresh = freshLookup == null ? () -> text : freshLookup;
         renderShared(parent, state, menuText, x, y, bounds[2], bounds[3], bounds[5], "quest details", refresh, updateText, onPreview, openColorPicker, effectiveFresh);
     }
@@ -181,13 +181,13 @@ public final class CanvasTextStyleMenu {
 
     private static void markStyleInteraction(TabletUiState state, String logScope) {
         if (isQuestDetailsScope(logScope)) {
-            TextStyleSession.markQuestDetailsInteraction(state);
+            CanvasTextStyleSession.markQuestDetailsInteraction(state);
         }
     }
 
     private static void keepQuestDetailsStyleMenuOpen(TabletUiState state, String logScope, String textId) {
         if (isQuestDetailsScope(logScope)) {
-            TextStyleSession.openQuestDetails(state, textId);
+            CanvasTextStyleSession.openQuestDetails(state, textId);
         }
     }
 
@@ -196,15 +196,15 @@ public final class CanvasTextStyleMenu {
     }
 
     private static String textFontSizeFieldTarget(TabletUiState state, String logScope) {
-        return TextStyleSession.fontSizeTarget(state, surface(logScope));
+        return CanvasTextStyleSession.fontSizeTarget(state, surface(logScope));
     }
 
     private static void setTextFontSizeFieldTarget(TabletUiState state, String logScope, String target) {
-        TextStyleSession.setFontSizeTarget(state, surface(logScope), target);
+        CanvasTextStyleSession.setFontSizeTarget(state, surface(logScope), target);
     }
 
-    private static TextStyleSession.Surface surface(String logScope) {
-        return isQuestDetailsScope(logScope) ? TextStyleSession.Surface.QUEST_DETAILS : TextStyleSession.Surface.MAIN_CANVAS;
+    private static CanvasTextStyleSession.Surface surface(String logScope) {
+        return isQuestDetailsScope(logScope) ? CanvasTextStyleSession.Surface.QUEST_DETAILS : CanvasTextStyleSession.Surface.MAIN_CANVAS;
     }
 
     private static int[] menuBoundsForGeometry(TabletUiState state, CanvasTextLayer text, int viewportW, int viewportH, int scroll, boolean gridSnapLocked, int toolCount) {

@@ -16,7 +16,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.ConnectionHit;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
@@ -117,11 +117,11 @@ public final class CanvasHitTester {
         }
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
-            CanvasExclusiveChoice drawEc = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
-            CanvasElementGeometry.Box ecBox = CanvasElementGeometry.screenBoxAtPivot(state, drawEc.x(), drawEc.y(), drawEc.w(), drawEc.h(), 0, 0, drawEc.rotation());
-            int ecCenterX = (int) Math.round(ecBox.centerX() + ecBox.width() / 2.0);
-            int ecCenterY = (int) Math.round(ecBox.centerY() + ecBox.height() / 2.0);
-            for (String connectedQuestId : drawEc.connectionQuestIds()) {
+            CanvasExclusiveChoice drawExclusiveChoice = CanvasLayerMutations.effectiveCanvasExclusiveChoice(state, ec);
+            CanvasElementGeometry.Box exclusiveChoiceBox = CanvasElementGeometry.screenBoxAtPivot(state, drawExclusiveChoice.x(), drawExclusiveChoice.y(), drawExclusiveChoice.w(), drawExclusiveChoice.h(), 0, 0, drawExclusiveChoice.rotation());
+            int exclusiveChoiceCenterX = (int) Math.round(exclusiveChoiceBox.centerX() + exclusiveChoiceBox.width() / 2.0);
+            int exclusiveChoiceCenterY = (int) Math.round(exclusiveChoiceBox.centerY() + exclusiveChoiceBox.height() / 2.0);
+            for (String connectedQuestId : drawExclusiveChoice.connectionQuestIds()) {
                 QuestCardLayout connectedQuest = byQuestId.get(connectedQuestId);
                 if (connectedQuest == null) {
                     continue;
@@ -130,17 +130,17 @@ public final class CanvasHitTester {
                         state,
                         0,
                         0,
-                        ecCenterX,
-                        ecCenterY,
+                        exclusiveChoiceCenterX,
+                        exclusiveChoiceCenterY,
                         connectedQuest.centerX(),
                         connectedQuest.centerY(),
-                        ConnectionRenderer.ecIsConnectionDirect(state, chapter, ec.id(), connectedQuest.questId())
+                        ConnectionRenderer.exclusiveChoiceIsConnectionDirect(state, chapter, ec.id(), connectedQuest.questId())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new ConnectionHit(ec.id(), connectedQuest.questId());
                 }
             }
-            for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
+            for (String prerequisiteQuestId : drawExclusiveChoice.prerequisiteQuestIds()) {
                 QuestCardLayout prerequisiteQuest = byQuestId.get(prerequisiteQuestId);
                 if (prerequisiteQuest == null) {
                     continue;
@@ -151,9 +151,9 @@ public final class CanvasHitTester {
                         0,
                         prerequisiteQuest.centerX(),
                         prerequisiteQuest.centerY(),
-                        ecCenterX,
-                        ecCenterY,
-                        ConnectionRenderer.ecIsConnectionDirect(state, chapter, prerequisiteQuest.questId(), ec.id())
+                        exclusiveChoiceCenterX,
+                        exclusiveChoiceCenterY,
+                        ConnectionRenderer.exclusiveChoiceIsConnectionDirect(state, chapter, prerequisiteQuest.questId(), ec.id())
                 );
                 if (nearPath(x, y, path, tolerance)) {
                     return new ConnectionHit(prerequisiteQuest.questId(), ec.id());
@@ -192,11 +192,11 @@ public final class CanvasHitTester {
     }
 
     public static CanvasExclusiveChoice hitTestSelectedCanvasExclusiveChoiceControls(TabletUiState state, int x, int y) {
-        if (state.canvas.canvasSelection.primaryEcId().isBlank()) {
+        if (state.canvas.canvasSelection.primaryExclusiveChoiceId().isBlank()) {
             return null;
         }
         CanvasExclusiveChoice ec = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapterName(state), List.of()).stream()
-                .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryEcId()))
+                .filter(entry -> entry.id().equals(state.canvas.canvasSelection.primaryExclusiveChoiceId()))
                 .findFirst()
                 .orElse(null);
         if (ec == null) {
@@ -209,14 +209,14 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasExclusiveChoiceResizeHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), x, y);
+        return QuestElementSelectionSlot.resizeHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), x, y);
     }
 
     public static boolean isCanvasExclusiveChoiceRotateHandleHit(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
         if (CanvasSelectionActions.totalCanvasSelectionCount(state) <= 1) {
             return false;
         }
-        return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), x, y);
+        return QuestElementSelectionSlot.rotateHandleHitAtPivot(state, ec.x(), ec.y(), ec.w(), ec.h(), ec.pivotX(), ec.pivotY(), ec.rotation(), x, y);
     }
 
     public static double[] canvasExclusiveChoiceLocalScreenPoint(TabletUiState state, CanvasExclusiveChoice ec, int x, int y) {
@@ -245,11 +245,11 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasTextResizeHandleHit(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHit(state, text.x(), text.y(), text.w(), text.h(), text.rotation(), x, y);
+        return QuestElementSelectionSlot.resizeHandleHit(state, text.x(), text.y(), text.w(), text.h(), text.rotation(), x, y);
     }
 
     public static boolean isCanvasTextRotateHandleHit(TabletUiState state, CanvasTextLayer text, int x, int y) {
-        return CanvasElementSelectionSlot.rotateHandleHit(state, text.x(), text.y(), text.w(), text.h(), text.rotation(), x, y);
+        return QuestElementSelectionSlot.rotateHandleHit(state, text.x(), text.y(), text.w(), text.h(), text.rotation(), x, y);
     }
 
     public static double[] canvasTextLocalScreenPoint(TabletUiState state, CanvasTextLayer text, int x, int y) {
@@ -268,15 +268,15 @@ public final class CanvasHitTester {
     }
 
     public static boolean isCanvasImageResizeHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
+        return QuestElementSelectionSlot.resizeHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
     }
 
     public static boolean isCanvasImageRotateHandleHit(TabletUiState state, CanvasImageLayer image, int x, int y) {
-        return CanvasElementSelectionSlot.rotateHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
+        return QuestElementSelectionSlot.rotateHandleHitAtPivot(state, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), x, y);
     }
 
     public static boolean isCanvasQuestResizeHandleHit(TabletUiState state, QuestCardLayout card, int x, int y) {
-        return CanvasElementSelectionSlot.resizeHandleHitAtScreenRect(card.x(), card.y(), card.width(), card.height(), x, y);
+        return QuestElementSelectionSlot.resizeHandleHitAtScreenRect(card.x(), card.y(), card.width(), card.height(), x, y);
     }
 
     public static double[] canvasImageLocalScreenPoint(TabletUiState state, CanvasImageLayer image, int x, int y) {

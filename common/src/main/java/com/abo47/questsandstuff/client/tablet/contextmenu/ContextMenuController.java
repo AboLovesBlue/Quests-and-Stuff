@@ -93,13 +93,13 @@ public final class ContextMenuController {
         state.contextMenu.contextCanvasTextId = clean(textId);
     }
 
-    public static void targetExclusiveChoice(TabletUiState state, String ecId) {
+    public static void targetExclusiveChoice(TabletUiState state, String exclusiveChoiceId) {
         if (state == null) {
             return;
         }
         clearTarget(state);
         state.contextMenu.contextMenuTarget = ContextMenuTarget.EXCLUSIVE_CHOICE;
-        state.contextMenu.contextCanvasExclusiveChoiceId = clean(ecId);
+        state.contextMenu.contextCanvasExclusiveChoiceId = clean(exclusiveChoiceId);
     }
 
     public static void close(TabletUiState state) {

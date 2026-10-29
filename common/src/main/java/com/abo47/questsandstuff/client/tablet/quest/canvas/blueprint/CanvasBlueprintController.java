@@ -189,7 +189,7 @@ public final class CanvasBlueprintController {
         List<CanvasBlueprint.QuestEntry> quests = selectedQuests(selection.questIds(), chapter);
         List<CanvasImageLayer> images = selectedImages(state, chapter, selection.imageIds());
         List<CanvasTextLayer> texts = selectedTexts(state, chapter, selection.textIds());
-        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, chapter, selection.ecIds());
+        List<CanvasBlueprint.ExclusiveChoiceEntry> ecs = selectedExclusiveChoices(state, chapter, selection.exclusiveChoiceIds());
         if (quests.isEmpty() && images.isEmpty() && texts.isEmpty() && ecs.isEmpty()) {
             return CanvasBlueprint.empty();
         }
@@ -205,7 +205,7 @@ public final class CanvasBlueprintController {
         List<CanvasBlueprint.QuestEntry> quests = new ArrayList<>();
         for (String questId : questIds) {
             CompoundTag tag = ClientQuestStateFacade.quest(questId);
-            QuestDefinition definition = ClientQuestDefinitionSnapshots.fromClientTag(questId, tag);
+            QuestDefinition definition = CanvasBlueprintSnapshots.fromClientTag(questId, tag);
             if (definition == null) {
                 continue;
             }
@@ -244,13 +244,13 @@ public final class CanvasBlueprintController {
         return texts;
     }
 
-    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String chapter, Set<String> ecIds) {
-        if (ecIds.isEmpty()) {
+    private static List<CanvasBlueprint.ExclusiveChoiceEntry> selectedExclusiveChoices(TabletUiState state, String chapter, Set<String> exclusiveChoiceIds) {
+        if (exclusiveChoiceIds.isEmpty()) {
             return List.of();
         }
         List<CanvasBlueprint.ExclusiveChoiceEntry> entries = new ArrayList<>();
         for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
-            if (ecIds.contains(ec.id())) {
+            if (exclusiveChoiceIds.contains(ec.id())) {
                 entries.add(new CanvasBlueprint.ExclusiveChoiceEntry(
                         ec.id(), chapter, ec.x(), ec.y(), ec.w(), ec.h(), ec.rotation(),
                         ec.background(), ec.connectionQuestIds(), Set.copyOf(ec.prerequisiteQuestIds()),

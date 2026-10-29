@@ -15,7 +15,7 @@ import com.abo47.questsandstuff.client.tablet.controls.TabletTextTextures;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
-import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTaskEntry;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEntry;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskActionWidgets;
@@ -36,11 +36,11 @@ public final class QuestTaskInlineFields {
     private QuestTaskInlineFields() {
     }
 
-    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, boolean task, int x, int y, int rightX) {
+    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX) {
         renderTaskTitle(parent, state, player, refresh, questId, entry, task, x, y, rightX, TabletColors.TEXT_PRIMARY);
     }
 
-    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, boolean task, int x, int y, int rightX, int color) {
+    public static void renderTaskTitle(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, boolean task, int x, int y, int rightX, int color) {
         boolean renaming = isRenamingTask(state, questId, entry.id(), task);
         int doneW = renaming ? 12 : 0;
         int fieldW = Math.max(18, rightX - x - doneW - (renaming ? 3 : 0));
@@ -90,7 +90,7 @@ public final class QuestTaskInlineFields {
         }
     }
 
-    public static void renderAmountField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, boolean task) {
+    public static void renderAmountField(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestTaskEntry entry, int x, int y, int w, boolean task) {
         int count = task ? Math.max(0, entry.tag().getInt("count")) : 0;
         int amount = QuestTaskDisplayText.amount(entry.json());
         if (task && QuestTaskDisplayText.isManualTask(entry.json())) {
@@ -194,7 +194,7 @@ public final class QuestTaskInlineFields {
         QuestDetailsTransientManager.closeTaskRename(state);
     }
 
-    private static void commitAmount(Player player, String questId, QuestDetailsTaskEntry entry, boolean task, int oldAmount, String rawValue) {
+    private static void commitAmount(Player player, String questId, QuestTaskEntry entry, boolean task, int oldAmount, String rawValue) {
         int parsed = QuestTaskDisplayText.parsePositive(rawValue, oldAmount);
         if (parsed == oldAmount) {
             return;

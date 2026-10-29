@@ -37,7 +37,7 @@ final class CanvasTransformHandleClicks {
             int localY,
             CanvasImageLayer imageHit,
             CanvasTextLayer textHit,
-            CanvasExclusiveChoice ecHit
+            CanvasExclusiveChoice exclusiveChoiceHit
     ) {
         int selectionCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
         if (selectionCount > 1) {
@@ -62,9 +62,9 @@ final class CanvasTransformHandleClicks {
                 && (CanvasRenderer.isCanvasTextResizeHandleHit(state, textHit, localX, localY)
                 || CanvasRenderer.isCanvasTextRotateHandleHit(state, textHit, localX, localY));
         boolean imageTransformHandleHit = imageHit != null && imageTransformHit(canvasViewport, state, imageHit, localX, localY);
-        boolean ecTransformHandleHit = ecHit != null
-                && (CanvasRenderer.isCanvasExclusiveChoiceResizeHandleHit(state, ecHit, localX, localY)
-                || CanvasRenderer.isCanvasExclusiveChoiceRotateHandleHit(state, ecHit, localX, localY));
+        boolean exclusiveChoiceTransformHandleHit = exclusiveChoiceHit != null
+                && (CanvasRenderer.isCanvasExclusiveChoiceResizeHandleHit(state, exclusiveChoiceHit, localX, localY)
+                || CanvasRenderer.isCanvasExclusiveChoiceRotateHandleHit(state, exclusiveChoiceHit, localX, localY));
         if (textTransformHandleHit) {
             state.canvas.canvasTextLastClickId = "";
             elementTransforms.beginTextTransform(textHit, localX, localY);
@@ -76,8 +76,8 @@ final class CanvasTransformHandleClicks {
             refresher.run();
             return true;
         }
-        if (ecTransformHandleHit) {
-            elementTransforms.beginExclusiveChoiceTransform(ecHit, localX, localY);
+        if (exclusiveChoiceTransformHandleHit) {
+            elementTransforms.beginExclusiveChoiceTransform(exclusiveChoiceHit, localX, localY);
             refresher.run();
             return true;
         }
@@ -128,18 +128,18 @@ final class CanvasTransformHandleClicks {
             refresher.run();
             return true;
         }
-        if (ecHit != null) {
+        if (exclusiveChoiceHit != null) {
             if (canvasViewport.ctrlDown()) {
-                CanvasBoxSelectionController.toggleCanvasExclusiveChoiceSelection(state, ecHit.id());
+                CanvasBoxSelectionController.toggleCanvasExclusiveChoiceSelection(state, exclusiveChoiceHit.id());
                 refresher.run();
                 return true;
             }
             if (canvasViewport.shiftDown()) {
-                CanvasRangeSelection.rangeSelect(state, byQuestId, state.canvas.canvasSelectionRangeAnchorKind, state.canvas.canvasSelectionRangeAnchorId, CanvasLayerKind.EXCLUSIVE_CHOICE, ecHit.id());
+                CanvasRangeSelection.rangeSelect(state, byQuestId, state.canvas.canvasSelectionRangeAnchorKind, state.canvas.canvasSelectionRangeAnchorId, CanvasLayerKind.EXCLUSIVE_CHOICE, exclusiveChoiceHit.id());
                 refresher.run();
                 return true;
             }
-            elementTransforms.beginExclusiveChoiceTransform(ecHit, localX, localY);
+            elementTransforms.beginExclusiveChoiceTransform(exclusiveChoiceHit, localX, localY);
             refresher.run();
             return true;
         }

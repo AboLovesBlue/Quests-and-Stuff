@@ -24,7 +24,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
-import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipeChoiceIndex;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerChoiceIndex;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -116,7 +116,7 @@ final class TabletAssets {
         TabletUiPerfProfiler.profile("ui.prewarm.modLogo", TabletAssets::prewarmModLogo);
         TabletUiPerfProfiler.profile("ui.prewarm.fluidEntries", () -> DisplayIconProvider.prewarmFluidEntries());
         TabletUiPerfProfiler.profile("ui.prewarm.entityPreviews", () -> EntityPreviewRenderer.prewarmEntityCache());
-        TabletUiPerfProfiler.profile("ui.prewarm.recipeIndex", () -> RecipeChoiceIndex.prewarm());
+        TabletUiPerfProfiler.profile("ui.prewarm.recipeIndex", () -> RecipePickerChoiceIndex.prewarm());
         TabletUiPerfProfiler.profile("ui.prewarm.recipeCards", () -> CanvasRecipeCardRecipes.prewarm());
     }
 

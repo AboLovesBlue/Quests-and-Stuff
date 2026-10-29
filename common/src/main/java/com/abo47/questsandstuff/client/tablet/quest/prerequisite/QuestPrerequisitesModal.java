@@ -1,6 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
-import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppOpenActions;
 import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
@@ -25,7 +25,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPanel;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
@@ -65,9 +65,9 @@ public final class QuestPrerequisitesModal {
 
         String chapter = TabletStateQueries.selectedChapterName(state);
         PrerequisiteConnectionModel model;
-        if (state.modal.prerequisitesManagerEcMode) {
+        if (state.modal.prerequisitesManagerExclusiveChoiceMode) {
             CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.modal.prerequisitesManagerQuestId);
-            model = PrerequisiteConnectionModel.buildForEc(ec, chapter, state.modal.prerequisitesManagerSearch);
+            model = PrerequisiteConnectionModel.buildForExclusiveChoice(ec, chapter, state.modal.prerequisitesManagerSearch);
         } else {
             String questId = safe(state.modal.prerequisitesManagerQuestId);
             CompoundTag questTag = ClientQuestStateFacade.quest(questId);
@@ -76,7 +76,7 @@ public final class QuestPrerequisitesModal {
         TextFieldWidget search = addSearch(modal, state, refresh, layout, w);
 
         PrerequisiteRowsPanel.add(modal, state, refresh, layout, w, h, model.questId(), model.rows());
-        addPreview(modal, state, model, layout, chapter, state.modal.prerequisitesManagerEcMode ? false : state.modal.prerequisitesManagerExternalMode);
+        addPreview(modal, state, model, layout, chapter, state.modal.prerequisitesManagerExclusiveChoiceMode ? false : state.modal.prerequisitesManagerExternalMode);
 
         if (state.modal.prerequisitesManagerContextOpen && !state.modal.prerequisitesManagerContextPrerequisiteId.isBlank()) {
             addContextDismissLayer(modal, state, refresh, w, h);
@@ -88,7 +88,7 @@ public final class QuestPrerequisitesModal {
     private static void addHeader(WidgetGroup modal, TabletUiState state, Runnable refresh, int w) {
         modal.addWidget(label(8, 6, TabletTranslationKeys.text(QuestTranslationKeys.MODAL_CONNECTIONS_MANAGER), TabletColors.TEXT_PRIMARY));
         int closeAnchorX = w - HEADER_CLOSE_ANCHOR_RIGHT_PAD;
-        if (!state.modal.prerequisitesManagerEcMode) {
+        if (!state.modal.prerequisitesManagerExclusiveChoiceMode) {
             int modeX = headerModeButtonX(w);
             String labelKey = state.modal.prerequisitesManagerExternalMode ? QuestTranslationKeys.CONNECTIONS_MODE_EXTERNAL : QuestTranslationKeys.CONNECTIONS_MODE_LOCAL;
             ButtonWidget mode = ChromeFactory.iconButton(modeX, HEADER_BUTTON_RENDER_Y, HEADER_BUTTON_SIZE, HEADER_BUTTON_SIZE, "open", () -> UiThemeManager.colorForRole(UiThemeManager.ROLE_ICON_DEFAULT), click -> {
@@ -105,7 +105,7 @@ public final class QuestPrerequisitesModal {
             mode.setHoverTooltips(new Component[]{Component.translatable(labelKey)});
             modal.addWidget(mode);
         }
-        TabletModalPanel.addModalClose(modal, closeAnchorX, HEADER_CLOSE_ANCHOR_Y, HEADER_BUTTON_SIZE, state, refresh);
+        ModalPanel.addModalClose(modal, closeAnchorX, HEADER_CLOSE_ANCHOR_Y, HEADER_BUTTON_SIZE, state, refresh);
     }
 
     private static TextFieldWidget addSearch(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW) {
@@ -181,11 +181,11 @@ public final class QuestPrerequisitesModal {
                 refresh.run();
             }));
         } else {
-            boolean direct = ConnectionRenderer.ecIsConnectionDirect(state, chapter, sourceId, targetId);
+            boolean direct = ConnectionRenderer.exclusiveChoiceIsConnectionDirect(state, chapter, sourceId, targetId);
             sections.add(ContextMenuSection.ARRANGE, new ContextAction(
                     direct ? I18n.get("ui.questsandstuff.context.connection_grid") : I18n.get("ui.questsandstuff.context.connection_direct"),
                     "connect", TabletColors.INTERACTIVE, () -> {
-                EditorCanvasCommandClient.runEcConnectionModeAction(player, state, sourceId, targetId, !direct);
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionModeAction(player, state, sourceId, targetId, !direct);
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=toggle_ec_connection_mode source={} target={}", sourceId, targetId);
                 refresh.run();
@@ -195,7 +195,7 @@ public final class QuestPrerequisitesModal {
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(
                 I18n.get("ui.questsandstuff.context.connection_color"),
                 "style_color", TabletColors.INTERACTIVE, () -> {
-            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
+            AppOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
             refresh.run();
@@ -231,8 +231,8 @@ public final class QuestPrerequisitesModal {
             return;
         }
         String chapter = TabletStateQueries.selectedChapterName(state);
-        if (state.modal.prerequisitesManagerEcMode) {
-            removeEcConnection(player, state, row);
+        if (state.modal.prerequisitesManagerExclusiveChoiceMode) {
+            removeExclusiveChoiceConnection(player, state, row);
         } else {
             EditorCanvasCommandClient.runPrerequisiteAction(player, row.targetId(), row.sourceId(), false);
         }
@@ -241,7 +241,7 @@ public final class QuestPrerequisitesModal {
         QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager action=remove_connection source={} target={}", row.sourceId(), row.targetId());
     }
 
-    private static void removeEcConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
+    private static void removeExclusiveChoiceConnection(Player player, TabletUiState state, PrerequisiteConnectionRow row) {
         String chapter = TabletStateQueries.selectedChapterName(state);
         CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, state.modal.prerequisitesManagerQuestId);
         if (ec == null) {

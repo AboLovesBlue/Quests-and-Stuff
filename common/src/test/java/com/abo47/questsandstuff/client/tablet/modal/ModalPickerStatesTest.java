@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
-import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.target.ModalPickerStates;
 
 class ModalPickerStatesTest {
@@ -167,54 +167,54 @@ class ModalPickerStatesTest {
     @Test
     void iconModeCycleKeepsOneModeActiveAndResetsScroll() {
         TabletUiState state = new TabletUiState();
-        state.pickers.iconMode = IconPickerMode.ITEMS;
+        state.pickers.iconMode = ModalIconPickerMode.ITEMS;
         state.pickers.iconScroll = 24;
 
-        IconPickerMode.cycle(state, true, true, false, 1);
+        ModalIconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.TAGS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.TAGS, state.pickers.iconMode);
         assertEquals(0, state.pickers.iconScroll);
         assertEquals("mode_tags", state.pickers.iconMode.icon());
         assertEquals("tags", state.pickers.iconMode.logName());
 
         state.pickers.iconScroll = 18;
-        IconPickerMode.cycle(state, true, true, false, 1);
+        ModalIconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.FLUIDS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.FLUIDS, state.pickers.iconMode);
         assertEquals(0, state.pickers.iconScroll);
         assertEquals("mode_fluids", state.pickers.iconMode.icon());
 
-        IconPickerMode.cycle(state, true, true, false, 1);
+        ModalIconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.ENTITIES, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ENTITIES, state.pickers.iconMode);
         assertEquals("entity", state.pickers.iconMode.icon());
 
-        IconPickerMode.cycle(state, true, true, false, 1);
+        ModalIconPickerMode.cycle(state, true, true, false, 1);
 
-        assertEquals(IconPickerMode.INVENTORY, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.INVENTORY, state.pickers.iconMode);
         assertEquals("mode_inventory", state.pickers.iconMode.icon());
-        IconPickerMode[] cycle = IconPickerMode.cycleForContext(true, true, false);
-        assertEquals(4, IconPickerMode.cycleIndex(state.pickers.iconMode, cycle));
-        assertEquals("mode_inventory", IconPickerMode.iconAt(cycle, 4));
+        ModalIconPickerMode[] cycle = ModalIconPickerMode.cycleForContext(true, true, false);
+        assertEquals(4, ModalIconPickerMode.cycleIndex(state.pickers.iconMode, cycle));
+        assertEquals("mode_inventory", ModalIconPickerMode.iconAt(cycle, 4));
 
-        IconPickerMode.cycle(state, true, true, false, -1);
+        ModalIconPickerMode.cycle(state, true, true, false, -1);
 
-        assertEquals(IconPickerMode.ENTITIES, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ENTITIES, state.pickers.iconMode);
     }
 
     @Test
     void useItemIconModeCyclesUsableItemsBeforeAllItems() {
         TabletUiState state = new TabletUiState();
-        state.pickers.iconMode = IconPickerMode.USABLE_ITEMS;
+        state.pickers.iconMode = ModalIconPickerMode.USABLE_ITEMS;
 
-        IconPickerMode.cycle(state, false, true, true, 1);
+        ModalIconPickerMode.cycle(state, false, true, true, 1);
 
-        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ITEMS, state.pickers.iconMode);
         assertEquals("items", state.pickers.iconMode.logName());
 
-        IconPickerMode.cycle(state, false, true, true, -1);
+        ModalIconPickerMode.cycle(state, false, true, true, -1);
 
-        assertEquals(IconPickerMode.USABLE_ITEMS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.USABLE_ITEMS, state.pickers.iconMode);
         assertEquals("usable_items", state.pickers.iconMode.logName());
         assertEquals("send-horizontal", state.pickers.iconMode.icon());
     }
@@ -222,16 +222,16 @@ class ModalPickerStatesTest {
     @Test
     void modelItemIconModeOnlyCyclesItemsAndTags() {
         TabletUiState state = new TabletUiState();
-        state.pickers.iconMode = IconPickerMode.ENTITIES;
+        state.pickers.iconMode = ModalIconPickerMode.ENTITIES;
 
-        IconPickerMode.cycleModelItems(state, 1);
+        ModalIconPickerMode.cycleModelItems(state, 1);
 
-        assertEquals(IconPickerMode.TAGS, state.pickers.iconMode);
-        assertEquals(1, IconPickerMode.cycleIndex(state.pickers.iconMode, IconPickerMode.modelItemCycle()));
-        assertEquals("mode_tags", IconPickerMode.iconAt(IconPickerMode.modelItemCycle(), 1));
+        assertEquals(ModalIconPickerMode.TAGS, state.pickers.iconMode);
+        assertEquals(1, ModalIconPickerMode.cycleIndex(state.pickers.iconMode, ModalIconPickerMode.modelItemCycle()));
+        assertEquals("mode_tags", ModalIconPickerMode.iconAt(ModalIconPickerMode.modelItemCycle(), 1));
 
-        IconPickerMode.cycleModelItems(state, 1);
+        ModalIconPickerMode.cycleModelItems(state, 1);
 
-        assertEquals(IconPickerMode.ITEMS, state.pickers.iconMode);
+        assertEquals(ModalIconPickerMode.ITEMS, state.pickers.iconMode);
     }
 }

@@ -11,31 +11,31 @@ import com.google.gson.JsonObject;
 
 public final class QuestTaskTypeCatalog {
     private static final String SCAN_ENTITY_TYPE = "scan_entity";
-    private static final List<QuestDetailsTypeChoice> TASK_CHOICES = withoutUnavailable(List.of(
-            task(QuestTranslationKeys.TYPE_ACQUIRE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, TaskJsonDefaults::itemTask, "item"),
-            task(QuestTranslationKeys.TYPE_USE_ITEM, "item_use", "item_use", QuestTaskEditFlow.SIMPLE_ICON_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_INTERACT_ITEM, "item_interact", "item_interact", QuestTaskEditFlow.SIMPLE_ICON_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_KILL_ENTITY, "kill_entity", "kill_entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_SCAN_ENTITY, "scan_entity", "scan", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_INTERACT_ENTITY, "entity_interact", "entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_ADVANCEMENT, "advancement", "trophy", QuestTaskEditFlow.ADVANCEMENT_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_RECIPE, "recipe", "recipe", QuestTaskEditFlow.RECIPE_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_VISIT_STRUCTURE, "structure", "pyramid", QuestTaskEditFlow.STRUCTURE_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_INTERACT_BLOCK, "block_interact", "box", QuestTaskEditFlow.BLOCK_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_STAT, "stat", "stat", QuestTaskEditFlow.STAT_PICKER, TaskJsonDefaults::statTask, "target"),
-            task(QuestTranslationKeys.TYPE_XP, "xp", "xp", QuestTaskEditFlow.XP_PICKER, TaskJsonDefaults::xpTask, "amount", "mode", "collection"),
-            task(QuestTranslationKeys.TYPE_MANUAL_CHECK, "check", "manual_check", QuestTaskEditFlow.DIRECT_JSON, TaskJsonDefaults::checkTask, "target"),
-            task(QuestTranslationKeys.TYPE_VISIT_BIOME, "biome", "biome", QuestTaskEditFlow.BIOME_PICKER, TaskJsonDefaults::simpleDefaultTask, "target"),
-            task(QuestTranslationKeys.TYPE_VISIT_LOCATION, "location", "orbit", QuestTaskEditFlow.DIMENSION_PICKER, TaskJsonDefaults::locationTask, "dimension")
+    private static final List<QuestTaskTypeChoice> TASK_CHOICES = withoutUnavailable(List.of(
+            task(QuestTranslationKeys.TYPE_ACQUIRE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, QuestTaskJsonDefaults::itemTask, "item"),
+            task(QuestTranslationKeys.TYPE_USE_ITEM, "item_use", "item_use", QuestTaskEditFlow.SIMPLE_ICON_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_INTERACT_ITEM, "item_interact", "item_interact", QuestTaskEditFlow.SIMPLE_ICON_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_KILL_ENTITY, "kill_entity", "kill_entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_SCAN_ENTITY, "scan_entity", "scan", QuestTaskEditFlow.ENTITY_ICON_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_INTERACT_ENTITY, "entity_interact", "entity", QuestTaskEditFlow.ENTITY_ICON_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_ADVANCEMENT, "advancement", "trophy", QuestTaskEditFlow.ADVANCEMENT_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_RECIPE, "recipe", "recipe", QuestTaskEditFlow.RECIPE_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_VISIT_STRUCTURE, "structure", "pyramid", QuestTaskEditFlow.STRUCTURE_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_INTERACT_BLOCK, "block_interact", "box", QuestTaskEditFlow.BLOCK_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_STAT, "stat", "stat", QuestTaskEditFlow.STAT_PICKER, QuestTaskJsonDefaults::statTask, "target"),
+            task(QuestTranslationKeys.TYPE_XP, "xp", "xp", QuestTaskEditFlow.XP_PICKER, QuestTaskJsonDefaults::xpTask, "amount", "mode", "collection"),
+            task(QuestTranslationKeys.TYPE_MANUAL_CHECK, "check", "manual_check", QuestTaskEditFlow.DIRECT_JSON, QuestTaskJsonDefaults::checkTask, "target"),
+            task(QuestTranslationKeys.TYPE_VISIT_BIOME, "biome", "biome", QuestTaskEditFlow.BIOME_PICKER, QuestTaskJsonDefaults::simpleDefaultTask, "target"),
+            task(QuestTranslationKeys.TYPE_VISIT_LOCATION, "location", "orbit", QuestTaskEditFlow.DIMENSION_PICKER, QuestTaskJsonDefaults::locationTask, "dimension")
     ));
-    private static final List<QuestDetailsTypeChoice> REWARD_CHOICES = List.of(
-            reward(QuestTranslationKeys.TYPE_GIVE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, TaskJsonDefaults::itemReward, "item"),
-            reward(QuestTranslationKeys.TYPE_XP, "xp", "xp", QuestTaskEditFlow.XP_PICKER, TaskJsonDefaults::xpReward, "amount", "mode"),
-            reward(QuestTranslationKeys.TYPE_COMMAND, "command", "open", QuestTaskEditFlow.COMMAND_EDITOR, TaskJsonDefaults::commandReward, "command"),
-            reward(QuestTranslationKeys.TYPE_LOOT_TABLE, "loot_table", "icon", QuestTaskEditFlow.LOOT_TABLE_PICKER, TaskJsonDefaults::lootTableReward, "loot_table")
+    private static final List<QuestTaskTypeChoice> REWARD_CHOICES = List.of(
+            reward(QuestTranslationKeys.TYPE_GIVE_ITEM, "item", "icon", QuestTaskEditFlow.ITEM_SOURCE_PICKER, QuestTaskJsonDefaults::itemReward, "item"),
+            reward(QuestTranslationKeys.TYPE_XP, "xp", "xp", QuestTaskEditFlow.XP_PICKER, QuestTaskJsonDefaults::xpReward, "amount", "mode"),
+            reward(QuestTranslationKeys.TYPE_COMMAND, "command", "open", QuestTaskEditFlow.COMMAND_EDITOR, QuestTaskJsonDefaults::commandReward, "command"),
+            reward(QuestTranslationKeys.TYPE_LOOT_TABLE, "loot_table", "icon", QuestTaskEditFlow.LOOT_TABLE_PICKER, QuestTaskJsonDefaults::lootTableReward, "loot_table")
     );
 
-    private static List<QuestDetailsTypeChoice> withoutUnavailable(List<QuestDetailsTypeChoice> choices) {
+    private static List<QuestTaskTypeChoice> withoutUnavailable(List<QuestTaskTypeChoice> choices) {
         if (OresAndStuffCompat.isAvailable()) {
             return choices;
         }
@@ -47,33 +47,33 @@ public final class QuestTaskTypeCatalog {
     private QuestTaskTypeCatalog() {
     }
 
-    public static List<QuestDetailsTypeChoice> taskChoices() {
+    public static List<QuestTaskTypeChoice> taskChoices() {
         return TASK_CHOICES;
     }
 
-    public static List<QuestDetailsTypeChoice> rewardChoices() {
+    public static List<QuestTaskTypeChoice> rewardChoices() {
         return REWARD_CHOICES;
     }
 
-    public static QuestDetailsTypeChoice taskChoice(String typePath) {
+    public static QuestTaskTypeChoice taskChoice(String typePath) {
         return choice(TASK_CHOICES, typePath);
     }
 
-    public static QuestDetailsTypeChoice rewardChoice(String typePath) {
+    public static QuestTaskTypeChoice rewardChoice(String typePath) {
         return choice(REWARD_CHOICES, typePath);
     }
 
-    private static QuestDetailsTypeChoice task(String labelKey, String type, String icon, QuestTaskEditFlow editFlow, BiFunction<String, String, JsonObject> defaultJsonFactory, String... requiredJsonFields) {
-        return new QuestDetailsTypeChoice(labelKey, type, icon, editFlow, id -> defaultJsonFactory.apply(id, type), List.of(requiredJsonFields));
+    private static QuestTaskTypeChoice task(String labelKey, String type, String icon, QuestTaskEditFlow editFlow, BiFunction<String, String, JsonObject> defaultJsonFactory, String... requiredJsonFields) {
+        return new QuestTaskTypeChoice(labelKey, type, icon, editFlow, id -> defaultJsonFactory.apply(id, type), List.of(requiredJsonFields));
     }
 
-    private static QuestDetailsTypeChoice reward(String labelKey, String type, String icon, QuestTaskEditFlow editFlow, BiFunction<String, String, JsonObject> defaultJsonFactory, String... requiredJsonFields) {
-        return new QuestDetailsTypeChoice(labelKey, type, icon, editFlow, id -> defaultJsonFactory.apply(id, type), List.of(requiredJsonFields));
+    private static QuestTaskTypeChoice reward(String labelKey, String type, String icon, QuestTaskEditFlow editFlow, BiFunction<String, String, JsonObject> defaultJsonFactory, String... requiredJsonFields) {
+        return new QuestTaskTypeChoice(labelKey, type, icon, editFlow, id -> defaultJsonFactory.apply(id, type), List.of(requiredJsonFields));
     }
 
-    private static QuestDetailsTypeChoice choice(List<QuestDetailsTypeChoice> choices, String typePath) {
-        String normalized = TaskJsonFactory.typePath(typePath);
-        for (QuestDetailsTypeChoice choice : choices) {
+    private static QuestTaskTypeChoice choice(List<QuestTaskTypeChoice> choices, String typePath) {
+        String normalized = QuestTaskJsonFactory.typePath(typePath);
+        for (QuestTaskTypeChoice choice : choices) {
             if (choice.type().equals(normalized)) {
                 return choice;
             }

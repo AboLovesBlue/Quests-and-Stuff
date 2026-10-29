@@ -117,7 +117,7 @@ public final class SyncKeys {
         public static final String ALLOCATED_IDS = "allocated_ids";
         public static final String IMAGES = "images";
         public static final String TEXTS = "texts";
-        public static final String ECS = "ecs";
+        public static final String EXCLUSIVE_CHOICES = "ecs";
 
         private EditorSelection() {
         }

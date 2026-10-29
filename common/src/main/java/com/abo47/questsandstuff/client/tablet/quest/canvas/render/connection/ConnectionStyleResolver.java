@@ -38,8 +38,8 @@ final class ConnectionStyleResolver {
     }
 
     static boolean isConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        if (isEcId(state, chapter, sourceQuestId) || isEcId(state, chapter, targetQuestId)) {
-            return ecIsConnectionHidden(state, chapter, sourceQuestId, targetQuestId);
+        if (isExclusiveChoiceId(state, chapter, sourceQuestId) || isExclusiveChoiceId(state, chapter, targetQuestId)) {
+            return exclusiveChoiceIsConnectionHidden(state, chapter, sourceQuestId, targetQuestId);
         }
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
         if (target != null && target.contains(SyncKeys.Quest.HIDDEN_CONNECTIONS, Tag.TAG_LIST)) {
@@ -55,8 +55,8 @@ final class ConnectionStyleResolver {
     }
 
     static boolean isConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId, CompoundTag target) {
-        if (isEcId(state, chapter, sourceQuestId) || isEcId(state, chapter, targetQuestId)) {
-            return ecIsConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
+        if (isExclusiveChoiceId(state, chapter, sourceQuestId) || isExclusiveChoiceId(state, chapter, targetQuestId)) {
+            return exclusiveChoiceIsConnectionDirect(state, chapter, sourceQuestId, targetQuestId);
         }
         String metadataKey = QuestConnectionMetadata.metadataKey(sourceQuestId);
         if (target != null && target.contains(SyncKeys.Quest.CONNECTION_MODES, Tag.TAG_COMPOUND)) {
@@ -116,35 +116,35 @@ final class ConnectionStyleResolver {
         return ConnectionRenderStyle.fromMetadata(metadata(state, chapter, sourceQuestId, targetQuestId, target));
     }
 
-    static CanvasExclusiveChoice findEc(TabletUiState state, String chapter, String id) {
+    static CanvasExclusiveChoice findExclusiveChoice(TabletUiState state, String chapter, String id) {
         return CanvasLayerMutations.findCanvasExclusiveChoice(state, chapter, id);
     }
 
-    static boolean isEcId(TabletUiState state, String chapter, String id) {
-        return findEc(state, chapter, id) != null;
+    static boolean isExclusiveChoiceId(TabletUiState state, String chapter, String id) {
+        return findExclusiveChoice(state, chapter, id) != null;
     }
 
-    private static final class EcEndpoint {
+    private static final class ExclusiveChoiceEndpoint {
         final CanvasExclusiveChoice ec;
         final String other;
 
-        EcEndpoint(CanvasExclusiveChoice ec, String other) {
+        ExclusiveChoiceEndpoint(CanvasExclusiveChoice ec, String other) {
             this.ec = ec;
             this.other = other;
         }
     }
 
-    private static EcEndpoint ecEndpoint(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        CanvasExclusiveChoice ec = findEc(state, chapter, sourceQuestId);
+    private static ExclusiveChoiceEndpoint exclusiveChoiceEndpoint(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        CanvasExclusiveChoice ec = findExclusiveChoice(state, chapter, sourceQuestId);
         if (ec != null) {
-            return new EcEndpoint(ec, targetQuestId);
+            return new ExclusiveChoiceEndpoint(ec, targetQuestId);
         }
-        ec = findEc(state, chapter, targetQuestId);
-        return ec != null ? new EcEndpoint(ec, sourceQuestId) : new EcEndpoint(null, null);
+        ec = findExclusiveChoice(state, chapter, targetQuestId);
+        return ec != null ? new ExclusiveChoiceEndpoint(ec, sourceQuestId) : new ExclusiveChoiceEndpoint(null, null);
     }
 
-    static int ecConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+    static int exclusiveChoiceConnectionColor(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        ExclusiveChoiceEndpoint e = exclusiveChoiceEndpoint(state, chapter, sourceQuestId, targetQuestId);
         if (e.ec != null) {
             Integer color = e.ec.connectionColors().get(e.other);
             if (color != null) return color;
@@ -152,8 +152,8 @@ final class ConnectionStyleResolver {
         return genericColor(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    static boolean ecIsConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+    static boolean exclusiveChoiceIsConnectionDirect(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        ExclusiveChoiceEndpoint e = exclusiveChoiceEndpoint(state, chapter, sourceQuestId, targetQuestId);
         if (e.ec != null) {
             String mode = e.ec.connectionModes().get(e.other);
             if (mode != null) {
@@ -163,16 +163,16 @@ final class ConnectionStyleResolver {
         return genericGrid(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    static boolean ecIsConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+    static boolean exclusiveChoiceIsConnectionHidden(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        ExclusiveChoiceEndpoint e = exclusiveChoiceEndpoint(state, chapter, sourceQuestId, targetQuestId);
         if (e.ec != null && e.ec.hiddenConnections().contains(e.other)) {
             return true;
         }
         return genericHidden(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    static String ecConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+    static String exclusiveChoiceConnectionTexture(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        ExclusiveChoiceEndpoint e = exclusiveChoiceEndpoint(state, chapter, sourceQuestId, targetQuestId);
         if (e.ec != null) {
             String texture = e.ec.connectionTextures().get(e.other);
             if (texture != null) return texture;
@@ -180,8 +180,8 @@ final class ConnectionStyleResolver {
         return genericTexture(state, chapter, sourceQuestId, targetQuestId);
     }
 
-    static int ecConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
-        EcEndpoint e = ecEndpoint(state, chapter, sourceQuestId, targetQuestId);
+    static int exclusiveChoiceConnectionTextureSpacing(TabletUiState state, String chapter, String sourceQuestId, String targetQuestId) {
+        ExclusiveChoiceEndpoint e = exclusiveChoiceEndpoint(state, chapter, sourceQuestId, targetQuestId);
         if (e.ec != null) {
             Integer spacing = e.ec.connectionTextureSpacings().get(e.other);
             if (spacing != null) return spacing;

@@ -1,0 +1,80 @@
+package com.abo47.questsandstuff.client.tablet.modal.pickers;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
+import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
+
+public final class DimensionPickerModal {
+    private DimensionPickerModal() {
+    }
+
+    public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
+        return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
+                new ResourceListPickerModal.Options(
+                        ModalWindowManager.ModalType.DIMENSION_PICKER,
+                        TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_DIMENSION),
+                        TabletTranslationKeys.text(QuestTranslationKeys.NO_DIMENSIONS),
+                        "dimension",
+                        DimensionPickerModal::dimensions,
+                        DimensionPickerModal::displayName,
+                        QuestDetailsWindow::applyDimensionPick,
+                        "minecraft:compass",
+                        24,
+                        48,
+                        150,
+                        80,
+                        80
+                ));
+    }
+
+    private static List<String> dimensions(String query) {
+        Set<String> found = new LinkedHashSet<>();
+        if (Minecraft.getInstance().getConnection() != null) {
+            for (ResourceKey<Level> key : Minecraft.getInstance().getConnection().levels()) {
+                found.add(key.location().toString());
+            }
+        }
+        if (found.isEmpty()) {
+            found.add("minecraft:overworld");
+            found.add("minecraft:the_nether");
+            found.add("minecraft:the_end");
+        }
+        List<String> values = new ArrayList<>(found);
+        values.sort(Comparator.naturalOrder());
+        if (SearchFilter.normalize(query).isBlank()) {
+            return values;
+        }
+        return values.stream().filter(value -> SearchFilter.matches(query, value, displayName(value))).toList();
+    }
+
+    private static String displayName(String dimension) {
+        if ("minecraft:overworld".equals(dimension)) {
+            return "Overworld";
+        }
+        if ("minecraft:the_nether".equals(dimension)) {
+            return "The Nether";
+        }
+        if ("minecraft:the_end".equals(dimension)) {
+            return "The End";
+        }
+        return DisplayNameFormatter.resourceLeaf(dimension);
+    }
+}

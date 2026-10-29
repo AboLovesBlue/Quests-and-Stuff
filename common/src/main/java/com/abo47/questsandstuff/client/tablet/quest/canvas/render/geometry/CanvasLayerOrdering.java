@@ -172,8 +172,8 @@ public final class CanvasLayerOrdering {
         return order(orderKeys).resolveElementHit(quest, image, text, exclusiveChoice);
     }
 
-    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String ecId, boolean front) {
-        moveLayer(state, chapter, exclusiveChoiceKey(ecId), front);
+    public static void moveExclusiveChoiceLayer(TabletUiState state, String chapter, String exclusiveChoiceId, boolean front) {
+        moveLayer(state, chapter, exclusiveChoiceKey(exclusiveChoiceId), front);
     }
 
     public static void ensurePresent(TabletUiState state, String chapter, String key) {
@@ -234,8 +234,8 @@ public final class CanvasLayerOrdering {
         return CanvasLayerKey.text(textId).orderKey();
     }
 
-    public static String exclusiveChoiceKey(String ecId) {
-        return CanvasLayerKey.exclusiveChoice(ecId).orderKey();
+    public static String exclusiveChoiceKey(String exclusiveChoiceId) {
+        return CanvasLayerKey.exclusiveChoice(exclusiveChoiceId).orderKey();
     }
 
     public static String connectionKey(String connectionId) {

@@ -4,7 +4,7 @@ import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
-import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalIconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
@@ -142,7 +142,7 @@ public final class TabletModalState {
         state.modal.modalQuestBackgroundGrayscale = false;
         state.modal.modalQuestCompletionHudBackgroundTarget = "";
         state.modal.modalQuestCompletionHudBackgroundTargets.clear();
-        state.modal.modalEcBackgroundTarget = "";
+        state.modal.modalExclusiveChoiceBackgroundTarget = "";
         state.modal.modalHudBackgroundTarget = "";
         state.modal.modalQuestCompletionSoundTarget = "";
         state.modal.modalQuestCompletionSoundTargets.clear();
@@ -188,7 +188,7 @@ public final class TabletModalState {
         state.modal.hudRemoveConfirmArmed = false;
         state.pickers.iconScrollDragging = false;
         state.pickers.iconSearchFocused = false;
-        IconPickerMode.reset(state);
+        ModalIconPickerMode.reset(state);
         state.pickers.biomeSearchFocused = false;
         state.pickers.biomeScrollDragging = false;
         state.pickers.advancementSearchFocused = false;

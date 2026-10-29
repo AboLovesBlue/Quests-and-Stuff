@@ -19,8 +19,7 @@ final class QuestTaskListInteractions {
     }
 
     static void select(TabletUiState state, String kind, String id) {
-        state.questDetails.questDetailsSelectedTaskKind = "tasks".equals(kind) ? "task" : kind;
-        state.questDetails.questDetailsSelectedTaskKind = "rewards".equals(kind) ? "reward" : state.questDetails.questDetailsSelectedTaskKind;
+        state.questDetails.questDetailsSelectedTaskKind = TaskSections.normalize(kind);
         state.questDetails.questDetailsSelectedTaskId = id == null ? "" : id;
     }
 
@@ -55,7 +54,7 @@ final class QuestTaskListInteractions {
         state.questDetails.questDetailsDescriptionSelection.imageIds().clear();
         state.questDetails.questDetailsTaskDragPending = true;
         state.questDetails.questDetailsTaskDragActive = false;
-        state.questDetails.questDetailsTaskDragKind = ("task".equals(kind) || "tasks".equals(kind)) ? "tasks" : "rewards";
+        state.questDetails.questDetailsTaskDragKind = TaskSections.isTask(kind) ? "tasks" : "rewards";
         state.questDetails.questDetailsTaskDragId = id;
         state.questDetails.questDetailsTaskDragStartX = (int) Math.round(mouseX);
         state.questDetails.questDetailsTaskDragStartY = (int) Math.round(mouseY);

@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.reward.QuestRewardDefinition;
 import com.abo47.questsandstuff.quest.model.task.QuestTaskDefinition;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 import com.google.gson.JsonParser;
 
@@ -38,7 +39,7 @@ public final class QuestContentEditService {
         service.captureUndo(session);
         Map<String, QuestTaskDefinition> tasks = new LinkedHashMap<>(source.tasks());
         tasks.put(task.id(), task);
-        updateQuest(player, session, QuestDefinitionEdits.withTasks(source, tasks));
+        updateQuest(service, player, session, QuestDefinitionEdits.withTasks(source, tasks));
     }
 
     public void removeQuestTask(ServerPlayer player, String questId, String taskId) {
@@ -52,7 +53,7 @@ public final class QuestContentEditService {
         service.captureUndo(session);
         Map<String, QuestTaskDefinition> tasks = new LinkedHashMap<>(source.tasks());
         tasks.remove(normalizedTask);
-        updateQuest(player, session, QuestDefinitionEdits.withTasks(source, tasks));
+        updateQuest(service, player, session, QuestDefinitionEdits.withTasks(source, tasks));
     }
 
     public void moveQuestTask(ServerPlayer player, String questId, String taskId, int offset) {
@@ -67,7 +68,7 @@ public final class QuestContentEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        updateQuest(player, session, QuestDefinitionEdits.withTasks(source, moved));
+        updateQuest(service, player, session, QuestDefinitionEdits.withTasks(source, moved));
     }
 
     public void putQuestReward(ServerPlayer player, String questId, String rewardJson) {
@@ -84,7 +85,7 @@ public final class QuestContentEditService {
         service.captureUndo(session);
         Map<String, QuestRewardDefinition> rewards = new LinkedHashMap<>(source.rewards());
         rewards.put(reward.id(), reward);
-        updateQuest(player, session, QuestDefinitionEdits.withRewards(source, rewards));
+        updateQuest(service, player, session, QuestDefinitionEdits.withRewards(source, rewards));
     }
 
     public void removeQuestReward(ServerPlayer player, String questId, String rewardId) {
@@ -98,7 +99,7 @@ public final class QuestContentEditService {
         service.captureUndo(session);
         Map<String, QuestRewardDefinition> rewards = new LinkedHashMap<>(source.rewards());
         rewards.remove(normalizedReward);
-        updateQuest(player, session, QuestDefinitionEdits.withRewards(source, rewards));
+        updateQuest(service, player, session, QuestDefinitionEdits.withRewards(source, rewards));
     }
 
     public void moveQuestReward(ServerPlayer player, String questId, String rewardId, int offset) {
@@ -113,15 +114,15 @@ public final class QuestContentEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        updateQuest(player, session, QuestDefinitionEdits.withRewards(source, moved));
+        updateQuest(service, player, session, QuestDefinitionEdits.withRewards(source, moved));
     }
 
-    private void updateQuest(ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
+    static void updateQuest(EditorSessionService service, ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
         service.definitionStore().upsert(updated);
         service.definitionStore().saveNow(updated.id());
         session.currentQuest = updated.id();
         service.postMutation(player);
-        service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", updated);
+        service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), SyncKeys.EditorAction.UPDATE, updated);
     }
 
     private static QuestTaskDefinition parseTask(String taskJson) {

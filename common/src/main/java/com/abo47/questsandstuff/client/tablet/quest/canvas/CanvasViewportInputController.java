@@ -196,28 +196,28 @@ final class CanvasViewportInputController {
 
         if (state.canvas.draggingCanvasImage || state.canvas.resizingCanvasImage || state.canvas.rotatingCanvasImage) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
-            CanvasLayerMutations.persistCanvasImage(state, chapter, state.canvas.canvasSelection.primaryImageId());
-            CanvasTransformSessions.clearMainCanvasSession(state);
-            refresher.run();
-            return true;
+            String imageId = state.canvas.canvasSelection.primaryImageId();
+            return commitElementTransform(state, refresher, () -> {
+                CanvasLayerMutations.commitTransientCanvasImage(state, chapter, imageId);
+                CanvasLayerMutations.persistCanvasImage(state, chapter, imageId);
+            });
         }
         if (state.canvas.draggingCanvasText || state.canvas.resizingCanvasText || state.canvas.rotatingCanvasText) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
-            CanvasLayerMutations.persistCanvasText(state, chapter, state.canvas.canvasSelection.primaryTextId());
-            CanvasTransformSessions.clearMainCanvasSession(state);
-            refresher.run();
-            return true;
+            String textId = state.canvas.canvasSelection.primaryTextId();
+            return commitElementTransform(state, refresher, () -> {
+                CanvasLayerMutations.commitTransientCanvasText(state, chapter, textId);
+                CanvasLayerMutations.persistCanvasText(state, chapter, textId);
+            });
         }
 
         if (state.canvas.draggingCanvasExclusiveChoice || state.canvas.resizingCanvasExclusiveChoice || state.canvas.rotatingCanvasExclusiveChoice) {
             String chapter = TabletStateQueries.selectedChapterName(state);
-            CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
-            CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, state.canvas.canvasSelection.primaryEcId());
-            CanvasTransformSessions.clearMainCanvasSession(state);
-            refresher.run();
-            return true;
+            String ecId = state.canvas.canvasSelection.primaryEcId();
+            return commitElementTransform(state, refresher, () -> {
+                CanvasLayerMutations.commitTransientCanvasExclusiveChoice(state, chapter, ecId);
+                CanvasLayerMutations.persistCanvasExclusiveChoice(state, chapter, ecId);
+            });
         }
 
         if (state.canvas.draggingSelection) {
@@ -292,6 +292,13 @@ final class CanvasViewportInputController {
         }
 
         return viewport.callSuperMouseReleased(mouseX, mouseY, button);
+    }
+
+    private static boolean commitElementTransform(TabletUiState state, Runnable refresher, Runnable commitAndPersist) {
+        commitAndPersist.run();
+        CanvasTransformSessions.clearMainCanvasSession(state);
+        refresher.run();
+        return true;
     }
 
     private static void persistSelectedCanvasLayers(TabletUiState state) {

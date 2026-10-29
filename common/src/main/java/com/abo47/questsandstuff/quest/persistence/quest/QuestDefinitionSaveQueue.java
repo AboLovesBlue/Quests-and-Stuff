@@ -3,8 +3,8 @@ package com.abo47.questsandstuff.quest.persistence.quest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -24,10 +24,12 @@ import com.google.gson.JsonObject;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.cloneDefinition;
 
 final class QuestDefinitionSaveQueue {
+    private static final long DEBOUNCE_MS = 600;
+
     private final Path questsDir;
     private final Gson gson;
     private final ScheduledExecutorService saveExecutor = Executors.newSingleThreadScheduledExecutor();
-    private final Map<String, ScheduledFuture<?>> delayedSaves = new HashMap<>();
+    private final Map<String, ScheduledFuture<?>> delayedSaves = new ConcurrentHashMap<>();
 
     QuestDefinitionSaveQueue(Path questsDir, Gson gson) {
         this.questsDir = questsDir;
@@ -51,7 +53,7 @@ final class QuestDefinitionSaveQueue {
             return;
         }
         QuestDefinition snapshot = cloneDefinition(definition);
-        delayedSaves.put(questId, saveExecutor.schedule(() -> saveSnapshot(questId, snapshot), 600, TimeUnit.MILLISECONDS));
+        delayedSaves.put(questId, saveExecutor.schedule(() -> saveSnapshot(questId, snapshot), DEBOUNCE_MS, TimeUnit.MILLISECONDS));
     }
 
     void saveNow(String questId, QuestDefinition definition) {
@@ -59,7 +61,8 @@ final class QuestDefinitionSaveQueue {
         if (definition == null) {
             return;
         }
-        saveSnapshot(questId, cloneDefinition(definition));
+        QuestDefinition snapshot = cloneDefinition(definition);
+        saveExecutor.schedule(() -> saveSnapshot(questId, snapshot), 0, TimeUnit.MILLISECONDS);
     }
 
     void saveAll(Map<String, QuestDefinition> snapshot) {

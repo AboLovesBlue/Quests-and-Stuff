@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.quest.details.task.QuestDetailsTasksPanel;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.TaskSections;
 import com.abo47.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -136,7 +137,7 @@ public final class QuestDetailsLayerWidget extends WidgetGroup {
             return true;
         }
         if (!detailsContextWasOpen && state.questDetails.questDetailsContextOpen) {
-            return "task".equals(state.questDetails.questDetailsContextKind) || "reward".equals(state.questDetails.questDetailsContextKind);
+            return TaskSections.isTask(state.questDetails.questDetailsContextKind) || TaskSections.isReward(state.questDetails.questDetailsContextKind);
         }
         return false;
     }

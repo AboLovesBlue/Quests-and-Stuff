@@ -27,6 +27,8 @@ public final class HudConstants {
     public static final int DEFAULT_COMPLETION_HEIGHT_SCALE = 147;
     public static final int DEFAULT_PINNED_SCALE = 104;
     public static final int DEFAULT_PINNED_HEIGHT_SCALE = 115;
+    public static final int HUD_BG_ALPHA = 180;
+    public static final int HUD_BORDER_ALPHA = 160;
 
     // Layout edit screen
     public static final int EDIT_BUTTON_W = 64;

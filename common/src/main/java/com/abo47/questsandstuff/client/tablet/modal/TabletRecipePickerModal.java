@@ -18,7 +18,7 @@ public final class TabletRecipePickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_RECIPE), w, state, refresh);
         int sidePad = 8;
-        int headY = 24;
+        int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
         int modeW = headH;
         int gap = 4;
@@ -29,7 +29,7 @@ public final class TabletRecipePickerModal {
         int gridY = headY + headH + 4;
         int gridH = h - gridY - 8;
 
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.recipeSearch, 96, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.recipeSearch, ModalShell.SEARCH_MED, value -> {
             String query = RecipePickerModeController.setSearch(state, value);
             RecipePickerMode mode = RecipePickerModeController.mode(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] recipe search mode={} query='{}'", mode.logName(query), query);

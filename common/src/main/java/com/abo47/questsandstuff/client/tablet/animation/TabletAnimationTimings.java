@@ -9,6 +9,8 @@ public final class TabletAnimationTimings {
     public static final long PROGRESS_FILL_MS = 360L;
     public static final long MINIMAP_MS = 180L;
     public static final long MINI_NOTIFICATION_MS = 900L;
+    public static final long MINI_NOTIFICATION_FADE_MS = 260L;
+    public static final long HOVER_EXPAND_MS = 150L;
     public static final long CONNECTION_ANIM_MS = 160L;
     public static final long THEME_RELOAD_CHECK_MS = 1500L;
     public static final long POINTER_SOURCE_MAX_AGE_MS = 800L;

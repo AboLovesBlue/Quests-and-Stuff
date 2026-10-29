@@ -4,6 +4,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.persistence.GsonProvider;
@@ -54,174 +56,135 @@ public final class QuestsAndStuffConfig {
         save();
     }
 
-    public static boolean debugLoggingEnabled() {
+    private static boolean current(BooleanSupplier flag) {
         load();
-        return DEBUG.debugLogging;
+        return flag.getAsBoolean();
+    }
+
+    private static boolean animations(BooleanSupplier flag) {
+        load();
+        return ANIMATIONS.ui && flag.getAsBoolean();
+    }
+
+    private static boolean setIfChanged(BooleanSupplier current, Consumer<Boolean> apply, boolean value) {
+        load();
+        if (current.getAsBoolean() != value) {
+            apply.accept(value);
+            save();
+        }
+        return true;
+    }
+
+    public static boolean debugLoggingEnabled() {
+        return current(() -> DEBUG.debugLogging);
     }
 
     public static void setDebugLoggingEnabled(boolean enabled) {
-        load();
-        if (DEBUG.debugLogging != enabled) {
-            DEBUG.debugLogging = enabled;
-            save();
-        }
+        setIfChanged(() -> DEBUG.debugLogging, v -> DEBUG.debugLogging = v, enabled);
     }
 
     public static boolean uiAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui;
+        return current(() -> ANIMATIONS.ui);
     }
 
     public static void setUiAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.ui != enabled) {
-            ANIMATIONS.ui = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.ui, v -> ANIMATIONS.ui = v, enabled);
     }
 
     public static boolean contextMenuAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.contextMenu;
+        return current(() -> ANIMATIONS.contextMenu);
     }
 
     public static boolean contextMenuAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.contextMenu;
+        return animations(() -> ANIMATIONS.contextMenu);
     }
 
     public static void setContextMenuAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.contextMenu != enabled) {
-            ANIMATIONS.contextMenu = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.contextMenu, v -> ANIMATIONS.contextMenu = v, enabled);
     }
 
     public static boolean toolsMenuAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.toolsMenu;
+        return current(() -> ANIMATIONS.toolsMenu);
     }
 
     public static boolean toolsMenuAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.toolsMenu;
+        return animations(() -> ANIMATIONS.toolsMenu);
     }
 
     public static void setToolsMenuAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.toolsMenu != enabled) {
-            ANIMATIONS.toolsMenu = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.toolsMenu, v -> ANIMATIONS.toolsMenu = v, enabled);
     }
 
     public static boolean minimapAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.minimap;
+        return current(() -> ANIMATIONS.minimap);
     }
 
     public static boolean minimapAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.minimap;
+        return animations(() -> ANIMATIONS.minimap);
     }
 
     public static void setMinimapAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.minimap != enabled) {
-            ANIMATIONS.minimap = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.minimap, v -> ANIMATIONS.minimap = v, enabled);
     }
 
     public static boolean questWindowAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.questWindow;
+        return current(() -> ANIMATIONS.questWindow);
     }
 
     public static boolean questWindowAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.questWindow;
+        return animations(() -> ANIMATIONS.questWindow);
     }
 
     public static void setQuestWindowAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.questWindow != enabled) {
-            ANIMATIONS.questWindow = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.questWindow, v -> ANIMATIONS.questWindow = v, enabled);
     }
 
     public static boolean popupWindowAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.popupWindow;
+        return current(() -> ANIMATIONS.popupWindow);
     }
 
     public static boolean popupWindowAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.popupWindow;
+        return animations(() -> ANIMATIONS.popupWindow);
     }
 
     public static void setPopupWindowAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.popupWindow != enabled) {
-            ANIMATIONS.popupWindow = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.popupWindow, v -> ANIMATIONS.popupWindow = v, enabled);
     }
 
     public static boolean connectionAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.connection;
+        return current(() -> ANIMATIONS.connection);
     }
 
     public static boolean connectionAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.connection;
+        return animations(() -> ANIMATIONS.connection);
     }
 
     public static void setConnectionAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.connection != enabled) {
-            ANIMATIONS.connection = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.connection, v -> ANIMATIONS.connection = v, enabled);
     }
 
     public static boolean chapterSwitchAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.chapterSwitch;
+        return current(() -> ANIMATIONS.chapterSwitch);
     }
 
     public static boolean chapterSwitchAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.chapterSwitch;
+        return animations(() -> ANIMATIONS.chapterSwitch);
     }
 
     public static void setChapterSwitchAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.chapterSwitch != enabled) {
-            ANIMATIONS.chapterSwitch = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.chapterSwitch, v -> ANIMATIONS.chapterSwitch = v, enabled);
     }
 
     public static boolean questHoverExpandAnimationSettingEnabled() {
-        load();
-        return ANIMATIONS.questHoverExpand;
+        return current(() -> ANIMATIONS.questHoverExpand);
     }
 
     public static boolean questHoverExpandAnimationsEnabled() {
-        load();
-        return ANIMATIONS.ui && ANIMATIONS.questHoverExpand;
+        return animations(() -> ANIMATIONS.questHoverExpand);
     }
 
     public static void setQuestHoverExpandAnimationsEnabled(boolean enabled) {
-        load();
-        if (ANIMATIONS.questHoverExpand != enabled) {
-            ANIMATIONS.questHoverExpand = enabled;
-            save();
-        }
+        setIfChanged(() -> ANIMATIONS.questHoverExpand, v -> ANIMATIONS.questHoverExpand = v, enabled);
     }
 
     public static int questHoverExpandPercent() {
@@ -243,133 +206,83 @@ public final class QuestsAndStuffConfig {
     }
 
     public static boolean fullScreenModeEnabled() {
-        load();
-        return CANVAS.fullScreenMode;
+        return current(() -> CANVAS.fullScreenMode);
     }
 
     public static void setFullScreenModeEnabled(boolean enabled) {
-        load();
-        if (CANVAS.fullScreenMode != enabled) {
-            CANVAS.fullScreenMode = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.fullScreenMode, v -> CANVAS.fullScreenMode = v, enabled);
     }
 
     public static boolean minimapEnabled() {
-        load();
-        return CANVAS.minimap;
+        return current(() -> CANVAS.minimap);
     }
 
     public static void setMinimapEnabled(boolean enabled) {
-        load();
-        if (CANVAS.minimap != enabled) {
-            CANVAS.minimap = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.minimap, v -> CANVAS.minimap = v, enabled);
     }
 
     public static boolean visualMinimapEnabled() {
-        load();
-        return CANVAS.visualMinimap;
+        return current(() -> CANVAS.visualMinimap);
     }
 
     public static void setVisualMinimapEnabled(boolean enabled) {
-        load();
-        if (CANVAS.visualMinimap != enabled) {
-            CANVAS.visualMinimap = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.visualMinimap, v -> CANVAS.visualMinimap = v, enabled);
     }
 
     public static boolean readOnlyCanvasFocusEnabled() {
-        load();
-        return CANVAS.readOnlyFocus;
+        return current(() -> CANVAS.readOnlyFocus);
     }
 
     public static void setReadOnlyCanvasFocusEnabled(boolean enabled) {
-        load();
-        if (CANVAS.readOnlyFocus != enabled) {
-            CANVAS.readOnlyFocus = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.readOnlyFocus, v -> CANVAS.readOnlyFocus = v, enabled);
     }
 
     public static boolean questEffectIconsEnabled() {
-        load();
-        return CANVAS.questEffectIcons;
+        return current(() -> CANVAS.questEffectIcons);
     }
 
     public static void setQuestEffectIconsEnabled(boolean enabled) {
-        load();
-        if (CANVAS.questEffectIcons != enabled) {
-            CANVAS.questEffectIcons = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.questEffectIcons, v -> CANVAS.questEffectIcons = v, enabled);
     }
 
     public static boolean canvasMiniNotificationsEnabled() {
-        load();
-        return CANVAS.miniNotifications;
+        return current(() -> CANVAS.miniNotifications);
     }
 
     public static void setCanvasMiniNotificationsEnabled(boolean enabled) {
-        load();
-        if (CANVAS.miniNotifications != enabled) {
-            CANVAS.miniNotifications = enabled;
-            save();
-        }
+        setIfChanged(() -> CANVAS.miniNotifications, v -> CANVAS.miniNotifications = v, enabled);
     }
 
     public static boolean autoClaimRewardsEnabled() {
-        load();
-        return REWARDS.autoClaim;
+        return current(() -> REWARDS.autoClaim);
     }
 
     public static void setAutoClaimRewardsEnabled(boolean enabled) {
-        load();
-        if (REWARDS.autoClaim != enabled) {
-            REWARDS.autoClaim = enabled;
-            save();
-        }
+        setIfChanged(() -> REWARDS.autoClaim, v -> REWARDS.autoClaim = v, enabled);
     }
 
     public static boolean commandRewardsEnabled() {
-        load();
-        return SECURITY.commandRewards;
+        return current(() -> SECURITY.commandRewards);
     }
 
     public static void setCommandRewardsEnabled(boolean enabled) {
-        load();
-        if (SECURITY.commandRewards != enabled) {
-            SECURITY.commandRewards = enabled;
-            save();
-        }
+        setIfChanged(() -> SECURITY.commandRewards, v -> SECURITY.commandRewards = v, enabled);
     }
 
     public static boolean completionHudEnabled() {
-        load();
-        return HUD.enabled;
+        return current(() -> HUD.enabled);
     }
 
     public static void setCompletionHudEnabled(boolean enabled) {
-        load();
-        if (HUD.enabled != enabled) {
-            HUD.enabled = enabled;
-            save();
-        }
+        setIfChanged(() -> HUD.enabled, v -> HUD.enabled = v, enabled);
     }
 
     public static boolean completionHudSoundEnabled() {
-        load();
-        return HUD.sound;
+        return current(() -> HUD.sound);
     }
 
     public static void setCompletionHudSoundEnabled(boolean enabled) {
-        load();
-        if (HUD.sound != enabled) {
-            HUD.sound = enabled;
-            save();
-        }
+        setIfChanged(() -> HUD.sound, v -> HUD.sound = v, enabled);
     }
 
     public static int completionHudDurationMs() {
@@ -391,33 +304,27 @@ public final class QuestsAndStuffConfig {
     }
 
     public static boolean chunkClaimProtectBreakPlace() {
-        load();
-        return CHUNK_CLAIMS.protectBreakPlace;
+        return current(() -> CHUNK_CLAIMS.protectBreakPlace);
     }
 
     public static boolean chunkClaimProtectInteraction() {
-        load();
-        return CHUNK_CLAIMS.protectInteraction;
+        return current(() -> CHUNK_CLAIMS.protectInteraction);
     }
 
     public static boolean chunkClaimProtectExplosions() {
-        load();
-        return CHUNK_CLAIMS.protectExplosions;
+        return current(() -> CHUNK_CLAIMS.protectExplosions);
     }
 
     public static boolean chunkClaimProtectMobGriefing() {
-        load();
-        return CHUNK_CLAIMS.protectMobGriefing;
+        return current(() -> CHUNK_CLAIMS.protectMobGriefing);
     }
 
     public static boolean chunkClaimProtectPvp() {
-        load();
-        return CHUNK_CLAIMS.protectPvp;
+        return current(() -> CHUNK_CLAIMS.protectPvp);
     }
 
     public static boolean chunkClaimProtectFire() {
-        load();
-        return CHUNK_CLAIMS.protectFire;
+        return current(() -> CHUNK_CLAIMS.protectFire);
     }
 
     public static int chunkClaimMaxClaimedChunks() {
@@ -439,57 +346,27 @@ public final class QuestsAndStuffConfig {
     }
 
     public static boolean setChunkClaimProtectBreakPlace(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectBreakPlace != value) {
-            CHUNK_CLAIMS.protectBreakPlace = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectBreakPlace, v -> CHUNK_CLAIMS.protectBreakPlace = v, value);
     }
 
     public static boolean setChunkClaimProtectInteraction(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectInteraction != value) {
-            CHUNK_CLAIMS.protectInteraction = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectInteraction, v -> CHUNK_CLAIMS.protectInteraction = v, value);
     }
 
     public static boolean setChunkClaimProtectExplosions(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectExplosions != value) {
-            CHUNK_CLAIMS.protectExplosions = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectExplosions, v -> CHUNK_CLAIMS.protectExplosions = v, value);
     }
 
     public static boolean setChunkClaimProtectMobGriefing(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectMobGriefing != value) {
-            CHUNK_CLAIMS.protectMobGriefing = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectMobGriefing, v -> CHUNK_CLAIMS.protectMobGriefing = v, value);
     }
 
     public static boolean setChunkClaimProtectPvp(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectPvp != value) {
-            CHUNK_CLAIMS.protectPvp = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectPvp, v -> CHUNK_CLAIMS.protectPvp = v, value);
     }
 
     public static boolean setChunkClaimProtectFire(boolean value) {
-        load();
-        if (CHUNK_CLAIMS.protectFire != value) {
-            CHUNK_CLAIMS.protectFire = value;
-            save();
-        }
-        return true;
+        return setIfChanged(() -> CHUNK_CLAIMS.protectFire, v -> CHUNK_CLAIMS.protectFire = v, value);
     }
 
     public static boolean setChunkClaimMaxClaimedChunks(int value) {
@@ -530,23 +407,19 @@ public final class QuestsAndStuffConfig {
     }
 
     public static boolean itemLockBlockUse() {
-        load();
-        return ITEM_LOCKS.blockUse;
+        return current(() -> ITEM_LOCKS.blockUse);
     }
 
     public static boolean itemLockBlockPickup() {
-        load();
-        return ITEM_LOCKS.blockPickup;
+        return current(() -> ITEM_LOCKS.blockPickup);
     }
 
     public static boolean itemLockBlockEquip() {
-        load();
-        return ITEM_LOCKS.blockEquip;
+        return current(() -> ITEM_LOCKS.blockEquip);
     }
 
     public static boolean itemLockLockedTooltips() {
-        load();
-        return ITEM_LOCKS.lockedTooltips;
+        return current(() -> ITEM_LOCKS.lockedTooltips);
     }
 
     public static boolean updateItemLocks(boolean blockUse, boolean blockPickup, boolean blockEquip, boolean lockedTooltips) {

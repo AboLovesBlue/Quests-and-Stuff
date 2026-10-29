@@ -2,6 +2,8 @@ package com.abo47.questsandstuff.client.quest.sound;
 
 import net.minecraft.client.resources.sounds.SoundInstance;
 
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+
 public final class QuestSoundPreview {
     private static String currentSoundKey = "";
     private static SoundInstance currentSound;
@@ -10,7 +12,7 @@ public final class QuestSoundPreview {
     }
 
     public static boolean toggle(String soundId) {
-        return toggle(soundId, 100);
+        return toggle(soundId, QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
     }
 
     public static boolean toggle(String soundId, int volumePercent) {

@@ -71,7 +71,7 @@ public final class SyncService {
         descriptionSyncer.sync(player, sequenceCounter::getAndIncrement, visibleQuestIds);
         displayCacheSyncer.sync(player, sequenceCounter.getAndIncrement());
         syncPinned(player);
-        performanceTracker.recordFullSync(1, chunks.size(), bytes);
+        performanceTracker.recordFullSync(chunks.size(), chunks.size(), bytes);
     }
 
     public void syncDelta(ServerPlayer player, Set<String> changedQuests) {
@@ -119,7 +119,7 @@ public final class SyncService {
         }
 
         descriptionSyncer.sync(player, sequenceCounter::getAndIncrement, delta.descriptionQuestIds());
-        performanceTracker.recordDeltaSync(1, chunks.size(), bytes);
+        performanceTracker.recordDeltaSync(chunks.size(), chunks.size(), bytes);
     }
 
     public void syncPinned(ServerPlayer player) {

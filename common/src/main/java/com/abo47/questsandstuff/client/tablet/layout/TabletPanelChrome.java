@@ -113,7 +113,7 @@ public final class TabletPanelChrome {
 
         if (holeRight > holeLeft && holeBottom > holeTop) {
             if (canEdit && gridEnabled) {
-                drawRectOutline(graphics, holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, gridLineColor(gridOpacityPercent, gridColor));
+                drawRectOutline(graphics, holeLeft, holeTop, holeRight - holeLeft, holeBottom - holeTop, TabletGridControls.gridAlpha(gridOpacityPercent, gridColor));
             }
         }
     }
@@ -258,12 +258,6 @@ public final class TabletPanelChrome {
             if (w == panel) return true;
         }
         return false;
-    }
-
-    private static int gridLineColor(int gridOpacityPercent, int gridColor) {
-        int alphaPercent = Math.max(0, Math.min(100, gridOpacityPercent));
-        int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
-        return (alpha << 24) | (gridColor & 0x00FFFFFF);
     }
 
     private static void fillPanelRect(IGuiTexture fill, GuiGraphics graphics, int left, int top, int right, int bottom) {

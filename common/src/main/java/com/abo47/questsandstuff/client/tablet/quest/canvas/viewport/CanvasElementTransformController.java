@@ -40,9 +40,11 @@ public final class CanvasElementTransformController {
         CanvasTransformMode gizmoMode = imageTransformMode(image, localX, localY);
         state.canvas.canvasSelection.setPrimaryImageId(image.id());
         state.canvas.canvasSelection.setPrimaryTextId("");
+        state.canvas.canvasSelection.setPrimaryEcId("");
         state.canvas.canvasSelection.imageIds().clear();
         state.canvas.canvasSelection.imageIds().add(image.id());
         state.canvas.canvasSelection.textIds().clear();
+        state.canvas.canvasSelection.ecIds().clear();
         state.canvas.canvasImageDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvas.canvasImageDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
         state.canvas.canvasImageStartX = image.x();
@@ -112,7 +114,7 @@ public final class CanvasElementTransformController {
             CanvasPoint anchor = CanvasTransformGizmo.supports(image.asset())
                     ? modelDragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, dx, dy)
                     : dragAnchor(state.canvas.canvasImageStartX, state.canvas.canvasImageStartY, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartPivotX, state.canvas.canvasImageStartPivotY, state.canvas.canvasImageStartRotation, dx, dy);
-            next = new CanvasImageLayer(image.id(), image.asset(), anchor.x, anchor.y, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH, state.canvas.canvasImageStartRotation, image.entityYaw(), image.entitySpinSpeed(), image.modelPitch(), image.pivotX(), image.pivotY());
+            next = image.withBounds(anchor.x, anchor.y, state.canvas.canvasImageStartW, state.canvas.canvasImageStartH);
             next = applySmartSnapToImage(next, cards, chapter);
         } else if (state.canvas.resizingCanvasImage) {
             clearSnapGuides();
@@ -167,9 +169,11 @@ public final class CanvasElementTransformController {
         CanvasTransformSessions.clearMainCanvasSession(state);
         state.canvas.canvasSelection.setPrimaryTextId(text.id());
         state.canvas.canvasSelection.setPrimaryImageId("");
+        state.canvas.canvasSelection.setPrimaryEcId("");
         state.canvas.canvasSelection.textIds().clear();
         state.canvas.canvasSelection.textIds().add(text.id());
         state.canvas.canvasSelection.imageIds().clear();
+        state.canvas.canvasSelection.ecIds().clear();
         state.canvas.canvasTextMenuTarget = text.id();
         state.canvas.canvasTextDragStartX = CanvasGeometry.screenToNearestLogicalX(state, localX);
         state.canvas.canvasTextDragStartY = CanvasGeometry.screenToNearestLogicalY(state, localY);
@@ -236,7 +240,7 @@ public final class CanvasElementTransformController {
         CanvasExclusiveChoice next = ec;
         if (state.canvas.draggingCanvasExclusiveChoice) {
             CanvasPoint anchor = dragAnchor(state.canvas.canvasEcStartX, state.canvas.canvasEcStartY, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasEcStartH), state.canvas.canvasEcStartRotation, dx, dy);
-            next = new CanvasExclusiveChoice(ec.id(), anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH, state.canvas.canvasEcStartRotation, ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections());
+            next = ec.withBounds(anchor.x, anchor.y, state.canvas.canvasEcStartW, state.canvas.canvasEcStartH);
             next = fittedExclusiveChoiceIfGridLocked(next);
             next = applySmartSnapToExclusiveChoice(next, cards, chapter);
         } else if (state.canvas.resizingCanvasExclusiveChoice) {
@@ -271,7 +275,7 @@ public final class CanvasElementTransformController {
         CanvasTextLayer next = text;
         if (state.canvas.draggingCanvasText) {
             CanvasPoint anchor = dragAnchor(state.canvas.canvasTextStartX, state.canvas.canvasTextStartY, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartW), CanvasElementGeometry.defaultPivot(state.canvas.canvasTextStartH), state.canvas.canvasTextStartRotation, dx, dy);
-            next = new CanvasTextLayer(text.id(), text.text(), anchor.x, anchor.y, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH, state.canvas.canvasTextStartRotation, text.align(), text.style(), text.color(), text.fontSize(), text.spans());
+            next = text.withBounds(anchor.x, anchor.y, state.canvas.canvasTextStartW, state.canvas.canvasTextStartH);
             next = applySmartSnapToText(next, cards, chapter);
         } else if (state.canvas.resizingCanvasText) {
             clearSnapGuides();
@@ -436,7 +440,7 @@ public final class CanvasElementTransformController {
                 1,
                 TabletModifierKeys.shiftDown()
         );
-        return fitAndClampText(new CanvasTextLayer(text.id(), text.text(), box.x(), box.y(), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans()));
+        return fitAndClampText(text.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
 
     private CanvasExclusiveChoice resizeExclusiveChoiceFromHandle(CanvasExclusiveChoice ec, int localX, int localY) {
@@ -456,7 +460,7 @@ public final class CanvasElementTransformController {
                 1,
                 TabletModifierKeys.shiftDown()
         );
-        return fitAndClampExclusiveChoice(new CanvasExclusiveChoice(ec.id(), box.x(), box.y(), box.width(), box.height(), ec.rotation(), ec.connectionQuestIds(), ec.prerequisiteQuestIds(), ec.background(), ec.connectionColors(), ec.connectionModes(), ec.connectionTextures(), ec.connectionTextureSpacings(), ec.hiddenConnections()));
+        return fitAndClampExclusiveChoice(ec.withBounds(box.x(), box.y(), box.width(), box.height()));
     }
 
     private ResizedBox resizeFromSelectionBox(int localX, int localY, int startX, int startY, int startW, int startH, int rotation, int minW, int minH, int pivotX, int pivotY, int cornerX, int cornerY, boolean preserveAspect) {

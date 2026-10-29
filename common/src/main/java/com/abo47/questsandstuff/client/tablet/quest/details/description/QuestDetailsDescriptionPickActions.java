@@ -15,14 +15,13 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 
 final class QuestDetailsDescriptionPickActions {
     private static final int MODEL_SIZE = 48;
-    private static final int RECIPE_CARD_W = 136;
-    private static final int RECIPE_CARD_H = 92;
 
     private QuestDetailsDescriptionPickActions() {
     }
@@ -180,7 +179,7 @@ final class QuestDetailsDescriptionPickActions {
             String id = parsed.entryId();
             int x = parseInt(parsed.part(3), 0);
             int y = parseInt(parsed.part(4), 0);
-            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, asset, x, y, RECIPE_CARD_W, RECIPE_CARD_H, 0)));
+            model.putImage(fittedNewImage(state, new CanvasImageLayer(id, asset, x, y, CanvasRecipeCardActions.CARD_W, CanvasRecipeCardActions.CARD_H, 0)));
             model.ensureOrder(QuestDetailsDescriptionModel.ORDER_IMAGE + id);
             QuestDetailsDescriptionModel.save(player, questId, model);
             QuestDetailsDescriptionSelectionState.selectOnlyImage(state, id);

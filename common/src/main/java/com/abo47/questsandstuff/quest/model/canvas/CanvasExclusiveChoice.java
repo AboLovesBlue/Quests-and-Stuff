@@ -52,6 +52,10 @@ public record CanvasExclusiveChoice(String id, int x, int y, int w, int h, int r
         return new CanvasExclusiveChoice(id, nextX, nextY, w, h, rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes, connectionTextures, connectionTextureSpacings, hiddenConnections);
     }
 
+    public CanvasExclusiveChoice withBounds(int nextX, int nextY, int nextW, int nextH) {
+        return new CanvasExclusiveChoice(id, nextX, nextY, nextW, nextH, rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes, connectionTextures, connectionTextureSpacings, hiddenConnections);
+    }
+
     public CanvasExclusiveChoice resizeTo(int nextW, int nextH) {
         int size = Math.max(8, Math.max(nextW, nextH));
         return new CanvasExclusiveChoice(id, x, y, size, size, rotation, connectionQuestIds, prerequisiteQuestIds, background, connectionColors, connectionModes, connectionTextures, connectionTextureSpacings, hiddenConnections);

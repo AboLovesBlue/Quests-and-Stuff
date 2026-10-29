@@ -6,6 +6,8 @@ import java.util.Map;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
+import net.minecraft.nbt.CompoundTag;
+
 public record QuestDisplay(
         String title,
         String subtitle,
@@ -26,6 +28,7 @@ public record QuestDisplay(
     public static final String DEFAULT_ICON_BACKGROUND = "minecraft:barrier";
     public static final String DEFAULT_COMPLETION_SOUND = "minecraft:ui.toast.challenge_complete";
     public static final int DEFAULT_COMPLETION_SOUND_VOLUME = 100;
+    public static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
     public static final String DEFAULT_COMPLETION_HUD_BACKGROUND = "";
     public static final String DEFAULT_QUEST_BACKGROUND = "default";
     public static final boolean DEFAULT_VISUAL_HIDDEN = false;
@@ -78,6 +81,46 @@ public record QuestDisplay(
                 questBackground,
                 questBackgroundGrayscale
         );
+    }
+
+    public QuestDisplay withTitle(String newTitle) {
+        return new QuestDisplay(newTitle, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withSubtitle(String newSubtitle) {
+        return new QuestDisplay(title, newSubtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withDescription(List<String> newDescription) {
+        return new QuestDisplay(title, subtitle, newDescription, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withIcon(String newIcon) {
+        return new QuestDisplay(title, subtitle, description, chapters, newIcon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withCompletionSound(String newCompletionSound) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, newCompletionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withCompletionSoundVolume(int newCompletionSoundVolume) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, completionSound, newCompletionSoundVolume, completionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withCompletionHudBackground(String newCompletionHudBackground) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, newCompletionHudBackground, visualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withVisualHidden(boolean newVisualHidden) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, newVisualHidden, questBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withQuestBackground(String newQuestBackground) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, newQuestBackground, questBackgroundGrayscale);
+    }
+
+    public QuestDisplay withQuestBackgroundGrayscale(boolean newQuestBackgroundGrayscale) {
+        return new QuestDisplay(title, subtitle, description, chapters, icon, iconBackground, completionSound, completionSoundVolume, completionHudBackground, visualHidden, questBackground, newQuestBackgroundGrayscale);
     }
 
     public QuestDisplay(
@@ -172,6 +215,12 @@ public record QuestDisplay(
 
     public static int normalizeCompletionSoundVolume(int volume) {
         return Math.max(0, Math.min(100, volume));
+    }
+
+    public static int normalizeCompletionSoundVolume(CompoundTag quest) {
+        return quest == null || !quest.contains("completion_sound_volume")
+                ? DEFAULT_COMPLETION_SOUND_VOLUME
+                : normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
     }
 
     public static String normalizeQuestBackground(String background) {

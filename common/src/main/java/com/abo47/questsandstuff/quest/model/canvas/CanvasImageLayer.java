@@ -6,6 +6,8 @@ public record CanvasImageLayer(String id, String asset, int x, int y, int w, int
     public static final int DEFAULT_ENTITY_YAW = 0;
     public static final int DEFAULT_ENTITY_SPIN_SPEED = 60;
     public static final int DEFAULT_MODEL_PITCH = 0;
+    public static final int DEFAULT_W = 80;
+    public static final int DEFAULT_H = 80;
     public static final int MIN_ENTITY_SPIN_SPEED = 0;
     public static final int MAX_ENTITY_SPIN_SPEED = 360;
 

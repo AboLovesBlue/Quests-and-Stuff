@@ -34,6 +34,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 
 public final class ContextMenuRenderer {
     public static final int CONTEXT_MENU_WIDTH = 108;
+    public static final int CONTEXT_MENU_BODY_H = 116;
     static final int OUTER_PAD = GRID_4;
     private static final int ICON_X = GRID_8;
     private static final int TEXT_X = 22;

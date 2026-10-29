@@ -49,7 +49,7 @@ public final class RegistryTilePicker {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, Config config) {
         ModalShell.addTitleAndClose(modal, config.title(), w, state, refresh);
         int sidePad = 8;
-        int headY = 24;
+        int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
         int modeW = headH;
         int gap = 4;
@@ -61,7 +61,7 @@ public final class RegistryTilePicker {
         int gridH = h - gridY - 8;
         StateAccess access = config.access();
 
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, access.search().get(), 96, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, access.search().get(), ModalShell.SEARCH_MED, value -> {
             access.searchSet().accept(SearchFilter.normalizeUserInput(value));
             access.scrollSet().accept(0);
             QuestsAndStuffMod.debugLog("[QnS:UI] {} search mode={} query='{}'", config.logName(), modeName(access, config), access.search().get());

@@ -58,7 +58,7 @@ public final class TabletSoundPickerModal {
         int rightW = libraryLayout.rightW();
         addPreviewPanel(modal, state, player, refresh, libraryLayout);
         int searchW = Math.max(40, headerCloseRenderX(w) - rightX - HEADER_GAP);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 2, searchW, 16, state.pickers.soundSearch, 120, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, 2, searchW, ModalShell.PICKER_SEARCH_H, state.pickers.soundSearch, ModalShell.SEARCH_LONG, value -> {
             String query = SearchFilter.normalizeUserInput(value);
             state.pickers.soundSearch = query;
             state.pickers.soundScroll = 0;

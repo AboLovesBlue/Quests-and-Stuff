@@ -51,11 +51,11 @@ public final class CanvasElementGridFit {
         int safeGrid = Math.max(1, grid);
         int rotation = CanvasGeometry.normalizeDegrees(text.rotation());
         if (rotation == 0) {
-            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), safeGrid, 24, 14);
+            CanvasGeometry.GridVisualBox box = CanvasGeometry.fitVisualBoxToGridSlot(text.x(), text.y(), text.w(), text.h(), safeGrid, CanvasTextLayer.MIN_W, CanvasTextLayer.MIN_H);
             CanvasPoint clamped = clamp(clamp, box.x(), box.y(), box.width(), box.height(), box.width() / 2, box.height() / 2, rotation);
             return new CanvasTextLayer(text.id(), text.text(), clamped.x, clamped.y, box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
         }
-        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, rotation, safeGrid, 24, 14);
+        CanvasGeometry.GridFittedBox fit = CanvasGeometry.fitRotatedElementToGridSlotAtPivot(text.x(), text.y(), text.w(), text.h(), text.w() / 2, text.h() / 2, rotation, safeGrid, CanvasTextLayer.MIN_W, CanvasTextLayer.MIN_H);
         CanvasPoint clamped = clamp(clamp, fit.x(), fit.y(), fit.width(), fit.height(), fit.width() / 2, fit.height() / 2, rotation);
         return new CanvasTextLayer(text.id(), text.text(), clamped.x, clamped.y, fit.width(), fit.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans());
     }

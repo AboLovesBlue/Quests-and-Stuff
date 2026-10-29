@@ -81,13 +81,17 @@ public class ChunkClaimSavedData extends SavedData {
     }
 
     public synchronized boolean claim(UUID teamId, ResourceLocation dim, int x, int z, String claimedByName) {
+        return claim(teamId, dim, x, z, claimedByName, false);
+    }
+
+    public synchronized boolean claim(UUID teamId, ResourceLocation dim, int x, int z, String claimedByName, boolean force) {
         List<ClaimedChunk> chunks = byTeam.computeIfAbsent(teamId, k -> new ArrayList<>());
         for (ClaimedChunk chunk : chunks) {
             if (sameChunk(chunk, dim, x, z)) {
                 return false;
             }
         }
-        chunks.add(new ClaimedChunk(dim, x, z, false, claimedByName == null ? "" : claimedByName));
+        chunks.add(new ClaimedChunk(dim, x, z, force, claimedByName == null ? "" : claimedByName));
         setDirty();
         return true;
     }

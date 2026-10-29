@@ -30,11 +30,11 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBluep
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionOps;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
-import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -163,13 +163,7 @@ final class CanvasContextSelectionActions {
                         for (var connection : connectedConnections) {
                             String prereq = connection.prerequisiteId();
                             String quest = connection.questId();
-                            boolean isEc = ConnectionRenderer.isEcId(state, selectedChapter, prereq) || ConnectionRenderer.isEcId(state, selectedChapter, quest);
-                            if (isEc) {
-                                EditorCanvasCommandClient.runEcConnectionTextureAction(state, prereq, quest, "");
-                            } else {
-                                EditorCanvasCommandClient.runConnectionTextureAction(player, quest, prereq, "");
-                                ConnectionRenderer.setConnectionTexture(state, selectedChapter, prereq, quest, "");
-                            }
+                            ConnectionOps.applyTexture(state, player, selectedChapter, prereq, quest, "");
                         }
                         QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
                         canvasViewport.refresh();

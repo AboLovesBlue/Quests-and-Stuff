@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 
 final class ChapterListRenderer {
     private ChapterListRenderer() {
@@ -21,7 +22,7 @@ final class ChapterListRenderer {
         List<String> groups = ClientQuestStateFacade.chapterOrder();
         int listH = list.getSize().height;
         int listW = list.getSize().width;
-        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || listW <= 54;
+        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || listW <= TabletLayout.CHAPTER_LIST_COLLAPSED_W;
         int listOriginX = list.getSelfPositionX();
         int listOriginY = list.getSelfPositionY();
         int baseCardX = 4;

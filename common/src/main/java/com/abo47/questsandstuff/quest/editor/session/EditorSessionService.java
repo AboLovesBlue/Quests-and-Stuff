@@ -33,6 +33,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionStore;
 import com.abo47.questsandstuff.quest.runtime.RuntimeEngine;
 import com.abo47.questsandstuff.quest.sync.SyncService;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 public final class EditorSessionService {
     private final QuestDefinitionStore definitionStore;
@@ -453,7 +454,7 @@ public final class EditorSessionService {
     }
 
     public static String normalizeChapter(String chapterName) {
-        return chapterName.trim().replace('\\', '/').replaceAll("/{2,}", "/");
+        return QuestIdentity.normalizeChapterName(chapterName);
     }
 
     public static String normalizeQuestId(String questId) {

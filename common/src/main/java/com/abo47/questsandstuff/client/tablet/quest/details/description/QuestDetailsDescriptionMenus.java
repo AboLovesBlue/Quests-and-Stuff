@@ -16,6 +16,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
@@ -307,7 +308,7 @@ public final class QuestDetailsDescriptionMenus {
             return;
         }
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         int x = modal.getPositionX() + Math.max(4, (modal.getSizeWidth() - w) / 2);
         int y = modal.getPositionY() + Math.max(4, (modal.getSizeHeight() - h) / 2);
         String mode = state.questDetails.modeEditorMode;

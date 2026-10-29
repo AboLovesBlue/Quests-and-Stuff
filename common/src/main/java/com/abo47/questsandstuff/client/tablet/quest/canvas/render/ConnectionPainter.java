@@ -2,7 +2,6 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import org.joml.Matrix4f;
@@ -18,14 +17,10 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import com.lowdragmc.lowdraglib.gui.texture.DynamicTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.util.DrawerHelper;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.assets.AssetLibrary;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasInteractionGate;
@@ -99,33 +94,21 @@ final class ConnectionPainter {
     }
 
     static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
-        drawTexturedChevrons(graphics, path, color, alpha, null, 0, CHEVRON_BASE_W, CHEVRON_BASE_H, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        drawTexturedChevrons(graphics, path, new ChevronDraw(color, alpha, 1.0f, null, 0, CHEVRON_BASE_W, CHEVRON_BASE_H), clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     static void drawStaticChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
         float safeScale = clampScale(scale);
         int gW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
         int gH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
-        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, safeScale, null, gW, gW, gH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        drawTexturedChevrons(graphics, path, new ChevronDraw(color, alpha, 1.0f, null, gW, gW, gH), clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     static void drawTexturedChevrons(GuiGraphics graphics, List<CanvasPoint> path, int color, int alpha, float scale, String textureStr, int clipMinX, int clipMinY, int clipMaxX, int clipMaxY) {
-        ResourceLocation tex = resolveTexture(textureStr);
+        ResourceLocation tex = ConnectionTextureResolver.resolveTexture(textureStr);
         float safeScale = clampScale(scale);
-        int[] dims = tex != null ? textureDims(textureStr) : null;
-        int glyphW, glyphH;
-        if (dims != null && dims[0] > 0 && dims[1] > 0) {
-            double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
-            double texAspect = (double) dims[0] / (double) dims[1];
-            double aW = Math.sqrt(baseArea * texAspect);
-            double aH = baseArea / aW;
-            glyphW = scaledGlyphDim((int) Math.round(aW), safeScale);
-            glyphH = scaledGlyphDim((int) Math.round(aH), safeScale);
-        } else {
-            glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
-            glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
-        }
-        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, safeScale, tex, glyphW, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        int[] glyph = glyphSize(tex, textureStr, safeScale);
+        drawTexturedChevrons(graphics, path, new ChevronDraw(color, alpha, 1.0f, tex, glyph[0], glyph[0], glyph[1]), clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     private static void drawConnection(
@@ -176,27 +159,15 @@ final class ConnectionPainter {
         int alpha = line.hidden() && hoveringEndpoint ? ConnectionRenderStyle.VISIBLE_ALPHA : line.alpha();
         List<CanvasPoint> path = connectionPath(state, originX, originY, startX, startY, endX, endY, line.direct());
         String rawTextureStr = line.texture();
-        ResourceLocation texture = resolveTexture(rawTextureStr);
+        ResourceLocation texture = ConnectionTextureResolver.resolveTexture(rawTextureStr);
         int spacing = line.textureSpacing();
         if (spacing == 0 && texture != null) {
-            int tw = textureWidth(rawTextureStr);
+            int tw = ConnectionTextureResolver.textureWidth(rawTextureStr);
             if (tw > 0) spacing = Math.max(tw, DEFAULT_SPACING);
         }
         float zoom = state.canvas.canvasZoom;
         float safeScale = clampScale(zoom);
-        double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
-        int[] dims = texture != null ? textureDims(rawTextureStr) : null;
-        int glyphW, glyphH;
-        if (dims != null && dims[0] > 0 && dims[1] > 0) {
-            double texAspect = (double) dims[0] / (double) dims[1];
-            double aW = Math.sqrt(baseArea * texAspect);
-            double aH = baseArea / aW;
-            glyphW = scaledGlyphDim((int) Math.round(aW), safeScale);
-            glyphH = scaledGlyphDim((int) Math.round(aH), safeScale);
-        } else {
-            glyphW = scaledGlyphDim(CHEVRON_BASE_W, safeScale);
-            glyphH = scaledGlyphDim(CHEVRON_BASE_H, safeScale);
-        }
+        int[] glyph = glyphSize(texture, rawTextureStr, safeScale);
         CanvasConnectionAnimation.AnimationState animation = CanvasConnectionAnimation.current(state, line.connectionId(), now);
         ItemStack gameStack = AssetLibrary.gameItemStack(rawTextureStr);
         if (gameStack != null && !gameStack.isEmpty()) {
@@ -210,10 +181,10 @@ final class ConnectionPainter {
         }
         if (animation.running()) {
             int animatedAlpha = Math.min(255, Math.round(alpha * (ANIMATION_ALPHA_BASE + ANIMATION_ALPHA_PROGRESS * animation.progress())));
-            drawTexturedChevrons(graphics, path, line.color(), animatedAlpha, animation.progress(), texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+            drawTexturedChevrons(graphics, path, new ChevronDraw(line.color(), animatedAlpha, animation.progress(), texture, spacing, glyph[0], glyph[1]), clipMinX, clipMinY, clipMaxX, clipMaxY);
             return;
         }
-        drawTexturedChevrons(graphics, path, line.color(), alpha, texture, spacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        drawTexturedChevrons(graphics, path, new ChevronDraw(line.color(), alpha, 1.0f, texture, spacing, glyph[0], glyph[1]), clipMinX, clipMinY, clipMaxX, clipMaxY);
     }
 
     private static boolean isHoveringEndpoint(
@@ -260,153 +231,41 @@ final class ConnectionPainter {
         return state.canvas.canvasContentX + state.canvas.canvasOffsetX + snapped;
     }
 
-    private static final java.util.Map<String, Integer> TEX_WIDTH_CACHE = new ConcurrentHashMap<>();
-    private static final java.util.Map<String, int[]> TEX_DIM_CACHE = new ConcurrentHashMap<>();
-
-    private static int textureWidth(String textureStr) {
-        if (textureStr == null || textureStr.isBlank()) return -1;
-        Integer cached = TEX_WIDTH_CACHE.get(textureStr);
-        if (cached != null) return cached;
-        try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
-            AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
-            if (ad != null) {
-                TEX_WIDTH_CACHE.put(textureStr, ad.width());
-                return ad.width();
-            }
-        } catch (Exception ignored) {
+    private static int[] glyphSize(ResourceLocation tex, String textureStr, float safeScale) {
+        int[] dims = tex != null ? ConnectionTextureResolver.textureDims(textureStr) : null;
+        if (dims != null && dims[0] > 0 && dims[1] > 0) {
+            double baseArea = CHEVRON_BASE_W * CHEVRON_BASE_H;
+            double texAspect = (double) dims[0] / (double) dims[1];
+            double aW = Math.sqrt(baseArea * texAspect);
+            double aH = baseArea / aW;
+            return new int[]{scaledGlyphDim((int) Math.round(aW), safeScale), scaledGlyphDim((int) Math.round(aH), safeScale)};
         }
-        TEX_WIDTH_CACHE.put(textureStr, -1);
-        return -1;
-    }
-
-    private static int[] textureDims(String textureStr) {
-        if (textureStr == null || textureStr.isBlank()) return null;
-        int[] cached = TEX_DIM_CACHE.get(textureStr);
-        if (cached != null) return cached.length > 0 ? cached : null;
-        try {
-            java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
-            AssetLibrary.AssetDimensions ad = AssetLibrary.assetDimensions(assetsRoot, textureStr);
-            if (ad != null) {
-                int[] dims = new int[]{ad.width(), ad.height()};
-                TEX_DIM_CACHE.put(textureStr, dims);
-                return dims;
-            }
-        } catch (Exception ignored) {
-        }
-        TEX_DIM_CACHE.put(textureStr, new int[0]);
-        return null;
-    }
-
-    private static ResourceLocation resolveTexture(String textureStr) {
-        if (textureStr == null || textureStr.isBlank()) {
-            return null;
-        }
-        ResourceLocation parsed = ResourceLocation.tryParse(textureStr);
-        if (parsed != null && parsed.getNamespace().equals(QuestsAndStuffMod.MODID)) {
-            return parsed;
-        }
-        if (AssetLibrary.gameItemStack(textureStr) != null) {
-            return null;
-        }
-        java.nio.file.Path assetsRoot = com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.ASSETS_ROOT_DIR;
-        try {
-            com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.ensureAssetsDirs(assetsRoot);
-            IGuiTexture guiTexture = com.abo47.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(assetsRoot, textureStr);
-            if (guiTexture == null) {
-                return null;
-            }
-            if (guiTexture instanceof DynamicTexture dynamic) {
-                guiTexture = dynamic.textureSupplier.get();
-            }
-            if (guiTexture instanceof ResourceTexture resource) {
-                return resource.imageLocation;
-            }
-            String sanitized = sanitizeAssetId(textureStr);
-            return ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + sanitized);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static String sanitizeAssetId(String value) {
-        String lower = value.toLowerCase(java.util.Locale.ROOT);
-        StringBuilder out = new StringBuilder(lower.length());
-        for (int i = 0; i < lower.length(); i++) {
-            char c = lower.charAt(i);
-            if ((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' || c == '-' || c == '.' || c == '/') {
-                out.append(c);
-            } else {
-                out.append('_');
-            }
-        }
-        return out.toString();
+        return new int[]{scaledGlyphDim(CHEVRON_BASE_W, safeScale), scaledGlyphDim(CHEVRON_BASE_H, safeScale)};
     }
 
     private static void drawTexturedChevrons(
             GuiGraphics graphics,
             List<CanvasPoint> path,
-            int color,
-            int alpha,
-            ResourceLocation texture,
-            int customSpacing,
-            int glyphW,
-            int glyphH,
+            ChevronDraw draw,
             int clipMinX,
             int clipMinY,
             int clipMaxX,
             int clipMaxY
     ) {
-        drawTexturedChevrons(graphics, path, color, alpha, 1.0f, texture, customSpacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
-    }
-
-    private static void drawTexturedChevrons(
-            GuiGraphics graphics,
-            List<CanvasPoint> path,
-            int color,
-            int alpha,
-            float progress,
-            ResourceLocation texture,
-            int customSpacing,
-            int glyphW,
-            int glyphH,
-            int clipMinX,
-            int clipMinY,
-            int clipMaxX,
-            int clipMaxY
-    ) {
-        drawTexturedChevrons(graphics, path, color, alpha, progress, 1.0f, texture, customSpacing, glyphW, glyphH, clipMinX, clipMinY, clipMaxX, clipMaxY);
-    }
-
-    private static void drawTexturedChevrons(
-            GuiGraphics graphics,
-            List<CanvasPoint> path,
-            int color,
-            int alpha,
-            float progress,
-            float scale,
-            ResourceLocation texture,
-            int customSpacing,
-            int glyphW,
-            int glyphH,
-            int clipMinX,
-            int clipMinY,
-            int clipMaxX,
-            int clipMaxY
-    ) {
-        double spacing = chevronStride(customSpacing, glyphW);
-        boolean customTex = texture != null;
+        int glyphW = draw.glyphW();
+        int glyphH = draw.glyphH();
+        double spacing = chevronStride(draw.customSpacing(), glyphW);
+        boolean customTex = draw.texture() != null;
         double totalLength = pathLength(path);
         if (totalLength < glyphW) {
             return;
         }
-        double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, progress)));
-        List<ChevronGlyph> glyphs = chevronGlyphs(path, color, alpha, visibleLength, glyphW, glyphH, spacing, clipMinX, clipMinY, clipMaxX, clipMaxY);
+        double visibleLength = Math.max(glyphW / 2.0, totalLength * Math.max(0.0f, Math.min(1.0f, draw.progress())));
+        List<ChevronGlyph> glyphs = chevronGlyphs(path, draw.color(), draw.alpha(), visibleLength, glyphW, glyphH, spacing, clipMinX, clipMinY, clipMaxX, clipMaxY);
         if (glyphs.isEmpty()) {
             return;
         }
-        ResourceLocation tex = texture != null ? texture : CONNECTION_CHEVRON;
-        customTex = texture != null;
+        ResourceLocation tex = customTex ? draw.texture() : CONNECTION_CHEVRON;
         float u0 = customTex ? 0.0f : CHEVRON_U0;
         float u1 = customTex ? 1.0f : CHEVRON_U1;
         setChevronTextureFilter(tex, GL11.GL_LINEAR);
@@ -630,5 +489,8 @@ final class ConnectionPainter {
     }
 
     private record ChevronGlyph(double x, double y, double dirX, double dirY, int color) {
+    }
+
+    private record ChevronDraw(int color, int alpha, float progress, ResourceLocation texture, int customSpacing, int glyphW, int glyphH) {
     }
 }

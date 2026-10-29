@@ -120,9 +120,7 @@ public final class CanvasLayerOrdering {
         }
         List<String> existing = state.canvas.canvasLayerOrderByChapter.get(chapter);
         if (existing == null || existing.isEmpty()) {
-            List<String> orderedDefaults = keepConnectionsBehindQuests(defaults);
-            state.canvas.canvasLayerOrderByChapter.put(chapter, orderedDefaults);
-            return orderedDefaults;
+            return keepConnectionsBehindQuests(defaults);
         }
         List<String> normalized = new ArrayList<>();
         Set<String> seen = new HashSet<>();
@@ -136,9 +134,7 @@ public final class CanvasLayerOrdering {
                 normalized.add(key);
             }
         }
-        List<String> ordered = keepConnectionsBehindQuests(normalized);
-        state.canvas.canvasLayerOrderByChapter.put(chapter, ordered);
-        return ordered;
+        return keepConnectionsBehindQuests(normalized);
     }
 
     public static CanvasLayerOrder normalizedOrder(

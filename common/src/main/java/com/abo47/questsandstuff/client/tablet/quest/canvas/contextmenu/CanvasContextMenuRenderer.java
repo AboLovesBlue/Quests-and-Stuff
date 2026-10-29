@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPlacement;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
@@ -61,7 +62,7 @@ final class CanvasContextMenuRenderer {
 
         if (state.contextMenu.modeEditorOpen) {
             int w = 240;
-            int h = 116;
+            int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
             int x = Math.max(4, (canvasViewport.getSizeWidth() - w) / 2);
             int y = Math.max(4, (canvasViewport.getSizeHeight() - h) / 2);
             String mode = state.contextMenu.modeEditorMode;

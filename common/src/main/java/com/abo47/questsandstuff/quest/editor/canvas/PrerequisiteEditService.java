@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.quest.editor.canvas;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +33,27 @@ public final class PrerequisiteEditService {
         return quest.isBlank() || prerequisite.isBlank() || quest.equals(prerequisite);
     }
 
+    private boolean createsPrerequisiteCycle(String quest, String prerequisite) {
+        Set<String> visited = new HashSet<>();
+        Deque<String> queue = new ArrayDeque<>();
+        queue.push(quest);
+        while (!queue.isEmpty()) {
+            QuestDefinition definition = owner.definitionStore().quests().get(queue.pop());
+            if (definition == null) {
+                continue;
+            }
+            for (String next : definition.prerequisites()) {
+                if (next.equals(prerequisite)) {
+                    return true;
+                }
+                if (visited.add(next)) {
+                    queue.push(next);
+                }
+            }
+        }
+        return false;
+    }
+
     public void setQuestPrerequisite(ServerPlayer player, String questId, String prerequisiteId, boolean enabled) {
         String quest = EditorSessionService.normalizeQuestId(questId);
         String prerequisite = EditorSessionService.normalizeQuestId(prerequisiteId);
@@ -44,6 +67,10 @@ public final class PrerequisiteEditService {
         Set<String> prerequisites = new HashSet<>(source.prerequisites());
         boolean changed = enabled ? prerequisites.add(prerequisite) : prerequisites.remove(prerequisite);
         if (!changed) {
+            return;
+        }
+        if (enabled && createsPrerequisiteCycle(quest, prerequisite)) {
+            QuestsAndStuffMod.debugLog("[QnS:Editor] prerequisite_cycle_blocked quest={} prerequisite={}", quest, prerequisite);
             return;
         }
 
@@ -228,9 +255,16 @@ public final class PrerequisiteEditService {
             return;
         }
 
-        owner.captureUndo(session);
         Set<String> prerequisites = new HashSet<>(source.prerequisites());
-        prerequisites.add(prerequisite);
+        if (!prerequisites.add(prerequisite)) {
+            return;
+        }
+        if (createsPrerequisiteCycle(current, prerequisite)) {
+            QuestsAndStuffMod.debugLog("[QnS:Editor] prerequisite_cycle_blocked quest={} prerequisite={}", current, prerequisite);
+            return;
+        }
+
+        owner.captureUndo(session);
         owner.definitionStore().upsert(withPrerequisites(source, prerequisites));
         owner.postMutation(player);
     }
@@ -254,9 +288,11 @@ public final class PrerequisiteEditService {
             return;
         }
 
-        owner.captureUndo(session);
         Set<String> prerequisites = new HashSet<>(source.prerequisites());
-        prerequisites.remove(prerequisite);
+        if (!prerequisites.remove(prerequisite)) {
+            return;
+        }
+        owner.captureUndo(session);
         owner.definitionStore().upsert(withPrerequisites(source, prerequisites));
         owner.postMutation(player);
     }

@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipb
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationState;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionState;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
@@ -311,7 +312,7 @@ public class TabletUiState {
         public final Map<String, CanvasDoublePoint> canvasCameraCentersByGroup = new HashMap<>();
         public final Map<String, Float> canvasCameraZoomsByGroup = new HashMap<>();
         public final CanvasLayerSelectionState canvasSelection = new CanvasLayerSelectionState();
-        public String canvasSelectionRangeAnchorKind = "";
+        public CanvasLayerKind canvasSelectionRangeAnchorKind;
         public String canvasSelectionRangeAnchorId = "";
         public final Map<String, CanvasPoint> transientQuestPositions = new HashMap<>();
         public final Map<String, Float> transientQuestScales = new HashMap<>();

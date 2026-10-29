@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
 
 public final class QuestCompletionSoundPlayer {
     public static final String DEFAULT_SOUND = "minecraft:ui.toast.challenge_complete";
@@ -21,7 +22,7 @@ public final class QuestCompletionSoundPlayer {
     }
 
     public static SoundInstance play(String soundId) {
-        return play(soundId, 100);
+        return play(soundId, QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
     }
 
     public static SoundInstance play(String soundId, int volumePercent) {

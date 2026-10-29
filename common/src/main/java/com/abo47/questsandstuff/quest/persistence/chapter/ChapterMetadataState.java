@@ -198,6 +198,6 @@ final class ChapterMetadataState {
     }
 
     static String normalizeChapterName(String name) {
-        return QuestIdentity.chapterName(name);
+        return QuestIdentity.normalizeChapterName(name);
     }
 }

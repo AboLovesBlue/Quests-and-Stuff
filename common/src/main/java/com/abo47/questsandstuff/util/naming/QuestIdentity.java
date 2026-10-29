@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.util.naming;
 public final class QuestIdentity {
     public static final String DEFAULT_QUEST_ID = "main/untitled";
     public static final int UI_CHAPTER_NAME_MAX_LENGTH = 40;
+    public static final int TITLE_MAX_LENGTH = 80;
 
     private QuestIdentity() {
     }
@@ -21,6 +22,10 @@ public final class QuestIdentity {
     public static String questIdOrDefault(String value) {
         String normalized = questId(value);
         return normalized.isBlank() ? DEFAULT_QUEST_ID : normalized;
+    }
+
+    public static String normalizeChapterName(String value) {
+        return value == null ? "" : value.trim().replace('\\', '/').replaceAll("/{2,}", "/");
     }
 
     public static String chapterName(String value) {

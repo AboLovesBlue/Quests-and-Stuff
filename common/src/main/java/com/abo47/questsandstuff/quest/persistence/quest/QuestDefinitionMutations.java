@@ -18,6 +18,7 @@ import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNo
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeDefinition;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.normalizeQuestId;
 import static com.abo47.questsandstuff.quest.persistence.quest.QuestDefinitionNormalizer.withId;
+import static com.abo47.questsandstuff.util.naming.QuestIdentity.normalizeChapterName;
 
 final class QuestDefinitionMutations {
     private final Path questsDir;
@@ -112,15 +113,17 @@ final class QuestDefinitionMutations {
     }
 
     void remove(String questId) {
-        QuestDefinition removed = quests.remove(questId);
+        String canonicalId = normalizeQuestId(questId);
+        QuestDefinition removed = quests.remove(canonicalId);
         chapters.reconcile(discoverChapters());
-        saveQueue.cancel(questId);
-        QuestDefinitionFileCleanup.deleteQuestFile(questsDir, questId, removed);
+        saveQueue.cancel(canonicalId);
+        QuestDefinitionFileCleanup.deleteQuestFile(questsDir, canonicalId, removed);
     }
 
     void markDirty(String questId) {
-        QuestDefinition definition = quests.get(questId);
-        saveQueue.markDirty(questId, definition);
+        String canonicalId = normalizeQuestId(questId);
+        QuestDefinition definition = quests.get(canonicalId);
+        saveQueue.markDirty(canonicalId, definition);
     }
 
     void saveNow(String questId) {
@@ -140,7 +143,9 @@ final class QuestDefinitionMutations {
     Set<String> discoverChapters() {
         Set<String> chapters = new TreeSet<>();
         for (QuestDefinition definition : quests.values()) {
-            chapters.addAll(definition.display().chapters().keySet());
+            for (String chapter : definition.display().chapters().keySet()) {
+                chapters.add(normalizeChapterName(chapter));
+            }
         }
         return chapters;
     }

@@ -94,7 +94,7 @@ final class QuestDetailsDescriptionLayout {
     }
 
     static CanvasTextLayer clampTextToColumn(TabletUiState state, CanvasTextLayer text, int contentW) {
-        int cappedW = Math.min(text.w(), Math.max(24, contentW));
+        int cappedW = Math.min(text.w(), Math.max(CanvasTextLayer.MIN_W, contentW));
         CanvasTextLayer sized = text.resizeTo(cappedW, text.h());
         CanvasPoint clamped = clampAnchorToColumn(
                 state,

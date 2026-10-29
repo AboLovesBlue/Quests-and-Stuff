@@ -49,10 +49,6 @@ public record TeamData(UUID teamId, UUID owner, List<TeamMember> members, String
         return new TeamData(teamId, owner, members, code, expiryMs);
     }
 
-    public TeamData clearInviteCode() {
-        return new TeamData(teamId, owner, members, "", 0L);
-    }
-
     public CompoundTag toNbt() {
         CompoundTag tag = new CompoundTag();
         tag.putUUID(NbtKeys.TEAM_ID, teamId);

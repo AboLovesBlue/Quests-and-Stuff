@@ -120,7 +120,7 @@ final class CanvasViewportClickController {
                 }
                 return true;
             }
-            if (button == 0 || button == 1) {
+            if (button == 1) {
                 CanvasViewportContextRouter.closeContextMenu(state);
                 refresher.run();
                 return true;

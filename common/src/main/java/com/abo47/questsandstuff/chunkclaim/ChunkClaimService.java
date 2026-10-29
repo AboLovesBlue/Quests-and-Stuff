@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.chunkclaim;
 
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import net.minecraft.core.BlockPos;
@@ -12,8 +13,10 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.chunkclaim.model.ClaimedChunk;
 import com.abo47.questsandstuff.chunkclaim.model.TeamChunkData;
 import com.abo47.questsandstuff.platform.Services;
@@ -97,6 +100,7 @@ public class ChunkClaimService {
         if (!QuestsAndStuffConfig.chunkClaimProtectFire()) {
             return;
         }
+        Method igniteOdds = igniteOddsLookup();
         data().forEachClaimed((teamId, chunk) -> {
             ServerLevel level = levelFor(chunk.dimension());
             if (level == null) {
@@ -104,21 +108,18 @@ public class ChunkClaimService {
             }
             int baseX = chunk.x() << 4;
             int baseZ = chunk.z() << 4;
+            LevelChunk loaded = level.getChunk(chunk.x(), chunk.z());
             BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
-            for (int lx = 0; lx < 16; lx++) {
-                for (int lz = 0; lz < 16; lz++) {
-                    for (int y = level.getMinBuildHeight(); y < level.getMaxBuildHeight(); y++) {
-                        mutable.set(baseX + lx, y, baseZ + lz);
-                        if (level.getBlockState(mutable).getBlock() == Blocks.FIRE) {
-                            BlockState below = level.getBlockState(mutable.below());
-                            try {
-                                java.lang.reflect.Method m = FireBlock.class.getDeclaredMethod("getIgniteOdds", BlockState.class);
-                                m.setAccessible(true);
-                                int odds = (int) m.invoke(Blocks.FIRE, below);
-                                if (odds > 0) {
-                                    level.removeBlock(mutable, false);
-                                }
-                            } catch (Exception igniteError) {
+            for (int si = 0; si < loaded.getSections().length; si++) {
+                if (loaded.getSections()[si].hasOnlyAir()) {
+                    continue;
+                }
+                int baseY = level.getSectionYFromSectionIndex(si) << 4;
+                for (int y = 0; y < 16; y++) {
+                    for (int lx = 0; lx < 16; lx++) {
+                        for (int lz = 0; lz < 16; lz++) {
+                            mutable.set(baseX + lx, baseY + y, baseZ + lz);
+                            if (loaded.getBlockState(mutable).getBlock() == Blocks.FIRE && burnsGround(level, mutable, igniteOdds)) {
                                 level.removeBlock(mutable, false);
                             }
                         }
@@ -126,6 +127,35 @@ public class ChunkClaimService {
                 }
             }
         });
+    }
+
+    private static Method igniteOddsLookup() {
+        for (Method candidate : FireBlock.class.getDeclaredMethods()) {
+            Class<?>[] parameterTypes = candidate.getParameterTypes();
+            if (parameterTypes.length == 1 && parameterTypes[0] == BlockState.class && candidate.getReturnType() == int.class) {
+                candidate.setAccessible(true);
+                try {
+                    if ((int) candidate.invoke(Blocks.FIRE, Blocks.OAK_PLANKS.defaultBlockState()) == 5) {
+                        return candidate;
+                    }
+                } catch (ReflectiveOperationException | IllegalArgumentException e) {
+                    QuestsAndStuffMod.LOGGER.warn("Failed probing FireBlock flammability accessor", e);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean burnsGround(ServerLevel level, BlockPos pos, Method igniteOdds) {
+        BlockState below = level.getBlockState(pos.below());
+        if (igniteOdds == null) {
+            return true;
+        }
+        try {
+            return (int) igniteOdds.invoke(Blocks.FIRE, below) > 0;
+        } catch (ReflectiveOperationException | IllegalArgumentException e) {
+            return true;
+        }
     }
 
     public TeamChunkData claims(UUID teamId) {
@@ -156,6 +186,16 @@ public class ChunkClaimService {
         return data().removeTeam(teamId);
     }
 
+    public void removeTeamClaims(UUID teamId) {
+        var d = data();
+        for (ClaimedChunk c : d.claims(teamId).chunks()) {
+            if (c.forceLoaded()) {
+                applyForceLoad(teamId, c.dimension(), c.x(), c.z(), false);
+            }
+        }
+        d.removeTeam(teamId);
+    }
+
     /**
      * Moves every claim owned by {@code fromTeam} onto {@code toTeam}. Used when a player joins
      * another team: their solo claims become part of the target team (owned by its leader). The
@@ -164,7 +204,7 @@ public class ChunkClaimService {
     public void transferClaims(UUID fromTeam, UUID toTeam, String ownerName) {
         var d = data();
         for (ClaimedChunk c : d.claims(fromTeam).chunks()) {
-            d.claim(toTeam, c.dimension(), c.x(), c.z(), ownerName);
+            d.claim(toTeam, c.dimension(), c.x(), c.z(), ownerName, c.forceLoaded());
         }
         d.removeTeam(fromTeam);
     }

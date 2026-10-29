@@ -178,17 +178,9 @@ public final class TabletLifecycle {
         rememberActiveWindow(state);
         if (state != null) {
             TabletUiFactory.persistUiState(state);
-            String app = state.root.currentApp;
-            if ("quest".equals(app)) {
-                saveLastApp("QUESTS");
-            } else if ("teams".equals(app)) {
-                saveLastApp("TEAMS");
-            } else if ("chunkclaimer".equals(app)) {
-                saveLastApp("CHUNKCLAIMER");
-            } else if ("settings".equals(app)) {
-                saveLastApp("SETTINGS");
-            } else if ("home".equals(app)) {
-                saveLastApp("");
+            String saveKey = TabletAppRegistry.saveKeyOf(state.root.currentApp);
+            if (saveKey != null) {
+                saveLastApp(saveKey);
             }
             if (state.root.skinEditMode) {
                 state.root.skinEditMode = false;

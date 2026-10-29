@@ -10,6 +10,13 @@ public record CanvasTextLayer(String id, String text, int x, int y, int w, int h
     public static final int DEFAULT_FONT_SIZE = 9;
     public static final int MIN_FONT_SIZE = 1;
     public static final int MAX_FONT_SIZE = 100;
+    public static final int MIN_W = 24;
+    public static final int MIN_H = 14;
+    public static final int DEFAULT_W = 96;
+    public static final int DEFAULT_H = 32;
+    public static final int FALLBACK_W = 160;
+    public static final int FALLBACK_H = 24;
+    public static final int FALLBACK_ROW_STEP = 28;
 
     public CanvasTextLayer(String id, String text, int x, int y, int w, int h, int rotation, String align, String style, int color) {
         this(id, text, x, y, w, h, rotation, align, style, color, DEFAULT_FONT_SIZE, List.of());
@@ -24,8 +31,8 @@ public record CanvasTextLayer(String id, String text, int x, int y, int w, int h
         text = text == null ? "" : text;
         align = normalizeAlign(align);
         style = normalizeStyle(style);
-        w = Math.max(24, w);
-        h = Math.max(14, h);
+        w = Math.max(MIN_W, w);
+        h = Math.max(MIN_H, h);
         fontSize = clampFontSize(fontSize);
         spans = normalizeSpans(spans, text.length(), style, color);
     }
@@ -34,8 +41,12 @@ public record CanvasTextLayer(String id, String text, int x, int y, int w, int h
         return new CanvasTextLayer(id, text, nextX, nextY, w, h, rotation, align, style, color, fontSize, spans);
     }
 
+    public CanvasTextLayer withBounds(int nextX, int nextY, int nextW, int nextH) {
+        return new CanvasTextLayer(id, text, nextX, nextY, nextW, nextH, rotation, align, style, color, fontSize, spans);
+    }
+
     public CanvasTextLayer resizeTo(int nextW, int nextH) {
-        return new CanvasTextLayer(id, text, x, y, Math.max(24, nextW), Math.max(14, nextH), rotation, align, style, color, fontSize, spans);
+        return new CanvasTextLayer(id, text, x, y, Math.max(MIN_W, nextW), Math.max(MIN_H, nextH), rotation, align, style, color, fontSize, spans);
     }
 
     public CanvasTextLayer rotateTo(int nextRotation) {

@@ -146,6 +146,10 @@ final class ManualSubmissions {
         for (UUID targetId : targets) {
             PlayerQuestState state = ctx.progressData().state(targetId);
             ctx.engine().ensureUnlocks(player, targetId, state, changed, tick);
+            QuestDefinition definition = ctx.definitionStore().quests().get(questId);
+            if (definition == null || !ctx.engine().isVisibleFor(state, definition)) {
+                continue;
+            }
             QuestProgressState questState = state.quest(questId);
             if (!questState.unlocked()) {
                 continue;

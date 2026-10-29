@@ -6,6 +6,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
@@ -56,7 +57,7 @@ public final class SettingsAppComposer {
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
         TabletUiState state = TabletBootstrap.prepare(player);
         TabletLifecycle.rememberMainWindow();
-        state.root.currentApp = "settings";
+        state.root.currentApp = TabletAppRegistry.APP_SETTINGS;
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int initialRootW = rootWidth(state);

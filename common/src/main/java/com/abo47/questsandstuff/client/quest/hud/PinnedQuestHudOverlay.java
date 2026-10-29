@@ -292,18 +292,7 @@ public final class PinnedQuestHudOverlay {
     }
 
     private static String cropToWidth(Font font, String value, int width) {
-        String safe = value == null ? "" : value;
-        if (width <= 0 || safe.isBlank()) {
-            return "";
-        }
-        if (font.width(safe) <= width) {
-            return safe;
-        }
-        String cropped = safe;
-        while (!cropped.isEmpty() && font.width(cropped + "...") > width) {
-            cropped = cropped.substring(0, cropped.length() - 1);
-        }
-        return cropped.isEmpty() ? "..." : cropped + "...";
+        return HudTextTruncate.cropToWidth(font, value, width);
     }
 
     private record TaskLine(String title, String progress, boolean complete, String icon) {

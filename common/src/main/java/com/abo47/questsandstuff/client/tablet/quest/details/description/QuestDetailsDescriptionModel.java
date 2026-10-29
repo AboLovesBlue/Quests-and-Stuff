@@ -12,6 +12,7 @@ import net.minecraft.nbt.TagParser;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -24,7 +25,7 @@ public final class QuestDetailsDescriptionModel {
     private static final String META_PREFIX = "@qas_desc_meta:";
     private static final String TEXT_PREFIX = "@qas_desc_text:";
     private static final String IMAGE_PREFIX = "@qas_desc_image:";
-    private static final int MAX_TEXT_LENGTH = 2048;
+    private static final int MAX_TEXT_LENGTH = TextEditSession.MAX_DRAFT_LENGTH;
 
     final Map<String, CanvasTextLayer> texts = new HashMap<>();
     final Map<String, CanvasImageLayer> images = new HashMap<>();
@@ -101,10 +102,10 @@ public final class QuestDetailsDescriptionModel {
                 }
             } else if (!line.isBlank()) {
                 String id = "line_" + i;
-                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, 160, 24, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
+                CanvasTextLayer text = new CanvasTextLayer(id, line, 8, fallbackY, CanvasTextLayer.FALLBACK_W, CanvasTextLayer.FALLBACK_H, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
                 model.putText(text);
                 model.ensureOrder(ORDER_TEXT + id);
-                fallbackY += 28;
+                fallbackY += CanvasTextLayer.FALLBACK_ROW_STEP;
             }
         }
         return model;

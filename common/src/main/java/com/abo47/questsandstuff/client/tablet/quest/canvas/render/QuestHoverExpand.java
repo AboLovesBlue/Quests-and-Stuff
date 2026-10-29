@@ -10,12 +10,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
+import com.abo47.questsandstuff.client.tablet.animation.TabletAnimationTimings;
 import com.abo47.questsandstuff.client.tablet.animation.UiAnimationProgress;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasInteractionGate;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class QuestHoverExpand extends WidgetGroup {
-    private static final long HOVER_MS = 150L;
+    private static final long HOVER_MS = TabletAnimationTimings.HOVER_EXPAND_MS;
     private static final int MAX_TRACKED = 256;
     private static final Map<String, HoverMotion> PROGRESS = new LinkedHashMap<>();
 

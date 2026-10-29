@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
@@ -156,7 +157,7 @@ public final class ChapterContextMenuRows {
 
     private static void openChapterModeEditor(TabletUiState state, Player player, String target, String mode, String path, int left, int right, Runnable refresh) {
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         var mc = net.minecraft.client.Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();

@@ -163,7 +163,7 @@ final class TabletRootKeyboardRouter {
         if (selfKey.invoke(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_Z && !Widget.isCtrlDown()) {
+        if (!textInputActive && keyCode == GLFW.GLFW_KEY_Z && !Widget.isCtrlDown()) {
             if (state.canvas.canvasZoom != 1.0f) {
                 CanvasCameraController.resetZoom(state, true);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas zoom reset key=Z");
@@ -171,7 +171,7 @@ final class TabletRootKeyboardRouter {
             }
             return true;
         }
-        if (state.root.editorAvailable && Widget.isCtrlDown() && keyCode == GLFW.GLFW_KEY_E) {
+        if (!textInputActive && state.root.editorAvailable && Widget.isCtrlDown() && keyCode == GLFW.GLFW_KEY_E) {
             state.root.editMode = !state.root.editMode;
             state.root.canEdit = state.root.editorAvailable && state.root.editMode;
             TabletUiFactory.persistEditMode(state.root.editMode);
@@ -179,7 +179,7 @@ final class TabletRootKeyboardRouter {
             refresher.run();
             return true;
         }
-        if (TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode)) {
+        if (!textInputActive && TabletKeybindings.toggleSkinEditMatches(keyCode, scanCode)) {
             return toggleSkinEdit(root, state, refresher);
         }
         if (!state.root.canEdit || !Widget.isCtrlDown()) {

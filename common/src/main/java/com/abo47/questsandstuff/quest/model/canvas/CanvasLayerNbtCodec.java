@@ -46,8 +46,8 @@ public final class CanvasLayerNbtCodec {
         if (id.isBlank()) {
             return null;
         }
-        int width = tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : 80;
-        int height = tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : 80;
+        int width = tag.contains("w", Tag.TAG_INT) ? tag.getInt("w") : CanvasImageLayer.DEFAULT_W;
+        int height = tag.contains("h", Tag.TAG_INT) ? tag.getInt("h") : CanvasImageLayer.DEFAULT_H;
         return new CanvasImageLayer(
                 id,
                 tag.getString("asset"),

@@ -10,6 +10,7 @@ import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
@@ -75,7 +76,7 @@ public final class QuestAppComposer {
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
         TabletUiState state = TabletBootstrap.prepare(player);
         TabletLifecycle.restoreRememberedWindow(state);
-        state.root.currentApp = "quest";
+        state.root.currentApp = TabletAppRegistry.APP_QUESTS;
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int initialRootW = rootWidth(state);

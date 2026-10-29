@@ -74,6 +74,12 @@ public final class TabletGridControls {
         state.canvas.canvasBgOpacityIndex = nearestIndex(CANVAS_BG_OPACITY, clamped);
     }
 
+    public static int gridAlpha(int percent, int rgbColor) {
+        int alphaPercent = Math.max(0, Math.min(100, percent));
+        int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
+        return (alpha << 24) | (rgbColor & 0x00FFFFFF);
+    }
+
     public static int cyclePercent(int current, int step, boolean backwards) {
         int clampedStep = Math.max(1, step);
         int clamped = Math.max(0, Math.min(100, current));

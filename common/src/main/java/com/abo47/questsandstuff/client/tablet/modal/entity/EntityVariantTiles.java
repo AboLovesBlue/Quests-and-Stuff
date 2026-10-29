@@ -17,6 +17,7 @@ import com.abo47.questsandstuff.client.tablet.controls.picker.TiledPickerPanel;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
@@ -36,9 +37,7 @@ import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
 
 final class EntityVariantTiles {
-    static final int RIGHT_X = 166;
     private static final int PAD = GRID_8;
-    private static final int LEFT_W = 150;
     private static final int TILE_COLUMNS = 3;
     private static final int TILE_ROWS = 3;
     private static final int TILE_GAP = GRID_6;
@@ -50,10 +49,10 @@ final class EntityVariantTiles {
     }
 
     static void addPreview(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int h) {
-        WidgetGroup preview = panel(PAD, 22, LEFT_W, h - 48, withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
+        WidgetGroup preview = panel(PAD, 22, ModalPreviewLayout.LEFT_W, h - 48, withAlpha(TabletColors.SURFACE_PANEL_ALT, 120), TabletColors.BORDER_BASE);
         preview.addWidget(label(8, 8, crop(EntityPreviewRenderer.entityDisplayName(model.entityId()), 22), TabletColors.TEXT_SECONDARY));
         preview.addWidget(label(8, 22, crop(EntityVariantCatalog.labelFor(model.entityId(), model.selected()), 22), TabletColors.TEXT_PRIMARY));
-        preview.addWidget(new WidgetGroup(10, 42, LEFT_W - 20, Math.max(48, h - 98)) {
+        preview.addWidget(new WidgetGroup(10, 42, ModalPreviewLayout.LEFT_W - 20, Math.max(48, h - 98)) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 EntityPreviewRenderer.renderEntityAsset(
@@ -77,12 +76,12 @@ final class EntityVariantTiles {
     }
 
     static void addTiles(WidgetGroup modal, Player player, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w, int h) {
-        int rightW = w - 174;
+        int rightW = w - ModalPreviewLayout.RIGHT_X - ModalPreviewLayout.PREVIEW_X;
         int listH = h - 48;
         TileMetrics metrics = tileMetrics(rightW, listH, model.tiles().size());
         TiledPickerPanel.add(
                 modal,
-                RIGHT_X,
+                ModalPreviewLayout.RIGHT_X,
                 22,
                 rightW,
                 listH,

@@ -13,6 +13,7 @@ import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
@@ -61,7 +62,7 @@ final class ChapterInlineRenameRows {
                 null
         );
         field.setClientSideWidget();
-        field.setMaxStringLength(40);
+        field.setMaxStringLength(QuestIdentity.UI_CHAPTER_NAME_MAX_LENGTH);
         field.setBordered(false);
         field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));
         field.setTextColor(TabletColors.TEXT_PRIMARY);

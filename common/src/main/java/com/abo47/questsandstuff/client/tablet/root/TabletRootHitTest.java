@@ -3,6 +3,7 @@ package com.abo47.questsandstuff.client.tablet.root;
 import net.minecraft.world.entity.player.Player;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
@@ -89,8 +90,8 @@ public final class TabletRootHitTest {
         }
         int rootW = TabletStateQueries.rootWidth(state);
         int rootH = TabletStateQueries.rootHeight(state);
-        int w = Math.max(1, Math.min(432, rootW - 32));
-        int h = Math.max(1, Math.min(260, rootH - 32));
+        int w = Math.max(1, Math.min(ModalShell.MODAL_MAX_W, rootW - ModalShell.MODAL_MARGIN));
+        int h = Math.max(1, Math.min(ModalShell.MODAL_MAX_H, rootH - ModalShell.MODAL_MARGIN));
         int mx = (rootW - w) / 2;
         int my = (rootH - h) / 2;
         int absX = rootX + mx + state.pickers.assetContextMenuX;

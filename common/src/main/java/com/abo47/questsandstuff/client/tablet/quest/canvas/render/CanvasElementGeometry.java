@@ -119,7 +119,7 @@ public final class CanvasElementGeometry {
             double sx;
             double sy;
             if (CanvasGeometry.isCardinalTurn(rotation)) {
-                double[] rotated = rotateCardinalLocal(corner[0], corner[1], rotation);
+                double[] rotated = CanvasRotationMath.rotateCardinalLocal(corner[0], corner[1], rotation);
                 sx = centerX + rotated[0];
                 sy = centerY + rotated[1];
             } else {

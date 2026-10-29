@@ -329,7 +329,7 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasTextLayer resizedText(CanvasTextLayer text, int mouseX, int mouseY, int cornerX, int cornerY) {
-        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, 24, 14, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, TabletModifierKeys.shiftDown());
+        CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, CanvasTextLayer.MIN_W, CanvasTextLayer.MIN_H, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, TabletModifierKeys.shiftDown());
         return fitAndClampText(new CanvasTextLayer(text.id(), text.text(), box.x(), box.y(), box.width(), box.height(), text.rotation(), text.align(), text.style(), text.color(), text.fontSize(), text.spans()));
     }
 

@@ -19,7 +19,7 @@ import static com.abo47.questsandstuff.util.MathUtils.clamp;
 
 public final class CanvasMiniNotificationController {
     private static final long DURATION_MS = TabletAnimationTimings.MINI_NOTIFICATION_MS;
-    private static final long FADE_MS = 260L;
+    private static final long FADE_MS = TabletAnimationTimings.MINI_NOTIFICATION_FADE_MS;
     private static final int CURSOR_GAP = 2;
 
     private CanvasMiniNotificationController() {

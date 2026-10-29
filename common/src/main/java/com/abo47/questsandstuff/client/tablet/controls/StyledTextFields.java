@@ -12,11 +12,46 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.MathUtils;
 import com.abo47.questsandstuff.util.naming.SafeNames;
 
 public final class StyledTextFields {
     private StyledTextFields() {
+    }
+
+    private static class CursorPreservingTextField extends TextFieldWidget {
+        private CursorPreservingTextField(
+                int x,
+                int y,
+                int width,
+                int height,
+                Supplier<String> textSupplier,
+                Consumer<String> responder
+        ) {
+            super(x, y, width, height, textSupplier, responder);
+        }
+
+        @Override
+        public TextFieldWidget setCurrentString(Object currentString) {
+            String newVal = currentString.toString();
+            if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
+                boolean wasEmpty = textField.getValue().isEmpty();
+                int cursorPos = textField.getCursorPosition();
+                super.setCurrentString(newVal);
+                if (wasEmpty && !newVal.isEmpty()) {
+                    textField.setCursorPosition(newVal.length());
+                    textField.setHighlightPos(newVal.length());
+                } else {
+                    int clamped = Math.min(cursorPos, newVal.length());
+                    textField.setCursorPosition(clamped);
+                    textField.setHighlightPos(clamped);
+                }
+            } else {
+                super.setCurrentString(currentString);
+            }
+            return this;
+        }
     }
 
     public static TextFieldWidget search(
@@ -42,34 +77,13 @@ public final class StyledTextFields {
             Consumer<String> responder,
             Consumer<Boolean> focusResponder
     ) {
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder) {
+        TextFieldWidget field = new CursorPreservingTextField(x, y, width, height, textSupplier, responder) {
             @Override
             public void onFocusChanged(Widget lastFocus, Widget focus) {
                 super.onFocusChanged(lastFocus, focus);
                 if (focusResponder != null) {
                     focusResponder.accept(isFocus());
                 }
-            }
-
-            @Override
-            public TextFieldWidget setCurrentString(Object currentString) {
-                String newVal = currentString.toString();
-                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
-                    boolean wasEmpty = textField.getValue().isEmpty();
-                    int cursorPos = textField.getCursorPosition();
-                    super.setCurrentString(newVal);
-                    if (wasEmpty && !newVal.isEmpty()) {
-                        textField.setCursorPosition(newVal.length());
-                        textField.setHighlightPos(newVal.length());
-                    } else {
-                        int clamped = Math.min(cursorPos, newVal.length());
-                        textField.setCursorPosition(clamped);
-                        textField.setHighlightPos(clamped);
-                    }
-                } else {
-                    super.setCurrentString(currentString);
-                }
-                return this;
             }
 
             @Override
@@ -117,7 +131,7 @@ public final class StyledTextFields {
         Runnable safeCancel = cancel == null ? () -> {
         } : cancel;
         Runnable safeBlur = blur == null ? safeCommit : blur;
-        return new TextFieldWidget(x, y, width, height, textSupplier, responder) {
+        return new CursorPreservingTextField(x, y, width, height, textSupplier, responder) {
             private boolean suppressNextBlur;
 
             @Override
@@ -151,27 +165,6 @@ public final class StyledTextFields {
                 }
                 return super.keyPressed(keyCode, scanCode, modifiers);
             }
-
-            @Override
-            public TextFieldWidget setCurrentString(Object currentString) {
-                String newVal = currentString.toString();
-                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
-                    boolean wasEmpty = textField.getValue().isEmpty();
-                    int cursorPos = textField.getCursorPosition();
-                    super.setCurrentString(newVal);
-                    if (wasEmpty && !newVal.isEmpty()) {
-                        textField.setCursorPosition(newVal.length());
-                        textField.setHighlightPos(newVal.length());
-                    } else {
-                        int clamped = Math.min(cursorPos, newVal.length());
-                        textField.setCursorPosition(clamped);
-                        textField.setHighlightPos(clamped);
-                    }
-                } else {
-                    super.setCurrentString(currentString);
-                }
-                return this;
-            }
         };
     }
 
@@ -190,28 +183,7 @@ public final class StyledTextFields {
             int maxLength,
             Consumer<String> responder
     ) {
-        TextFieldWidget field = new TextFieldWidget(x, y, width, height, textSupplier, responder) {
-            @Override
-            public TextFieldWidget setCurrentString(Object currentString) {
-                String newVal = currentString.toString();
-                if (isRemote() && textField != null && !textField.getValue().equals(newVal)) {
-                    boolean wasEmpty = textField.getValue().isEmpty();
-                    int cursorPos = textField.getCursorPosition();
-                    super.setCurrentString(newVal);
-                    if (wasEmpty && !newVal.isEmpty()) {
-                        textField.setCursorPosition(newVal.length());
-                        textField.setHighlightPos(newVal.length());
-                    } else {
-                        int clamped = Math.min(cursorPos, newVal.length());
-                        textField.setCursorPosition(clamped);
-                        textField.setHighlightPos(clamped);
-                    }
-                } else {
-                    super.setCurrentString(currentString);
-                }
-                return this;
-            }
-
+        TextFieldWidget field = new CursorPreservingTextField(x, y, width, height, textSupplier, responder) {
             @Override
             public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
                 setTextColor(TabletColors.TEXT_PRIMARY);
@@ -505,7 +477,7 @@ public final class StyledTextFields {
     }
 
     public static TextFieldWidget applyPercentageValidator(TextFieldWidget field) {
-        return applyIntegerValidator(field, 0, 100);
+        return applyIntegerValidator(field, 0, CanvasTextLayer.MAX_FONT_SIZE);
     }
 
     public static TextFieldWidget applyFloatValidator(TextFieldWidget field, float min, float max) {

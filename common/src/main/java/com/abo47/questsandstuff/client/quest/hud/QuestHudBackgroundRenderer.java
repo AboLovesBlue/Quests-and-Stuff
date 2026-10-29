@@ -79,8 +79,8 @@ final class QuestHudBackgroundRenderer {
 
     static void drawThumbnail(GuiGraphics graphics, String background, int x, int y, int width, int height) {
         if (background == null || background.isBlank()) {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
-            drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, 160));
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
+            drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
             return;
         }
         IGuiTexture texture = TabletUiFactory.assetThumbnailTexture(background);
@@ -90,8 +90,8 @@ final class QuestHudBackgroundRenderer {
         if (texture != null) {
             texture.draw(graphics, 0, 0, x, y, width, height);
         } else {
-            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, 180)).draw(graphics, 0, 0, x, y, width, height);
+            SurfaceFactory.fill(withAlpha(TabletColors.SURFACE_BASE, HudConstants.HUD_BG_ALPHA)).draw(graphics, 0, 0, x, y, width, height);
         }
-        drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, 160));
+        drawRectOutline(graphics, x, y, width, height, withAlpha(TabletColors.BORDER_BASE, HudConstants.HUD_BORDER_ALPHA));
     }
 }

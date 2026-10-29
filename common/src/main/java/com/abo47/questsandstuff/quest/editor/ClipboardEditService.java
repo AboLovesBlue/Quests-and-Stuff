@@ -1,6 +1,7 @@
 package com.abo47.questsandstuff.quest.editor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -27,6 +28,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.quest.model.task.QuestVisibilityMode;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 import com.abo47.questsandstuff.util.naming.QuestNaming;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
@@ -38,6 +40,7 @@ import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitio
 import static com.abo47.questsandstuff.quest.editor.clipboard.ClipboardDefinitionCopier.normalizeScale;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.deepCopyDefinition;
 import static com.abo47.questsandstuff.quest.editor.quest.QuestDefinitionEdits.withSettings;
+import static com.abo47.questsandstuff.quest.sync.SyncKeys.EditorAction.ADD;
 
 public final class ClipboardEditService {
     private final EditorSessionService owner;
@@ -197,7 +200,7 @@ public final class ClipboardEditService {
             if (synced == null) {
                 synced = definition;
             }
-            owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "add", synced);
+            owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), ADD, synced);
         }
         CompoundTag selection = new CompoundTag();
         ListTag ids = new ListTag();
@@ -213,7 +216,7 @@ public final class ClipboardEditService {
             allocated.putString(a.getKey(), a.getValue());
         }
         selection.put("allocated_ids", allocated);
-        owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "paste_select", "__paste_select", selection);
+        owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), SyncKeys.EditorAction.PASTE_SELECT, "__paste_select", selection);
         owner.clipboardDebug("PASTE complete player=" + playerName
                 + " chapter=" + request.targetChapter()
                 + " created=" + result.selectionIds().stream().sorted().toList()
@@ -259,7 +262,7 @@ public final class ClipboardEditService {
             if (synced == null) {
                 synced = definition;
             }
-            owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "add", synced);
+            owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), ADD, synced);
         }
         CompoundTag selection = selectionPayload(chapter, pastedQuests, pastedImages, pastedTexts, pastedEcs);
         owner.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "paste_select", "__paste_select", selection);
@@ -488,56 +491,13 @@ public final class ClipboardEditService {
             if (newId == null || newId.isBlank()) {
                 continue;
             }
-            List<String> remappedConnections = new ArrayList<>();
-            for (String conn : entry.connections()) {
-                String mapped = allocatedQuestIds.get(conn);
-                if (mapped != null) {
-                    remappedConnections.add(mapped);
-                }
-            }
-            List<String> remappedPrerequisites = new ArrayList<>();
-            for (String prereq : entry.prerequisites()) {
-                String mapped = allocatedQuestIds.get(prereq);
-                if (mapped != null) {
-                    remappedPrerequisites.add(mapped);
-                }
-            }
-            Map<String, Integer> remappedColors = new LinkedHashMap<>();
-            for (Map.Entry<String, Integer> e : entry.connectionColors().entrySet()) {
-                String mapped = allocatedQuestIds.get(e.getKey());
-                if (mapped != null && e.getValue() != null) {
-                    remappedColors.put(mapped, e.getValue());
-                }
-            }
-            Map<String, String> remappedModes = new LinkedHashMap<>();
-            for (Map.Entry<String, String> e : entry.connectionModes().entrySet()) {
-                String mapped = allocatedQuestIds.get(e.getKey());
-                if (mapped != null) {
-                    remappedModes.put(mapped, e.getValue());
-                }
-            }
-            Map<String, String> remappedTextures = new LinkedHashMap<>();
-            for (Map.Entry<String, String> e : entry.connectionTextures().entrySet()) {
-                String mapped = allocatedQuestIds.get(e.getKey());
-                String tex = e.getValue();
-                if (mapped != null && tex != null && !tex.isBlank()) {
-                    remappedTextures.put(mapped, tex);
-                }
-            }
-            Map<String, Integer> remappedSpacings = new LinkedHashMap<>();
-            for (Map.Entry<String, Integer> e : entry.connectionTextureSpacings().entrySet()) {
-                String mapped = allocatedQuestIds.get(e.getKey());
-                if (mapped != null && e.getValue() != null) {
-                    remappedSpacings.put(mapped, e.getValue());
-                }
-            }
-            Set<String> remappedHidden = new LinkedHashSet<>();
-            for (String h : entry.hiddenConnections()) {
-                String mapped = allocatedQuestIds.get(h);
-                if (mapped != null) {
-                    remappedHidden.add(mapped);
-                }
-            }
+            List<String> remappedConnections = remapIds(entry.connections(), allocatedQuestIds);
+            List<String> remappedPrerequisites = remapIds(entry.prerequisites(), allocatedQuestIds);
+            Map<String, Integer> remappedColors = remapKeys(entry.connectionColors(), allocatedQuestIds, color -> color != null);
+            Map<String, String> remappedModes = remapKeys(entry.connectionModes(), allocatedQuestIds, mode -> true);
+            Map<String, String> remappedTextures = remapKeys(entry.connectionTextures(), allocatedQuestIds, texture -> texture != null && !texture.isBlank());
+            Map<String, Integer> remappedSpacings = remapKeys(entry.connectionTextureSpacings(), allocatedQuestIds, spacing -> spacing != null);
+            Set<String> remappedHidden = new LinkedHashSet<>(remapIds(entry.hiddenConnections(), allocatedQuestIds));
             pasted.add(new CanvasExclusiveChoice(
                     newId,
                     anchorX + (entry.sourceX() - blueprint.originX()),
@@ -556,6 +516,28 @@ public final class ClipboardEditService {
             ));
         }
         return pasted;
+    }
+
+    private static List<String> remapIds(Collection<String> ids, Map<String, String> allocatedIds) {
+        List<String> remapped = new ArrayList<>();
+        for (String id : ids) {
+            String mapped = allocatedIds.get(id);
+            if (mapped != null) {
+                remapped.add(mapped);
+            }
+        }
+        return remapped;
+    }
+
+    private static <V> Map<String, V> remapKeys(Map<String, V> source, Map<String, String> allocatedIds, java.util.function.Predicate<V> keepValue) {
+        Map<String, V> remapped = new LinkedHashMap<>();
+        for (Map.Entry<String, V> entry : source.entrySet()) {
+            String mapped = allocatedIds.get(entry.getKey());
+            if (mapped != null && keepValue.test(entry.getValue())) {
+                remapped.put(mapped, entry.getValue());
+            }
+        }
+        return remapped;
     }
 
     private static CompoundTag selectionPayload(String chapter, List<QuestDefinition> quests, List<CanvasImageLayer> images, List<CanvasTextLayer> texts, List<CanvasExclusiveChoice> ecs) {
@@ -613,7 +595,7 @@ public final class ClipboardEditService {
         return chapter.isBlank() ? null : definition.display().chapters().get(chapter);
     }
 
-    private static QuestSettings withHiddenMode(QuestSettings source, QuestVisibilityMode mode) {
+    public static QuestSettings withHiddenMode(QuestSettings source, QuestVisibilityMode mode) {
         QuestSettings settings = source == null ? QuestSettings.DEFAULT : source;
         return new QuestSettings(
                 settings.individualProgress(),

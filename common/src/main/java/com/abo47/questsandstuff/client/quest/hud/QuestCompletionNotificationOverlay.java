@@ -172,33 +172,11 @@ public final class QuestCompletionNotificationOverlay {
     }
 
     private static String cropToWidth(Font font, String value, int width) {
-        String safe = value == null ? "" : value;
-        if (width <= 0 || safe.isBlank()) {
-            return "";
-        }
-        if (font.width(safe) <= width) {
-            return safe;
-        }
-        String ellipsis = "...";
-        if (font.width(ellipsis) > width) {
-            String cropped = safe;
-            while (!cropped.isEmpty() && font.width(cropped) > width) {
-                cropped = cropped.substring(0, cropped.length() - 1);
-            }
-            return cropped;
-        }
-        String cropped = safe;
-        while (!cropped.isEmpty() && font.width(cropped + ellipsis) > width) {
-            cropped = cropped.substring(0, cropped.length() - 1);
-        }
-        return cropped.isEmpty() ? ellipsis : cropped + ellipsis;
+        return HudTextTruncate.cropToWidth(font, value, width);
     }
 
     private static int completionSoundVolume(CompoundTag quest) {
-        if (quest == null || !quest.contains("completion_sound_volume")) {
-            return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
-        }
-        return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
+        return QuestDisplay.normalizeCompletionSoundVolume(quest);
     }
 
     private static void updateActiveNotification(long now, long displayMs) {

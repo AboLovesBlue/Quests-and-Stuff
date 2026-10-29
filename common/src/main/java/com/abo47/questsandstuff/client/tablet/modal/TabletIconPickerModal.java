@@ -71,7 +71,7 @@ public final class TabletIconPickerModal {
             IconPickerMode.normalizeForContext(state, entityPicker, itemModelPicker, supportsEntityIcons, supportsInventoryIcons, useItemPicker);
         }
         IconPickerMode mode = IconPickerMode.safe(state.pickers.iconMode);
-        int headY = 24;
+        int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
         int modeW = entityPicker ? 0 : headH;
         int gap = 4;
@@ -84,7 +84,7 @@ public final class TabletIconPickerModal {
         int slot = 18;
 
         TabletModalPanel.addModalClose(modal, gridX + gridW - headH, 4, headH, state, refresh);
-        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.iconSearch, 80, value -> {            state.pickers.iconSearch = SearchFilter.normalizeUserInput(value);
+        TextFieldWidget search = ModalShell.addSearchField(modal, searchX, headY, Math.max(24, searchW), headH, state.pickers.iconSearch, ModalShell.SEARCH_MAX_LENGTH, value -> {            state.pickers.iconSearch = SearchFilter.normalizeUserInput(value);
             state.pickers.iconScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] icon search mode={} query='{}'", IconPickerMode.safe(state.pickers.iconMode).logName(), state.pickers.iconSearch);
             refresh.run();

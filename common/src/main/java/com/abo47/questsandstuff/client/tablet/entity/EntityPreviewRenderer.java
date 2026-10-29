@@ -28,6 +28,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.Level;
 
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
@@ -37,6 +38,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 public final class EntityPreviewRenderer {
     public static final String ENTITY_ASSET_PREFIX = "entity:";
     private static final Map<String, Entity> ENTITY_CACHE = new HashMap<>();
+    private static Level cachedEntitiesLevel;
     private static float animationPartialTicks;
     public static final int FRONT_ENTITY_YAW = 205;
     private static final int DEFAULT_ICON_ENTITY_YAW = FRONT_ENTITY_YAW;
@@ -54,9 +56,11 @@ public final class EntityPreviewRenderer {
     }
 
     public static void prewarmEntityCache() {
-        if (Minecraft.getInstance().level == null) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) {
             return;
         }
+        evictStaleEntities(level);
         for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
             if (type == null) {
                 continue;
@@ -67,7 +71,7 @@ public final class EntityPreviewRenderer {
             }
             String entityId = id.toString();
             if (!ENTITY_CACHE.containsKey(entityId)) {
-                Entity entity = type.create(Minecraft.getInstance().level);
+                Entity entity = type.create(level);
                 if (entity != null) {
                     ENTITY_CACHE.put(entityId, entity);
                 }
@@ -266,7 +270,9 @@ public final class EntityPreviewRenderer {
     }
 
     private static Entity cachedEntity(EntityAsset asset) {
-        if (asset.entityId().isBlank() || Minecraft.getInstance().level == null) {
+        Level level = Minecraft.getInstance().level;
+        evictStaleEntities(level);
+        if (asset.entityId().isBlank() || level == null) {
             return null;
         }
         EntityType<?> type = entityType(asset.entityId());
@@ -274,14 +280,21 @@ public final class EntityPreviewRenderer {
             return null;
         }
         Entity entity = ENTITY_CACHE.get(asset.cacheKey());
-        if (entity == null || entity.getType() != type || entity.level() != Minecraft.getInstance().level) {
-            entity = type.create(Minecraft.getInstance().level);
+        if (entity == null || entity.getType() != type || entity.level() != level) {
+            entity = type.create(level);
             if (entity == null) {
                 return null;
             }
             ENTITY_CACHE.put(asset.cacheKey(), entity);
         }
         return entity;
+    }
+
+    private static void evictStaleEntities(Level currentLevel) {
+        if (cachedEntitiesLevel != currentLevel) {
+            ENTITY_CACHE.clear();
+            cachedEntitiesLevel = currentLevel;
+        }
     }
 
     private static EntityType<?> entityType(String entityId) {

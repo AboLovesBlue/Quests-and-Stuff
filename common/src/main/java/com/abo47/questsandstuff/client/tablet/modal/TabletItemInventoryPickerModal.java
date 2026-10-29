@@ -44,13 +44,13 @@ public final class TabletItemInventoryPickerModal {
     public static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h) {
         ModalShell.addTitleAndClose(modal, TabletTranslationKeys.text(QuestTranslationKeys.CHOOSE_INVENTORY_ITEM), w, state, refresh);
         int sidePad = 8;
-        int headY = 24;
+        int headY = ModalShell.PICKER_HEADER_Y;
         int headH = 18;
         int gridX = sidePad;
         int gridY = headY + headH + 4;
         int gridW = w - sidePad * 2;
         int gridH = h - gridY - 8;
-        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.pickers.itemInventorySearch, 80, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, gridX, headY, gridW, headH, state.pickers.itemInventorySearch, ModalShell.SEARCH_MAX_LENGTH, value -> {
             state.pickers.itemInventorySearch = SearchFilter.normalizeUserInput(value);
             state.pickers.itemInventoryScroll = 0;
             QuestsAndStuffMod.debugLog("[QnS:UI] inventory item search query='{}'", state.pickers.itemInventorySearch);

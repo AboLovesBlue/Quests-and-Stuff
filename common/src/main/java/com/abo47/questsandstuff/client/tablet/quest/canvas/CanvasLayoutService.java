@@ -98,6 +98,9 @@ public final class CanvasLayoutService {
         List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, visibleCards, byQuestId, 1_000_000, 1_000_000);
         List<CanvasExclusiveChoice> exclusiveChoices = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(selectedChapter, List.of());
         List<String> layerOrder = CanvasLayerOrdering.normalize(state, selectedChapter, visibleCards, images, texts, connectionKeys, exclusiveChoices);
+        if (selectedChapter != null && !selectedChapter.isBlank()) {
+            state.canvas.canvasLayerOrderByChapter.put(selectedChapter, layerOrder);
+        }
         Map<String, Integer> layerIndexes = CanvasLayerOrdering.indexMap(layerOrder);
         visibleCards.sort(Comparator.comparingInt(card -> CanvasLayerOrdering.layerIndex(layerIndexes, CanvasLayerOrdering.questKey(card.questId()))));
         return visibleCards;

@@ -8,6 +8,7 @@ import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletBootstrap;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.layout.SplitPanelLayout;
@@ -60,7 +61,7 @@ public final class ChunkClaimerAppComposer {
     public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
         TabletUiState state = TabletBootstrap.prepare(player);
         TabletLifecycle.rememberMainWindow();
-        state.root.currentApp = "chunkclaimer";
+        state.root.currentApp = TabletAppRegistry.APP_CHUNKCLAIMER;
         applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
 
         int crw = rootWidth(state);

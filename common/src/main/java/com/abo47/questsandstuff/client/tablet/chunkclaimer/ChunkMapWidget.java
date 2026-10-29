@@ -33,6 +33,7 @@ import net.minecraft.world.level.material.MapColor;
 import com.lowdragmc.lowdraglib.gui.texture.ResourceTexture;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 
+import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.teams.ClientTeamCache;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
@@ -60,8 +61,6 @@ public class ChunkMapWidget extends Widget {
     private int cachedCx = Integer.MAX_VALUE;
     private int cachedCz = Integer.MAX_VALUE;
     private boolean cachedSurfaceScan;
-    private int lastHoverDx = Integer.MAX_VALUE;
-    private int lastHoverDz = Integer.MAX_VALUE;
 
     private boolean dragActive;
     private ResourceLocation dragDimension;
@@ -425,9 +424,7 @@ public class ChunkMapWidget extends Widget {
         }
 
         if (state.chunkClaimer.showGrid) {
-            int opacityPct = Math.max(0, Math.min(100, state.chunkClaimer.gridOpacityPercent));
-            int alpha = Math.max(20, Math.min(220, (255 * opacityPct) / 100));
-            int gridCol = (alpha << 24) | (GRID_COLOR & 0x00FFFFFF);
+            int gridCol = TabletGridControls.gridAlpha(state.chunkClaimer.gridOpacityPercent, GRID_COLOR);
             for (int i = iLo; i <= iHi; i++) {
                 int dx = i - gw / 2;
                 for (int j = jLo; j <= jHi; j++) {
@@ -503,10 +500,6 @@ public class ChunkMapWidget extends Widget {
             int iHov = dx + gw / 2;
             int jHov = dz + gh / 2;
             if (iHov >= iLo && iHov <= iHi && jHov >= jLo && jHov <= jHi) {
-                if (dx != lastHoverDx || dz != lastHoverDz) {
-                    lastHoverDx = dx;
-                    lastHoverDz = dz;
-                }
                 int hpxLocal = ChunkMapGeometry.cellPixelX(ox, cell, gw, dx);
                 int hpyLocal = ChunkMapGeometry.cellPixelY(oy, cell, gh, dz);
                 int fx = baseX + hpxLocal + (cell + 1) / 2;
@@ -526,13 +519,7 @@ public class ChunkMapWidget extends Widget {
                     int textY = baseY + hpyLocal + cell + 3;
                     graphics.drawString(font, name, textX, textY, 0xFFEAF1F4, true);
                 }
-            } else {
-                lastHoverDx = Integer.MAX_VALUE;
-                lastHoverDz = Integer.MAX_VALUE;
             }
-        } else {
-            lastHoverDx = Integer.MAX_VALUE;
-            lastHoverDz = Integer.MAX_VALUE;
         }
 
         drawPlayer(graphics, centerX, centerY, cell);

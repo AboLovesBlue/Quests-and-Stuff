@@ -12,6 +12,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
 import com.abo47.questsandstuff.client.tablet.animation.SourceOriginRevealWidget;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
+import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAdvancementPickerModal;
 import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
@@ -75,8 +76,8 @@ public final class ModalPanelRouter {
         if (descriptor == null) {
             return;
         }
-        int w = Math.min(432, overlay.getSize().width - 32);
-        int h = Math.min(260, overlay.getSize().height - 32);
+        int w = Math.min(ModalShell.MODAL_MAX_W, overlay.getSize().width - ModalShell.MODAL_MARGIN);
+        int h = Math.min(ModalShell.MODAL_MAX_H, overlay.getSize().height - ModalShell.MODAL_MARGIN);
         int mx = (overlay.getSize().width - w) / 2;
         int my = (overlay.getSize().height - h) / 2;
         WidgetGroup dim = new WidgetGroup(0, 0, overlay.getSize().width, overlay.getSize().height) {

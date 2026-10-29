@@ -138,9 +138,23 @@ final class CanvasMinimapOverlay {
             Map<String, QuestCardLayout> byQuestId,
             CanvasMinimapGeometry.Projection projection
     ) {
-        Map<String, CanvasMinimapRect> questBoxes = new HashMap<>();
-        List<CanvasMinimapRect> questRects = new ArrayList<>();
+        Map<String, CanvasMinimapRect> boxes = new HashMap<>();
         Map<String, double[]> logicalCenters = new HashMap<>();
+        Set<String> rendered = new HashSet<>();
+        List<CanvasMinimapRect> rects = snapshotQuestBoxes(state, cards, projection, boxes, logicalCenters);
+        List<CanvasMinimapConnection> connections = snapshotQuestConnections(state, chapter, cards, byQuestId, projection, boxes, logicalCenters, rendered);
+        snapshotEcStage(state, chapter, projection, boxes, logicalCenters, rendered, rects, connections);
+        return new CanvasMinimapSnapshot(List.copyOf(rects), List.copyOf(connections), projection);
+    }
+
+    private static List<CanvasMinimapRect> snapshotQuestBoxes(
+            TabletUiState state,
+            List<QuestCardLayout> cards,
+            CanvasMinimapGeometry.Projection projection,
+            Map<String, CanvasMinimapRect> boxes,
+            Map<String, double[]> logicalCenters
+    ) {
+        List<CanvasMinimapRect> rects = new ArrayList<>();
         boolean visualMode = QuestsAndStuffConfig.visualMinimapEnabled();
         for (QuestCardLayout card : cards) {
             CanvasMinimapRect box = projectRect(
@@ -156,13 +170,23 @@ final class CanvasMinimapOverlay {
                     card.tag()
             );
             logicalCenters.put(card.questId(), new double[]{card.visualLogicalX() + card.logicalWidth() / 2.0, card.visualLogicalY() + card.logicalHeight() / 2.0});
-            questBoxes.put(card.questId(), box);
-            questRects.add(box);
+            boxes.put(card.questId(), box);
+            rects.add(box);
         }
+        return rects;
+    }
 
+    private static List<CanvasMinimapConnection> snapshotQuestConnections(
+            TabletUiState state,
+            String chapter,
+            List<QuestCardLayout> cards,
+            Map<String, QuestCardLayout> byQuestId,
+            CanvasMinimapGeometry.Projection projection,
+            Map<String, CanvasMinimapRect> boxes,
+            Map<String, double[]> logicalCenters,
+            Set<String> rendered
+    ) {
         List<CanvasMinimapConnection> connections = new ArrayList<>();
-        Set<String> rendered = new HashSet<>();
-
         for (QuestCardLayout target : cards) {
             CompoundTag targetTag = target.tag();
             if (!targetTag.getBoolean(QuestSettings.SHOW_PREREQUISITE_ARROW_FIELD)) {
@@ -187,8 +211,8 @@ final class CanvasMinimapOverlay {
                 double[] srcCenter = logicalCenters.get(sourceId);
                 double[] tgtCenter = logicalCenters.get(target.questId());
                 if (srcCenter == null || tgtCenter == null) continue;
-                CanvasMinimapRect srcBox = questBoxes.get(sourceId);
-                CanvasMinimapRect tgtBox = questBoxes.get(target.questId());
+                CanvasMinimapRect srcBox = boxes.get(sourceId);
+                CanvasMinimapRect tgtBox = boxes.get(target.questId());
                 float sourceCenterX = srcBox.x() + srcBox.w() / 2.0f;
                 float sourceCenterY = srcBox.y() + srcBox.h() / 2.0f;
                 float targetCenterX = tgtBox.x() + tgtBox.w() / 2.0f;
@@ -207,7 +231,19 @@ final class CanvasMinimapOverlay {
                 ));
             }
         }
+        return connections;
+    }
 
+    private static void snapshotEcStage(
+            TabletUiState state,
+            String chapter,
+            CanvasMinimapGeometry.Projection projection,
+            Map<String, CanvasMinimapRect> boxes,
+            Map<String, double[]> logicalCenters,
+            Set<String> rendered,
+            List<CanvasMinimapRect> rects,
+            List<CanvasMinimapConnection> connections
+    ) {
         List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
         for (CanvasExclusiveChoice ec : ecs) {
             net.minecraft.nbt.CompoundTag ecTag = null;
@@ -227,55 +263,57 @@ final class CanvasMinimapOverlay {
                     ec.id(),
                     ecTag
             );
-            logicalCenters.put(ec.id(), new double[]{ec.x() + ec.w() / 2.0, ec.y() + ec.h() / 2.0});
-            questBoxes.put(ec.id(), ecBox);
-            questRects.add(ecBox);
+            double[] ecLogicalCenter = new double[]{ec.x() + ec.w() / 2.0, ec.y() + ec.h() / 2.0};
+            logicalCenters.put(ec.id(), ecLogicalCenter);
+            boxes.put(ec.id(), ecBox);
+            rects.add(ecBox);
 
-            double[] ecLogicalCenter = logicalCenters.get(ec.id());
-            float ecCenterX = ecLogicalCenter != null ? (float) CanvasMinimapGeometry.mapX(projection, ecLogicalCenter[0]) : ecBox.x() + ecBox.w() / 2.0f;
-            float ecCenterY = ecLogicalCenter != null ? (float) CanvasMinimapGeometry.mapY(projection, ecLogicalCenter[1]) : ecBox.y() + ecBox.h() / 2.0f;
-
+            float ecCenterX = (float) CanvasMinimapGeometry.mapX(projection, ecLogicalCenter[0]);
+            float ecCenterY = (float) CanvasMinimapGeometry.mapY(projection, ecLogicalCenter[1]);
             for (String connectedId : ec.connectionQuestIds()) {
-                CanvasMinimapRect targetBox = questBoxes.get(connectedId);
-                if (targetBox == null) continue;
-                String connectionKey = "ec:" + ec.id() + "->" + connectedId;
-                if (!rendered.add(connectionKey)) continue;
-                int color = ec.connectionColors().getOrDefault(connectedId, TabletColors.TEXT_SECONDARY);
-                boolean direct = isEcDirect(ec, connectedId);
-                double[] tgtCenter = logicalCenters.get(connectedId);
-                float tgtCX = tgtCenter != null ? (float) CanvasMinimapGeometry.mapX(projection, tgtCenter[0]) : targetBox.x() + targetBox.w() / 2.0f;
-                float tgtCY = tgtCenter != null ? (float) CanvasMinimapGeometry.mapY(projection, tgtCenter[1]) : targetBox.y() + targetBox.h() / 2.0f;
-                String tex = ec.connectionTextures().getOrDefault(connectedId, "");
-                connections.add(new CanvasMinimapConnection(
-                        ecCenterX, ecCenterY,
-                        tgtCX, tgtCY,
-                        color, EC_ALPHA, direct,
-                        direct || tgtCenter == null ? null : computeGridPath(projection, ecLogicalCenter[0], ecLogicalCenter[1], tgtCenter[0], tgtCenter[1]),
-                        tex.isBlank() ? null : tex
-                ));
+                addEcConnection(connections, rendered, projection, ec, connectedId, boxes.get(connectedId), logicalCenters.get(connectedId), ecLogicalCenter, ecCenterX, ecCenterY, true);
             }
             for (String prerequisiteId : ec.prerequisiteQuestIds()) {
-                CanvasMinimapRect sourceBox = questBoxes.get(prerequisiteId);
-                if (sourceBox == null) continue;
-                String connectionKey = "ec:" + prerequisiteId + "->" + ec.id();
-                if (!rendered.add(connectionKey)) continue;
-                int color = ec.connectionColors().getOrDefault(prerequisiteId, TabletColors.TEXT_SECONDARY);
-                boolean direct = isEcDirect(ec, prerequisiteId);
-                double[] srcCenter = logicalCenters.get(prerequisiteId);
-                float srcCX = srcCenter != null ? (float) CanvasMinimapGeometry.mapX(projection, srcCenter[0]) : sourceBox.x() + sourceBox.w() / 2.0f;
-                float srcCY = srcCenter != null ? (float) CanvasMinimapGeometry.mapY(projection, srcCenter[1]) : sourceBox.y() + sourceBox.h() / 2.0f;
-                String tex = ec.connectionTextures().getOrDefault(prerequisiteId, "");
-                connections.add(new CanvasMinimapConnection(
-                        srcCX, srcCY,
-                        ecCenterX, ecCenterY,
-                        color, EC_ALPHA, direct,
-                        direct || srcCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], ecLogicalCenter[0], ecLogicalCenter[1]),
-                        tex.isBlank() ? null : tex
-                ));
+                addEcConnection(connections, rendered, projection, ec, prerequisiteId, boxes.get(prerequisiteId), logicalCenters.get(prerequisiteId), ecLogicalCenter, ecCenterX, ecCenterY, false);
             }
         }
+    }
 
-        return new CanvasMinimapSnapshot(List.copyOf(questRects), List.copyOf(connections), projection);
+    private static void addEcConnection(
+            List<CanvasMinimapConnection> connections,
+            Set<String> rendered,
+            CanvasMinimapGeometry.Projection projection,
+            CanvasExclusiveChoice ec,
+            String otherId,
+            CanvasMinimapRect otherBox,
+            double[] otherCenter,
+            double[] ecLogicalCenter,
+            float ecCenterX,
+            float ecCenterY,
+            boolean ecIsSource
+    ) {
+        if (otherBox == null) {
+            return;
+        }
+        String sourceId = ecIsSource ? ec.id() : otherId;
+        String targetId = ecIsSource ? otherId : ec.id();
+        if (!rendered.add("ec:" + sourceId + "->" + targetId)) return;
+        float otherCX = otherCenter == null ? otherBox.x() + otherBox.w() / 2.0f : (float) CanvasMinimapGeometry.mapX(projection, otherCenter[0]);
+        float otherCY = otherCenter == null ? otherBox.y() + otherBox.h() / 2.0f : (float) CanvasMinimapGeometry.mapY(projection, otherCenter[1]);
+        float srcCX = ecIsSource ? ecCenterX : otherCX;
+        float srcCY = ecIsSource ? ecCenterY : otherCY;
+        float tgtCX = ecIsSource ? otherCX : ecCenterX;
+        float tgtCY = ecIsSource ? otherCY : ecCenterY;
+        double[] srcCenter = ecIsSource ? ecLogicalCenter : otherCenter;
+        double[] tgtCenter = ecIsSource ? otherCenter : ecLogicalCenter;
+        String tex = ec.connectionTextures().getOrDefault(otherId, "");
+        connections.add(new CanvasMinimapConnection(
+                srcCX, srcCY, tgtCX, tgtCY,
+                ec.connectionColors().getOrDefault(otherId, TabletColors.TEXT_SECONDARY),
+                EC_ALPHA, isEcDirect(ec, otherId),
+                isEcDirect(ec, otherId) || otherCenter == null ? null : computeGridPath(projection, srcCenter[0], srcCenter[1], tgtCenter[0], tgtCenter[1]),
+                tex.isBlank() ? null : tex
+        ));
     }
 
     private static List<CanvasPoint> computeGridPath(CanvasMinimapGeometry.Projection projection, double sx, double sy, double tx, double ty) {

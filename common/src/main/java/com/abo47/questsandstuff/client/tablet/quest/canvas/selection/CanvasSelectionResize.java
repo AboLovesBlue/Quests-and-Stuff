@@ -163,14 +163,14 @@ public final class CanvasSelectionResize {
                         textPivotX,
                         textPivotY,
                         text.rotation(),
-                        24,
-                        14
+                        CanvasTextLayer.MIN_W,
+                        CanvasTextLayer.MIN_H
                 );
                 resized.put(text.id(), text.moveTo(box.x(), box.y()).resizeTo(box.width(), box.height()));
                 continue;
             }
-            int targetW = Math.max(24, (int) Math.round(text.w() * scaleX));
-            int targetH = Math.max(14, (int) Math.round(text.h() * scaleY));
+            int targetW = Math.max(CanvasTextLayer.MIN_W, (int) Math.round(text.w() * scaleX));
+            int targetH = Math.max(CanvasTextLayer.MIN_H, (int) Math.round(text.h() * scaleY));
             double centerX = target.left() + (text.x() + text.w() / 2.0D - start.left()) * scaleX;
             double centerY = target.top() + (text.y() + text.h() / 2.0D - start.top()) * scaleY;
             int targetX = (int) Math.round(centerX - targetW / 2.0D);

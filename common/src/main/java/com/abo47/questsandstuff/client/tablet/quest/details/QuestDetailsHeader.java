@@ -21,6 +21,7 @@ import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.network.ModNetwork;
 import com.abo47.questsandstuff.network.quest.runtime.C2STogglePinPacket;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 final class QuestDetailsHeader {
     private QuestDetailsHeader() {
@@ -145,7 +146,7 @@ final class QuestDetailsHeader {
         );
         titleField.setClientSideWidget();
         titleField.setCurrentString(titleDraft(state));
-        titleField.setMaxStringLength(80);
+        titleField.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         titleField.setBordered(false);
         boolean editing = state.questDetails.questDetailsTitleFocused && questId.equals(state.questDetails.pendingQuestTitleChangeId);
         boolean framed = QuestDetailsEditController.canEdit(state);

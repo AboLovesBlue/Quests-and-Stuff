@@ -13,11 +13,13 @@ import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
+import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 
 public final class FontSizeFieldWidget extends TextFieldWidget {
-    public static final int MIN = 1;
-    public static final int MAX = 100;
+    public static final int MIN = CanvasTextLayer.MIN_FONT_SIZE;
+    public static final int MAX = CanvasTextLayer.MAX_FONT_SIZE;
 
     private final IntConsumer onChange;
     private final IntConsumer onPreview;

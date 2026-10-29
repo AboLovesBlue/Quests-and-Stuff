@@ -141,11 +141,6 @@ public class TeamSavedData extends SavedData {
         setDirty();
     }
 
-    public void removeInviteCode(String code) {
-        inviteCodes.remove(code);
-        setDirty();
-    }
-
     public PlayerInviteCode getInviteCode(String code) {
         PlayerInviteCode pic = inviteCodes.get(code);
         if (pic == null) {

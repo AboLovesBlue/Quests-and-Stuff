@@ -15,13 +15,12 @@ import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
 final class QuestDetailsDescriptionEditActions {
-    private static final int RECIPE_CARD_W = 136;
-    private static final int RECIPE_CARD_H = 92;
 
     private QuestDetailsDescriptionEditActions() {
     }
@@ -30,7 +29,7 @@ final class QuestDetailsDescriptionEditActions {
         String id = nextDescriptionTextId(model);
         int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - 48);
         int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - 16);
-        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), 96, 32, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
+        CanvasTextLayer text = new CanvasTextLayer(id, "Text", Math.max(0, x), Math.max(0, y), CanvasTextLayer.DEFAULT_W, CanvasTextLayer.DEFAULT_H, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
         text = QuestDetailsDescriptionLayout.fitAndClampText(state, text, QuestDetailsWindow.descriptionContentWidth(state));
         model.putText(text);
         model.ensureOrder(QuestDetailsDescriptionModel.ORDER_TEXT + id);
@@ -83,8 +82,8 @@ final class QuestDetailsDescriptionEditActions {
 
     static void addRecipeCardAt(TabletUiState state, String questId, int panelX, int panelY) {
         String id = nextDescriptionRecipeId(modelForQuest(questId));
-        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - RECIPE_CARD_W / 2);
-        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - RECIPE_CARD_H / 2);
+        int x = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorX - panelX - CanvasRecipeCardActions.CARD_W / 2);
+        int y = QuestDetailsDescriptionLayout.snap(state, state.questDetails.questDetailsContextAnchorY - panelY + state.questDetails.questDetailsDescScroll - CanvasRecipeCardActions.CARD_H / 2);
         QuestDetailsWindow.openRecipePicker(state, ModalTargets.descRecipeNew(questId, id, Math.max(0, x), Math.max(0, y)));
         QuestsAndStuffMod.debugLog("[QnS:UI] quest details add recipe card pending quest={} image={} pos={},{}", questId, id, x, y);
     }

@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
+
 public final class CanvasRotationMath {
     private CanvasRotationMath() {
     }
@@ -74,10 +76,19 @@ public final class CanvasRotationMath {
         return Math.max(0, Math.min(safeNew, Math.round(safePivot * (float) safeNew / (float) safeOld)));
     }
 
-    static double effectivePivot(int pivot, int span) {
+    public static double effectivePivot(int pivot, int span) {
         int safeSpan = Math.max(1, span);
         int safePivot = Math.max(0, Math.min(safeSpan, pivot));
         return safePivot == safeSpan / 2 ? safeSpan / 2.0D : safePivot;
+    }
+
+    public static CanvasDoublePoint rotatePoint(double x, double y, double pivotX, double pivotY, double cos, double sin) {
+        double relX = x - pivotX;
+        double relY = y - pivotY;
+        return new CanvasDoublePoint(
+                pivotX + relX * cos - relY * sin,
+                pivotY + relX * sin + relY * cos
+        );
     }
 
     static double[] rotatedCorner(
@@ -158,7 +169,7 @@ public final class CanvasRotationMath {
         };
     }
 
-    private static double[] rotateCardinalLocal(double x, double y, int rotation) {
+    public static double[] rotateCardinalLocal(double x, double y, int rotation) {
         return switch (rotation) {
             case 90 -> new double[]{-y, x};
             case 180 -> new double[]{-x, -y};
@@ -167,19 +178,16 @@ public final class CanvasRotationMath {
         };
     }
 
-    private static int floorClean(double value) {
+    public static double clean(double value) {
         double nearest = Math.rint(value);
-        if (Math.abs(value - nearest) < 1.0E-7D) {
-            return (int) nearest;
-        }
-        return (int) Math.floor(value);
+        return Math.abs(value - nearest) < 1.0E-7D ? nearest : value;
     }
 
-    private static int ceilClean(double value) {
-        double nearest = Math.rint(value);
-        if (Math.abs(value - nearest) < 1.0E-7D) {
-            return (int) nearest;
-        }
-        return (int) Math.ceil(value);
+    public static int floorClean(double value) {
+        return (int) Math.floor(clean(value));
+    }
+
+    public static int ceilClean(double value) {
+        return (int) Math.ceil(clean(value));
     }
 }

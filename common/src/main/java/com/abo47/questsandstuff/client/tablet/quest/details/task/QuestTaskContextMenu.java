@@ -28,10 +28,10 @@ final class QuestTaskContextMenu {
         ContextMenuSections sections = new ContextMenuSections();
         String kind = state.questDetails.questDetailsContextKind == null ? "" : state.questDetails.questDetailsContextKind;
         QuestTaskCreateMenuActions.addSections(sections, state, kind);
-        if ("task".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+        if (TaskSections.isTask(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
             QuestTaskMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
-        if ("reward".equals(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
+        if (TaskSections.isReward(kind) && !state.questDetails.questDetailsContextId.isBlank()) {
             QuestTaskRewardMenuActions.addSections(sections, state, player, questId, state.questDetails.questDetailsContextId);
         }
         List<ContextAction> actions = sections.build();

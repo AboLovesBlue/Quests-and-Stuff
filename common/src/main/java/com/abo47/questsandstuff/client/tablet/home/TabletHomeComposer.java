@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.app.TabletAppRegistry;
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.root.TabletRootWidget;
@@ -32,7 +33,7 @@ public final class TabletHomeComposer {
     public static WidgetGroup create(Player player, int rootWidth, int rootHeight, boolean fullScreenMode) {
         UiThemeManager.activeThemeName();
         TabletUiState state = new TabletUiState();
-        state.root.currentApp = "home";
+        state.root.currentApp = TabletAppRegistry.APP_HOME;
         TabletUiFactory.setActiveTabletState(state);
         int safeRootW = Math.max(1, rootWidth);
         int safeRootH = Math.max(1, rootHeight);

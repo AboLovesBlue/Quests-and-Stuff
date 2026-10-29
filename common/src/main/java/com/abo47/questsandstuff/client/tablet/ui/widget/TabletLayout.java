@@ -43,6 +43,7 @@ public final class TabletLayout {
     public static final int CANVAS_W = BODY_W - CHAPTER_W - GAP;
     public static final int CHAPTER_CARD_H = 32;
     public static final int CHAPTER_CARD_GAP = PANEL_GAP;
+    public static final int CHAPTER_LIST_COLLAPSED_W = 54;
     public static final int CHAPTER_COLLAPSED_ROW_STEP = 30;
     public static final String DRAFT_CHAPTER = "__draft_chapter__";
     public static final Path ASSETS_ROOT_DIR = Path.of("config", "questsandstuff", "assets");
@@ -188,7 +189,7 @@ public final class TabletLayout {
         if (state.chapterPanel.chapterScrollMax <= 0) {
             return false;
         }
-        if (isChapterPanelCollapsed(state) || state.chapterPanel.chapterListWidth <= 54) {
+        if (isChapterPanelCollapsed(state) || state.chapterPanel.chapterListWidth <= CHAPTER_LIST_COLLAPSED_W) {
             return false;
         }
         int listLeft = state.chapterPanel.chapterListOriginX;
@@ -253,7 +254,7 @@ public final class TabletLayout {
     }
 
     public static int chapterRowStep(TabletUiState state) {
-        if (state != null && (state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= 54)) {
+        if (state != null && (state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= CHAPTER_LIST_COLLAPSED_W)) {
             return CHAPTER_COLLAPSED_ROW_STEP;
         }
         return CHAPTER_CARD_H + CHAPTER_CARD_GAP;

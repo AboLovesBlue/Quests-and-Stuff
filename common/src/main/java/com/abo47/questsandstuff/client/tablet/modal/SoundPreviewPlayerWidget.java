@@ -12,6 +12,8 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 
+import com.abo47.questsandstuff.quest.model.QuestDisplay;
+
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 
 final class SoundPreviewPlayerWidget extends WidgetGroup {
@@ -22,7 +24,7 @@ final class SoundPreviewPlayerWidget extends WidgetGroup {
     private final IntSupplier volumePercent;
 
     SoundPreviewPlayerWidget(int x, int y, int width, String soundId) {
-        this(x, y, width, soundId, () -> 100);
+        this(x, y, width, soundId, () -> QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME);
     }
 
     SoundPreviewPlayerWidget(int x, int y, int width, String soundId, IntSupplier volumePercent) {
@@ -32,7 +34,7 @@ final class SoundPreviewPlayerWidget extends WidgetGroup {
     SoundPreviewPlayerWidget(int x, int y, int width, int height, String soundId, IntSupplier volumePercent) {
         super(x, y, width, height);
         this.soundId = soundId == null ? "" : soundId.trim();
-        this.volumePercent = volumePercent == null ? () -> 100 : volumePercent;
+        this.volumePercent = volumePercent == null ? () -> QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME : volumePercent;
         updateTooltip();
     }
 

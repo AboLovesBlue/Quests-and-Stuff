@@ -32,7 +32,7 @@ final class ResourceListPickerModal {
     static TextFieldWidget rebuild(WidgetGroup modal, TabletUiState state, Player player, Runnable refresh, int w, int h, Options options) {
         SearchScrollState picker = ModalPickerStates.forType(state, options.type());
         ModalShell.addTitleAndClose(modal, options.title(), w, state, refresh);
-        TextFieldWidget search = ModalShell.addSearchField(modal, 8, 24, w - 16, 16, picker.search(), options.searchMaxLength(), value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, 8, ModalShell.PICKER_HEADER_Y, w - 16, ModalShell.PICKER_SEARCH_H, picker.search(), options.searchMaxLength(), value -> {
             picker.setSearch(value);
             picker.setScrollValue(0);
             String query = picker.search();
@@ -41,7 +41,7 @@ final class ResourceListPickerModal {
         }, picker::setFocused);
 
         int listX = 8;
-        int listY = 46;
+        int listY = ModalShell.PICKER_LIST_Y;
         int listW = w - 16;
         int listH = h - listY - 8;
         List<String> entries = options.entries().values(picker.search());

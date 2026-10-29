@@ -20,6 +20,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import com.google.gson.JsonObject;
 
@@ -66,7 +67,7 @@ final class QuestTaskInlineFields {
         );
         field.setClientSideWidget();
         field.setCurrentString(state.questDetails.questDetailsTaskRenameDraft);
-        field.setMaxStringLength(80);
+        field.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         field.setBordered(false);
         field.setTextColor(TabletColors.TEXT_PRIMARY);
         field.setBackground(SurfaceFactory.bordered(TabletColors.SURFACE_BASE, TabletColors.INTERACTIVE));

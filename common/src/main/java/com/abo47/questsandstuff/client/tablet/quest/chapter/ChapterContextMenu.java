@@ -9,6 +9,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuLayout;
 import com.abo47.questsandstuff.client.tablet.quest.chapter.menu.ChapterContextMenuRows;
@@ -48,7 +49,7 @@ public final class ChapterContextMenu {
         ));
         if (state.chapterPanel.modeEditorOpen) {
             int w = 240;
-            int h = 116;
+            int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
             int x = Math.max(4, (overlay.getSizeWidth() - w) / 2);
             int y = Math.max(4, (overlay.getSizeHeight() - h) / 2);
             String mode = state.chapterPanel.modeEditorMode;

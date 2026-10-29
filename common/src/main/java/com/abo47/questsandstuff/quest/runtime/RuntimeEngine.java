@@ -289,7 +289,9 @@ public final class RuntimeEngine {
         QuestProgressState progress = state.quest(questId);
 
         boolean complete = false;
-        if (!definition.tasks().isEmpty()) {
+        if (definition.tasks().isEmpty()) {
+            complete = progress.unlocked();
+        } else {
             complete = true;
             for (Map.Entry<String, QuestTaskDefinition> task : definition.tasks().entrySet()) {
                 if (!CompletionRules.isTaskComplete(definition, progress, task.getKey(), task.getValue())) {

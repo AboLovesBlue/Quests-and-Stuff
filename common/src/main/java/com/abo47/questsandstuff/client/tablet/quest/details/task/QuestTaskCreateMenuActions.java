@@ -14,13 +14,13 @@ final class QuestTaskCreateMenuActions {
     }
 
     static void addSections(ContextMenuSections sections, TabletUiState state, String kind) {
-        if (kind.startsWith("task")) {
+        if (TaskSections.isTask(kind)) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_TASK), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "task", "");
             }));
         }
-        if (kind.startsWith("reward")) {
+        if (TaskSections.isReward(kind)) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.add(TabletTranslationKeys.text(QuestTranslationKeys.ADD_REWARD), () -> {
                 ContextMenuController.clearDeleteConfirm(state);
                 QuestDetailsTransientManager.openTypePicker(state, "reward", "");

@@ -452,11 +452,7 @@ public final class ModalOpenActions {
     }
 
     private static int completionSoundVolume(String questId) {
-        CompoundTag quest = ClientQuestStateFacade.quest(questId);
-        if (quest == null || !quest.contains("completion_sound_volume")) {
-            return QuestDisplay.DEFAULT_COMPLETION_SOUND_VOLUME;
-        }
-        return QuestDisplay.normalizeCompletionSoundVolume(quest.getInt("completion_sound_volume"));
+        return QuestDisplay.normalizeCompletionSoundVolume(ClientQuestStateFacade.quest(questId));
     }
 
     private static Set<String> normalizedTargets(Collection<String> questIds) {

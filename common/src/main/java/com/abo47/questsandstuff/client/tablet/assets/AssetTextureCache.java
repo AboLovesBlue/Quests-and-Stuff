@@ -27,6 +27,7 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 final class AssetTextureCache {
     private static final Map<String, IGuiTexture> TEXTURE_CACHE = new HashMap<>();
     private static final Map<String, IGuiTexture> THUMBNAIL_CACHE = new HashMap<>();
+    private static final Map<String, List<ResourceLocation>> REGISTERED_LOCATIONS = new HashMap<>();
 
     private AssetTextureCache() {
     }
@@ -165,7 +166,6 @@ final class AssetTextureCache {
             java.awt.Graphics2D tg = tiledBI.createGraphics();
             tg.drawImage(sourceBI, 0, 0, null);
             tg.dispose();
-            tg.dispose();
             Files.createDirectories(tilesDir);
             ImageIO.write(tiledBI, "png", tilePath.toFile());
             QuestsAndStuffMod.LOGGER.info("[QnS:UI] Pre-rendered tile saved: root={} asset={} path={}", assetsRoot, relativePath, tilePath);
@@ -173,7 +173,7 @@ final class AssetTextureCache {
                 NativeImage nativeImage = NativeImage.read(in);
                 if (nativeImage != null) {
                     ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "tiles/" + sanitized);
-                    Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(nativeImage));
+                    registerTexture(cacheKey, id, nativeImage);
                     IGuiTexture result = new DynamicTexture(() -> new ResourceTexture(id));
                     TEXTURE_CACHE.put(cacheKey, result);
                     return result;
@@ -186,6 +186,7 @@ final class AssetTextureCache {
     }
 
     static void clearTileCache(Path assetsRoot, String relativePath) {
+        releaseTextures("tile:" + relativePath);
         TEXTURE_CACHE.remove("tile:" + relativePath);
         if (assetsRoot == null || relativePath == null) return;
         String sanitized = AssetPathResolver.sanitizeAssetId(relativePath);
@@ -197,9 +198,27 @@ final class AssetTextureCache {
     }
 
     static void clearTextureCache(String key) {
+        releaseTextures(key);
+        releaseTextures(textureCacheKey(key, true));
         TEXTURE_CACHE.remove(key);
         TEXTURE_CACHE.remove(textureCacheKey(key, true));
         THUMBNAIL_CACHE.remove(key);
+    }
+
+    private static void registerTexture(String cacheKey, ResourceLocation id, NativeImage image) {
+        Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
+        REGISTERED_LOCATIONS.computeIfAbsent(cacheKey, ignored -> new ArrayList<>()).add(id);
+    }
+
+    private static void releaseTextures(String cacheKey) {
+        List<ResourceLocation> ids = REGISTERED_LOCATIONS.remove(cacheKey);
+        if (ids == null) {
+            return;
+        }
+        var textureManager = Minecraft.getInstance().getTextureManager();
+        for (ResourceLocation id : ids) {
+            textureManager.release(id);
+        }
     }
 
     static ResourceLocation staticTextureLocation(Path assetsRoot, String relativePath) {
@@ -278,7 +297,7 @@ final class AssetTextureCache {
                 applyGrayscale(image);
             }
             ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key));
-            Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
+            registerTexture(key, id, image);
             return new DynamicTexture(() -> new ResourceTexture(id));
         } catch (Exception e) {
             QuestsAndStuffMod.LOGGER.warn("[QnS:UI] Failed loading texture {}", key, e);
@@ -329,7 +348,7 @@ final class AssetTextureCache {
                 applyGrayscale(image);
             }
             ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key + "_f" + index));
-            Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(image));
+            registerTexture(key, id, image);
             frames.add(new ResourceTexture(id));
             delaysMs.add(Math.max(40, gifDelayMs(reader, key, index)));
         }
@@ -390,7 +409,7 @@ final class AssetTextureCache {
                     applyGrayscale(nativeImage);
                 }
                 ResourceLocation id = ResourceLocation.tryBuild(QuestsAndStuffMod.MODID, "chapter_asset/" + AssetPathResolver.sanitizeAssetId(key + "_fallback"));
-                Minecraft.getInstance().getTextureManager().register(id, new net.minecraft.client.renderer.texture.DynamicTexture(nativeImage));
+                registerTexture(key, id, nativeImage);
                 return new DynamicTexture(() -> new ResourceTexture(id));
             }
         } catch (Exception exception) {

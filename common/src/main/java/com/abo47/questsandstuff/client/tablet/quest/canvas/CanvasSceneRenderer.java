@@ -49,6 +49,7 @@ import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasTextLayer;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.chapterBackgroundTexture;
@@ -79,9 +80,7 @@ final class CanvasSceneRenderer {
         canvasViewport.addWidget(new WidgetGroup(0, 0, canvasViewport.getSizeWidth(), canvasViewport.getSizeHeight()) {
             @Override
             public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                int alphaPercent = Math.max(0, Math.min(100, state.canvas.gridOpacityPercent));
-                int alpha = Math.max(20, Math.min(220, (255 * alphaPercent) / 100));
-                int lineColor = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
+                int lineColor = TabletGridControls.gridAlpha(state.canvas.gridOpacityPercent, TabletGridControls.defaultGridColor(state));
                 int cell = CanvasGeometry.gridSize(state);
                 int originX = getPositionX();
                 int originY = getPositionY();
@@ -339,7 +338,7 @@ final class CanvasSceneRenderer {
         }, null, null);
         field.setClientSideWidget();
         field.setCurrentString(state.questDetails.questTitleDraft == null ? "" : state.questDetails.questTitleDraft);
-        field.setMaxStringLength(80);
+        field.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         field.setBordered(false);
         field.setTextColor(TabletColors.TEXT_PRIMARY);
         field.setBackground(SurfaceFactory.bordered(withAlpha(TabletColors.SURFACE_BASE, 246), TabletColors.BORDER_ACCENT));

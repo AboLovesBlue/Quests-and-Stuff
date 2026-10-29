@@ -10,10 +10,10 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.quest.editor.session.EditorSessionService;
 import com.abo47.questsandstuff.quest.model.QuestDefinition;
 import com.abo47.questsandstuff.quest.model.QuestDisplay;
+import com.abo47.questsandstuff.quest.sync.SyncKeys;
 
 public final class QuestDisplayEditService {
     private static final int MAX_DESCRIPTION_LINES = 256;
-    private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
 
     private final EditorSessionService service;
 
@@ -28,23 +28,16 @@ public final class QuestDisplayEditService {
             return;
         }
 
+        QuestDisplay old = source.display();
+        String newTitle = title == null || title.isBlank() ? old.title() : title;
+        String newSubtitle = subtitle == null ? old.subtitle() : subtitle;
+        if (newTitle.equals(old.title()) && newSubtitle.equals(old.subtitle())) {
+            return;
+        }
+
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay display = new QuestDisplay(
-                title == null || title.isBlank() ? source.display().title() : title,
-                subtitle == null ? source.display().subtitle() : subtitle,
-                source.display().description(),
-                source.display().chapters(),
-                source.display().icon(),
-                source.display().iconBackground(),
-                source.display().completionSound(),
-                source.display().completionSoundVolume(),
-                source.display().completionHudBackground(),
-                source.display().visualHidden(),
-                source.display().questBackground(),
-                source.display().questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(source, old.withTitle(newTitle).withSubtitle(newSubtitle)));
     }
 
     public void updateQuestDescription(ServerPlayer player, String questId, List<String> description) {
@@ -54,27 +47,18 @@ public final class QuestDisplayEditService {
             return;
         }
 
+        List<String> newDescription = description == null ? List.of() : description.stream()
+                .filter(line -> line != null)
+                .map(QuestDisplayEditService::limitDescriptionLine)
+                .limit(MAX_DESCRIPTION_LINES)
+                .toList();
+        if (source.display().description().equals(newDescription)) {
+            return;
+        }
+
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay display = new QuestDisplay(
-                source.display().title(),
-                source.display().subtitle(),
-                description == null ? List.of() : description.stream()
-                        .filter(line -> line != null)
-                        .map(QuestDisplayEditService::limitDescriptionLine)
-                        .limit(MAX_DESCRIPTION_LINES)
-                        .toList(),
-                source.display().chapters(),
-                source.display().icon(),
-                source.display().iconBackground(),
-                source.display().completionSound(),
-                source.display().completionSoundVolume(),
-                source.display().completionHudBackground(),
-                source.display().visualHidden(),
-                source.display().questBackground(),
-                source.display().questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(source, source.display().withDescription(newDescription)));
     }
 
     public void setQuestIcon(ServerPlayer player, String questId, String icon) {
@@ -85,24 +69,14 @@ public final class QuestDisplayEditService {
         }
 
         String normalizedIcon = QuestDisplay.normalizeIcon(icon);
+        if (source.display().icon().equals(normalizedIcon)) {
+            return;
+        }
+
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay display = new QuestDisplay(
-                source.display().title(),
-                source.display().subtitle(),
-                source.display().description(),
-                source.display().chapters(),
-                normalizedIcon,
-                source.display().iconBackground(),
-                source.display().completionSound(),
-                source.display().completionSoundVolume(),
-                source.display().completionHudBackground(),
-                source.display().visualHidden(),
-                source.display().questBackground(),
-                source.display().questBackgroundGrayscale()
-        );
         QuestsAndStuffMod.debugLog("[QnS:Editor] quest icon quest={} icon={}", normalizedQuestId, normalizedIcon);
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(source, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(source, source.display().withIcon(normalizedIcon)));
     }
 
     public void setQuestVisualHidden(ServerPlayer player, String questId, boolean hidden) {
@@ -114,22 +88,7 @@ public final class QuestDisplayEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay old = quest.display();
-        QuestDisplay display = new QuestDisplay(
-                old.title(),
-                old.subtitle(),
-                old.description(),
-                old.chapters(),
-                old.icon(),
-                old.iconBackground(),
-                old.completionSound(),
-                old.completionSoundVolume(),
-                old.completionHudBackground(),
-                hidden,
-                old.questBackground(),
-                old.questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(quest, quest.display().withVisualHidden(hidden)));
     }
 
     public void setQuestCompletionSound(ServerPlayer player, String questId, String sound) {
@@ -145,22 +104,7 @@ public final class QuestDisplayEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay old = quest.display();
-        QuestDisplay display = new QuestDisplay(
-                old.title(),
-                old.subtitle(),
-                old.description(),
-                old.chapters(),
-                old.icon(),
-                old.iconBackground(),
-                normalizedSound,
-                old.completionSoundVolume(),
-                old.completionHudBackground(),
-                old.visualHidden(),
-                old.questBackground(),
-                old.questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionSound(normalizedSound)));
     }
 
     public void setQuestCompletionSound(ServerPlayer player, Set<String> questIds, String sound) {
@@ -170,22 +114,7 @@ public final class QuestDisplayEditService {
             if (quest.display().completionSound().equals(normalizedSound)) {
                 continue;
             }
-            QuestDisplay old = quest.display();
-            QuestDisplay display = new QuestDisplay(
-                    old.title(),
-                    old.subtitle(),
-                    old.description(),
-                    old.chapters(),
-                    old.icon(),
-                    old.iconBackground(),
-                    normalizedSound,
-                    old.completionSoundVolume(),
-                    old.completionHudBackground(),
-                    old.visualHidden(),
-                    old.questBackground(),
-                    old.questBackgroundGrayscale()
-            );
-            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+            updated.add(QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionSound(normalizedSound)));
         }
         updateQuests(player, updated);
     }
@@ -203,22 +132,7 @@ public final class QuestDisplayEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay old = quest.display();
-        QuestDisplay display = new QuestDisplay(
-                old.title(),
-                old.subtitle(),
-                old.description(),
-                old.chapters(),
-                old.icon(),
-                old.iconBackground(),
-                old.completionSound(),
-                normalizedVolume,
-                old.completionHudBackground(),
-                old.visualHidden(),
-                old.questBackground(),
-                old.questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionSoundVolume(normalizedVolume)));
     }
 
     public void setQuestCompletionSoundVolume(ServerPlayer player, Set<String> questIds, int volume) {
@@ -228,22 +142,7 @@ public final class QuestDisplayEditService {
             if (quest.display().completionSoundVolume() == normalizedVolume) {
                 continue;
             }
-            QuestDisplay old = quest.display();
-            QuestDisplay display = new QuestDisplay(
-                    old.title(),
-                    old.subtitle(),
-                    old.description(),
-                    old.chapters(),
-                    old.icon(),
-                    old.iconBackground(),
-                    old.completionSound(),
-                    normalizedVolume,
-                    old.completionHudBackground(),
-                    old.visualHidden(),
-                    old.questBackground(),
-                    old.questBackgroundGrayscale()
-            );
-            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+            updated.add(QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionSoundVolume(normalizedVolume)));
         }
         updateQuests(player, updated);
     }
@@ -261,47 +160,17 @@ public final class QuestDisplayEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay old = quest.display();
-        QuestDisplay display = new QuestDisplay(
-                old.title(),
-                old.subtitle(),
-                old.description(),
-                old.chapters(),
-                old.icon(),
-                old.iconBackground(),
-                old.completionSound(),
-                old.completionSoundVolume(),
-                normalizedBackground,
-                old.visualHidden(),
-                old.questBackground(),
-                old.questBackgroundGrayscale()
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionHudBackground(normalizedBackground)));
     }
 
     public void setQuestCompletionHudBackground(ServerPlayer player, Set<String> questIds, String background) {
         String normalizedBackground = QuestDisplay.normalizeCompletionHudBackground(background);
         List<QuestDefinition> updated = new ArrayList<>();
         for (QuestDefinition quest : selectedQuests(questIds)) {
-            QuestDisplay old = quest.display();
-            if (old.completionHudBackground().equals(normalizedBackground)) {
+            if (quest.display().completionHudBackground().equals(normalizedBackground)) {
                 continue;
             }
-            QuestDisplay display = new QuestDisplay(
-                    old.title(),
-                    old.subtitle(),
-                    old.description(),
-                    old.chapters(),
-                    old.icon(),
-                    old.iconBackground(),
-                    old.completionSound(),
-                    old.completionSoundVolume(),
-                    normalizedBackground,
-                    old.visualHidden(),
-                    old.questBackground(),
-                    old.questBackgroundGrayscale()
-            );
-            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+            updated.add(QuestDefinitionEdits.withDisplay(quest, quest.display().withCompletionHudBackground(normalizedBackground)));
         }
         updateQuests(player, updated);
     }
@@ -319,57 +188,20 @@ public final class QuestDisplayEditService {
 
         EditorSessionService.EditorSession session = service.session(player);
         service.captureUndo(session);
-        QuestDisplay old = quest.display();
-        QuestDisplay display = new QuestDisplay(
-                old.title(),
-                old.subtitle(),
-                old.description(),
-                old.chapters(),
-                old.icon(),
-                old.iconBackground(),
-                old.completionSound(),
-                old.completionSoundVolume(),
-                old.completionHudBackground(),
-                old.visualHidden(),
-                normalizedBackground,
-                grayscale
-        );
-        updateQuest(player, session, QuestDefinitionEdits.withDisplay(quest, display));
+        QuestDisplay display = quest.display().withQuestBackground(normalizedBackground).withQuestBackgroundGrayscale(grayscale);
+        QuestContentEditService.updateQuest(service, player, session, QuestDefinitionEdits.withDisplay(quest, display));
     }
 
     public void setQuestBackground(ServerPlayer player, Set<String> questIds, String background, boolean grayscale) {
         String normalizedBackground = QuestDisplay.normalizeQuestBackground(background);
         List<QuestDefinition> updated = new ArrayList<>();
         for (QuestDefinition quest : selectedQuests(questIds)) {
-            QuestDisplay old = quest.display();
-            if (old.questBackground().equals(normalizedBackground) && old.questBackgroundGrayscale() == grayscale) {
+            if (quest.display().questBackground().equals(normalizedBackground) && quest.display().questBackgroundGrayscale() == grayscale) {
                 continue;
             }
-            QuestDisplay display = new QuestDisplay(
-                    old.title(),
-                    old.subtitle(),
-                    old.description(),
-                    old.chapters(),
-                    old.icon(),
-                    old.iconBackground(),
-                    old.completionSound(),
-                    old.completionSoundVolume(),
-                    old.completionHudBackground(),
-                    old.visualHidden(),
-                    normalizedBackground,
-                    grayscale
-            );
-            updated.add(QuestDefinitionEdits.withDisplay(quest, display));
+            updated.add(QuestDefinitionEdits.withDisplay(quest, quest.display().withQuestBackground(normalizedBackground).withQuestBackgroundGrayscale(grayscale)));
         }
         updateQuests(player, updated);
-    }
-
-    private void updateQuest(ServerPlayer player, EditorSessionService.EditorSession session, QuestDefinition updated) {
-        service.definitionStore().upsert(updated);
-        service.definitionStore().saveNow(updated.id());
-        session.currentQuest = updated.id();
-        service.postMutation(player);
-        service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", updated);
     }
 
     private void updateQuests(ServerPlayer player, List<QuestDefinition> updated) {
@@ -385,7 +217,7 @@ public final class QuestDisplayEditService {
         }
         service.postMutation(player);
         for (QuestDefinition definition : updated) {
-            service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), "update", definition);
+            service.syncService().broadcastEditorMutation(player.server.getPlayerList().getPlayers(), SyncKeys.EditorAction.UPDATE, definition);
         }
     }
 
@@ -405,6 +237,6 @@ public final class QuestDisplayEditService {
     }
 
     private static String limitDescriptionLine(String line) {
-        return line.length() > MAX_DESCRIPTION_LINE_LENGTH ? line.substring(0, MAX_DESCRIPTION_LINE_LENGTH) : line;
+        return line.length() > QuestDisplay.MAX_DESCRIPTION_LINE_LENGTH ? line.substring(0, QuestDisplay.MAX_DESCRIPTION_LINE_LENGTH) : line;
     }
 }

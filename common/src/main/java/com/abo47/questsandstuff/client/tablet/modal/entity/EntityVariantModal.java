@@ -7,6 +7,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
@@ -32,15 +33,15 @@ public final class EntityVariantModal {
     }
 
     private static TextFieldWidget addControls(WidgetGroup modal, TabletUiState state, Runnable refresh, EntityVariantPickerModel model, int w) {
-        int rightX = EntityVariantTiles.RIGHT_X;
-        int rightW = w - 174;
+        int rightX = ModalPreviewLayout.RIGHT_X;
+        int rightW = w - ModalPreviewLayout.RIGHT_X - ModalPreviewLayout.PREVIEW_X;
         int controlsY = 2;
         int controlsH = 16;
         int backY = 1;
         int backSize = 18;
         int backX = rightX + rightW - backSize - 22;
         int searchW = model.browsingFolder() ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.entityVariantSearch, 80, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.entityVariantSearch, ModalShell.SEARCH_MAX_LENGTH, value -> {
             state.pickers.entityVariantSearch = SearchFilter.normalizeUserInput(value);
             state.pickers.entityVariantScroll = 0;
             refresh.run();

@@ -21,8 +21,8 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import com.abo47.questsandstuff.util.naming.StableIdAllocator;
 
 public final class CanvasRecipeCardActions {
-    private static final int CARD_W = 136;
-    private static final int CARD_H = 92;
+    public static final int CARD_W = 136;
+    public static final int CARD_H = 92;
 
     private CanvasRecipeCardActions() {
     }

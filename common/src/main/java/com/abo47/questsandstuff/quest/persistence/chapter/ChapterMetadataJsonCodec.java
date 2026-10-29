@@ -37,8 +37,8 @@ final class ChapterMetadataJsonCodec {
             if (id.isBlank()) {
                 continue;
             }
-            int width = intOr(json, "w", 80);
-            int height = intOr(json, "h", 80);
+            int width = intOr(json, "w", CanvasImageLayer.DEFAULT_W);
+            int height = intOr(json, "h", CanvasImageLayer.DEFAULT_H);
             images.add(new CanvasImageLayer(
                     id,
                     stringOr(json, "asset", ""),

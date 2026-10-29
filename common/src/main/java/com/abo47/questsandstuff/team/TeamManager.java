@@ -108,7 +108,10 @@ public final class TeamManager {
             }
         }
         if (newMembers.isEmpty()) {
+            data().removeInviteCodesForTeam(team.teamId());
+            QuestServiceRegistry.chunkClaims(level.getServer()).removeTeamClaims(team.teamId());
             data().removeTeam(team.teamId());
+            ChunkClaimPacketHelper.broadcastAll(level);
         } else {
             TeamData updated = team.withMembers(newMembers);
             data().removeTeam(team.teamId());
@@ -139,7 +142,10 @@ public final class TeamManager {
             }
         }
         if (newMembers.isEmpty()) {
+            data().removeInviteCodesForTeam(team.teamId());
+            QuestServiceRegistry.chunkClaims(level.getServer()).removeTeamClaims(team.teamId());
             data().removeTeam(team.teamId());
+            ChunkClaimPacketHelper.broadcastAll(level);
         } else {
             TeamData updated = team.withMembers(newMembers);
             data().removeTeam(team.teamId());

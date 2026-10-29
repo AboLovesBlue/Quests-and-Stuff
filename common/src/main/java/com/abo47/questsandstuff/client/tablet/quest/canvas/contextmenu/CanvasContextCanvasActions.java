@@ -14,6 +14,7 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
 import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
@@ -83,8 +84,8 @@ final class CanvasContextCanvasActions {
         )));
         addActions.add(ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.add_text_box"), "text", TabletColors.SUCCESS, () -> {
             String id = StableIdAllocator.nextId("txt", canvasTextIds(state, selectedChapter));
-            int textW = 96;
-            int textH = 32;
+            int textW = CanvasTextLayer.DEFAULT_W;
+            int textH = CanvasTextLayer.DEFAULT_H;
             int x = snapToGrid(state, state.contextMenu.contextPointerLogicalX - textW / 2);
             int y = snapToGrid(state, state.contextMenu.contextPointerLogicalY - textH / 2);
             CanvasTextLayer text = new CanvasTextLayer(id, "Text", x, y, textW, textH, 0, "left", "normal", TabletColors.TEXT_PRIMARY);
@@ -250,7 +251,7 @@ final class CanvasContextCanvasActions {
 
     private static void openCanvasModeEditor(TabletUiState state, CanvasViewport canvasViewport, String selectedChapter, String mode, String path, int left, int right) {
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         var mc = net.minecraft.client.Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();
@@ -283,7 +284,7 @@ final class CanvasContextCanvasActions {
 
     private static void openCanvasDynamicModeEditor(TabletUiState state, CanvasViewport canvasViewport, String selectedChapter, String path, int l, int r, int t, int b) {
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         var mc = net.minecraft.client.Minecraft.getInstance();
         int screenW = mc.getWindow().getGuiScaledWidth();
         int screenH = mc.getWindow().getGuiScaledHeight();

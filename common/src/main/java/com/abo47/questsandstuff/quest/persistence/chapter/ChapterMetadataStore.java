@@ -148,111 +148,51 @@ public final class ChapterMetadataStore {
     }
 
     public void setChapterIcon(String chapter, String icon) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        String value = icon == null ? "" : icon.trim();
-        state.chapterIcons.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter icon {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "icon", icon == null ? "" : icon.trim(), state.chapterIcons);
     }
 
     public void setChapterBackground(String chapter, String background) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        String value = background == null || background.isBlank() ? "default" : background.trim();
-        state.chapterBackgrounds.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter background {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "background", background == null || background.isBlank() ? "default" : background.trim(), state.chapterBackgrounds);
     }
 
     public void setChapterCanvasBackground(String chapter, String background) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        String value = background == null || background.isBlank() ? "default" : background.trim();
-        state.chapterCanvasBackgrounds.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter canvas_background {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "canvas_background", background == null || background.isBlank() ? "default" : background.trim(), state.chapterCanvasBackgrounds);
     }
 
     public void setChapterTextAlign(String chapter, String align) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        String value = ChapterMetadataJsonCodec.normalizeTextAlign(align);
-        state.chapterTextAlign.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_align {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "text_align", ChapterMetadataJsonCodec.normalizeTextAlign(align), state.chapterTextAlign);
     }
 
     public void setChapterTextColor(String chapter, int color) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        state.chapterTextColor.put(normalized, color);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_color {} -> {}", normalized, color);
-        saveChapter(normalized);
+        set(chapter, "text_color", color, state.chapterTextColor);
     }
 
     public void setChapterTextStyle(String chapter, String style) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        String value = ChapterMetadataJsonCodec.normalizeTextStyle(style);
-        state.chapterTextStyle.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_style {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "text_style", ChapterMetadataJsonCodec.normalizeTextStyle(style), state.chapterTextStyle);
     }
 
     public void setChapterTextSize(String chapter, int size) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        int value = CanvasTextLayer.clampFontSize(size);
-        state.chapterTextSize.put(normalized, value);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter text_size {} -> {}", normalized, value);
-        saveChapter(normalized);
+        set(chapter, "text_size", CanvasTextLayer.clampFontSize(size), state.chapterTextSize);
     }
 
     public void setChapterLockUntilUnlocked(String chapter, boolean lockUntilUnlocked) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        state.chapterLockUntilUnlocked.put(normalized, lockUntilUnlocked);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter lock_until_unlocked {} -> {}", normalized, lockUntilUnlocked);
-        saveChapter(normalized);
+        set(chapter, "lock_until_unlocked", lockUntilUnlocked, state.chapterLockUntilUnlocked);
     }
 
     public void setChapterHideUntilUnlocked(String chapter, boolean hideUntilUnlocked) {
-        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (normalized.isBlank()) {
-            return;
-        }
-        state.chapterHideUntilUnlocked.put(normalized, hideUntilUnlocked);
-        QuestsAndStuffMod.debugLog("[QnS:Store] chapter hide_until_unlocked {} -> {}", normalized, hideUntilUnlocked);
-        saveChapter(normalized);
+        set(chapter, "hide_until_unlocked", hideUntilUnlocked, state.chapterHideUntilUnlocked);
     }
 
     public void putCanvasExclusiveChoice(String chapter, CanvasExclusiveChoice ec) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (ec != null && ChapterCanvasLayerMutations.put(state, normalized, ec, ec.id(), "exclusive_choice:" + ec.id(), state.canvasExclusiveChoicesByChapter, CanvasExclusiveChoice::id)) {
+        if (ChapterCanvasLayerMutations.put(state, normalized, ChapterCanvasLayerMutations.EXCLUSIVE_CHOICE_ID_PREFIX, ec, state.canvasExclusiveChoicesByChapter, CanvasExclusiveChoice::id)) {
             saveChapter(normalized);
         }
     }
 
     public boolean removeCanvasExclusiveChoice(String chapter, String ecId) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (!ChapterCanvasLayerMutations.remove(state, normalized, ecId, "exclusive_choice:" + ecId, state.canvasExclusiveChoicesByChapter, CanvasExclusiveChoice::id)) {
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, ecId, ChapterCanvasLayerMutations.EXCLUSIVE_CHOICE_ID_PREFIX, state.canvasExclusiveChoicesByChapter, CanvasExclusiveChoice::id)) {
             return false;
         }
         saveChapter(normalized);
@@ -261,14 +201,14 @@ public final class ChapterMetadataStore {
 
     public void putCanvasImage(String chapter, CanvasImageLayer image) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (image != null && ChapterCanvasLayerMutations.put(state, normalized, image, image.id(), "image:" + image.id(), state.canvasImagesByChapter, CanvasImageLayer::id)) {
+        if (ChapterCanvasLayerMutations.put(state, normalized, ChapterCanvasLayerMutations.IMAGE_ID_PREFIX, image, state.canvasImagesByChapter, CanvasImageLayer::id)) {
             saveChapter(normalized);
         }
     }
 
     public boolean removeCanvasImage(String chapter, String imageId) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (!ChapterCanvasLayerMutations.remove(state, normalized, imageId, "image:" + imageId, state.canvasImagesByChapter, CanvasImageLayer::id)) {
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, imageId, ChapterCanvasLayerMutations.IMAGE_ID_PREFIX, state.canvasImagesByChapter, CanvasImageLayer::id)) {
             return false;
         }
         saveChapter(normalized);
@@ -277,14 +217,14 @@ public final class ChapterMetadataStore {
 
     public void putCanvasText(String chapter, CanvasTextLayer text) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (text != null && ChapterCanvasLayerMutations.put(state, normalized, text, text.id(), "text:" + text.id(), state.canvasTextsByChapter, CanvasTextLayer::id)) {
+        if (ChapterCanvasLayerMutations.put(state, normalized, ChapterCanvasLayerMutations.TEXT_ID_PREFIX, text, state.canvasTextsByChapter, CanvasTextLayer::id)) {
             saveChapter(normalized);
         }
     }
 
     public boolean removeCanvasText(String chapter, String textId) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
-        if (!ChapterCanvasLayerMutations.remove(state, normalized, textId, "text:" + textId, state.canvasTextsByChapter, CanvasTextLayer::id)) {
+        if (!ChapterCanvasLayerMutations.remove(state, normalized, textId, ChapterCanvasLayerMutations.TEXT_ID_PREFIX, state.canvasTextsByChapter, CanvasTextLayer::id)) {
             return false;
         }
         saveChapter(normalized);
@@ -305,21 +245,19 @@ public final class ChapterMetadataStore {
         if (normalized.isBlank()) {
             return;
         }
-        if (images != null) {
-            for (CanvasImageLayer image : images) {
-                if (image != null) {
-                    ChapterCanvasLayerMutations.put(state, normalized, image, image.id(), "image:" + image.id(), state.canvasImagesByChapter, CanvasImageLayer::id);
-                }
-            }
-        }
-        if (texts != null) {
-            for (CanvasTextLayer text : texts) {
-                if (text != null) {
-                    ChapterCanvasLayerMutations.put(state, normalized, text, text.id(), "text:" + text.id(), state.canvasTextsByChapter, CanvasTextLayer::id);
-                }
-            }
-        }
+        ChapterCanvasLayerMutations.putAll(state, normalized, ChapterCanvasLayerMutations.IMAGE_ID_PREFIX, images, state.canvasImagesByChapter, CanvasImageLayer::id);
+        ChapterCanvasLayerMutations.putAll(state, normalized, ChapterCanvasLayerMutations.TEXT_ID_PREFIX, texts, state.canvasTextsByChapter, CanvasTextLayer::id);
         ChapterCanvasLayerMutations.setOrder(state, normalized, order);
+        saveChapter(normalized);
+    }
+
+    private <T> void set(String chapter, String key, T value, Map<String, T> target) {
+        String normalized = ChapterMetadataState.normalizeChapterName(chapter);
+        if (normalized.isBlank()) {
+            return;
+        }
+        target.put(normalized, value);
+        QuestsAndStuffMod.debugLog("[QnS:Store] chapter {} {} -> {}", key, normalized, value);
         saveChapter(normalized);
     }
 

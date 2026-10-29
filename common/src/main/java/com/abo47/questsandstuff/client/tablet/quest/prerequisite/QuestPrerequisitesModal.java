@@ -111,7 +111,7 @@ public final class QuestPrerequisitesModal {
     private static TextFieldWidget addSearch(WidgetGroup modal, TabletUiState state, Runnable refresh, ModalPreviewLayout.Metrics layout, int modalW) {
         int modeX = headerModeButtonX(modalW);
         int searchW = Math.max(40, modeX - layout.rightX() - HEADER_SEARCH_TO_BUTTON_GAP);
-        return ModalShell.addSearchField(modal, layout.rightX(), 2, searchW, 16, state.modal.prerequisitesManagerSearch, 80, value -> {
+        return ModalShell.addSearchField(modal, layout.rightX(), 2, searchW, ModalShell.PICKER_SEARCH_H, state.modal.prerequisitesManagerSearch, ModalShell.SEARCH_MAX_LENGTH, value -> {
             state.modal.prerequisitesManagerSearch = SearchFilter.normalizeUserInput(value);
             state.modal.prerequisitesManagerScroll = 0;
             state.modal.prerequisitesManagerHoveredConnectionKey = "";

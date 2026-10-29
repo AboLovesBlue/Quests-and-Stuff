@@ -27,7 +27,7 @@ import com.abo47.questsandstuff.util.naming.QuestNaming;
 
 public final class EditorQuestCommandClient {
     private static final int MAX_DESCRIPTION_LINES = 256;
-    private static final int MAX_DESCRIPTION_LINE_LENGTH = 16384;
+    private static final int MAX_DESCRIPTION_LINE_LENGTH = QuestDisplay.MAX_DESCRIPTION_LINE_LENGTH;
 
     private EditorQuestCommandClient() {
     }

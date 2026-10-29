@@ -168,13 +168,13 @@ final class QuestTaskCardRenderer {
                 state.questDetails.questDetailsTaskDragRefreshQueued = true;
             }));
         }
-        boolean editSelected = kind.startsWith(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
+        boolean editSelected = TaskSections.normalize(kind).equals(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
         boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
         boolean selected = editSelected || claimSelected;
         int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING)
                 : itemLocked ? TabletColors.LOCKED : TabletColors.INTERACTIVE;
 
-        String skinKey = "tasks".equals(kind) ? "quests_task_cards" : "quests_reward_cards";
+        String skinKey = TaskSections.isTask(kind) ? "quests_task_cards" : "quests_reward_cards";
         SkinAnchorRegistry.registerShared(skinKey, card);
         String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
         if (rawOverride == null) {

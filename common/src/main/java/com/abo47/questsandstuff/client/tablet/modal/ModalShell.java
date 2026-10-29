@@ -14,6 +14,16 @@ import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 
 public final class ModalShell {
+    public static final int SEARCH_MAX_LENGTH = 80;
+    public static final int SEARCH_MED = 96;
+    public static final int SEARCH_LONG = 120;
+    public static final int PICKER_HEADER_Y = 24;
+    public static final int PICKER_SEARCH_H = 16;
+    public static final int PICKER_LIST_Y = 46;
+    public static final int MODAL_MAX_W = 432;
+    public static final int MODAL_MAX_H = 260;
+    public static final int MODAL_MARGIN = 32;
+
     private ModalShell() {
     }
 

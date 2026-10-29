@@ -44,8 +44,7 @@ public final class QuestDetailsDescriptionCanvasRenderer {
             return;
         }
         int cell = CanvasGeometry.gridSize(state);
-        int alpha = Math.max(20, Math.min(220, (255 * Math.max(0, Math.min(100, state.questDetails.questDetailsGridOpacityPercent))) / 100));
-        int color = (alpha << 24) | (TabletGridControls.defaultGridColor(state) & 0x00FFFFFF);
+        int color = TabletGridControls.gridAlpha(state.questDetails.questDetailsGridOpacityPercent, TabletGridControls.defaultGridColor(state));
         int spanW = contentW;
         int spanH = contentH;
         int paintW = spanW + 1;

@@ -18,6 +18,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.widget.TabletLayout;
 import com.abo47.questsandstuff.client.tablet.ui.widget.TabletWidgetCoordinates;
 
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.CHAPTER_X;
@@ -245,7 +246,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         int cardLeft = state.chapterPanel.chapterCardHitLeft;
         int cardRight = state.chapterPanel.chapterCardHitRight;
         int cardWidth = Math.max(1, cardRight - cardLeft);
-        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= 54;
+        boolean collapsed = state.chapterPanel.chapterPanelCollapsed || state.chapterPanel.chapterListWidth <= TabletLayout.CHAPTER_LIST_COLLAPSED_W;
         int iconLeft = collapsed ? cardLeft + Math.max(0, (cardWidth - CONTENT_ICON_SIZE) / 2) : cardLeft + 2;
         int rowStep = chapterRowStep(state);
         int iconTop = state.chapterPanel.chapterRowStartY + index * rowStep - state.chapterPanel.chapterScroll + (collapsed ? Math.max(0, (rowStep - CONTENT_ICON_SIZE) / 2) : 8);

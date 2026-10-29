@@ -6,10 +6,18 @@ import java.util.Map;
 import java.util.function.Function;
 
 final class ChapterCanvasLayerMutations {
+    static final String IMAGE_ID_PREFIX = "image:";
+    static final String TEXT_ID_PREFIX = "text:";
+    static final String EXCLUSIVE_CHOICE_ID_PREFIX = "exclusive_choice:";
+
     private ChapterCanvasLayerMutations() {
     }
 
-    static <T> boolean put(ChapterMetadataState state, String chapter, T layer, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
+    static <T> boolean put(ChapterMetadataState state, String chapter, String prefix, T layer, Map<String, List<T>> target, Function<T, String> idExtractor) {
+        if (layer == null) {
+            return false;
+        }
+        String id = idExtractor.apply(layer);
         String normalized = state.ensureChapter(chapter);
         if (normalized.isBlank() || id == null || id.isBlank()) {
             return false;
@@ -27,11 +35,11 @@ final class ChapterCanvasLayerMutations {
             values.add(layer);
         }
         target.put(normalized, List.copyOf(values));
-        ensureOrderEntry(state, normalized, orderKey);
+        ensureOrderEntry(state, normalized, prefix + id);
         return true;
     }
 
-    static <T> boolean remove(ChapterMetadataState state, String chapter, String id, String orderKey, Map<String, List<T>> target, Function<T, String> idExtractor) {
+    static <T> boolean remove(ChapterMetadataState state, String chapter, String id, String prefix, Map<String, List<T>> target, Function<T, String> idExtractor) {
         String normalized = ChapterMetadataState.normalizeChapterName(chapter);
         if (normalized.isBlank() || id == null || id.isBlank()) {
             return false;
@@ -42,8 +50,19 @@ final class ChapterCanvasLayerMutations {
             return false;
         }
         ChapterMetadataState.putOrRemove(target, normalized, values);
-        removeOrderEntry(state, normalized, orderKey);
+        removeOrderEntry(state, normalized, prefix + id);
         return true;
+    }
+
+    static <T> void putAll(ChapterMetadataState state, String chapter, String prefix, List<T> layers, Map<String, List<T>> target, Function<T, String> idExtractor) {
+        if (layers == null) {
+            return;
+        }
+        for (T layer : layers) {
+            if (layer != null) {
+                put(state, chapter, prefix, layer, target, idExtractor);
+            }
+        }
     }
 
     static void setOrder(ChapterMetadataState state, String chapter, List<String> order) {

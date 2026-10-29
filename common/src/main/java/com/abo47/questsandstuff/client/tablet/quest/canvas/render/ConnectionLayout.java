@@ -92,56 +92,16 @@ final class ConnectionLayout {
                 if (connectedQuest == null) {
                     continue;
                 }
-                String connectionId = CanvasConnectionAnimation.connectionKey(ec.id(), connectedQuestId);
-                if (!rendered.add(connectionId)) {
-                    continue;
-                }
-                if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
-                        && !CanvasLayoutService.intersectsPanRenderWindow(connectedQuest, viewportW, viewportH)) {
-                    continue;
-                }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, ec.id(), connectedQuestId);
-                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, ec.id(), connectedQuestId);
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, ec.id(), connectedQuestId);
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, ec.id(), connectedQuestId);
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, ec.id(), connectedQuestId);
-                int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
-                lines.add(new ConnectionLine(
-                        connectionId, ec.id(), connectedQuestId,
-                        ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
-                        connectedQuest.x(), connectedQuest.y(), connectedQuest.width(), connectedQuest.height(),
-                        ecCenterX, ecCenterY,
-                        connectedQuest.centerX(), connectedQuest.centerY(),
-                        direct, false, color, hidden, alpha, texture, textureSpacing
-                ));
+                addEcConnectionLine(lines, rendered, state, chapter, ec.id(), connectedQuestId, connectedQuest,
+                        true, viewportW, viewportH, ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, ecCenterX, ecCenterY);
             }
             for (String prerequisiteQuestId : drawEc.prerequisiteQuestIds()) {
                 QuestCardLayout prerequisiteQuest = byQuestId.get(prerequisiteQuestId);
                 if (prerequisiteQuest == null) {
                     continue;
                 }
-                String connectionId = CanvasConnectionAnimation.connectionKey(prerequisiteQuestId, ec.id());
-                if (!rendered.add(connectionId)) {
-                    continue;
-                }
-                if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
-                        && !CanvasLayoutService.intersectsPanRenderWindow(prerequisiteQuest, viewportW, viewportH)) {
-                    continue;
-                }
-                boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, prerequisiteQuestId, ec.id());
-                int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, prerequisiteQuestId, ec.id());
-                String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, prerequisiteQuestId, ec.id());
-                int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, prerequisiteQuestId, ec.id());
-                boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, prerequisiteQuestId, ec.id());
-                int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
-                lines.add(new ConnectionLine(
-                        connectionId, prerequisiteQuestId, ec.id(),
-                        prerequisiteQuest.x(), prerequisiteQuest.y(), prerequisiteQuest.width(), prerequisiteQuest.height(),
-                        ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH,
-                        prerequisiteQuest.centerX(), prerequisiteQuest.centerY(),
-                        ecCenterX, ecCenterY,
-                        direct, false, color, hidden, alpha, texture, textureSpacing
-                ));
+                addEcConnectionLine(lines, rendered, state, chapter, ec.id(), prerequisiteQuestId, prerequisiteQuest,
+                        false, viewportW, viewportH, ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, ecCenterX, ecCenterY);
             }
         }
         return lines;
@@ -204,6 +164,46 @@ final class ConnectionLayout {
             }
         }
         return lines;
+    }
+
+    private static void addEcConnectionLine(List<ConnectionLine> lines, Set<String> rendered, TabletUiState state, String chapter,
+            String ecId, String questId, QuestCardLayout quest, boolean ecSource, int viewportW, int viewportH,
+            int ecBoxLeft, int ecBoxTop, int ecScreenW, int ecScreenH, int ecCenterX, int ecCenterY) {
+        String fromId = ecSource ? ecId : questId;
+        String toId = ecSource ? questId : ecId;
+        String connectionId = CanvasConnectionAnimation.connectionKey(fromId, toId);
+        if (!rendered.add(connectionId)) {
+            return;
+        }
+        if (!intersectsViewport(ecBoxLeft, ecBoxTop, ecScreenW, ecScreenH, viewportW, viewportH)
+                && !CanvasLayoutService.intersectsPanRenderWindow(quest, viewportW, viewportH)) {
+            return;
+        }
+        boolean direct = ConnectionStyleResolver.ecIsConnectionDirect(state, chapter, fromId, toId);
+        int color = ConnectionStyleResolver.ecConnectionColor(state, chapter, fromId, toId);
+        String texture = ConnectionStyleResolver.ecConnectionTexture(state, chapter, fromId, toId);
+        int textureSpacing = ConnectionStyleResolver.ecConnectionTextureSpacing(state, chapter, fromId, toId);
+        boolean hidden = ConnectionStyleResolver.ecIsConnectionHidden(state, chapter, fromId, toId);
+        int alpha = hidden ? ConnectionRenderStyle.HIDDEN_ALPHA : ConnectionRenderStyle.VISIBLE_ALPHA;
+        int sourceX = ecSource ? ecBoxLeft : quest.x();
+        int sourceY = ecSource ? ecBoxTop : quest.y();
+        int sourceW = ecSource ? ecScreenW : quest.width();
+        int sourceH = ecSource ? ecScreenH : quest.height();
+        int sourceCenterX = ecSource ? ecCenterX : quest.centerX();
+        int sourceCenterY = ecSource ? ecCenterY : quest.centerY();
+        int targetX = ecSource ? quest.x() : ecBoxLeft;
+        int targetY = ecSource ? quest.y() : ecBoxTop;
+        int targetW = ecSource ? quest.width() : ecScreenW;
+        int targetH = ecSource ? quest.height() : ecScreenH;
+        int targetCenterX = ecSource ? quest.centerX() : ecCenterX;
+        int targetCenterY = ecSource ? quest.centerY() : ecCenterY;
+        lines.add(new ConnectionLine(
+                connectionId, fromId, toId,
+                sourceX, sourceY, sourceW, sourceH,
+                targetX, targetY, targetW, targetH,
+                sourceCenterX, sourceCenterY, targetCenterX, targetCenterY,
+                direct, false, color, hidden, alpha, texture, textureSpacing
+        ));
     }
 
     private static boolean intersectsViewport(int x, int y, int w, int h, int viewportW, int viewportH) {

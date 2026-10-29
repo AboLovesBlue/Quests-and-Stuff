@@ -13,11 +13,11 @@ import com.abo47.questsandstuff.quest.model.QuestDisplay;
 import com.abo47.questsandstuff.quest.model.QuestSettings;
 import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
-final class QuestDefinitionNormalizer {
+public final class QuestDefinitionNormalizer {
     private QuestDefinitionNormalizer() {
     }
 
-    static QuestDefinition cloneDefinition(QuestDefinition definition) {
+    public static QuestDefinition cloneDefinition(QuestDefinition definition) {
         return new QuestDefinition(
                 definition.schema(),
                 definition.id(),
@@ -79,7 +79,7 @@ final class QuestDefinitionNormalizer {
         return QuestIdentity.questIdOrDefault(questId);
     }
 
-    private static <T> Map<String, T> orderedCopy(Map<String, T> source) {
+    public static <T> Map<String, T> orderedCopy(Map<String, T> source) {
         return source == null || source.isEmpty() ? Map.of() : new LinkedHashMap<>(source);
     }
 
@@ -115,7 +115,7 @@ final class QuestDefinitionNormalizer {
             }
             prerequisites.add(normalizedPrerequisite);
         }
-        Map<String, String> filteredTextures = filterConnectionTextures(definition.connectionTextures(), prerequisites);
+        Map<String, String> filteredTextures = ConnectionMetadataFilter.filterConnectionTextures(definition.connectionTextures(), prerequisites);
 
         return new QuestDefinition(
                 definition.schema(),
@@ -123,11 +123,11 @@ final class QuestDefinitionNormalizer {
                 definition.display(),
                 definition.settings(),
                 Set.copyOf(prerequisites),
-                filterConnectionColors(definition.connectionColors(), prerequisites),
-                filterConnectionModes(definition.connectionModes(), prerequisites),
-                filterHiddenConnections(definition.hiddenConnections(), prerequisites),
+                ConnectionMetadataFilter.filterConnectionColors(definition.connectionColors(), prerequisites),
+                ConnectionMetadataFilter.filterConnectionModes(definition.connectionModes(), prerequisites),
+                ConnectionMetadataFilter.filterHiddenConnections(definition.hiddenConnections(), prerequisites),
                 filteredTextures,
-                filterConnectionTextureSpacings(definition.connectionTextureSpacings(), prerequisites),
+                ConnectionMetadataFilter.filterConnectionTextureSpacings(definition.connectionTextureSpacings(), prerequisites),
                 definition.tasksOrder(),
                 definition.rewardsOrder(),
                 definition.tasks(),
@@ -151,74 +151,6 @@ final class QuestDefinitionNormalizer {
             return "";
         }
         return definition.display().chapters().keySet().stream().sorted().findFirst().orElse("");
-    }
-
-    private static Map<String, String> filterConnectionModes(Map<String, String> modes, Set<String> prerequisites) {
-        if (modes == null || modes.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, String> filtered = new HashMap<>();
-        for (Map.Entry<String, String> entry : modes.entrySet()) {
-            String key = normalizeQuestId(entry.getKey());
-            String mode = entry.getValue() == null ? "" : entry.getValue().trim();
-            if (!key.isBlank() && prerequisites.contains(key) && "grid".equals(mode)) {
-                filtered.put(key, mode);
-            }
-        }
-        return Map.copyOf(filtered);
-    }
-
-    private static Set<String> filterHiddenConnections(Set<String> hidden, Set<String> prerequisites) {
-        if (hidden == null || hidden.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
-            return Set.of();
-        }
-        Set<String> filtered = new HashSet<>();
-        for (String entry : hidden) {
-            String key = normalizeQuestId(entry);
-            if (!key.isBlank() && prerequisites.contains(key)) {
-                filtered.add(key);
-            }
-        }
-        return Set.copyOf(filtered);
-    }
-
-    private static Map<String, Integer> filterConnectionColors(Map<String, Integer> colors, Set<String> prerequisites) {
-        if (colors == null || colors.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, Integer> filtered = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : colors.entrySet()) {
-            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null) {
-                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
-            }
-        }
-        return Map.copyOf(filtered);
-    }
-
-    private static Map<String, String> filterConnectionTextures(Map<String, String> textures, Set<String> prerequisites) {
-        if (textures == null || textures.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, String> filtered = new HashMap<>();
-        for (Map.Entry<String, String> entry : textures.entrySet()) {
-            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && !entry.getValue().isBlank()) {
-                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
-            }
-        }
-        return Map.copyOf(filtered);
-    }
-
-    private static Map<String, Integer> filterConnectionTextureSpacings(Map<String, Integer> spacings, Set<String> prerequisites) {
-        if (spacings == null || spacings.isEmpty() || prerequisites == null || prerequisites.isEmpty()) {
-            return Map.of();
-        }
-        Map<String, Integer> filtered = new HashMap<>();
-        for (Map.Entry<String, Integer> entry : spacings.entrySet()) {
-            if (entry.getKey() != null && prerequisites.contains(normalizeQuestId(entry.getKey())) && entry.getValue() != null && entry.getValue() > 0) {
-                filtered.put(normalizeQuestId(entry.getKey()), entry.getValue());
-            }
-        }
-        return Map.copyOf(filtered);
     }
 
 }

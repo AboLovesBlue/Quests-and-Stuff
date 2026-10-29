@@ -50,6 +50,7 @@ import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
+import com.abo47.questsandstuff.util.naming.QuestIdentity;
 
 import static com.abo47.questsandstuff.client.tablet.controls.SearchFilter.crop;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
@@ -199,7 +200,7 @@ public final class TabletAssetPickerModal {
         int searchW = canGoBack
                 ? Math.max(40, backX - rightX - HEADER_GAP)
                 : Math.max(40, firstHeaderButtonX - rightX - HEADER_GAP);
-        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.assetSearch, 80, value -> {
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.assetSearch, ModalShell.SEARCH_MAX_LENGTH, value -> {
             state.pickers.assetSearch = SearchFilter.normalizeUserInput(value);
             state.pickers.assetGridScroll = 0;
             refresh.run();
@@ -390,7 +391,7 @@ public final class TabletAssetPickerModal {
         );
         renameRef[0] = rename;
         rename.setClientSideWidget();
-        rename.setMaxStringLength(80);
+        rename.setMaxStringLength(QuestIdentity.TITLE_MAX_LENGTH);
         rename.setCurrentString(state.pickers.assetRenameDraft.isBlank() ? TabletModalPanel.fileNameFromRelativePath(relative) : state.pickers.assetRenameDraft);
         StyledTextFields.applyStandardStyle(rename, TabletColors.SURFACE_BASE, TabletColors.BORDER_ACCENT);
         rename.setFocus(true);
@@ -566,14 +567,7 @@ public final class TabletAssetPickerModal {
                 String chapter = parts[1];
                 String prerequisiteId = parts[2];
                 String questId = parts[3];
-                boolean isEc = com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, prerequisiteId)
-                        || com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.isEcId(state, chapter, questId);
-                if (isEc) {
-                    EditorCanvasCommandClient.runEcConnectionTextureSpacingAction(state, prerequisiteId, questId, spacing);
-                } else {
-                    EditorCanvasCommandClient.runConnectionTextureSpacingAction(player, questId, prerequisiteId, spacing);
-                    com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer.setConnectionTextureSpacing(state, chapter, prerequisiteId, questId, spacing);
-                }
+                com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionOps.applyTextureSpacing(state, player, chapter, prerequisiteId, questId, spacing);
             }
         }
         refresh.run();

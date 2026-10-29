@@ -410,7 +410,7 @@ public final class SkinEditManager {
     private static void openModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY,
             String mode, String titleKey, String leftLabelKey, String rightLabelKey, int left, int right) {
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         Rectangle bounds = modeEditorBounds(mouseX, mouseY, w, h);
         int x = bounds.x;
         int y = bounds.y;
@@ -432,7 +432,7 @@ public final class SkinEditManager {
 
     private static void openDynamicModeEditor(TabletUiState state, TabletRootWidget root, Runnable refresher, String targetKey, String asset, int mouseX, int mouseY, int l, int r, int t, int b) {
         int w = 240;
-        int h = 116;
+        int h = ContextMenuRenderer.CONTEXT_MENU_BODY_H;
         Rectangle bounds = modeEditorBounds(mouseX, mouseY, w, h);
         int x = bounds.x;
         int y = bounds.y;

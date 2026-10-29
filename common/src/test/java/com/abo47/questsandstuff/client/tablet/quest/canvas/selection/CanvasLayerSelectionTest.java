@@ -5,8 +5,8 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

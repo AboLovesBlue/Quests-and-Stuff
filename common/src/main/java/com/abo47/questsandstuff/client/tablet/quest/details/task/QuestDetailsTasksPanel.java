@@ -14,20 +14,25 @@ import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.DragScrollBarWidget;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskInlineFields;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskActionWidgets;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.menus.QuestDetailsTaskMenus;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 
 import com.google.gson.JsonObject;
 
 public final class QuestDetailsTasksPanel {
-    static final int HEADER_SECTION_GAP = TabletUiFactory.PANEL_INSET - 1;
-    static final int SECTION_GAP = TabletUiFactory.PANEL_INSET + 1;
-    static final int TITLE_H = 18;
-    static final int CARD_H = TabletUiFactory.CHAPTER_CARD_H;
-    static final int CARD_GAP = TabletUiFactory.CHAPTER_CARD_GAP;
-    static final int LIST_PAD = TabletUiFactory.PANEL_INSET;
-    static final int ICON = TabletUiFactory.CONTENT_ICON_SIZE;
-    static final int HEADER_H = TabletUiFactory.HEADER_H;
+    public static final int HEADER_SECTION_GAP = TabletUiFactory.PANEL_INSET - 1;
+    public static final int SECTION_GAP = TabletUiFactory.PANEL_INSET + 1;
+    public static final int TITLE_H = 18;
+    public static final int CARD_H = TabletUiFactory.CHAPTER_CARD_H;
+    public static final int CARD_GAP = TabletUiFactory.CHAPTER_CARD_GAP;
+    public static final int LIST_PAD = TabletUiFactory.PANEL_INSET;
+    public static final int ICON = TabletUiFactory.CONTENT_ICON_SIZE;
+    public static final int HEADER_H = TabletUiFactory.HEADER_H;
 
     private QuestDetailsTasksPanel() {
     }
@@ -200,7 +205,7 @@ public final class QuestDetailsTasksPanel {
             return false;
         }
         int visibleH = Math.max(1, h - TITLE_H - 4);
-        int maxStart = QuestTaskSectionWidget.scrollMax(entries, visibleH);
+        int maxStart = QuestTaskCardList.scrollMax(entries, visibleH);
         int cardW = Math.max(1, maxStart > 0 ? w - 12 - DragScrollBarWidget.RESERVED_WIDTH : w - 12);
         if (localX < LIST_PAD || localX >= LIST_PAD + cardW) {
             return false;
@@ -221,7 +226,7 @@ public final class QuestDetailsTasksPanel {
         return TabletUiFactory.CHAPTER_PANEL_GUTTER_X;
     }
 
-    static int leftPanelContentY() {
+    public static int leftPanelContentY() {
         return QuestDetailsWindow.CONTENT_INSET;
     }
 
@@ -229,7 +234,7 @@ public final class QuestDetailsTasksPanel {
         return Math.max(1, leftW - TabletUiFactory.CHAPTER_PANEL_GUTTER_X * 2);
     }
 
-    static int leftPanelContentH() {
+    public static int leftPanelContentH() {
         return Math.max(1, TabletUiFactory.CHAPTER_H - QuestDetailsWindow.CONTENT_INSET - TabletUiFactory.CHAPTER_PANEL_GUTTER_BOTTOM);
     }
 
@@ -238,7 +243,7 @@ public final class QuestDetailsTasksPanel {
             return ItemStack.EMPTY;
         }
         int visibleH = Math.max(1, h - TITLE_H - 4);
-        int maxStart = QuestTaskSectionWidget.scrollMax(entries, visibleH);
+        int maxStart = QuestTaskCardList.scrollMax(entries, visibleH);
         int scroll = tasks ? state.questDetails.questDetailsTaskScroll : state.questDetails.questDetailsRewardScroll;
         scroll = Math.max(0, Math.min(scroll, maxStart));
         int listTop = y + TITLE_H;

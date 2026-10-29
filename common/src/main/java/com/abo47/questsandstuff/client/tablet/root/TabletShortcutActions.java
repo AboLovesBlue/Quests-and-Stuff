@@ -8,14 +8,15 @@ import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.world.entity.player.Player;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
@@ -176,8 +177,8 @@ final class TabletShortcutActions {
         if (canvasViewport == null) {
             return false;
         }
-        boolean copied = CanvasClipboardController.copySelectionToClipboard(canvasViewport, state);
-        return copied && CanvasClipboardController.pasteNearSelectionOrViewportCenter(player, state, canvasViewport);
+        boolean copied = CanvasClipboardCopy.copySelectionToClipboard(canvasViewport, state);
+        return copied && CanvasClipboardPaste.pasteNearSelectionOrViewportCenter(player, state, canvasViewport);
     }
 
     private static boolean nudgeSelection(Player player, TabletUiState state, CanvasViewport canvasViewport, int keyCode, boolean shift) {

@@ -2,13 +2,13 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
 import net.minecraft.world.entity.player.Player;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -26,7 +26,7 @@ final class CanvasContextGlobalActions {
                 canvasViewport.refresh();
             }));
         }
-        if (!selectedChapter.isBlank() && CanvasClipboardController.hasClipboardContent(state)) {
+        if (!selectedChapter.isBlank() && CanvasClipboardCopy.hasClipboardContent(state)) {
             sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.paste"), "paste", TabletColors.SUCCESS, () -> {
                 CanvasContextMenuSupport.pasteClipboard(player, state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=paste target={}", state.contextMenu.contextMenuTarget);

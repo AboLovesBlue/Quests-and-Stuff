@@ -12,13 +12,18 @@ import net.minecraft.world.entity.player.Player;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasLayoutService;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportClickController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportInputController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasViewportKeyboardController;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasChapterSwitchAnimation;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasConnectionAnimation;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.CanvasConnectionAnimation;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasElementTransformController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasInlineTextEditor;
@@ -100,7 +105,7 @@ public final class CanvasViewport extends WidgetGroup {
         canvasRefresher.run();
     }
 
-    void queueCanvasRefresh() {
+    public void queueCanvasRefresh() {
         canvasRefreshQueued = true;
     }
 
@@ -114,14 +119,14 @@ public final class CanvasViewport extends WidgetGroup {
         canvasContentLayerBaseY = 0;
     }
 
-    void registerQuestCardLayer(String questId, WidgetGroup layer) {
+    public void registerQuestCardLayer(String questId, WidgetGroup layer) {
         if (questId == null || questId.isBlank() || layer == null) {
             return;
         }
         questCardLayers.put(questId, layer);
     }
 
-    void setCanvasContentLayer(WidgetGroup canvasContentLayer) {
+    public void setCanvasContentLayer(WidgetGroup canvasContentLayer) {
         this.canvasContentLayer = canvasContentLayer;
         if (canvasContentLayer == null) {
             canvasContentLayerBaseX = 0;
@@ -133,7 +138,7 @@ public final class CanvasViewport extends WidgetGroup {
         applyLivePanToLayer();
     }
 
-    void beginCanvasPan() {
+    public void beginCanvasPan() {
         livePanX = 0;
         livePanY = 0;
         state.canvas.canvasLivePanX = 0;
@@ -141,7 +146,7 @@ public final class CanvasViewport extends WidgetGroup {
         applyLivePanToLayer();
     }
 
-    boolean previewCanvasPan(int dx, int dy) {
+    public boolean previewCanvasPan(int dx, int dy) {
         if (dx == 0 && dy == 0) {
             return true;
         }
@@ -157,17 +162,17 @@ public final class CanvasViewport extends WidgetGroup {
         return true;
     }
 
-    boolean panPreviewNeedsRefresh() {
+    public boolean panPreviewNeedsRefresh() {
         int thresholdX = Math.max(1, (CanvasLayoutService.panRenderOverscanX(getSizeWidth()) * 3) / 4);
         int thresholdY = Math.max(1, (CanvasLayoutService.panRenderOverscanY(getSizeHeight()) * 3) / 4);
         return Math.abs(livePanX) >= thresholdX || Math.abs(livePanY) >= thresholdY;
     }
 
-    void beginSelectionDragPreview() {
+    public void beginSelectionDragPreview() {
         selectionQuestLayerBases.clear();
     }
 
-    boolean selectionDragPreviewSupported() {
+    public boolean selectionDragPreviewSupported() {
         return !state.canvas.canvasSelection.questIds().isEmpty()
                 || !state.canvas.canvasSelection.primaryEcId().isBlank()
                 || !state.canvas.canvasSelection.primaryImageId().isBlank()
@@ -177,7 +182,7 @@ public final class CanvasViewport extends WidgetGroup {
                 || !state.canvas.canvasSelection.ecIds().isEmpty();
     }
 
-    boolean previewSelectionDrag() {
+    public boolean previewSelectionDrag() {
         if (!selectionDragPreviewSupported()) {
             return false;
         }
@@ -198,7 +203,7 @@ public final class CanvasViewport extends WidgetGroup {
         return true;
     }
 
-    void endSelectionDragPreview() {
+    public void endSelectionDragPreview() {
         selectionQuestLayerBases.clear();
     }
 
@@ -234,7 +239,7 @@ public final class CanvasViewport extends WidgetGroup {
         return CanvasGeometry.dragDelta(state, state.canvas.dragStartBoundsTop, state.canvas.dragSelectionDeltaY);
     }
 
-    void commitCanvasPan() {
+    public void commitCanvasPan() {
         if (livePanX == 0 && livePanY == 0) {
             return;
         }
@@ -385,35 +390,35 @@ public final class CanvasViewport extends WidgetGroup {
         return CanvasViewportInputController.mouseWheelMove(this, state, refresher, textEditor, mouseX, mouseY, wheelDelta);
     }
 
-    boolean callSuperMouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean callSuperMouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
-    boolean callSuperMouseClicked(double mouseX, double mouseY, int button) {
+    public boolean callSuperMouseClicked(double mouseX, double mouseY, int button) {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    boolean callSuperMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean callSuperMouseReleased(double mouseX, double mouseY, int button) {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    boolean callSuperMouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+    public boolean callSuperMouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
         return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
     }
 
-    boolean callSuperKeyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean callSuperKeyPressed(int keyCode, int scanCode, int modifiers) {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    boolean callSuperCharTyped(char codePoint, int modifiers) {
+    public boolean callSuperCharTyped(char codePoint, int modifiers) {
         return super.charTyped(codePoint, modifiers);
     }
 
-    boolean shiftDown() {
+    public boolean shiftDown() {
         return isShiftDown();
     }
 
-    boolean ctrlDown() {
+    public boolean ctrlDown() {
         return isCtrlDown();
     }
 }

@@ -18,8 +18,8 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.modal.PickerTileText;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTileText;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.codec.UiThemeManager;
@@ -35,6 +35,7 @@ import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.label;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.panel;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 
 final class EntityVariantTiles {
     private static final int PAD = GRID_8;

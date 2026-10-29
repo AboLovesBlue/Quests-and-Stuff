@@ -1,4 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,15 +12,15 @@ import net.minecraft.nbt.Tag;
 
 import com.google.gson.JsonObject;
 
-final class QuestTaskEntries {
+public final class QuestTaskEntries {
     private QuestTaskEntries() {
     }
 
-    static List<QuestDetailsTaskEntry> entries(CompoundTag tag) {
+    public static List<QuestDetailsTaskEntry> entries(CompoundTag tag) {
         return entries(tag, new ListTag());
     }
 
-    static List<QuestDetailsTaskEntry> entries(CompoundTag tag, ListTag order) {
+    public static List<QuestDetailsTaskEntry> entries(CompoundTag tag, ListTag order) {
         List<QuestDetailsTaskEntry> entries = new ArrayList<>();
         Set<String> added = new HashSet<>();
         for (int i = 0; i < order.size(); i++) {

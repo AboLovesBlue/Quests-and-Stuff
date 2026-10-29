@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.List;
 
 import net.minecraft.world.entity.player.Player;
@@ -11,13 +14,12 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -68,19 +70,19 @@ final class CanvasContextConnectionActions {
         }));
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = CanvasRenderer.connectionColor(state, selectedChapter, sourceId, targetId);
-            ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
-                    ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    AssetPickerOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
                     canvasViewport.refresh();
                 }),
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
-                    ModalOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    IconPickerOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture_game source={} target={}", sourceId, targetId);
                     canvasViewport.refresh();
@@ -115,19 +117,19 @@ final class CanvasContextConnectionActions {
         }));
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", TabletColors.INTERACTIVE, () -> {
             int color = ConnectionRenderer.ecConnectionColor(state, selectedChapter, sourceId, targetId);
-            ModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
             canvasViewport.refresh();
         }));
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
-                    ModalOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    AssetPickerOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
                     canvasViewport.refresh();
                 }),
                 ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
-                    ModalOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    IconPickerOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
                     ContextMenuController.clearDeleteConfirm(state);
                     QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture_game source={} target={}", sourceId, targetId);
                     canvasViewport.refresh();

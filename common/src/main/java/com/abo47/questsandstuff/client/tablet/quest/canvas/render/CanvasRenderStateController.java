@@ -1,0 +1,42 @@
+package com.abo47.questsandstuff.client.tablet.quest.canvas.render;
+
+import java.util.Set;
+
+import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+import com.abo47.questsandstuff.client.tablet.ui.state.TabletStateQueries;
+
+final class CanvasRenderStateController {
+    private CanvasRenderStateController() {
+    }
+
+    static String prepareRebuild(TabletUiState state) {
+        String selectedChapter = TabletStateQueries.selectedChapterName(state);
+        state.canvas.canvasZoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        return selectedChapter;
+    }
+
+    static void setContentBounds(TabletUiState state, int contentX, int contentY, int contentW, int contentH) {
+        state.canvas.canvasContentX = contentX;
+        state.canvas.canvasContentY = contentY;
+        state.canvas.canvasContentW = contentW;
+        state.canvas.canvasContentH = contentH;
+    }
+
+    static void pruneStaleInteractiveState(TabletUiState state, Set<String> visibleQuestIds) {
+        state.canvas.canvasSelection.questIds().retainAll(visibleQuestIds);
+        if (!state.canvas.connectSourceQuestId.isBlank() && !ClientQuestStateFacade.containsQuest(state.canvas.connectSourceQuestId)) {
+            state.canvas.connectSourceQuestId = "";
+        }
+        state.canvas.connectSourceQuestIds.removeIf(questId -> !ClientQuestStateFacade.containsQuest(questId));
+    }
+
+    static void closeEditOnlyStateWhenReadOnly(TabletUiState state) {
+        if (state.root.canEdit) {
+            return;
+        }
+        ContextMenuController.close(state);
+        state.canvas.boxSelecting = false;
+    }
+}

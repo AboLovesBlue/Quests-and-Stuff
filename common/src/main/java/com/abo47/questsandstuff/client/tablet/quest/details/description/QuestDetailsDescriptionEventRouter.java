@@ -2,11 +2,12 @@ package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
 import net.minecraft.world.entity.player.Player;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
@@ -143,8 +144,8 @@ final class QuestDetailsDescriptionEventRouter {
         }
         if ("desc_image".equals(hit.kind())) {
             CanvasImageLayer hitImage = model.image(hit.id());
-            if (hitImage != null && CanvasTransformGizmo.supports(hitImage.asset()) && !selection.isSelectedImage(hit.id())) {
-                CanvasTransformGizmo.setMode(state, CanvasTransformMode.MOVE);
+            if (hitImage != null && CanvasTransformGizmoAxis.supports(hitImage.asset()) && !selection.isSelectedImage(hit.id())) {
+                CanvasTransformGizmoAxis.setMode(state, CanvasTransformMode.MOVE);
             }
         }
         QuestDetailsDescriptionHitTest.Rect hitRect = hitTest.rect(model, hit);
@@ -351,7 +352,7 @@ final class QuestDetailsDescriptionEventRouter {
     private void beginTransform(QuestDetailsDescriptionModel model, QuestDetailsDescriptionHitTest.Hit hit, int lx, int visibleY, int ly) {
         QuestDetailsDescriptionHitTest.Rect rect = hitTest.rect(model, hit);
         CanvasImageLayer image = "desc_image".equals(hit.kind()) ? model.image(hit.id()) : null;
-        boolean gizmoSupported = image != null && CanvasTransformGizmo.supports(image.asset());
+        boolean gizmoSupported = image != null && CanvasTransformGizmoAxis.supports(image.asset());
         CanvasTransformMode gizmoMode = hitTest.imageGizmoMode(model, hit, lx, visibleY);
         if (gizmoSupported && gizmoMode == null) {
             state.questDetails.questDetailsTransformAxis = "";
@@ -359,7 +360,7 @@ final class QuestDetailsDescriptionEventRouter {
         }
         String transformAxis = gizmoSupported ? hitTest.imageGizmoAxis(model, hit, lx, visibleY) : "";
         if (gizmoMode == CanvasTransformMode.MOVE) {
-            transformAxis = CanvasTransformGizmo.moveAxisOrFree(transformAxis);
+            transformAxis = CanvasTransformGizmoAxis.moveAxisOrFree(transformAxis);
         }
         boolean resizeHit = gizmoMode == CanvasTransformMode.RESIZE
                 || (!gizmoSupported && gizmoMode == null && hitTest.inResizeHandle(rect, lx, visibleY));
@@ -375,8 +376,8 @@ final class QuestDetailsDescriptionEventRouter {
             return false;
         }
         CanvasImageLayer image = model.image(hit.id());
-        CanvasTransformMode active = CanvasTransformGizmo.activeMode(state);
-        if (image == null || !CanvasTransformGizmo.supports(image.asset()) || (active != CanvasTransformMode.MOVE && active != CanvasTransformMode.RESIZE)) {
+        CanvasTransformMode active = CanvasTransformGizmoAxis.activeMode(state);
+        if (image == null || !CanvasTransformGizmoAxis.supports(image.asset()) || (active != CanvasTransformMode.MOVE && active != CanvasTransformMode.RESIZE)) {
             return false;
         }
         return true;

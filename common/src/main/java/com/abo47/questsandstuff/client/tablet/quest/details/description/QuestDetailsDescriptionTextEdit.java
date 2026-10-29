@@ -9,9 +9,9 @@ import net.minecraft.client.Minecraft;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;

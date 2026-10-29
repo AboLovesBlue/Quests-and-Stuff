@@ -1,5 +1,8 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter.menu;
 
+import com.abo47.questsandstuff.client.tablet.modal.SoundPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
@@ -12,9 +15,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -77,7 +79,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        ModalOpenActions.openChapterAssetIconPicker(state, target);
+        AssetPickerOpenActions.openChapterAssetIconPicker(state, target);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -114,7 +116,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        ModalOpenActions.openChapterBackgroundPicker(state, target, ClientQuestStateFacade.chapterBackground(target));
+        AssetPickerOpenActions.openChapterBackgroundPicker(state, target, ClientQuestStateFacade.chapterBackground(target));
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -123,7 +125,7 @@ public final class ChapterContextMenuActions {
         if (!EditorChapterCommandClient.canManageChapters(state)) {
             return;
         }
-        ModalOpenActions.openChapterGameTexturePicker(state, target);
+        IconPickerOpenActions.openChapterGameTexturePicker(state, target);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -145,7 +147,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         String currentBackground = firstQuestCompletionHud(questIds);
-        ModalOpenActions.openBatchQuestCompletionHudBackgroundPicker(state, questIds, currentBackground);
+        AssetPickerOpenActions.openBatchQuestCompletionHudBackgroundPicker(state, questIds, currentBackground);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -158,7 +160,7 @@ public final class ChapterContextMenuActions {
         if (questIds.isEmpty()) {
             return;
         }
-        ModalOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, questIds);
+        IconPickerOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, questIds);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -172,7 +174,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         String currentSound = firstQuestCompletionSound(questIds);
-        ModalOpenActions.openBatchQuestGameSoundPicker(state, questIds, currentSound);
+        SoundPickerOpenActions.openBatchQuestGameSoundPicker(state, questIds, currentSound);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -186,7 +188,7 @@ public final class ChapterContextMenuActions {
             return;
         }
         String currentSound = firstQuestCompletionSound(questIds);
-        ModalOpenActions.openBatchQuestCustomCompletionSoundPicker(state, questIds, currentSound);
+        SoundPickerOpenActions.openBatchQuestCustomCompletionSoundPicker(state, questIds, currentSound);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -204,7 +206,7 @@ public final class ChapterContextMenuActions {
         if (targets.isEmpty()) {
             return;
         }
-        ModalOpenActions.openChapterConnectionTexturePicker(state, target, targets);
+        AssetPickerOpenActions.openChapterConnectionTexturePicker(state, target, targets);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }
@@ -222,7 +224,7 @@ public final class ChapterContextMenuActions {
         if (targets.isEmpty()) {
             return;
         }
-        ModalOpenActions.openChapterConnectionGameTexturePicker(state, target, targets);
+        IconPickerOpenActions.openChapterConnectionGameTexturePicker(state, target, targets);
         state.chapterPanel.chapterMenuOpen = false;
         refresh.run();
     }

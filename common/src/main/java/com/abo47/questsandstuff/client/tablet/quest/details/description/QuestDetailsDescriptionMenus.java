@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.description;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -27,14 +32,13 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
 import com.abo47.questsandstuff.client.tablet.layout.TabletGridControls;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasTextStyleMenu;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
@@ -96,7 +100,7 @@ public final class QuestDetailsDescriptionMenus {
             CanvasTextLayer colorSource = base == null ? text : base;
             state.questDetails.questDetailsTextColorQuestId = questId;
             state.questDetails.questDetailsTextColorTextId = colorSource.id();
-            ModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
+            AppModalOpenActions.openColorPicker(state, ModalTargets.questDescText(questId, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details text color open picker quest={} text={}", questId, colorSource.id());
             refresh.run();
         }, refresh, () -> {
@@ -197,11 +201,11 @@ public final class QuestDetailsDescriptionMenus {
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_BACKGROUND), "background", TabletColors.INTERACTIVE, List.of(
                 ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", TabletColors.INTERACTIVE, () -> {
                     ContextMenuController.clearDeleteConfirm(state);
-                    ModalOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
+                    AssetPickerOpenActions.openAssetPicker(state, ModalTargets.descBackground(questId), model.canvasBackground == null ? "" : model.canvasBackground);
                 }),
                 ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", TabletColors.INTERACTIVE, () -> {
                     ContextMenuController.clearDeleteConfirm(state);
-                    ModalOpenActions.openQuestDetailsGameTexturePicker(state, ModalTargets.descBackground(questId));
+                    IconPickerOpenActions.openQuestDetailsGameTexturePicker(state, ModalTargets.descBackground(questId));
                 })
         )));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
@@ -285,7 +289,7 @@ public final class QuestDetailsDescriptionMenus {
         sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.action(TabletTranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_GRID_COLOR), "style_color", TabletColors.INTERACTIVE, () -> {
             ContextMenuController.clearDeleteConfirm(state);
             int color = TabletGridControls.defaultGridColor(state);
-            ModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
+            AppModalOpenActions.openColorPicker(state, ModalTargets.gridColor(), color);
             QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_grid_color color={}", color);
         }));
         if (model.canvasBackground != null && !model.canvasBackground.isBlank() && !"default".equals(model.canvasBackground)) {
@@ -433,7 +437,7 @@ public final class QuestDetailsDescriptionMenus {
                     ContextMenuController.clearDeleteConfirm(state);
                     String imageId = state.questDetails.questDetailsContextId;
                     QuestDetailsTransientManager.closeContext(state);
-                    ModalOpenActions.openEntityVariantPicker(state, ModalTargets.questDetailsImage(questId, imageId), contextImage.asset());
+                    RegistryPickerOpenActions.openEntityVariantPicker(state, ModalTargets.questDetailsImage(questId, imageId), contextImage.asset());
                     QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=change_entity_variant quest={} image={} entity={}", questId, imageId, entityId);
                 }));
             }
@@ -443,7 +447,7 @@ public final class QuestDetailsDescriptionMenus {
                 QuestsAndStuffMod.debugLog("[QnS:UI] quest details context action=edit_entity_motion quest={} image={}", questId, state.questDetails.questDetailsContextId);
             }));
         }
-        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
+        if (contextImage != null && CanvasTransformGizmoAxis.supports(contextImage.asset())
                 && descriptionSelectionCount(state) == 1
                 && QuestDetailsDescriptionSelectionState.selectedImageIds(state).contains(contextImage.id())) {
             ContextMenuSections gizmoSections = new ContextMenuSections();
@@ -618,7 +622,7 @@ public final class QuestDetailsDescriptionMenus {
     private static boolean selectionSupportsGizmo(TabletUiState state, QuestDetailsDescriptionModel model) {
         for (String imageId : QuestDetailsDescriptionSelectionState.selectedImageIds(state)) {
             CanvasImageLayer image = model.image(imageId);
-            if (image != null && CanvasTransformGizmo.supports(image.asset())) {
+            if (image != null && CanvasTransformGizmoAxis.supports(image.asset())) {
                 return true;
             }
         }

@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.overlay;
 
+import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -8,13 +9,12 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.controls.TextStyleButtons;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTextRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
@@ -50,7 +50,7 @@ public final class CanvasTextStyleMenu {
             CanvasTextLayer fresh = freshLookup.get();
             CanvasTextLayer colorSource = fresh == null ? text : fresh;
             String freshChapter = selectedChapterName(state);
-            ModalOpenActions.openColorPicker(state, ModalTargets.canvasText(freshChapter, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
+            AppModalOpenActions.openColorPicker(state, ModalTargets.canvasText(freshChapter, colorSource.id()), CanvasRenderer.activeTextColor(state, colorSource));
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas text color open picker chapter={} id={}", freshChapter, colorSource.id());
             refresh.run();
         }, freshLookup);

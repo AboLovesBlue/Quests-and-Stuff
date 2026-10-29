@@ -4,9 +4,9 @@ import java.util.function.IntSupplier;
 
 import net.minecraft.client.gui.GuiGraphics;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementSelectionSlot;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.CanvasElementSelectionSlot;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;

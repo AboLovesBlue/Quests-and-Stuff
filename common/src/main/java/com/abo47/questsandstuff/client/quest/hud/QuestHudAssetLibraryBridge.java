@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.quest.hud;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -9,7 +10,6 @@ import com.lowdragmc.lowdraglib.gui.modular.ModularUIGuiContainer;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.modal.ModalDismissGuard;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -29,7 +29,7 @@ final class QuestHudAssetLibraryBridge {
         TabletUiState state = new TabletUiState();
         state.root.tabletRootWidth = screenW;
         state.root.tabletRootHeight = screenH;
-        ModalOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayoutManager.background(element), QuestHudLayoutManager.opacityPercent(element));
+        AssetPickerOpenActions.openHudBackgroundPicker(state, targetName(element), QuestHudLayoutManager.background(element), QuestHudLayoutManager.opacityPercent(element));
 
         Runnable[] refresh = new Runnable[1];
         WidgetGroup root = new WidgetGroup(0, 0, screenW, screenH);

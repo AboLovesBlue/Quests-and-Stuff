@@ -10,19 +10,21 @@ import net.minecraft.client.resources.language.I18n;
 import com.lowdragmc.lowdraglib.gui.widget.Widget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletKeybindings;
 import com.abo47.questsandstuff.client.tablet.bootstrap.TabletLifecycle;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
-import com.abo47.questsandstuff.client.tablet.modal.TabletAssetPickerModal;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasMouseMode;
+import com.abo47.questsandstuff.client.tablet.modal.asset.TabletAssetPickerModal;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.interaction.CanvasMouseMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformMode;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
@@ -348,7 +350,7 @@ final class TabletRootKeyboardRouter {
         if (mode == null) {
             return false;
         }
-        CanvasTransformGizmo.setMode(state, mode);
+        CanvasTransformGizmoAxis.setMode(state, mode);
         QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo shortcut mode={}", mode.id);
         refresher.run();
         return true;
@@ -359,13 +361,13 @@ final class TabletRootKeyboardRouter {
             return false;
         }
         if (keyCode == GLFW.GLFW_KEY_C) {
-            if (CanvasClipboardController.copySelectionToClipboard(canvasViewport, state)) {
+            if (CanvasClipboardCopy.copySelectionToClipboard(canvasViewport, state)) {
                 refresher.run();
             }
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_V) {
-            if (CanvasClipboardController.pasteNearSelectionOrViewportCenter(root.resolvePlayer(), state, canvasViewport)) {
+            if (CanvasClipboardPaste.pasteNearSelectionOrViewportCenter(root.resolvePlayer(), state, canvasViewport)) {
                 refresher.run();
             }
             return true;

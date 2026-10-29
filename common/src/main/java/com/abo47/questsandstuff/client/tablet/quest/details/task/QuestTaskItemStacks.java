@@ -9,6 +9,7 @@ import net.minecraft.world.item.Items;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
 
 import com.google.gson.JsonObject;
 

@@ -3,10 +3,10 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.viewport;
 import java.util.List;
 import java.util.Map;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasDoublePoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;

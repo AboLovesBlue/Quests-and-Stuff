@@ -1,13 +1,15 @@
 package com.abo47.questsandstuff.client.tablet.quest.details;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import org.lwjgl.glfw.GLFW;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.quest.RewardClaimHandler;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
 import com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
@@ -203,51 +205,51 @@ final class QuestDetailsWindowActions {
     }
 
     static void openIconPicker(TabletUiState state, String target) {
-        ModalOpenActions.openQuestDetailsIconPicker(state, target);
+        IconPickerOpenActions.openQuestDetailsIconPicker(state, target);
     }
 
     static void openBiomePicker(TabletUiState state, String target) {
-        ModalOpenActions.openBiomePicker(state, target);
+        RegistryPickerOpenActions.openBiomePicker(state, target);
     }
 
     static void openAdvancementPicker(TabletUiState state, String target) {
-        ModalOpenActions.openAdvancementPicker(state, target);
+        RegistryPickerOpenActions.openAdvancementPicker(state, target);
     }
 
     static void openRecipePicker(TabletUiState state, String target) {
-        ModalOpenActions.openRecipePicker(state, target);
+        RegistryPickerOpenActions.openRecipePicker(state, target);
     }
 
     static void openStructurePicker(TabletUiState state, String target) {
-        ModalOpenActions.openStructurePicker(state, target);
+        RegistryPickerOpenActions.openStructurePicker(state, target);
     }
 
     static void openBlockPicker(TabletUiState state, String target) {
-        ModalOpenActions.openBlockPicker(state, target);
+        RegistryPickerOpenActions.openBlockPicker(state, target);
     }
 
     static void openStatPicker(TabletUiState state, String target) {
-        ModalOpenActions.openStatPicker(state, target);
+        RegistryPickerOpenActions.openStatPicker(state, target);
     }
 
     static void openDimensionPicker(TabletUiState state, String target) {
-        ModalOpenActions.openDimensionPicker(state, target);
+        RegistryPickerOpenActions.openDimensionPicker(state, target);
     }
 
     static void openLootTablePicker(TabletUiState state, String target) {
-        ModalOpenActions.openLootTablePicker(state, target);
+        RegistryPickerOpenActions.openLootTablePicker(state, target);
     }
 
     static void openItemLockPicker(TabletUiState state, String target) {
-        ModalOpenActions.openItemLockPicker(state, target);
+        RegistryPickerOpenActions.openItemLockPicker(state, target);
     }
 
     static void openItemInventoryPicker(TabletUiState state, String target) {
-        ModalOpenActions.openItemInventoryPicker(state, target);
+        RegistryPickerOpenActions.openItemInventoryPicker(state, target);
     }
 
     static void openAssetPicker(TabletUiState state, String target) {
-        ModalOpenActions.openAssetPicker(state, target);
+        AssetPickerOpenActions.openAssetPicker(state, target);
     }
 
     private static String editableQuestId(TabletUiState state) {

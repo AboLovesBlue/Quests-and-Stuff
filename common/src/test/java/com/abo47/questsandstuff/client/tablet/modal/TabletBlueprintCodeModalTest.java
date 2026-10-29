@@ -11,6 +11,7 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.abo47.questsandstuff.client.tablet.modal.asset.TabletBlueprintCodeModal;
 
 class TabletBlueprintCodeModalTest {
     @Test

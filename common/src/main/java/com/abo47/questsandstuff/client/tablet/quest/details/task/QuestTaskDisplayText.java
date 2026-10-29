@@ -12,6 +12,9 @@ import net.minecraft.world.level.block.Blocks;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskLootTableRewardEditor;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonDefaults;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.TabletTranslationKeys;
 import com.abo47.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
@@ -19,11 +22,11 @@ import com.abo47.questsandstuff.client.tablet.text.format.StatTargetFormatter;
 
 import com.google.gson.JsonObject;
 
-final class QuestTaskDisplayText {
+public final class QuestTaskDisplayText {
     private QuestTaskDisplayText() {
     }
 
-    static int amount(JsonObject json) {
+    public static int amount(JsonObject json) {
         if (json == null || !json.has("amount")) {
             return 1;
         }
@@ -38,7 +41,7 @@ final class QuestTaskDisplayText {
         }
     }
 
-    static int parsePositive(String value, int fallback) {
+    public static int parsePositive(String value, int fallback) {
         try {
             return Math.max(1, Math.min(99999, Integer.parseInt(value == null ? "" : value.trim())));
         } catch (NumberFormatException ignored) {
@@ -46,7 +49,7 @@ final class QuestTaskDisplayText {
         }
     }
 
-    static String taskIcon(JsonObject json) {
+    public static String taskIcon(JsonObject json) {
         String explicitIcon = TaskJsonFactory.asString(json, "icon", "");
         String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
         if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
@@ -66,7 +69,7 @@ final class QuestTaskDisplayText {
         return TaskJsonFactory.firstPresent(json, "item", "fallback_item", "minecraft:book");
     }
 
-    static String rewardIcon(JsonObject json) {
+    public static String rewardIcon(JsonObject json) {
         String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
         String explicitIcon = TaskJsonFactory.asString(json, "icon", "");
         if ("xp".equals(path) && (explicitIcon.isBlank() || "xp".equals(explicitIcon))) {
@@ -75,10 +78,10 @@ final class QuestTaskDisplayText {
         if ("loot_table".equals(path) || "loot".equals(path)) {
             return TaskJsonFactory.firstPresent(json, "icon", "minecraft:chest");
         }
-        return TaskJsonFactory.firstPresent(json, "icon", "item", "fallback_item", TaskJsonFactory.rewardFallback(path));
+        return TaskJsonFactory.firstPresent(json, "icon", "item", "fallback_item", TaskJsonDefaults.rewardFallback(path));
     }
 
-    static String displayName(JsonObject json, String type) {
+    public static String displayName(JsonObject json, String type) {
         String path = TaskJsonFactory.typePath(type);
         String title = TaskJsonFactory.asString(json, "title", "");
         if (!title.isBlank()) {
@@ -164,24 +167,24 @@ final class QuestTaskDisplayText {
         return subtitle.isBlank() ? typeLabel(type) : subtitle;
     }
 
-    static String typeLabel(String type) {
+    public static String typeLabel(String type) {
         String path = TaskJsonFactory.typePath(type);
         String spaced = path.replace('_', ' ');
         return spaced.isBlank() ? TabletTranslationKeys.text(TabletTranslationKeys.COMMON_UNKNOWN) : Character.toUpperCase(spaced.charAt(0)) + spaced.substring(1);
     }
 
-    static boolean isManualTask(JsonObject json) {
+    public static boolean isManualTask(JsonObject json) {
         String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
         return "check".equals(path) || "dummy".equals(path);
     }
 
-    static boolean isManualXpTask(JsonObject json) {
+    public static boolean isManualXpTask(JsonObject json) {
         String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
         String collection = TaskJsonFactory.asString(json, "collection", "automatic");
         return "xp".equals(path) && ("manual".equals(collection) || "consume".equals(collection));
     }
 
-    static boolean usesAmountField(JsonObject json, boolean task) {
+    public static boolean usesAmountField(JsonObject json, boolean task) {
         String path = TaskJsonFactory.typePath(TaskJsonFactory.asString(json, "type", ""));
         if (task) {
             return !isManualTask(json)
@@ -196,10 +199,6 @@ final class QuestTaskDisplayText {
         return !"command".equals(path) && !"loot_table".equals(path) && !"loot".equals(path) && !"selectable".equals(path);
     }
 
-    static String manualTarget(JsonObject json, String fallback) {
-        String target = TaskJsonFactory.asString(json, "target", "");
-        return target.isBlank() ? fallback : target;
-    }
 
     private static boolean isEntityTask(String typePath) {
         return "kill_entity".equals(typePath)

@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.modal;
 
 import com.abo47.questsandstuff.client.quest.sound.QuestSoundPreview;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 

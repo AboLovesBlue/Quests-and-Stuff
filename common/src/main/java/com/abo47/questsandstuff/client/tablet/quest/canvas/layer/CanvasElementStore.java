@@ -6,8 +6,9 @@ import java.util.function.UnaryOperator;
 
 import net.minecraft.nbt.CompoundTag;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrder;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.network.ModNetwork;

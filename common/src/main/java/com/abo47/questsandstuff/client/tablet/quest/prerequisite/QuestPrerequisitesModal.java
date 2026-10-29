@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.prerequisite;
 
+import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
 import java.util.List;
 
 import net.minecraft.client.resources.language.I18n;
@@ -21,16 +22,15 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.modal.ModalContextMenuPlacement;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalPreviewLayout;
 import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintMiniRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasElementStore;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.text.QuestTranslationKeys;
@@ -195,7 +195,7 @@ public final class QuestPrerequisitesModal {
         sections.add(ContextMenuSection.APPEARANCE, new ContextAction(
                 I18n.get("ui.questsandstuff.context.connection_color"),
                 "style_color", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
+            AppModalOpenActions.openColorPicker(state, ModalTargets.connection(chapter, sourceId, targetId), connectionColor);
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] prerequisites manager context action=connection_color source={} target={}", sourceId, targetId);
             refresh.run();

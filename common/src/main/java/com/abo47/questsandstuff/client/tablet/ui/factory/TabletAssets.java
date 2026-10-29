@@ -24,7 +24,7 @@ import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconProvider;
 import com.abo47.questsandstuff.client.tablet.icons.IconAtlas;
 import com.abo47.questsandstuff.client.tablet.icons.IconRegistry;
-import com.abo47.questsandstuff.client.tablet.modal.RecipeChoiceIndex;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipeChoiceIndex;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardRecipes;
 import com.abo47.questsandstuff.client.tablet.theme.BackgroundModes;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;

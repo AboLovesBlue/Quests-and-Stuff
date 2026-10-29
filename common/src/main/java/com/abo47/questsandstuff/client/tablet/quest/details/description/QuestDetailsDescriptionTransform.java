@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessions;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasElementGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionSnapshot;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionResize;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionRotate;
@@ -281,16 +282,16 @@ public final class QuestDetailsDescriptionTransform {
     private CanvasImageLayer transformImage(QuestDetailsDescriptionModel model, CanvasImageLayer image, int dx, int dy, int mouseX, int mouseY) {
         return switch (state.questDetails.questDetailsTransformMode) {
             case "resize" -> resizedImage(image, mouseX, mouseY);
-            case "rotate" -> CanvasTransformGizmo.supports(image.asset()) && !CanvasTransformGizmo.AXIS_ROLL.equals(state.questDetails.questDetailsTransformAxis) ? rotateModelFromDrag(image, mouseX, mouseY) : clampRotationPreviewImage(image.rotateTo(rotation(mouseX, mouseY)));
+            case "rotate" -> CanvasTransformGizmoAxis.supports(image.asset()) && !CanvasTransformGizmoAxis.AXIS_ROLL.equals(state.questDetails.questDetailsTransformAxis) ? rotateModelFromDrag(image, mouseX, mouseY) : clampRotationPreviewImage(image.rotateTo(rotation(mouseX, mouseY)));
             default -> {
-                CanvasPoint delta = CanvasTransformGizmo.supports(image.asset())
+                CanvasPoint delta = CanvasTransformGizmoAxis.supports(image.asset())
                         ? modelMoveDelta(dx, dy)
                         : LayerTransformEngine.dragDelta(dx, dy, snapSettings());
                 int x = state.questDetails.questDetailsTransformStartX + delta.x;
                 int y = state.questDetails.questDetailsTransformStartY + delta.y;
                 CanvasPoint snapped = snapMove(model, image.id(), x, y, image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
-                String axis = CanvasTransformGizmo.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
-                if (!CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis)) {
+                String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
+                if (!CanvasTransformGizmoAxis.AXIS_MOVE_FREE.equals(axis)) {
                     CanvasPoint offset = LayerTransformEngine.axisDelta(snapped.x - x, snapped.y - y, state.questDetails.questDetailsTransformStartRotation, axis, new LayerTransformEngine.SnapSettings(CanvasGeometry.gridSize(state), false, false));
                     snapped = new CanvasPoint(x + offset.x, y + offset.y);
                     state.canvas.snapGuideXVisible = state.canvas.snapGuideXVisible && offset.x != 0;
@@ -303,13 +304,13 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasPoint modelMoveDelta(int dx, int dy) {
-        String axis = CanvasTransformGizmo.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
+        String axis = CanvasTransformGizmoAxis.moveAxisOrFree(state.questDetails.questDetailsTransformAxis);
         return LayerTransformEngine.modelMoveDelta(new LayerTransformEngine.ModelMoveRequest(
                 dx,
                 dy,
                 state.questDetails.questDetailsTransformStartRotation,
                 axis,
-                CanvasTransformGizmo.AXIS_MOVE_FREE.equals(axis),
+                CanvasTransformGizmoAxis.AXIS_MOVE_FREE.equals(axis),
                 snapSettings()
         ));
     }
@@ -317,7 +318,7 @@ public final class QuestDetailsDescriptionTransform {
     private CanvasImageLayer rotateModelFromDrag(CanvasImageLayer image, int mouseX, int mouseY) {
         LayerTransformEngine.ModelRotation rotation = LayerTransformEngine.modelRotation(new LayerTransformEngine.ModelRotationRequest(
                 new LayerTransformEngine.ModelRotation(state.questDetails.questDetailsTransformStartYaw, state.questDetails.questDetailsTransformStartPitch),
-                CanvasTransformGizmo.AXIS_PITCH.equals(state.questDetails.questDetailsTransformAxis),
+                CanvasTransformGizmoAxis.AXIS_PITCH.equals(state.questDetails.questDetailsTransformAxis),
                 state.questDetails.questDetailsTransformPivotX,
                 state.questDetails.questDetailsTransformPivotY,
                 state.questDetails.questDetailsTransformStartAngle,
@@ -334,9 +335,9 @@ public final class QuestDetailsDescriptionTransform {
     }
 
     private CanvasImageLayer resizedImage(CanvasImageLayer image, int mouseX, int mouseY) {
-        boolean gizmoSupported = CanvasTransformGizmo.supports(image.asset());
-        int cornerX = gizmoSupported ? CanvasTransformGizmo.resizeCornerX(state.questDetails.questDetailsTransformAxis) : 1;
-        int cornerY = gizmoSupported ? CanvasTransformGizmo.resizeCornerY(state.questDetails.questDetailsTransformAxis) : 1;
+        boolean gizmoSupported = CanvasTransformGizmoAxis.supports(image.asset());
+        int cornerX = gizmoSupported ? CanvasTransformGizmoAxis.resizeCornerX(state.questDetails.questDetailsTransformAxis) : 1;
+        int cornerY = gizmoSupported ? CanvasTransformGizmoAxis.resizeCornerY(state.questDetails.questDetailsTransformAxis) : 1;
         CanvasGeometry.ResizedBox box = resizedBox(mouseX, mouseY, 8, 8, state.questDetails.questDetailsTransformStartPivotX, state.questDetails.questDetailsTransformStartPivotY, cornerX, cornerY, gizmoSupported || TabletModifierKeys.shiftDown());
         return fitAndClampImage(image.withBounds(box.x(), box.y(), box.width(), box.height()));
     }

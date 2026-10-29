@@ -4,8 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKind;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 public final class CanvasSelectionSet {

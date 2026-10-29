@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrder;
 import com.abo47.questsandstuff.quest.editor.blueprint.CanvasBlueprint;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;

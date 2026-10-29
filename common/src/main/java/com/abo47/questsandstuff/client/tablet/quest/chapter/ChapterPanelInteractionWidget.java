@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.chapter;
 
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,7 +15,6 @@ import com.abo47.questsandstuff.client.tablet.controls.CardDragSortUtil;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.controls.SearchFilter;
 import com.abo47.questsandstuff.client.tablet.layout.TabletPanelChrome;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
@@ -232,7 +232,7 @@ public final class ChapterPanelInteractionWidget extends WidgetGroup {
         state.chapterPanel.chapterDragActive = false;
         state.chapterPanel.chapterDragName = "";
         state.chapterPanel.chapterDragTargetIndex = -1;
-        ModalOpenActions.openChapterIconPicker(state, hit);
+        IconPickerOpenActions.openChapterIconPicker(state, hit);
         QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon picker open target={}", hit);
         refresh.run();
         return true;

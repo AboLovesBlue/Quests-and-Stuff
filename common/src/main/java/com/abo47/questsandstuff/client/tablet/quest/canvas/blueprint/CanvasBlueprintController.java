@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.blueprint;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -13,8 +14,7 @@ import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.overlay.CanvasMiniNotificationController;
@@ -35,7 +35,7 @@ public final class CanvasBlueprintController {
     }
 
     public static void openBlueprintLibrary(TabletUiState state) {
-        ModalOpenActions.openBlueprintPicker(state, state.canvas.blueprintPlacement.asset());
+        AssetPickerOpenActions.openBlueprintPicker(state, state.canvas.blueprintPlacement.asset());
     }
 
     public static boolean saveSelectionWithNotice(CanvasViewport canvasViewport, TabletUiState state, int noticeX, int noticeY) {
@@ -173,7 +173,7 @@ public final class CanvasBlueprintController {
     }
 
     static PlacementAnchor placementAnchor(TabletUiState state, CanvasBlueprint blueprint, int localX, int localY) {
-        CanvasBlueprintMiniRenderer.BlueprintBounds bounds = CanvasBlueprintMiniRenderer.bounds(blueprint);
+        CanvasBlueprintMiniGeometry.BlueprintBounds bounds = CanvasBlueprintMiniGeometry.bounds(blueprint);
         int logicalX = (int) Math.round(CanvasGeometry.screenToLogicalX(state, localX) - bounds.width() / 2.0);
         int logicalY = (int) Math.round(CanvasGeometry.screenToLogicalY(state, localY) - bounds.height() / 2.0);
         int snappedX = TabletUiFactory.snapToGrid(state, logicalX);

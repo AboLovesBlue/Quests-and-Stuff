@@ -8,6 +8,8 @@ import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
 import com.abo47.questsandstuff.client.sync.state.ClientQuestStateFacade;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextAction;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
@@ -16,10 +18,9 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
 import com.abo47.questsandstuff.client.tablet.controls.ScrollMath;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardController;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.ConnectionRenderer;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
 import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
@@ -135,15 +136,15 @@ public final class CanvasContextMenuSupport {
     }
 
     public static boolean canCopyContext(CanvasViewport canvasViewport, TabletUiState state) {
-        return CanvasClipboardController.canCopyContext(canvasViewport, state);
+        return CanvasClipboardCopy.canCopyContext(canvasViewport, state);
     }
 
     public static void copyContextToClipboard(CanvasViewport canvasViewport, TabletUiState state) {
-        CanvasClipboardController.copyContextToClipboard(canvasViewport, state);
+        CanvasClipboardCopy.copyContextToClipboard(canvasViewport, state);
     }
 
     public static void pasteClipboard(Player player, TabletUiState state) {
-        CanvasClipboardController.pasteAtContext(player, state);
+        CanvasClipboardPaste.pasteAtContext(player, state);
     }
 
     public static boolean hasOtherQuest(CanvasViewport canvasViewport, String questId) {

@@ -2,9 +2,10 @@ package com.abo47.questsandstuff.client.tablet.quest.canvas.transform;
 
 import org.junit.jupiter.api.Test;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,7 +23,7 @@ class LayerTransformEngineTest {
                 10,
                 22,
                 0,
-                CanvasTransformGizmo.AXIS_MOVE_X,
+                CanvasTransformGizmoAxis.AXIS_MOVE_X,
                 false,
                 shiftOnly
         )));

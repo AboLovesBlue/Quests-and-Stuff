@@ -2,42 +2,35 @@ package com.abo47.questsandstuff.client.tablet.quest.details.task;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import com.lowdragmc.lowdraglib.gui.texture.ColorBorderTexture;
-import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib.gui.widget.ImageWidget;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuController;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.icons.DisplayIconWidget;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.modal.TabletModalPanel;
-import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsCoordinates;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskInlineFields;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskLootTableRewardEditor;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.interaction.QuestTaskListInteractions;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskLockJson;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskSelectableRewards;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
-import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
-import com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
-import com.abo47.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
 import com.abo47.questsandstuff.client.tablet.theme.tokens.TabletColors;
 
 import com.google.gson.JsonObject;
 
-import static com.abo47.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.flatHitButton;
 
 final class QuestTaskCardRenderer {
@@ -45,7 +38,7 @@ final class QuestTaskCardRenderer {
     }
 
     static void renderTaskCard(WidgetGroup parent, TabletUiState state, Player player, Runnable refresh, String questId, QuestDetailsTaskEntry entry, int x, int y, int w, List<QuestDetailsTaskEntry> entries, int listY, int listBottom) {
-        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom, false, false, false, QuestTaskLockJson.hasLocks(entry.json())));
+        parent.addWidget(QuestTaskCardPanel.cardPanel(state, player, refresh, questId, entries, "tasks", entry.id(), x, y, w, entry.tag().getFloat("progress"), listY, listBottom, false, false, false, QuestTaskLockJson.hasLocks(entry.json())));
         String icon = QuestTaskDisplayText.taskIcon(entry.json());
         addTaskIcon(parent, entry.json(), icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), true, entry.json(), icon, x + 8, y + 8);
@@ -63,7 +56,7 @@ final class QuestTaskCardRenderer {
         boolean claimChoiceEntry = QuestTaskSelectableRewards.isClaimChoiceEntry(entry);
         JsonObject displayJson = selectableWrapper ? QuestTaskSelectableRewards.displayJson(entry.json()) : entry.json();
         QuestDetailsTaskEntry displayEntry = selectableWrapper ? new QuestDetailsTaskEntry(entry.id(), entry.tag(), displayJson) : entry;
-        parent.addWidget(cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry, false));
+        parent.addWidget(QuestTaskCardPanel.cardPanel(state, player, refresh, questId, entries, "rewards", entry.id(), x, y, w, 0.0f, listY, listBottom, selectableReward, rewardsClaimed, claimChoiceEntry, false));
         String icon = QuestTaskDisplayText.rewardIcon(displayJson);
         addTaskIcon(parent, displayJson, icon, x + 8, y + 8);
         addIconHoverHit(parent, state, refresh, questId, entry.id(), false, displayJson, icon, x + 8, y + 8);
@@ -116,126 +109,6 @@ final class QuestTaskCardRenderer {
         hit.setHoverTexture(EntityIconControls.iconHoverTexture());
         hit.setHoverTooltips(iconTooltip(json, icon));
         parent.addWidget(hit);
-    }
-
-    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom) {
-        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, false);
-    }
-
-    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward) {
-        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, false, selectableReward);
-    }
-
-    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry) {
-        return cardPanel(state, player, refresh, questId, entries, kind, id, x, y, w, progress, listY, listBottom, selectableReward, claimedReward, claimChoiceEntry, false);
-    }
-
-    private static WidgetGroup cardPanel(TabletUiState state, Player player, Runnable refresh, String questId, List<QuestDetailsTaskEntry> entries, String kind, String id, int x, int y, int w, float progress, int listY, int listBottom, boolean selectableReward, boolean claimedReward, boolean claimChoiceEntry, boolean itemLocked) {
-        WidgetGroup card = new WidgetGroup(x, y, w, QuestDetailsTasksPanel.CARD_H) {
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                return false;
-            }
-
-            @Override
-            public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-                int localY = listY + y + QuestDetailsCoordinates.localY(state, mouseY, getPositionY(), QuestDetailsTasksPanel.CARD_H);
-                if (QuestTaskListInteractions.handleDrag(player, state, refresh, questId, entries, kind, listY, listBottom, localY, mouseX, mouseY, button)) {
-                    return true;
-                }
-                return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-            }
-
-            @Override
-            public boolean mouseReleased(double mouseX, double mouseY, int button) {
-                if (QuestTaskListInteractions.handleRelease(player, state, refresh, questId, entries, kind)) {
-                    return true;
-                }
-                return super.mouseReleased(mouseX, mouseY, button);
-            }
-
-            @Override
-            public void drawInBackground(@Nonnull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-                super.drawInBackground(graphics, mouseX, mouseY, partialTicks);
-                if (isMouseOverElement(mouseX, mouseY)) {
-                    GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight());
-                }
-            }
-        };
-        if (claimChoiceEntry && !claimedReward) {
-            card.addWidget(flatHitButton(0, 0, w, QuestDetailsTasksPanel.CARD_H, click -> {
-                QuestTaskSelectableRewards.selectChoice(state, id);
-                state.questDetails.questDetailsTaskDragRefreshQueued = true;
-            }));
-        }
-        boolean editSelected = TaskSections.normalize(kind).equals(state.questDetails.questDetailsSelectedTaskKind) && id.equals(state.questDetails.questDetailsSelectedTaskId);
-        boolean claimSelected = claimChoiceEntry && QuestTaskSelectableRewards.isSelectedChoice(state, id);
-        boolean selected = editSelected || claimSelected;
-        int accent = selectableReward ? (claimSelected ? TabletColors.SUCCESS : TabletColors.WARNING)
-                : itemLocked ? TabletColors.LOCKED : TabletColors.INTERACTIVE;
-
-        String skinKey = TaskSections.isTask(kind) ? "quests_task_cards" : "quests_reward_cards";
-        SkinAnchorRegistry.registerShared(skinKey, card);
-        String rawOverride = SkinOverrideKey.resolveOverride(state, skinKey);
-        if (rawOverride == null) {
-            rawOverride = fallbackOverride(state, skinKey);
-        }
-        boolean skinned = rawOverride != null;
-        if (skinned) {
-            SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
-            if (parsed != null) {
-                IGuiTexture tex = parsed.createTexture();
-                if (tex != null) {
-                    card.addWidget(new ImageWidget(-1, -1, w + 2, QuestDetailsTasksPanel.CARD_H + 2, tex));
-                }
-            }
-            card.setBackground(SurfaceFactory.transparentFill());
-        } else {
-            card.setBackground(SurfaceFactory.fill(TabletColors.elevatedSurface()));
-        }
-
-        if (claimedReward) {
-            addCardFill(card, w, withAlpha(TabletColors.TEXT_MUTED, 34));
-        } else if (selected || selectableReward) {
-            addCardFill(card, w, withAlpha(accent, 82));
-        } else if (itemLocked) {
-            addCardFill(card, w, withAlpha(TabletColors.LOCKED, 46));
-        }
-
-        int borderColor = claimedReward ? TabletColors.subtleBorder() : (selected ? accent : TabletColors.subtleBorder());
-        if (!skinned) {
-            card.addWidget(borderQuad(w, borderColor));
-        }
-
-        int fillW = Math.round(w * Math.max(0.0f, Math.min(1.0f, progress)));
-        if (fillW > 0) {
-            WidgetGroup fill = new WidgetGroup(0, 0, Math.max(1, fillW), QuestDetailsTasksPanel.CARD_H);
-            fill.setBackground(SurfaceFactory.fill(withAlpha(TabletColors.SUCCESS, 80)));
-            card.addWidget(fill);
-        }
-        return card;
-    }
-
-    private static String fallbackOverride(TabletUiState state, String skinKey) {
-        for (var entry : state.root.skinFillOverrides.entrySet()) {
-            String entryKey = entry.getKey();
-            if (skinKey.equals(entryKey)) return entry.getValue();
-            String effective = entryKey.contains(":") ? entryKey.substring(entryKey.indexOf(':') + 1) : entryKey;
-            if (skinKey.equals(effective)) return entry.getValue();
-        }
-        return null;
-    }
-
-    private static void addCardFill(WidgetGroup card, int w, int fill) {
-        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
-        g.setBackground(SurfaceFactory.fill(fill));
-        card.addWidget(g);
-    }
-
-    private static WidgetGroup borderQuad(int w, int color) {
-        WidgetGroup g = new WidgetGroup(0, 0, w, QuestDetailsTasksPanel.CARD_H);
-        g.setBackground(new ColorBorderTexture(1, color));
-        return g;
     }
 
     private static Component[] iconTooltip(JsonObject json, String icon) {

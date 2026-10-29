@@ -1,0 +1,17 @@
+package com.abo47.questsandstuff.client.tablet.modal.settings;
+
+import java.util.List;
+import java.util.function.Function;
+
+import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
+
+public record SettingsTabDescriptor(
+        int id,
+        String logName,
+        String labelKey,
+        Function<TabletUiState, List<SettingsOptionDescriptor>> optionProvider
+) {
+    public List<SettingsOptionDescriptor> options(TabletUiState state) {
+        return optionProvider.apply(state);
+    }
+}

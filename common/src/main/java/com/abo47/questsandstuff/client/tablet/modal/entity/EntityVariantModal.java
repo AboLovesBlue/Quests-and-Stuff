@@ -12,6 +12,7 @@ import com.abo47.questsandstuff.client.tablet.modal.ModalShell;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions;
 
 public final class EntityVariantModal {
     private EntityVariantModal() {

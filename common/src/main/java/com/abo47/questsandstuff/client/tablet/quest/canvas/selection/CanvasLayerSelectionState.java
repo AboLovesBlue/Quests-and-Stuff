@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKey;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerKind;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKey;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerKind;
 
 public final class CanvasLayerSelectionState {
     private final LinkedHashSet<String> questIds = new LinkedHashSet<>();

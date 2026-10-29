@@ -1,4 +1,5 @@
 package com.abo47.questsandstuff.client.tablet.quest.details.task;
+import com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactory;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;

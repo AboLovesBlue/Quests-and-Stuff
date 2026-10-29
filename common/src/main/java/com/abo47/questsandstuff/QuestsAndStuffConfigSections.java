@@ -1,4 +1,5 @@
-package com.abo47.questsandstuff;
+package com.abo47.questsandstuff;import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestHoverExpand;
+
 
 import com.google.gson.JsonObject;
 

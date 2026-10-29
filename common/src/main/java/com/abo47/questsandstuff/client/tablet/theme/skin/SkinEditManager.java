@@ -1,5 +1,6 @@
 package com.abo47.questsandstuff.client.tablet.theme.skin;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +29,6 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.controls.TabletIconTextButton;
 import com.abo47.questsandstuff.client.tablet.controls.FourFieldEditor;
 import com.abo47.questsandstuff.client.tablet.controls.TwoFieldEditor;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.details.QuestDetailsRootWidget;
@@ -299,7 +299,7 @@ public final class SkinEditManager {
                 () -> {
                     root.closeContextMenu();
                     state.modal.skinEditFillTarget = resolvedTarget;
-                    ModalOpenActions.openAssetPicker(state, resolvedTarget, currentAsset);
+                    AssetPickerOpenActions.openAssetPicker(state, resolvedTarget, currentAsset);
                     if (refresher != null) refresher.run();
                 }));
 

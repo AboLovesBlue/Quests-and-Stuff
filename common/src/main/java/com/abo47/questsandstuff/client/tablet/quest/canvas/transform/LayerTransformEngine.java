@@ -1,7 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.transform;
 
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGeometry;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformAxisDelta;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformAxisDelta;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
 
 public final class LayerTransformEngine {

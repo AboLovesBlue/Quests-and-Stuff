@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalPickerStates;
 
 class ModalPickerStatesTest {
     @Test
@@ -76,7 +79,7 @@ class ModalPickerStatesTest {
     @Test
     void activePickerBindingUpdatesModalSessionPayload() {
         TabletUiState state = new TabletUiState();
-        ModalOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
+        RegistryPickerOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
 
         SearchScrollState picker = ModalPickerStates.recipe(state);
         picker.setSearch(" Stone\n");
@@ -95,11 +98,11 @@ class ModalPickerStatesTest {
     @Test
     void switchingPickerTypeCreatesFreshSessionPayload() {
         TabletUiState state = new TabletUiState();
-        ModalOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
+        RegistryPickerOpenActions.openRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe");
         ModalPickerStates.recipe(state).setSearch("stone");
         ModalPickerStates.recipe(state).setScrollValue(22);
 
-        ModalOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
+        AssetPickerOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
 
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
         assertEquals("", state.modal.modalSession.picker().search());

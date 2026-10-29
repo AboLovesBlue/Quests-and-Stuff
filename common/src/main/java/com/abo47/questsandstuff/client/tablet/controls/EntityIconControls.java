@@ -1,5 +1,7 @@
 package com.abo47.questsandstuff.client.tablet.controls;
 
+import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
@@ -10,7 +12,6 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
 import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
@@ -21,10 +22,10 @@ public final class EntityIconControls {
 
     public static void openIconPicker(TabletUiState state, IconPickerTarget target) {
         if (!target.quest().isBlank()) {
-            ModalOpenActions.openQuestIconPicker(state, target.quest());
+            IconPickerOpenActions.openQuestIconPicker(state, target.quest());
             return;
         }
-        ModalOpenActions.openChapterIconPicker(state, target.chapter());
+        IconPickerOpenActions.openChapterIconPicker(state, target.chapter());
     }
 
     public static void addChangeIconHit(WidgetGroup parent, TabletUiState state, Runnable refresh, int x, int y, int size, Runnable openPicker) {
@@ -76,7 +77,7 @@ public final class EntityIconControls {
     }
 
     public static void openVariantPicker(TabletUiState state, String target, String icon) {
-        ModalOpenActions.openEntityVariantPicker(state, target, icon);
+        RegistryPickerOpenActions.openEntityVariantPicker(state, target, icon);
     }
 
     public static IGuiTexture iconHoverTexture() {

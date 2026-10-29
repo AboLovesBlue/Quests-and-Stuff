@@ -9,6 +9,9 @@ import com.abo47.questsandstuff.quest.model.canvas.CanvasImageLayer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
 
 class ModalOpenActionsTest {
     @Test
@@ -22,7 +25,7 @@ class ModalOpenActionsTest {
         state.pickers.assetContextOpen = true;
         state.pickers.assetRenameOpen = true;
 
-        ModalOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
+        AssetPickerOpenActions.openAssetPicker(state, "reward_icon|quest|reward|icon", "icons/new.png");
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
@@ -49,7 +52,7 @@ class ModalOpenActionsTest {
         state.pickers.recipeScrollDragging = true;
         state.pickers.recipeMode = RecipePickerMode.INVENTORY;
 
-        ModalOpenActions.openCanvasRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe", 12, 34);
+        RegistryPickerOpenActions.openCanvasRecipePicker(state, "task_recipe|quest|task|questsandstuff:recipe", 12, 34);
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.RECIPE_PICKER));
         assertEquals(ModalWindowManager.ModalType.RECIPE_PICKER, state.modal.modalSession.type());
@@ -76,7 +79,7 @@ class ModalOpenActionsTest {
         state.pickers.iconScrollDragging = true;
         state.pickers.iconMode = IconPickerMode.INVENTORY;
 
-        ModalOpenActions.openQuestDetailsIconPicker(state, ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"));
+        IconPickerOpenActions.openQuestDetailsIconPicker(state, ModalTargets.taskSimpleIcon("quest", "task", "questsandstuff:item_use"));
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modal.modalSession.type());
@@ -95,7 +98,7 @@ class ModalOpenActionsTest {
         TabletUiState state = new TabletUiState();
         state.pickers.iconMode = IconPickerMode.FLUIDS;
 
-        ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
+        IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityNew("chapter"), 5, 9);
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ICON_PICKER));
         assertEquals(ModalWindowManager.ModalType.ICON_PICKER, state.modal.modalSession.type());
@@ -113,7 +116,7 @@ class ModalOpenActionsTest {
         state.modal.modalCanvasImageTarget = "old_image";
         state.modal.modalQuestCompletionSoundTargets.add("old_sound");
 
-        ModalOpenActions.openQuestBackgroundPicker(state, "quest_a", "backgrounds/stone.png", true);
+        AssetPickerOpenActions.openQuestBackgroundPicker(state, "quest_a", "backgrounds/stone.png", true);
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.ASSET_PICKER));
         assertEquals("quest_a", state.modal.modalQuestBackgroundTarget);
@@ -132,7 +135,7 @@ class ModalOpenActionsTest {
         state.modal.modalCanvasBackgroundTarget = "old_canvas";
         state.pickers.assetSelected = "sounds/old.ogg";
 
-        ModalOpenActions.openQuestGameSoundPicker(state, "quest_a", "minecraft:block.note_block.pling");
+        SoundPickerOpenActions.openQuestGameSoundPicker(state, "quest_a", "minecraft:block.note_block.pling");
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.SOUND_PICKER));
         assertEquals("quest_a", state.modal.modalQuestCompletionSoundTarget);
@@ -155,7 +158,7 @@ class ModalOpenActionsTest {
         state.canvas.snapGuideXVisible = true;
         state.canvas.snapGuideYVisible = true;
 
-        ModalOpenActions.openColorPicker(state, "theme", 0xFF00AA);
+        AppModalOpenActions.openColorPicker(state, "theme", 0xFF00AA);
 
         assertTrue(ModalStateQueries.isOpen(state, ModalWindowManager.ModalType.COLOR_PICKER));
         assertFalse(state.canvas.draggingCanvasImage);

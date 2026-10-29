@@ -11,6 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptors;
+import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptor;
+import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsOptionKind;
+import com.abo47.questsandstuff.client.tablet.modal.settings.SettingsOptionDescriptor;
 
 class SettingsTabDescriptorsTest {
     @Test

@@ -7,6 +7,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestHoverExpand;
 import com.abo47.questsandstuff.platform.Services;
 import com.abo47.questsandstuff.quest.persistence.GsonProvider;
 

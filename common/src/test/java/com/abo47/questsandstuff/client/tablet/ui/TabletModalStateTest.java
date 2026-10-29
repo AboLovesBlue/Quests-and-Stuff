@@ -1,17 +1,17 @@
 package com.abo47.questsandstuff.client.tablet.ui;
 
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.abo47.questsandstuff.QuestsAndStuffConfig;
-import com.abo47.questsandstuff.client.tablet.modal.IconPickerMode;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.target.IconPickerMode;
 import com.abo47.questsandstuff.client.tablet.modal.ModalSession;
 import com.abo47.questsandstuff.client.tablet.modal.ModalStateQueries;
 import com.abo47.questsandstuff.client.tablet.modal.ModalWindowManager;
-import com.abo47.questsandstuff.client.tablet.modal.RecipePickerMode;
+import com.abo47.questsandstuff.client.tablet.modal.recipe.RecipePickerMode;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.state.TabletModalState;
 
@@ -157,7 +157,7 @@ class TabletModalStateTest {
     void modalSessionCapturesBatchTargetsAndClearsThemOnClose() {
         TabletUiState state = new TabletUiState();
 
-        ModalOpenActions.openBatchQuestBackgroundPicker(state, List.of("quest_a", " quest_b "), "background.png", true);
+        AssetPickerOpenActions.openBatchQuestBackgroundPicker(state, List.of("quest_a", " quest_b "), "background.png", true);
 
         assertEquals(ModalWindowManager.ModalType.ASSET_PICKER, state.modal.modalSession.type());
         assertEquals("", state.modal.modalSession.target(ModalSession.TargetSlot.QUEST_BACKGROUND));

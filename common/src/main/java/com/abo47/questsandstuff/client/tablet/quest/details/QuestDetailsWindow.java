@@ -5,7 +5,7 @@ import net.minecraft.world.item.ItemStack;
 
 import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
 
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargetParser;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargetParser;
 import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory;
 

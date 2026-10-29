@@ -7,6 +7,7 @@ import java.util.Set;
 
 import net.minecraft.nbt.CompoundTag;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrder;
 import com.abo47.questsandstuff.client.sync.mutation.ClientEditorMutationApplier;
 import com.abo47.questsandstuff.client.sync.mutation.ClientQuestMutator;
 import com.abo47.questsandstuff.client.sync.packet.ClientSyncInbox;

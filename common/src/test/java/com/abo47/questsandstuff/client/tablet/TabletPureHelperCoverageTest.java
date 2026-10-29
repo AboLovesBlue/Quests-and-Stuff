@@ -1,4 +1,8 @@
-package com.abo47.questsandstuff.client.tablet;
+package com.abo47.questsandstuff.client.tablet;import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestCardBackgroundRendererTest;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestMiniCardRendererTest;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrderingTest;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessionsTest;
+
 
 import java.util.Map;
 
@@ -14,7 +18,7 @@ class TabletPureHelperCoverageTest {
                 entry("modal sessions", "com.abo47.questsandstuff.client.tablet.ui.TabletModalStateTest"),
                 entry("picker sessions", "com.abo47.questsandstuff.client.tablet.modal.ModalPickerStatesTest"),
                 entry("settings descriptors", "com.abo47.questsandstuff.client.tablet.modal.SettingsTabDescriptorsTest"),
-                entry("transform sessions", "com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasTransformSessionsTest"),
+                entry("transform sessions", "com.abo47.questsandstuff.client.tablet.quest.canvas.transform.CanvasTransformSessionsTest"),
                 entry("sync keys and chunks", "com.abo47.questsandstuff.quest.sync.SyncPayloadBuilderTest"),
                 entry("client sync inbox", "com.abo47.questsandstuff.client.sync.packet.ClientSyncInboxTest"),
                 entry("optimistic mutations", "com.abo47.questsandstuff.client.sync.mutation.ClientOptimisticMutationsTest"),
@@ -28,15 +32,15 @@ class TabletPureHelperCoverageTest {
                 entry("prerequisite connection model", "com.abo47.questsandstuff.client.tablet.quest.prerequisite.PrerequisiteConnectionModelTest"),
                 entry("shared smart snap engine", "com.abo47.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngineTest"),
                 entry("main canvas smart snap adapter", "com.abo47.questsandstuff.client.tablet.quest.canvas.viewport.CanvasSmartSnapperTest"),
-                entry("quest card background defaults", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestCardBackgroundRendererTest"),
-                entry("mini quest card renderer", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.QuestMiniCardRendererTest"),
-                entry("canvas layer ordering", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrderingTest"),
+                entry("quest card background defaults", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestCardBackgroundRendererTest"),
+                entry("mini quest card renderer", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.card.QuestMiniCardRendererTest"),
+                entry("canvas layer ordering", "com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrderingTest"),
                 entry("canvas layer selection", "com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasLayerSelectionTest"),
                 entry("description layer selection", "com.abo47.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionSelectionStateTest"),
                 entry("context action tones", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionToneTest"),
                 entry("context action layout", "com.abo47.questsandstuff.client.tablet.contextmenu.ContextActionLayoutTest"),
-                entry("task json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.task.TaskJsonFactoryTest"),
-                entry("task defaults", "com.abo47.questsandstuff.client.tablet.quest.details.task.QuestTaskTypeCatalogTest")
+                entry("task json diagnostics", "com.abo47.questsandstuff.client.tablet.quest.details.task.model.TaskJsonFactoryTest"),
+                entry("task defaults", "com.abo47.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalogTest")
         );
 
         coverage.forEach((area, className) ->

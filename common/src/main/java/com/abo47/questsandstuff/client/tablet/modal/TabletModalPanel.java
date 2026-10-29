@@ -14,8 +14,8 @@ import com.abo47.questsandstuff.QuestsAndStuffMod;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.icons.FluidIconCodec;
 import com.abo47.questsandstuff.client.tablet.icons.ItemStackIconCodec;
-import com.abo47.questsandstuff.client.tablet.modal.actions.AssetPickerApplyActions;
-import com.abo47.questsandstuff.client.tablet.modal.actions.ColorPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.asset.AssetPickerApplyActions;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.ColorPickerApplyActions;
 import com.abo47.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.actions.CanvasEntityPickerLauncher;
@@ -25,6 +25,7 @@ import com.abo47.questsandstuff.client.tablet.state.TabletUiState;
 import static com.abo47.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
 import static com.abo47.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
 import static com.abo47.questsandstuff.client.tablet.ui.factory.TabletUiFactory.closeIconButton;
+import com.abo47.questsandstuff.client.tablet.modal.pickers.PickerTooltips;
 
 public final class TabletModalPanel {
     private TabletModalPanel() {
@@ -57,15 +58,15 @@ public final class TabletModalPanel {
         return accepted;
     }
 
-    static void runAssetBackgroundAction(Player player, TabletUiState state, String background) {
+    public static void runAssetBackgroundAction(Player player, TabletUiState state, String background) {
         AssetPickerApplyActions.run(player, state, background);
     }
 
-    static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
+    public static boolean runCanvasEntityAction(Player player, TabletUiState state, String target, String pickedItem) {
         return CanvasEntityPickerLauncher.run(player, state, target, pickedItem);
     }
 
-    static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
+    public static boolean runCanvasModelAction(TabletUiState state, String target, String pickedValue) {
         return CanvasModelPickerLauncher.run(state, target, pickedValue);
     }
 
@@ -105,7 +106,7 @@ public final class TabletModalPanel {
         return new Component[]{Component.literal(entry).withStyle(ChatFormatting.GRAY)};
     }
 
-    static String fileNameFromRelativePath(String relativePath) {
+    public static String fileNameFromRelativePath(String relativePath) {
         if (relativePath == null || relativePath.isBlank()) {
             return "";
         }
@@ -113,7 +114,7 @@ public final class TabletModalPanel {
         return slash >= 0 ? relativePath.substring(slash + 1) : relativePath;
     }
 
-    static String parentRelativePath(String relativePath) {
+    public static String parentRelativePath(String relativePath) {
         if (relativePath == null || relativePath.isBlank()) {
             return "";
         }
@@ -121,15 +122,15 @@ public final class TabletModalPanel {
         return slash >= 0 ? relativePath.substring(0, slash) : "";
     }
 
-    static int currentColorPickerValue(TabletUiState state, String target) {
+    public static int currentColorPickerValue(TabletUiState state, String target) {
         return ColorPickerApplyActions.currentValue(state, target);
     }
 
-    static void applyColorPickerValue(Player player, TabletUiState state, String target, int color) {
+    public static void applyColorPickerValue(Player player, TabletUiState state, String target, int color) {
         ColorPickerApplyActions.apply(player, state, target, color);
     }
 
-    static String tr(String key, Object... args) {
+    public static String tr(String key, Object... args) {
         return I18n.get(key, args);
     }
 

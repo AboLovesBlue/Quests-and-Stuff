@@ -1,5 +1,10 @@
 package com.abo47.questsandstuff.client.tablet.quest.canvas.contextmenu;
 
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abo47.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.AppModalOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abo47.questsandstuff.client.tablet.modal.IconPickerOpenActions;
 import java.util.List;
 
 import com.abo47.questsandstuff.QuestsAndStuffMod;
@@ -12,16 +17,15 @@ import com.abo47.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
 import com.abo47.questsandstuff.client.tablet.controls.EntityIconControls;
 import com.abo47.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
 import com.abo47.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
-import com.abo47.questsandstuff.client.tablet.modal.ModalOpenActions;
-import com.abo47.questsandstuff.client.tablet.modal.ModalTargets;
+import com.abo47.questsandstuff.client.tablet.modal.target.ModalTargets;
 import com.abo47.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasGridFitController;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasLayerMutations;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFitController;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasLayerOrdering;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmo;
-import com.abo47.questsandstuff.client.tablet.quest.canvas.render.CanvasTransformGizmoMenus;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abo47.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoMenus;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextEditSession;
 import com.abo47.questsandstuff.client.tablet.quest.canvas.text.TextStyleSession;
@@ -44,7 +48,7 @@ final class CanvasContextElementActions {
         CanvasImageLayer contextImage = CanvasLayerMutations.findCanvasImage(state, selectedChapter, state.contextMenu.contextCanvasImageId);
         if (contextImage != null && CanvasRecipeCardAsset.isRecipeCardAsset(contextImage.asset())) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_recipe_card"), "recipe", TabletColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
+                RegistryPickerOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_recipe_card chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
@@ -52,7 +56,7 @@ final class CanvasContextElementActions {
             }));
         } else if (contextImage != null && EntityPreviewRenderer.isEntityAsset(contextImage.asset())) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", TabletColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
+                IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_entity chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
@@ -74,7 +78,7 @@ final class CanvasContextElementActions {
             );
         } else if (contextImage != null && (ModelAssetPreviewRenderer.isItemAsset(contextImage.asset()) || ModelAssetPreviewRenderer.isItemTagAsset(contextImage.asset()))) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", TabletColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
+                IconPickerOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_item_model chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
@@ -82,14 +86,14 @@ final class CanvasContextElementActions {
             }));
         } else if (contextImage != null && ModelAssetPreviewRenderer.isBlockModelAsset(contextImage.asset())) {
             sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", TabletColors.INTERACTIVE, () -> {
-                ModalOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
+                RegistryPickerOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedChapter, state.contextMenu.contextCanvasImageId), state.canvas.canvasImageLogicalX, state.canvas.canvasImageLogicalY);
                 ContextMenuController.clearDeleteConfirm(state);
                 ContextMenuController.close(state);
                 QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_block_model chapter={} image={}", selectedChapter, state.contextMenu.contextCanvasImageId);
                 canvasViewport.refresh();
             }));
         }
-        if (contextImage != null && CanvasTransformGizmo.supports(contextImage.asset())
+        if (contextImage != null && CanvasTransformGizmoAxis.supports(contextImage.asset())
                 && CanvasSelectionActions.totalCanvasSelectionCount(state) == 1
                 && CanvasSelectionActions.isImageSelected(state, contextImage.id())) {
             CanvasTransformGizmoMenus.addModeActions(sections, ContextMenuSection.ARRANGE, state, canvasViewport::refresh);
@@ -172,7 +176,7 @@ final class CanvasContextElementActions {
                             ContextActionFactory.action(
                                     CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE),
                                     "image", TabletColors.INTERACTIVE, () -> {
-                                        ModalOpenActions.openEcBackgroundPicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId, ec.background());
+                                        AssetPickerOpenActions.openEcBackgroundPicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId, ec.background());
                                         ContextMenuController.close(state);
                                         QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
                                         canvasViewport.refresh();
@@ -181,7 +185,7 @@ final class CanvasContextElementActions {
                             ContextActionFactory.action(
                                     CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE),
                                     "brick-wall", TabletColors.INTERACTIVE, () -> {
-                                        ModalOpenActions.openEcGameTexturePicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId);
+                                        IconPickerOpenActions.openEcGameTexturePicker(state, selectedChapter, state.contextMenu.contextCanvasExclusiveChoiceId);
                                         ContextMenuController.close(state);
                                         QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=change_ec_background_game ec={}", state.contextMenu.contextCanvasExclusiveChoiceId);
                                         canvasViewport.refresh();
@@ -232,7 +236,7 @@ final class CanvasContextElementActions {
             return;
         }
         sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_PREREQUISITES_MANAGER), "share-2", TabletColors.INTERACTIVE, () -> {
-            ModalOpenActions.openPrerequisitesManagerForEc(state, ec.id());
+            AppModalOpenActions.openPrerequisitesManagerForEc(state, ec.id());
             ContextMenuController.clearDeleteConfirm(state);
             QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=prerequisites_manager ec={} connections={}", state.contextMenu.contextCanvasExclusiveChoiceId, connectionCount);
             canvasViewport.refresh();

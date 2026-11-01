@@ -1,0 +1,54 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.task.interaction;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskDisplayText;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.model.QuestTaskJsonFactory;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+import com.google.gson.JsonObject;
+
+public final class QuestTaskRenameActions {
+    private QuestTaskRenameActions() {
+    }
+
+    public static void openTaskRenameEditor(UiState state, String questId, String id, boolean task) {
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
+        CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
+        JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entries.getCompound(id).getString("json")).value();
+        QuestDetailsTransientManager.openTaskRename(
+                state,
+                questId,
+                id,
+                task,
+                QuestTaskDisplayText.displayName(json, QuestTaskJsonFactory.asString(json, "type", ""))
+        );
+    }
+
+    public static void putTaskTitle(Player player, String questId, String id, String title, boolean task) {
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
+        CompoundTag entries = quest.getCompound(task ? "tasks" : "rewards");
+        CompoundTag entry = entries.getCompound(id);
+        JsonObject json = QuestTaskJsonFactory.readForEdit(questId, id, task, entry.getString("json")).value();
+        if (!json.has("id")) {
+            json.addProperty("id", id);
+        }
+        String normalizedTitle = title == null ? "" : title.trim();
+        if (normalizedTitle.isBlank()) {
+            json.remove("title");
+        } else {
+            json.addProperty("title", normalizedTitle);
+        }
+        if (task) {
+            EditorQuestCommandClient.putQuestTaskJson(player, questId, json.toString());
+        } else {
+            EditorQuestCommandClient.putQuestRewardJson(player, questId, json.toString());
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] quest details task renamed quest={} id={} task={} title={}", questId, id, task, normalizedTitle);
+    }
+}

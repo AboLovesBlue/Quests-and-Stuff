@@ -1,0 +1,174 @@
+package com.abolovesblue.questsandstuff.client.tablet.settings;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abolovesblue.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abolovesblue.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptor;
+import com.abolovesblue.questsandstuff.client.tablet.modal.settings.SettingsTabDescriptors;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+import static com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.flatHitButton;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+
+final class SettingsAppHeaderControls {
+    private static final int TAB_H = GRID_20;
+    private static final int TAB_GAP = GRID_4;
+    private static final int SEARCH_INSET = 9;
+    private static final int TAB_ENLARGE = GRID_4;
+
+    private final UiState state;
+    private final Runnable refresh;
+    private final TextFieldWidget searchField;
+    private final WidgetGroup tabLayer;
+
+    private SettingsAppHeaderControls(UiState state, Runnable refresh, TextFieldWidget searchField, WidgetGroup tabLayer) {
+        this.state = state;
+        this.refresh = refresh;
+        this.searchField = searchField;
+        this.tabLayer = tabLayer;
+    }
+
+    static SettingsAppHeaderControls create(UiState state, Runnable refresh, int headerTop, int bodyW) {
+        TextFieldWidget searchField = StyledTextFields.search(
+                SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP, Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H,
+                () -> state.settings.search, Integer.MAX_VALUE,
+                value -> {
+                    state.settings.search = SearchFilter.normalizeUserInput(value);
+                    refresh.run();
+                },
+                focused -> {}
+        );
+        WidgetGroup tabLayer = new WidgetGroup(0, headerTop, bodyW, TAB_H + TAB_ENLARGE);
+        return new SettingsAppHeaderControls(state, refresh, searchField, tabLayer);
+    }
+
+    TextFieldWidget searchField() {
+        return searchField;
+    }
+
+    WidgetGroup tabLayer() {
+        return tabLayer;
+    }
+
+    void layout(int headerTop, int bodyW) {
+        tabLayer.clearAllWidgets();
+        SkinAnchorRegistry.clearShared("settings_tab_layer");
+        tabLayer.setSelfPosition(0, headerTop);
+        tabLayer.setSize(bodyW, TAB_H + TAB_ENLARGE);
+        int tabAreaW = Math.max(1, bodyW - SEARCH_INSET * 2);
+        int tabX = SEARCH_INSET;
+        int count = Math.max(1, SettingsTabDescriptors.all().size());
+        int totalGap = TAB_GAP * (count - 1);
+        int tabW = Math.max(1, (tabAreaW - totalGap) / count);
+        int remainder = Math.max(0, (tabAreaW - totalGap) - tabW * count);
+        for (int i = 0; i < count; i++) {
+            SettingsTabDescriptor tab = SettingsTabDescriptors.all().get(i);
+            int currentW = tabW + (i < remainder ? 1 : 0);
+            tabLayer.addWidget(makeTabButton(tab, tabX, currentW));
+            tabX += currentW + TAB_GAP;
+        }
+        searchField.setSelfPosition(SEARCH_INSET, headerTop + TAB_H + TAB_ENLARGE + TAB_GAP);
+        searchField.setSize(Math.max(40, bodyW - SEARCH_INSET * 2), HEADER_H);
+        searchField.setTextColor(ThemeColors.TEXT_PRIMARY);
+        searchField.setBackground(SurfaceFactory.bordered(ThemeColors.SURFACE_BASE, ThemeColors.BORDER_BASE));
+    }
+
+    void addTo(WidgetGroup mainPanel) {
+        mainPanel.addWidget(tabLayer);
+        mainPanel.addWidget(searchField);
+    }
+
+    private WidgetGroup makeTabButton(SettingsTabDescriptor tab, int x, int w) {
+        boolean active = state.settings.currentTab == tab.id();
+        int h = TAB_H;
+        int fill = active ? withAlpha(ThemeColors.SURFACE_BASE, 250) : withAlpha(ThemeColors.SURFACE_PANEL_ALT, 142);
+        int border = active ? ThemeColors.BORDER_ACCENT : ThemeColors.BORDER_BASE;
+        WidgetGroup container = new WidgetGroup(x, 0, w, h + TAB_ENLARGE);
+        WidgetGroup bg = skinnedTabBg(w, fill, border, active);
+        SkinAnchorRegistry.registerShared("settings_tab_layer", bg);
+        LabelWidget text = label(8, TAB_ENLARGE + 6, SearchFilter.crop(I18n.get(tab.labelKey()), fontWidth(I18n.get(tab.labelKey()), Math.max(8, w - 16))), active ? ThemeColors.TEXT_PRIMARY : ThemeColors.TEXT_MUTED);
+        ButtonWidget hit = active
+                ? flatHitButton(0, 0, w, h + TAB_ENLARGE, click -> selectTab(tab))
+                : flatHitButton(0, TAB_ENLARGE, w, h, click -> selectTab(tab));
+        GlowShaderHelper.glowHit(hit, Component.translatable(tab.labelKey()));
+        hit.setClickedTexture(SurfaceFactory.fill(withAlpha(ThemeColors.INTERACTIVE, 82)));
+        container.addWidget(bg);
+        container.addWidget(text);
+        container.addWidget(hit);
+        return container;
+    }
+
+    private WidgetGroup skinnedTabBg(int w, int fill, int border, boolean active) {
+        int bgH = active ? TAB_H + TAB_ENLARGE : TAB_H;
+        int drawYOffset = active ? 0 : TAB_ENLARGE;
+        int drawH = bgH;
+        WidgetGroup bg = new WidgetGroup(0, 0, w, bgH) {
+            @Override
+            public void drawInBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+                int drawY = getPositionY() + drawYOffset;
+                String rawOverride = SkinOverrideKey.resolveOverride(state, "settings_tab_layer");
+                if (rawOverride != null) {
+                    SkinFillOverride parsed = SkinFillOverride.parse(rawOverride);
+                    if (parsed != null) {
+                        IGuiTexture tex = parsed.createTexture();
+                        if (tex != null) {
+                            tex.draw(graphics, mouseX, mouseY, getPositionX() - 1, drawY - 1, getSizeWidth() + 2, drawH + 2);
+                            return;
+                        }
+                    }
+                }
+                SurfaceFactory.bordered(fill, border).draw(graphics, mouseX, mouseY, getPositionX(), drawY, getSizeWidth(), drawH);
+            }
+        };
+        bg.setBackground(SurfaceFactory.bordered(fill, border));
+        return bg;
+    }
+
+    private void selectTab(SettingsTabDescriptor tab) {
+        if (tab == null || state.settings.currentTab == tab.id()) {
+            return;
+        }
+        state.settings.currentTab = tab.id();
+        state.settings.scroll = 0;
+        state.settings.scrollDragging = false;
+        state.modal.themeScroll = 0;
+        state.modal.themeScrollDragging = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] settings tab selected tab={}", tab.logName());
+        refresh.run();
+    }
+
+    private static int fontWidth(String text, int maxWidth) {
+        if (text == null) {
+            return 0;
+        }
+        int width = Minecraft.getInstance().font.width(text);
+        if (width <= maxWidth) {
+            return text.length();
+        }
+        int fit = text.length();
+        while (fit > 0 && Minecraft.getInstance().font.width(text.substring(0, fit) + "...") > maxWidth) {
+            fit--;
+        }
+        return Math.max(1, fit);
+    }
+}

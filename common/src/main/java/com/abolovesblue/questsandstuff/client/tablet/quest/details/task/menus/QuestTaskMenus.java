@@ -1,0 +1,22 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.task.menus;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+public final class QuestTaskMenus {
+    private QuestTaskMenus() {
+    }
+
+    public static void renderTypePicker(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
+        QuestTaskTransientMenus.render(modal, state, player, refresh, modalW, modalH);
+        QuestTaskTypePickerMenu.render(modal, state, player, refresh, questId, quest, modalW, modalH);
+    }
+
+    public static void renderContextMenu(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId) {
+        QuestTaskContextMenu.render(modal, state, player, refresh, questId);
+    }
+}

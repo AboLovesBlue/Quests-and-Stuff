@@ -1,0 +1,273 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details;
+
+import com.abolovesblue.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.IconPickerOpenActions;
+import org.lwjgl.glfw.GLFW;
+
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargetParser;
+import com.abolovesblue.questsandstuff.client.tablet.quest.RewardClaimHandler;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardActions;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionClipboard;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionPanel;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+final class QuestDetailsWindowActions {
+    private QuestDetailsWindowActions() {
+    }
+
+    static void applyIconPick(Player player, UiState state, String entry) {
+        if (QuestDetailsDescriptionPanel.applyIconPick(player, state, entry)) {
+            return;
+        }
+        QuestTaskListPanel.applyIconPick(player, state, entry);
+    }
+
+    static void applyBiomePick(Player player, UiState state, String biome) {
+        QuestTaskListPanel.applyBiomePick(player, state, biome);
+    }
+
+    static void applyAdvancementPick(Player player, UiState state, String advancement) {
+        QuestTaskListPanel.applyAdvancementPick(player, state, advancement);
+    }
+
+    static void applyRecipePick(Player player, UiState state, String recipe) {
+        if (QuestDetailsDescriptionPanel.applyRecipePick(player, state, recipe)) {
+            return;
+        }
+        if (CanvasRecipeCardActions.applyRecipePick(player, state, recipe)) {
+            return;
+        }
+        QuestTaskListPanel.applyRecipePick(player, state, recipe);
+    }
+
+    static void applyStructurePick(Player player, UiState state, String structure) {
+        QuestTaskListPanel.applyStructurePick(player, state, structure);
+    }
+
+    static void applyBlockPick(Player player, UiState state, String block) {
+        if (QuestDetailsDescriptionPanel.applyBlockPick(player, state, block)) {
+            return;
+        }
+        QuestTaskListPanel.applyBlockPick(player, state, block);
+    }
+
+    static void applyStatPick(Player player, UiState state, String stat) {
+        QuestTaskListPanel.applyStatPick(player, state, stat);
+    }
+
+    static void applyDimensionPick(Player player, UiState state, String dimension) {
+        QuestTaskListPanel.applyDimensionPick(player, state, dimension);
+    }
+
+    static void applyLootTablePick(Player player, UiState state, String lootTable) {
+        QuestTaskListPanel.applyLootTablePick(player, state, lootTable);
+    }
+
+    static void applyItemLockPick(Player player, UiState state, String entry) {
+        QuestTaskListPanel.applyItemLockPick(player, state, entry);
+    }
+
+    static void applyInventoryItemPick(Player player, UiState state, ItemStack stack) {
+        QuestTaskListPanel.applyInventoryItemPick(player, state, stack);
+    }
+
+    static void applyAssetPick(Player player, UiState state, String asset) {
+        QuestDetailsDescriptionPanel.applyAssetPick(player, state, asset);
+    }
+
+    static void applyAssetPick(Player player, UiState state, ModalTargetParser.Target target, String asset) {
+        QuestDetailsDescriptionPanel.applyAssetPick(player, state, target, asset);
+    }
+
+    static String descriptionImageAsset(String questId, String imageId) {
+        return QuestDetailsDescriptionPanel.imageAsset(questId, imageId);
+    }
+
+    static void applyEntityVariantPick(Player player, UiState state, String questId, String imageId, String variantKey) {
+        QuestDetailsDescriptionPanel.applyEntityVariantPick(player, state, questId, imageId, variantKey);
+    }
+
+    static void applyTextColor(Player player, UiState state, String target, int color) {
+        QuestDetailsDescriptionPanel.applyTextColor(player, state, target, color);
+    }
+
+    static void applyTextColor(Player player, UiState state, ModalTargetParser.Target target, int color) {
+        QuestDetailsDescriptionPanel.applyTextColor(player, state, target, color);
+    }
+
+    static boolean handleClipboardShortcut(Player player, UiState state, int keyCode) {
+        String questId = editableQuestId(state);
+        if (questId.isBlank()) {
+            return false;
+        }
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        if (keyCode == GLFW.GLFW_KEY_C) {
+            return QuestDetailsDescriptionPanel.copySelectedDescriptionToClipboard(state, model);
+        }
+        if (keyCode == GLFW.GLFW_KEY_V) {
+            int[] viewport = viewport(state);
+            return QuestDetailsDescriptionClipboard.pasteFromKeyboard(player, state, questId, model, viewport[2], viewport[3]);
+        }
+        return false;
+    }
+
+    static boolean beginSelectedRename(UiState state) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        String questId = questId(state);
+        if (!state.questDetails.questDetailsSelectedTaskId.isBlank()) {
+            QuestTaskListPanel.openTaskRenameEditor(
+                    state,
+                    questId,
+                    state.questDetails.questDetailsSelectedTaskId,
+                    "task".equals(state.questDetails.questDetailsSelectedTaskKind)
+            );
+            return true;
+        }
+        if (!questId.isBlank()) {
+            EditorQuestCommandClient.beginQuestTitleChange(state, questId);
+            state.questDetails.questDetailsTitleFocused = true;
+            return true;
+        }
+        return false;
+    }
+
+    static boolean deleteSelected(Player player, UiState state) {
+        if (!QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        String questId = questId(state);
+        if (questId.isBlank()) {
+            return false;
+        }
+        if (QuestTaskListPanel.deleteSelectedTask(player, state, questId)) {
+            return true;
+        }
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        return QuestDetailsDescriptionPanel.deleteSelectedDescription(player, state, questId, model);
+    }
+
+    static boolean duplicateSelected(Player player, UiState state) {
+        if (!QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        String questId = questId(state);
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedTaskId.isBlank()) {
+            return false;
+        }
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        int[] viewport = viewport(state);
+        return QuestDetailsDescriptionPanel.copySelectedDescriptionToClipboard(state, model)
+                && QuestDetailsDescriptionClipboard.pasteFromKeyboard(player, state, questId, model, viewport[2], viewport[3]);
+    }
+
+    static boolean selectAllDescription(UiState state) {
+        if (!QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        String questId = questId(state);
+        if (questId.isBlank()) {
+            return false;
+        }
+        state.questDetails.questDetailsSelectedTaskKind = "";
+        state.questDetails.questDetailsSelectedTaskId = "";
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        return QuestDetailsDescriptionPanel.selectAllDescription(state, model);
+    }
+
+    static boolean nudgeSelected(Player player, UiState state, int dx, int dy) {
+        if (!QuestDetailsEditController.canEdit(state)) {
+            return false;
+        }
+        String questId = questId(state);
+        if (questId.isBlank() || !state.questDetails.questDetailsSelectedTaskId.isBlank()) {
+            return false;
+        }
+        QuestDetailsDescriptionModel model = QuestDetailsDescriptionModel.decode(ClientQuestStateFacade.quest(questId));
+        return QuestDetailsDescriptionClipboard.nudgeSelected(player, state, questId, model, dx, dy);
+    }
+
+    static void claimAll(Player player, String questId) {
+        if (questId == null || questId.isBlank()) {
+            return;
+        }
+        String trimmed = questId.trim();
+        RewardClaimHandler.claimAll(player, trimmed);
+    }
+
+    static void openIconPicker(UiState state, String target) {
+        IconPickerOpenActions.openQuestDetailsIconPicker(state, target);
+    }
+
+    static void openBiomePicker(UiState state, String target) {
+        RegistryPickerOpenActions.openBiomePicker(state, target);
+    }
+
+    static void openAdvancementPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openAdvancementPicker(state, target);
+    }
+
+    static void openRecipePicker(UiState state, String target) {
+        RegistryPickerOpenActions.openRecipePicker(state, target);
+    }
+
+    static void openStructurePicker(UiState state, String target) {
+        RegistryPickerOpenActions.openStructurePicker(state, target);
+    }
+
+    static void openBlockPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openBlockPicker(state, target);
+    }
+
+    static void openStatPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openStatPicker(state, target);
+    }
+
+    static void openDimensionPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openDimensionPicker(state, target);
+    }
+
+    static void openLootTablePicker(UiState state, String target) {
+        RegistryPickerOpenActions.openLootTablePicker(state, target);
+    }
+
+    static void openItemLockPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openItemLockPicker(state, target);
+    }
+
+    static void openItemInventoryPicker(UiState state, String target) {
+        RegistryPickerOpenActions.openItemInventoryPicker(state, target);
+    }
+
+    static void openAssetPicker(UiState state, String target) {
+        AssetPickerOpenActions.openAssetPicker(state, target);
+    }
+
+    private static String editableQuestId(UiState state) {
+        if (state == null || !state.questDetails.questDetailsOpen || !QuestDetailsEditController.canEdit(state)) {
+            return "";
+        }
+        return questId(state);
+    }
+
+    private static String questId(UiState state) {
+        return state == null ? "" : state.questDetails.questDetailsQuestId == null ? "" : state.questDetails.questDetailsQuestId.trim();
+    }
+
+    private static int[] viewport(UiState state) {
+        int leftW = QuestDetailsWindowGeometry.leftPanelWidth(state);
+        int frameW = state.questDetails.questDetailsW > 0 ? state.questDetails.questDetailsW : QuestDetailsWindow.WINDOW_W;
+        int frameH = state.questDetails.questDetailsH > 0 ? state.questDetails.questDetailsH : QuestDetailsWindow.WINDOW_H;
+        int canvasW = QuestDetailsWindowGeometry.canvasPanelWidth(leftW, frameW);
+        return QuestDetailsWindowGeometry.mainCanvasViewport(canvasW, frameH);
+    }
+}

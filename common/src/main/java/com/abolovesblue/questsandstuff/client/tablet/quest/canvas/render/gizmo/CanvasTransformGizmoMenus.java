@@ -1,0 +1,42 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasTransformMode;
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+public final class CanvasTransformGizmoMenus {
+    private CanvasTransformGizmoMenus() {
+    }
+
+    public static void addModeActions(ContextMenuSections sections, ContextMenuSection section, UiState state, Runnable refresh) {
+        addModeAction(sections, section, state, CanvasTransformMode.MOVE, QuestTranslationKeys.CONTEXT_GIZMO_MOVE, refresh);
+        addModeAction(sections, section, state, CanvasTransformMode.RESIZE, QuestTranslationKeys.CONTEXT_GIZMO_RESIZE, refresh);
+        addModeAction(sections, section, state, CanvasTransformMode.ROTATE, QuestTranslationKeys.CONTEXT_GIZMO_ROTATE, refresh);
+    }
+
+    public static void addCenterPivotAction(ContextMenuSections sections, ContextMenuSection section, UiState state, Runnable centerPivot, Runnable refresh) {
+        sections.add(section, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CENTER_PIVOT), "align-center-horizontal", ThemeColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            centerPivot.run();
+            QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo center_pivot");
+            refresh.run();
+        }));
+    }
+
+    private static void addModeAction(ContextMenuSections sections, ContextMenuSection section, UiState state, CanvasTransformMode mode, String labelKey, Runnable refresh) {
+        boolean active = CanvasTransformGizmoAxis.activeMode(state) == mode;
+        sections.add(section, ContextActionFactory.stayOpen(TranslationKeys.text(labelKey), mode.icon, active ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE, () -> {
+            CanvasTransformGizmoAxis.setMode(state, mode);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] transform gizmo mode={}", mode.id);
+            refresh.run();
+        }));
+    }
+}

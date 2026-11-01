@@ -1,0 +1,99 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.task.menus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ActionTone;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskXpEditor;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.model.QuestTaskLockJson;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+import com.google.gson.JsonObject;
+
+final class QuestTaskMenuActions {
+    private QuestTaskMenuActions() {
+    }
+
+    static void addSections(ContextMenuSections sections, UiState state, Player player, String questId, String contextId) {
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(TranslationKeys.text(QuestTranslationKeys.CHANGE_TASK), "square_pen", ThemeColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestDetailsTransientManager.openTypePicker(state, "task_change", contextId);
+        }));
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promotedRename(TranslationKeys.text(QuestTranslationKeys.RENAME_TASK), () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestTaskEditActions.openTaskRenameEditor(state, questId, contextId, true);
+        }));
+        CompoundTag taskTag = ClientQuestStateFacade.quest(questId)
+                .getCompound("tasks")
+                .getCompound(contextId);
+        JsonObject taskJson = QuestTaskMenuSupport.parseTaskJson(taskTag.getString("json"));
+        if (QuestTaskXpEditor.isXp(taskJson)) {
+            sections.add(ContextMenuSection.PRIMARY, QuestTaskMenuSupport.editSubmenu(List.of(ContextActionFactory.rename(TranslationKeys.text(QuestTranslationKeys.EDIT_XP), () -> {
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestDetailsTransientManager.openXpPicker(state, questId, contextId, true);
+            }))));
+        }
+        List<ContextAction> moveActions = new ArrayList<>();
+        QuestTaskMenuSupport.addMoveActions(moveActions, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            EditorQuestCommandClient.moveQuestTask(player, questId, contextId, -1);
+        }, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            EditorQuestCommandClient.moveQuestTask(player, questId, contextId, 1);
+        });
+        sections.addAll(ContextMenuSection.ARRANGE, moveActions);
+        addLockSections(sections, state, player, questId, contextId, taskJson);
+        List<ContextAction> visualActions = new ArrayList<>();
+        QuestTaskMenuSupport.addVisualActions(visualActions, state, questId, contextId, true);
+        sections.addAll(ContextMenuSection.APPEARANCE, visualActions);
+        String deleteKey = "quest_details_task:" + questId + ":" + contextId;
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
+            EditorQuestCommandClient.removeQuestTask(player, questId, contextId);
+        }));
+    }
+
+    private static void addLockSections(ContextMenuSections sections, UiState state, Player player, String questId, String taskId, JsonObject taskJson) {
+        int lockAccent = ThemeColors.LOCKED;
+        List<ContextAction> lockActions = new ArrayList<>();
+        lockActions.add(ContextActionFactory.action(
+                TranslationKeys.text(QuestTranslationKeys.ADD_ITEM_LOCK),
+                "lock",
+                lockAccent,
+                () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestDetailsWindow.openItemLockPicker(state, ModalTargets.taskItemLock(questId, taskId));
+                }));
+        for (String lock : QuestTaskLockJson.locks(taskJson)) {
+            lockActions.add(ContextActionFactory.action(
+                    TranslationKeys.text(QuestTranslationKeys.REMOVE_ITEM_LOCK, lock),
+                    "delete",
+                    ActionTone.DANGER,
+                    () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        QuestTaskEditActions.removeItemLock(player, state, questId, taskId, lock);
+                    }));
+        }
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(
+                TranslationKeys.text(QuestTranslationKeys.CONTEXT_ITEM_LOCKS),
+                "lock",
+                lockAccent,
+                lockActions));
+    }
+}

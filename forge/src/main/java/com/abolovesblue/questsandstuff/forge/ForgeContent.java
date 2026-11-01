@@ -1,0 +1,58 @@
+package com.abolovesblue.questsandstuff.forge;
+
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.item.TabletItem;
+import com.abolovesblue.questsandstuff.loot.CompletedQuestLootCondition;
+import com.abolovesblue.questsandstuff.quest.runtime.lock.LockedRecipeSerializer;
+
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+
+public final class ForgeContent {
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, QuestsAndStuffMod.MODID);
+    public static final DeferredRegister<LootItemConditionType> LOOT_CONDITION_TYPES = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, QuestsAndStuffMod.MODID);
+    public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, QuestsAndStuffMod.MODID);
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, QuestsAndStuffMod.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, QuestsAndStuffMod.MODID);
+
+    public static final RegistryObject<SoundEvent> UI_CLICK = SOUND_EVENTS.register("ui_click",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(QuestsAndStuffMod.MODID, "ui_click")));
+
+    public static final RegistryObject<Item> TABLET = ITEMS.register("quest_tablet", () -> new TabletItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<LootItemConditionType> COMPLETED_QUEST_LOOT_CONDITION = LOOT_CONDITION_TYPES.register(
+            "completed_quest",
+            () -> new LootItemConditionType(CompletedQuestLootCondition.SERIALIZER)
+    );
+    public static final RegistryObject<CreativeModeTab> MAIN_TAB = TABS.register("main", () -> CreativeModeTab.builder()
+            .title(Component.translatable("itemGroup.questsandstuff.main"))
+            .withTabsBefore(CreativeModeTabs.SPAWN_EGGS)
+            .icon(() -> TABLET.get().getDefaultInstance())
+            .displayItems((parameters, output) -> output.accept(TABLET.get()))
+            .build());
+    public static final RegistryObject<LockedRecipeSerializer> LOCKED_RECIPE_SERIALIZER =
+            RECIPE_SERIALIZERS.register("locked", () -> LockedRecipeSerializer.INSTANCE);
+
+    private ForgeContent() {
+    }
+
+    public static void register(IEventBus modBus) {
+        QuestsAndStuffMod.registerContent(TABLET, COMPLETED_QUEST_LOOT_CONDITION);
+        ITEMS.register(modBus);
+        LOOT_CONDITION_TYPES.register(modBus);
+        TABS.register(modBus);
+        RECIPE_SERIALIZERS.register(modBus);
+        SOUND_EVENTS.register(modBus);
+    }
+}

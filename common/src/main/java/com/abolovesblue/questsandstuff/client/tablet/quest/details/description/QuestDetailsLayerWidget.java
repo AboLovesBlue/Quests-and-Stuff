@@ -1,0 +1,232 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.description;
+
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestState;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskListPanel;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskSections;
+import com.abolovesblue.questsandstuff.client.tablet.quest.tools.ToolMenuAnimation;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+public final class QuestDetailsLayerWidget extends WidgetGroup {
+    private final UiState state;
+    private final Runnable refresh;
+
+    public QuestDetailsLayerWidget(int x, int y, int width, int height, UiState state, Runnable refresh) {
+        super(x, y, width, height);
+        this.state = state;
+        this.refresh = refresh == null ? () -> {
+        } : refresh;
+    }
+
+    @Override
+    public void updateScreen() {
+        super.updateScreen();
+        if (QuestDetailsWindow.finishCloseIfDone(state)) {
+            refresh.run();
+        }
+        if (ToolMenuAnimation.finishClosingIfDone(state)) {
+            refresh.run();
+        }
+        if (state.questDetails.questDetailsTaskDragRefreshQueued) {
+            state.questDetails.questDetailsTaskDragRefreshQueued = false;
+            state.questDetails.questDetailsTaskDragPendingQuestId = "";
+            state.questDetails.questDetailsTaskDragPendingTaskId = "";
+            state.questDetails.questDetailsTaskDragPendingOffset = 0;
+            ClientQuestState.clearDragReorderPending();
+            refresh.run();
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return super.mouseClicked(mouseX, mouseY, button);
+        }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        boolean detailsContextWasOpen = state.questDetails.questDetailsContextOpen;
+        boolean detailsContextHit = detailsContextWasOpen && QuestDetailsWindow.isContextMenuHit(state, mouseX, mouseY);
+        boolean textStyleWasOpen = CanvasTextStyleSession.questDetailsOpenOrEditingFont(state);
+        boolean textStyleHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
+        boolean textOwnerHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
+        boolean motionEditorWasOpen = EntityMotionEditor.isQuestDetailsOpen(state);
+        boolean motionEditorHit = motionEditorWasOpen && EntityMotionEditor.isQuestDetailsHit(state, mouseX, mouseY);
+        String selectedTaskKindBefore = state.questDetails.questDetailsSelectedTaskKind;
+        String selectedTaskIdBefore = state.questDetails.questDetailsSelectedTaskId;
+        boolean dragPendingBefore = state.questDetails.questDetailsTaskDragPending;
+        boolean clearTaskSelection = (button == 0 || button == 1)
+                && !detailsContextHit
+                && !textStyleHit
+                && !textOwnerHit
+                && !motionEditorHit
+                && !QuestTaskListPanel.isCardHit(state, mouseX, mouseY);
+        if (textStyleHit) {
+            CanvasTextStyleSession.markQuestDetailsInteraction(state);
+        }
+        super.mouseClicked(mouseX, mouseY, button);
+        if (clearTaskSelection && taskInteractionStarted(
+                state,
+                selectedTaskKindBefore,
+                selectedTaskIdBefore,
+                dragPendingBefore,
+                detailsContextWasOpen
+        )) {
+            clearTaskSelection = false;
+        }
+        if (QuestTaskListPanel.isCardHit(state, mouseX, mouseY)) {
+            clearTaskSelection = false;
+        }
+        if (motionEditorWasOpen && (motionEditorHit || EntityMotionEditor.isDragging(state))) {
+            return true;
+        }
+        if (motionEditorWasOpen && (button == 0 || button == 1)) {
+            if (clearTaskSelection) {
+                QuestTaskListPanel.clearSelection(state, "outside_card_click");
+            }
+            EntityMotionEditor.close(state);
+            refresh.run();
+            return true;
+        }
+        boolean textStyleStillHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleMenuHit(state, mouseX, mouseY);
+        boolean textOwnerStillHit = textStyleWasOpen && QuestDetailsWindow.isTextStyleOwnerHit(state, mouseX, mouseY);
+        if (textStyleHit || textOwnerHit || textStyleStillHit || textOwnerStillHit || recentlyHandledTextStyleClick()) {
+            return true;
+        }
+        boolean selectionCleared = clearTaskSelection
+                && QuestTaskListPanel.clearSelection(state, "outside_card_click");
+        if (!QuestDetailsWindow.isInside(state, mouseX, mouseY)) {
+            closeFloatingDetailsState();
+            refresh.run();
+        } else if ((button == 0 || button == 1) && detailsContextWasOpen && state.questDetails.questDetailsContextOpen && !detailsContextHit) {
+            QuestDetailsTransientManager.closeContext(state);
+            ContextMenuController.clearDeleteConfirm(state);
+            refresh.run();
+        } else if ((button == 0 || button == 1) && textStyleWasOpen && !textStyleHit && state.questDetails.questDetailsTextStyleOpen) {
+            closeTextStyle("outside_click");
+            refresh.run();
+        } else if (selectionCleared) {
+            refresh.run();
+        }
+        return true;
+    }
+
+    private static boolean taskInteractionStarted(
+            UiState state,
+            String selectedKindBefore,
+            String selectedIdBefore,
+            boolean dragPendingBefore,
+            boolean detailsContextWasOpen
+    ) {
+        if (!selectedKindBefore.equals(state.questDetails.questDetailsSelectedTaskKind)
+                || !selectedIdBefore.equals(state.questDetails.questDetailsSelectedTaskId)) {
+            return true;
+        }
+        if (!dragPendingBefore && state.questDetails.questDetailsTaskDragPending && !state.questDetails.questDetailsTaskDragId.isBlank()) {
+            return true;
+        }
+        if (!detailsContextWasOpen && state.questDetails.questDetailsContextOpen) {
+            return QuestTaskSections.isTask(state.questDetails.questDetailsContextKind) || QuestTaskSections.isReward(state.questDetails.questDetailsContextKind);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return super.mouseReleased(mouseX, mouseY, button);
+        }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        super.mouseReleased(mouseX, mouseY, button);
+        return true;
+    }
+
+    @Override
+    public boolean mouseWheelMove(double mouseX, double mouseY, double wheelDelta) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+        }
+        QuestDetailsWindow.syncScreenOrigin(this, state);
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        super.mouseWheelMove(mouseX, mouseY, wheelDelta);
+        return true;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            boolean result = super.keyPressed(keyCode, scanCode, modifiers);
+            QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed not visible key={} result={}", keyCode, result);
+            return result;
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed not interactive key={}", keyCode);
+            return true;
+        }
+        super.keyPressed(keyCode, scanCode, modifiers);
+        boolean isEditing = CanvasTextEditSession.isQuestDetailsEditing(state);
+        boolean hasFontFocus = state.questDetails.questDetailsTextFontSizeFieldTarget != null && !state.questDetails.questDetailsTextFontSizeFieldTarget.isBlank();
+        QuestsAndStuffMod.debugLog("[QnS:DEBUG] qdlw.keyPressed key={} editing={} fontFieldOpen={}", keyCode, isEditing, hasFontFocus);
+        return true;
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (!QuestDetailsWindow.isVisible(state)) {
+            return super.charTyped(codePoint, modifiers);
+        }
+        if (!QuestDetailsWindow.isInteractive(state)) {
+            return true;
+        }
+        super.charTyped(codePoint, modifiers);
+        return true;
+    }
+
+    private void closeFloatingDetailsState() {
+        QuestDetailsTransientManager.closeFloatingPopups(state);
+        EntityMotionEditor.close(state);
+        closeTextStyle("details_outside");
+    }
+
+    private void closeTextStyle(String reason) {
+        boolean wasOpen = CanvasTextStyleSession.questDetailsOpenOrEditingFont(state) || !state.questDetails.questDetailsTextStyleTarget.isBlank();
+        String target = state.questDetails.questDetailsTextStyleTarget == null ? "" : state.questDetails.questDetailsTextStyleTarget;
+        CanvasTextStyleSession.closeQuestDetails(state);
+        if (wasOpen) {
+            QuestsAndStuffMod.debugLog("[QnS:UI] quest details text style close target={} reason={}", target, reason);
+        }
+    }
+
+    private boolean recentlyHandledTextStyleClick() {
+        return CanvasTextStyleSession.recentlyHandledQuestDetailsClick(state, System.currentTimeMillis(), 350L);
+    }
+}

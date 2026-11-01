@@ -1,0 +1,40 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.overlay;
+
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
+
+record CanvasMinimapSnapshot(
+        List<CanvasMinimapRect> quests,
+        List<CanvasMinimapConnection> connections,
+        CanvasMinimapGeometry.Projection projection
+) {
+}
+
+record CanvasMinimapRect(
+        int x,
+        int y,
+        int w,
+        int h,
+        int color,
+        int alpha,
+        String questId,
+        CompoundTag tag
+) {
+}
+
+record CanvasMinimapConnection(
+        float x1,
+        float y1,
+        float x2,
+        float y2,
+        int color,
+        int alpha,
+        boolean direct,
+        List<CanvasPoint> projectedPath,
+        String texture
+) {
+}

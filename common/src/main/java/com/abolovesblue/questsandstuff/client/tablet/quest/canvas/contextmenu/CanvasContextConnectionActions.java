@@ -1,0 +1,169 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.contextmenu;
+
+import com.abolovesblue.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.AppOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.IconPickerOpenActions;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+final class CanvasContextConnectionActions {
+    private CanvasContextConnectionActions() {
+    }
+
+    static void addConnectionActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.CONNECTION || state.contextMenu.contextConnectionSource.isBlank() || state.contextMenu.contextConnectionTarget.isBlank()) {
+            return;
+        }
+        String sourceId = state.contextMenu.contextConnectionSource;
+        String targetId = state.contextMenu.contextConnectionTarget;
+        boolean isExclusiveChoiceConnection = ConnectionRenderer.isExclusiveChoiceId(state, selectedChapter, sourceId)
+                || ConnectionRenderer.isExclusiveChoiceId(state, selectedChapter, targetId);
+        if (isExclusiveChoiceConnection) {
+            addConnectionExclusiveChoiceActions(sections, canvasViewport, state, player, selectedChapter, sourceId, targetId);
+        } else {
+            addConnectionQuestActions(sections, canvasViewport, state, player, selectedChapter, sourceId, targetId);
+        }
+        addConnectionLayerActions(sections, canvasViewport, state, selectedChapter);
+        if (CanvasContextDeleteController.canDeleteContext(state)) {
+            String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
+                CanvasContextDeleteController.runDeleteAction(player, state);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addConnectionQuestActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter, String sourceId, String targetId) {
+        boolean direct = CanvasRenderer.isConnectionDirect(state, selectedChapter, sourceId, targetId);
+        boolean hidden = CanvasRenderer.isConnectionHidden(state, selectedChapter, sourceId, targetId);
+        sections.add(ContextMenuSection.ARRANGE, new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ThemeColors.INTERACTIVE, () -> {
+            EditorCanvasCommandClient.runConnectionModeAction(player, targetId, sourceId, direct);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.ARRANGE, new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ThemeColors.INTERACTIVE : ThemeColors.WARNING, () -> {
+            EditorCanvasCommandClient.runConnectionHiddenAction(player, targetId, sourceId, !hidden);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ThemeColors.INTERACTIVE, () -> {
+            int color = CanvasRenderer.connectionColor(state, selectedChapter, sourceId, targetId);
+            AppOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_color source={} target={}", sourceId, targetId);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                    AssetPickerOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                    IconPickerOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=connection_texture_game source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                })
+        )));
+        if (!ConnectionRenderer.connectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
+            String connTexKey = "conn_remove_tex:" + sourceId + ":" + targetId;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, connTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+                EditorCanvasCommandClient.runConnectionTextureAction(player, targetId, sourceId, "");
+                ConnectionRenderer.setConnectionTexture(state, selectedChapter, sourceId, targetId, "");
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_texture source={} target={}", sourceId, targetId);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addConnectionExclusiveChoiceActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter, String sourceId, String targetId) {
+        boolean direct = ConnectionRenderer.exclusiveChoiceIsConnectionDirect(state, selectedChapter, sourceId, targetId);
+        boolean hidden = ConnectionRenderer.isConnectionHidden(state, selectedChapter, sourceId, targetId);
+        sections.add(ContextMenuSection.ARRANGE, new ContextAction(direct ? CanvasContextMenuController.tr("ui.questsandstuff.context.connection_grid") : CanvasContextMenuController.tr("ui.questsandstuff.context.connection_direct"), "connect", ThemeColors.INTERACTIVE, () -> {
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionModeAction(player, state, sourceId, targetId, !direct);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=toggle_ec_connection_mode source={} target={} direct={}", sourceId, targetId, !direct);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.ARRANGE, new ContextAction(hidden ? CanvasContextMenuController.tr("ui.questsandstuff.context.show_connection") : CanvasContextMenuController.tr("ui.questsandstuff.context.hide_connection"), hidden ? "eye" : "eye-off", hidden ? ThemeColors.INTERACTIVE : ThemeColors.WARNING, () -> {
+            EditorCanvasCommandClient.runExclusiveChoiceConnectionHiddenAction(player, state, sourceId, targetId, !hidden);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_hidden source={} target={} hidden={}", sourceId, targetId, !hidden);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.connection_color"), "style_color", ThemeColors.INTERACTIVE, () -> {
+            int color = ConnectionRenderer.exclusiveChoiceConnectionColor(state, selectedChapter, sourceId, targetId);
+            AppOpenActions.openColorPicker(state, ModalTargets.connection(selectedChapter, sourceId, targetId), color);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_color source={} target={}", sourceId, targetId);
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                    AssetPickerOpenActions.openConnectionTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                    IconPickerOpenActions.openConnectionGameTexturePicker(state, selectedChapter, sourceId, targetId);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=ec_connection_texture_game source={} target={}", sourceId, targetId);
+                    canvasViewport.refresh();
+                })
+        )));
+        if (!ConnectionRenderer.exclusiveChoiceConnectionTexture(state, selectedChapter, sourceId, targetId).isBlank()) {
+            String exclusiveChoiceConnTexKey = "ec_conn_remove_tex:" + sourceId + ":" + targetId;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, exclusiveChoiceConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, sourceId, targetId, "");
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_ec_connection_texture source={} target={}", sourceId, targetId);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addConnectionLayerActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
+        String connectionId = CanvasRenderer.connectionKey(state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget);
+        String layerKey = CanvasLayerOrdering.connectionKey(connectionId);
+        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, true)) {
+            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ThemeColors.INTERACTIVE, () -> {
+                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget, true);
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=connection id={}", connectionId);
+                canvasViewport.refresh();
+            }));
+        }
+        if (CanvasContextMenuSupport.canMoveLayer(canvasViewport, state, selectedChapter, layerKey, false)) {
+            sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ThemeColors.TEXT_MUTED, () -> {
+                CanvasLayerMutations.moveConnectionLayer(state, selectedChapter, state.contextMenu.contextConnectionSource, state.contextMenu.contextConnectionTarget, false);
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=connection id={}", connectionId);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+}

@@ -1,0 +1,138 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.task.menus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.QuestTaskEditActions;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeChoice;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.model.QuestTaskTypeCatalog;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+final class QuestTaskTypePickerMenu {
+    private QuestTaskTypePickerMenu() {
+    }
+
+    static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, String questId, CompoundTag quest, int modalW, int modalH) {
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
+        if (!picker.typePicker() || !QuestDetailsEditController.canEdit(state)) {
+            return;
+        }
+        boolean rewards = picker.kind().startsWith("reward");
+        boolean change = picker.kind().endsWith("_change");
+        List<QuestTaskTypeChoice> choices = rewards ? QuestTaskTypeCatalog.rewardChoices() : QuestTaskTypeCatalog.taskChoices();
+        List<ContextAction> typeActions = actions(choices, rewards, change, player, state, questId, quest, picker.targetId());
+        int rowCount = typeActions.size();
+        int menuW = 130;
+        int menuH = ContextMenuPanel.heightForRows(rowCount);
+        int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, typeActions, 0, rowCount, ThemeColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        modal.addWidget(menu);
+    }
+
+    private static List<ContextAction> actions(
+            List<QuestTaskTypeChoice> choices,
+            boolean rewards,
+            boolean change,
+            Player player,
+            UiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        ContextMenuSections sections = new ContextMenuSections();
+        if (rewards) {
+            for (QuestTaskTypeChoice choice : choices) {
+                sections.add(ContextMenuSection.PRIMARY, typeChoiceAction(choice, true, change, player, state, questId, quest, targetId));
+            }
+            return sections.build();
+        }
+
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ITEM_TYPES, "icon", choices, List.of("item", "item_use", "item_interact", "recipe"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_ENTITY_TYPES, "entity", choices, List.of("kill_entity", "scan_entity", "entity_interact"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_WORLD_TYPES, "biome", choices, List.of("block_interact", "structure", "biome", "location"), rewards, change, player, state, questId, quest, targetId);
+        addTypeGroup(sections, ContextMenuSection.PRIMARY, QuestTranslationKeys.CONTEXT_PROGRESS_TYPES, "stat", choices, List.of("advancement", "stat", "xp", "check"), rewards, change, player, state, questId, quest, targetId);
+        return sections.build();
+    }
+
+    private static void addTypeGroup(
+            ContextMenuSections sections,
+            ContextMenuSection section,
+            String labelKey,
+            String icon,
+            List<QuestTaskTypeChoice> choices,
+            List<String> types,
+            boolean rewards,
+            boolean change,
+            Player player,
+            UiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        List<ContextAction> children = new ArrayList<>();
+        for (String type : types) {
+            QuestTaskTypeChoice choice = typeChoice(choices, type);
+            if (choice != null) {
+                children.add(typeChoiceAction(choice, rewards, change, player, state, questId, quest, targetId));
+            }
+        }
+        if (!children.isEmpty()) {
+            sections.add(section, ContextActionFactory.submenu(TranslationKeys.text(labelKey), icon, ThemeColors.INTERACTIVE, children));
+        }
+    }
+
+    private static QuestTaskTypeChoice typeChoice(List<QuestTaskTypeChoice> choices, String type) {
+        for (QuestTaskTypeChoice choice : choices) {
+            if (choice.type().equals(type)) {
+                return choice;
+            }
+        }
+        return null;
+    }
+
+    private static ContextAction typeChoiceAction(
+            QuestTaskTypeChoice choice,
+            boolean rewards,
+            boolean change,
+            Player player,
+            UiState state,
+            String questId,
+            CompoundTag quest,
+            String targetId
+    ) {
+        return ContextActionFactory.action(choice.label(), choice.icon(), ThemeColors.INTERACTIVE, () -> {
+            QuestDetailsTransientManager.closeTypePicker(state);
+            QuestDetailsTransientManager.closeContext(state);
+            if (rewards) {
+                if (change && !targetId.isBlank()) {
+                    QuestTaskEditActions.beginRewardChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestTaskEditActions.beginRewardAdd(player, state, questId, quest, choice.type());
+                }
+            } else {
+                if (change && !targetId.isBlank()) {
+                    QuestTaskEditActions.beginTaskChange(player, state, questId, targetId, choice.type());
+                } else {
+                    QuestTaskEditActions.beginTaskAdd(player, state, questId, quest, choice.type());
+                }
+            }
+        });
+    }
+}

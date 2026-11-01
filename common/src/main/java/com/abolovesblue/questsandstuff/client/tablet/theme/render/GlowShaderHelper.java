@@ -1,0 +1,176 @@
+package com.abolovesblue.questsandstuff.client.tablet.theme.render;
+
+import java.awt.Rectangle;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FastColor;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.texture.ShaderTexture;
+import com.lowdragmc.lowdraglib.gui.widget.Widget;
+
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+public final class GlowShaderHelper {
+    private static final ResourceLocation GLOW_SHADER = new ResourceLocation("questsandstuff", "glow");
+
+    private GlowShaderHelper() {
+    }
+
+    private static ShaderTexture shader() {
+        return ShaderTexture.createShader(GLOW_SHADER);
+    }
+
+    // IGuiTexture that draws the glow shader in the theme-driven GLOW color.
+    public static IGuiTexture hoverGlow() {
+        return hoverGlow(ThemeColors.GLOW);
+    }
+
+    // IGuiTexture that draws the glow shader in a custom ARGB color.
+    public static IGuiTexture hoverGlow(int glowColor) {
+        return (graphics, mouseX, mouseY, x, y, w, h) ->
+                drawGlow(graphics, mouseX, mouseY, (int) x, (int) y, w, h, glowColor);
+    }
+
+    public static Widget glowHit(Widget hit) {
+        hit.setHoverTexture(hoverGlow());
+        return hit;
+    }
+
+    public static Widget glowHit(Widget hit, Component... tooltips) {
+        glowHit(hit);
+        if (tooltips != null && tooltips.length > 0) {
+            hit.setHoverTooltips(tooltips);
+        }
+        return hit;
+    }
+
+    // Draw the glow shader over the given area in the theme-driven GLOW color.
+    public static void drawGlow(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h) {
+        drawGlow(graphics, mouseX, mouseY, x, y, w, h, ThemeColors.GLOW);
+    }
+
+    // Draw the glow shader over the given area in a custom ARGB color.
+    public static void drawGlow(GuiGraphics graphics, int mouseX, int mouseY, int x, int y, int w, int h, int glowColor) {
+        ShaderTexture s = shader();
+        if (s == null) return;
+        float r = FastColor.ARGB32.red(glowColor) / 255f;
+        float g = FastColor.ARGB32.green(glowColor) / 255f;
+        float b = FastColor.ARGB32.blue(glowColor) / 255f;
+        s.setUniformCache(cache -> cache.glUniform4F("uGlowColor", r, g, b, 1f));
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        s.draw(graphics, mouseX, mouseY, x, y, w, h);
+    }
+
+    /**
+     * Draw the glow shader clipped to ancestor widget bounds.
+     * @param ancestors list of ancestor bounds from outermost to innermost
+     */
+    public static void drawGlowClipped(GuiGraphics graphics, int mouseX, int mouseY,
+                                        int wx, int wy, int ww, int wh,
+                                        int glowColor, List<Rectangle> ancestors) {
+        if (ww <= 0 || wh <= 0) return;
+        Rectangle clip = ancestorClip(wx, wy, ww, wh, ancestors);
+        if (clip == null || clip.width <= 0 || clip.height <= 0) return;
+        graphics.enableScissor(clip.x, clip.y, clip.x + clip.width, clip.y + clip.height);
+        drawGlow(graphics, mouseX, mouseY, wx, wy, ww, wh, glowColor);
+        graphics.disableScissor();
+    }
+
+    private static Rectangle ancestorClip(int wx, int wy, int ww, int wh, List<Rectangle> ancestors) {
+        int sx = wx;
+        int sy = wy;
+        int sw = ww;
+        int sh = wh;
+        for (Rectangle a : ancestors) {
+            int ar = a.x + a.width;
+            int ab = a.y + a.height;
+            int r = sx + sw;
+            int b = sy + sh;
+            sx = Math.max(sx, a.x);
+            sy = Math.max(sy, a.y);
+            sw = Math.min(r, ar) - sx;
+            sh = Math.min(b, ab) - sy;
+            if (sw <= 0 || sh <= 0) return null;
+        }
+        return new Rectangle(sx, sy, sw, sh);
+    }
+
+    /**
+     * Draw the glow shader over [wx,wy,ww,wh], but with rectangular "holes"
+     * cut out for nested target widgets (so nested elements read as separately
+     * targetable, not swallowed by the parent's glow).
+     *
+     * @param ancestors ancestor clip bounds (outermost -> innermost)
+     * @param excludes  bounds of nested target widgets, same coordinate space
+     */
+    public static void drawGlowOccluded(GuiGraphics graphics, int mouseX, int mouseY,
+                                          int wx, int wy, int ww, int wh,
+                                          int glowColor, List<Rectangle> ancestors,
+                                          List<Rectangle> excludes) {
+        if (ww <= 0 || wh <= 0) return;
+
+        Rectangle base = ancestorClip(wx, wy, ww, wh, ancestors);
+        if (base == null || base.width <= 0 || base.height <= 0) return;
+
+        if (excludes == null || excludes.isEmpty()) {
+            graphics.enableScissor(base.x, base.y, base.x + base.width, base.y + base.height);
+            drawGlow(graphics, mouseX, mouseY, wx, wy, ww, wh, glowColor);
+            graphics.disableScissor();
+            return;
+        }
+
+        List<Rectangle> free = new ArrayList<>();
+        free.add(base);
+
+        for (Rectangle hole : excludes) {
+            Rectangle h = base.intersection(hole);
+            if (h.isEmpty()) continue;
+
+            List<Rectangle> next = new ArrayList<>();
+            for (Rectangle r : free) {
+                subtract(r, h, next);
+            }
+            free = next;
+        }
+
+        for (Rectangle piece : free) {
+            if (piece.width <= 0 || piece.height <= 0) continue;
+            graphics.enableScissor(piece.x, piece.y, piece.x + piece.width, piece.y + piece.height);
+            drawGlow(graphics, mouseX, mouseY, wx, wy, ww, wh, glowColor);
+            graphics.disableScissor();
+        }
+    }
+
+    private static void subtract(Rectangle rect, Rectangle hole, List<Rectangle> out) {
+        Rectangle h = rect.intersection(hole);
+        if (h.isEmpty()) {
+            out.add(rect);
+            return;
+        }
+
+        if (h.y > rect.y) {
+            out.add(new Rectangle(rect.x, rect.y, rect.width, h.y - rect.y));
+        }
+        int rectBottom = rect.y + rect.height;
+        int holeBottom = h.y + h.height;
+        if (holeBottom < rectBottom) {
+            out.add(new Rectangle(rect.x, holeBottom, rect.width, rectBottom - holeBottom));
+        }
+        if (h.x > rect.x) {
+            out.add(new Rectangle(rect.x, h.y, h.x - rect.x, h.height));
+        }
+        int rectRight = rect.x + rect.width;
+        int holeRight = h.x + h.width;
+        if (holeRight < rectRight) {
+            out.add(new Rectangle(holeRight, h.y, rectRight - holeRight, h.height));
+        }
+    }
+}

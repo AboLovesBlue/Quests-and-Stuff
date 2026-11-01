@@ -1,0 +1,63 @@
+package com.abolovesblue.questsandstuff.client.tablet.modal.pickers;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.format.DisplayNameFormatter;
+import com.abolovesblue.questsandstuff.client.tablet.modal.ModalWindowManager;
+
+public final class LootTablePickerModal {
+    private LootTablePickerModal() {
+    }
+
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
+        return ResourceListPickerModal.rebuild(modal, state, player, refresh, w, h,
+                new ResourceListPickerModal.Options(
+                        ModalWindowManager.ModalType.LOOT_TABLE_PICKER,
+                        TranslationKeys.text(QuestTranslationKeys.CHOOSE_LOOT_TABLE),
+                        TranslationKeys.text(QuestTranslationKeys.NO_LOOT_TABLES),
+                        "loot table",
+                        LootTablePickerModal::lootTables,
+                        LootTablePickerModal::displayName,
+                        QuestDetailsWindow::applyLootTablePick,
+                        "minecraft:chest",
+                        24,
+                        32,
+                        170,
+                        38,
+                        96
+                ));
+    }
+
+    private static List<String> lootTables(String query) {
+        Map<String, String> displays = ClientQuestStateFacade.lootTableDisplays();
+        List<String> values = new ArrayList<>(displays.isEmpty()
+                ? List.of("minecraft:chests/simple_dungeon", "minecraft:chests/village/village_armorer", "minecraft:empty")
+                : displays.keySet());
+        values.sort(Comparator.naturalOrder());
+        if (SearchFilter.normalize(query).isBlank()) {
+            return values;
+        }
+        return values.stream()
+                .filter(value -> SearchFilter.matches(query, value, displayName(value)))
+                .toList();
+    }
+
+    private static String displayName(String lootTable) {
+        return DisplayNameFormatter.lootTable(lootTable, ClientQuestStateFacade.lootTableDisplays());
+    }
+
+}

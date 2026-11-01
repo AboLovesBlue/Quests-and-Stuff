@@ -1,0 +1,222 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.description;
+
+import org.joml.Quaternionf;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abolovesblue.questsandstuff.client.tablet.layout.GridControls;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.CanvasBackgroundOpacity;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasElementGeometry;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.card.QuestElementSelectionSlot;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.CanvasImageLayerRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.text.CanvasTextRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.text.CanvasTextEditSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.theme.BackgroundModes;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import static com.abolovesblue.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_IMAGE;
+import static com.abolovesblue.questsandstuff.client.tablet.quest.details.description.QuestDetailsDescriptionModel.ORDER_TEXT;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+
+public final class QuestDetailsDescriptionCanvasRenderer {
+    private QuestDetailsDescriptionCanvasRenderer() {
+    }
+
+    public static void drawContent(GuiGraphics graphics, int mouseX, int mouseY, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+        drawDescriptionBackground(graphics, state, model, contentX, contentY, contentW, contentH);
+        drawGrid(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
+        drawElements(graphics, state, model, contentX, contentY, contentW, contentH);
+        drawGuides(graphics, mouseX, mouseY, state, contentX, contentY, contentW, contentH);
+    }
+
+    private static void drawGrid(GuiGraphics graphics, int mouseX, int mouseY, UiState state, int contentX, int contentY, int contentW, int contentH) {
+        if (!state.questDetails.questDetailsGridEnabled || !QuestDetailsEditController.canEdit(state)) {
+            return;
+        }
+        int cell = CanvasGeometry.gridSize(state);
+        int color = GridControls.gridAlpha(state.questDetails.questDetailsGridOpacityPercent, GridControls.defaultGridColor(state));
+        int spanW = contentW;
+        int spanH = contentH;
+        int paintW = spanW + 1;
+        int paintH = spanH + 1;
+        IGuiTexture line = SurfaceFactory.fill(color);
+        for (int x = 0; x <= spanW; x += cell) {
+            line.draw(graphics, mouseX, mouseY, contentX + x, contentY, 1, paintH);
+        }
+        int offset = Math.floorMod(-state.questDetails.questDetailsDescScroll, cell);
+        for (int y = offset; y <= spanH; y += cell) {
+            line.draw(graphics, mouseX, mouseY, contentX, contentY + y, paintW, 1);
+        }
+        line.draw(graphics, mouseX, mouseY, contentX + spanW, contentY, 1, paintH);
+    }
+
+    private static void drawDescriptionBackground(GuiGraphics graphics, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+        int paintW = contentW + 1;
+        int paintH = contentH + 1;
+        int opacityPercent = Math.max(0, Math.min(100, state.questDetails.questDetailsCanvasBgOpacityPercent));
+        if (CanvasBackgroundOpacity.alpha(opacityPercent) <= 0) {
+            return;
+        }
+        IGuiTexture texture = BackgroundModes.createTexture(model.canvasBackground);
+        if (texture != null) {
+            // Custom canvas background is drawn exactly once by QuestDetailsDescriptionCanvas.drawBackgroundTexture.
+            return;
+        }
+        CanvasBackgroundOpacity.drawFill(graphics, contentX, contentY, paintW, paintH, ThemeColors.SURFACE_BASE, opacityPercent);
+    }
+
+    private static void drawElements(GuiGraphics graphics, UiState state, QuestDetailsDescriptionModel model, int contentX, int contentY, int contentW, int contentH) {
+        for (String key : model.order) {
+            if (key.startsWith(ORDER_IMAGE)) {
+                CanvasImageLayer image = model.image(key.substring(ORDER_IMAGE.length()));
+                if (image != null) {
+                    drawImage(graphics, state, image, contentX, contentY, contentW, contentH);
+                }
+            } else if (key.startsWith(ORDER_TEXT)) {
+                CanvasTextLayer text = model.text(key.substring(ORDER_TEXT.length()));
+                if (text != null) {
+                    drawText(graphics, state, text, contentX, contentY, contentW, contentH);
+                }
+            }
+        }
+    }
+
+    private static void drawGuides(GuiGraphics graphics, int mouseX, int mouseY, UiState state, int contentX, int contentY, int contentW, int contentH) {
+        if (!QuestDetailsEditController.canEdit(state) || (!state.canvas.snapGuideXVisible && !state.canvas.snapGuideYVisible)) {
+            return;
+        }
+        int color = withAlpha(ThemeColors.WARNING, 225);
+        IGuiTexture guide = SurfaceFactory.fill(color);
+        if (state.canvas.snapGuideXVisible && state.canvas.snapGuideX >= 0 && state.canvas.snapGuideX <= contentW) {
+            int x = contentX + state.canvas.snapGuideX;
+            guide.draw(graphics, mouseX, mouseY, x, contentY, 1, contentH + 1);
+        }
+        if (state.canvas.snapGuideYVisible && state.canvas.snapGuideY >= 0 && state.canvas.snapGuideY <= contentH) {
+            int y = contentY + state.canvas.snapGuideY;
+            guide.draw(graphics, mouseX, mouseY, contentX, y, contentW + 1, 1);
+        }
+    }
+
+    private static void drawImage(GuiGraphics graphics, UiState state, CanvasImageLayer image, int contentX, int contentY, int contentW, int contentH) {
+        CanvasImageLayer drawImage = CanvasLayerMutations.effectiveQuestDetailsImage(state, image);
+        withSelectionGeometry(state, contentW, contentH, () -> {
+            drawImageAtGeometry(graphics, state, drawImage, contentX, contentY, contentH);
+            if (isSelectedImage(state, drawImage.id()) && QuestDetailsEditController.canEdit(state)) {
+                if (selectedCount(state) <= 1) {
+                    drawImageSelection(graphics, state, contentX, contentY, contentW, contentH, drawImage);
+                } else {
+                    QuestElementSelectionSlot.drawFillAndOutlineAtPivot(graphics, state, contentX, contentY,
+                        drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(),
+                        drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+                }
+            }
+        });
+    }
+
+    private static void drawText(GuiGraphics graphics, UiState state, CanvasTextLayer text, int contentX, int contentY, int contentW, int contentH) {
+        CanvasTextLayer drawText = CanvasLayerMutations.effectiveQuestDetailsText(state, text);
+        boolean inlineEditing = CanvasTextEditSession.isQuestDetailsEditing(state) && drawText.id().equals(state.canvas.canvasTextEditTarget);
+        CanvasTextLayer rendered = inlineEditing ? drawText.withText(state.canvas.canvasTextEditDraft) : drawText;
+        withSelectionGeometry(state, contentW, contentH, () -> {
+            drawTextAtGeometry(graphics, state, rendered, drawText, contentX, contentY, contentH, inlineEditing);
+            if (isSelectedText(state, drawText.id()) && QuestDetailsEditController.canEdit(state)) {
+                if (selectedCount(state) <= 1) {
+                    drawSelection(graphics, state, contentX, contentY, contentW, contentH, drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+                } else {
+                    QuestElementSelectionSlot.drawFillAndOutline(graphics, state, contentX, contentY,
+                        drawText.x(), drawText.y(), drawText.w(), drawText.h(), drawText.rotation());
+                }
+            }
+        });
+    }
+
+    private static void drawImageAtGeometry(GuiGraphics graphics, UiState state, CanvasImageLayer drawImage, int contentX, int contentY, int contentH) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBoxAtPivot(state, drawImage.x(), drawImage.y(), drawImage.w(), drawImage.h(), drawImage.pivotX(), drawImage.pivotY(), drawImage.rotation());
+        int y = (int) Math.round(box.centerY() + box.top());
+        if (y > contentH || y + box.height() < 0) {
+            return;
+        }
+        CanvasImageLayerRenderer.drawAtPivot(graphics, 0, 0, drawImage, contentX + box.centerX(), contentY + box.centerY(), box.width(), box.height(), -box.left(), -box.top());
+    }
+
+    private static void drawTextAtGeometry(GuiGraphics graphics, UiState state, CanvasTextLayer rendered, CanvasTextLayer geometryText, int contentX, int contentY, int contentH, boolean inlineEditing) {
+        CanvasElementGeometry.Box box = CanvasElementGeometry.screenBox(state, geometryText.x(), geometryText.y(), geometryText.w(), geometryText.h(), geometryText.rotation());
+        int y = (int) Math.round(box.centerY() + box.top());
+        if (y > contentH || y + box.height() < 0) {
+            return;
+        }
+        graphics.pose().pushPose();
+        graphics.pose().translate(contentX + box.centerX(), contentY + box.centerY(), 0.0f);
+        graphics.pose().mulPose(new Quaternionf().rotationXYZ(0.0f, 0.0f, (float) Math.toRadians(geometryText.rotation())));
+        CanvasTextRenderer.drawTextLayer(graphics, state, rendered, box.width(), box.height(), inlineEditing);
+        graphics.pose().popPose();
+    }
+
+    private static void drawSelection(GuiGraphics graphics, UiState state, int contentX, int contentY, int contentW, int contentH, int x, int y, int w, int h, int rotation) {
+        withSelectionGeometry(state, contentW, contentH, () -> QuestElementSelectionSlot.draw(graphics, state, contentX, contentY, x, y, w, h, rotation));
+    }
+
+    private static void drawImageSelection(GuiGraphics graphics, UiState state, int contentX, int contentY, int contentW, int contentH, CanvasImageLayer image) {
+        withSelectionGeometry(state, contentW, contentH, () -> {
+            if (CanvasTransformGizmoAxis.supports(image.asset())) {
+                CanvasTransformGizmo.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation(), image.entityYaw(), image.modelPitch());
+            } else {
+                QuestElementSelectionSlot.drawAtPivot(graphics, state, contentX, contentY, image.x(), image.y(), image.w(), image.h(), image.pivotX(), image.pivotY(), image.rotation());
+            }
+        });
+    }
+
+    private static void withSelectionGeometry(UiState state, int contentW, int contentH, Runnable draw) {
+        int oldContentX = state.canvas.canvasContentX;
+        int oldContentY = state.canvas.canvasContentY;
+        int oldContentW = state.canvas.canvasContentW;
+        int oldContentH = state.canvas.canvasContentH;
+        int oldOffsetX = state.canvas.canvasOffsetX;
+        int oldOffsetY = state.canvas.canvasOffsetY;
+        float oldZoom = state.canvas.canvasZoom;
+        boolean oldGridSnap = state.canvas.gridSnapLocked;
+        state.canvas.canvasContentX = 0;
+        state.canvas.canvasContentY = -state.questDetails.questDetailsDescScroll;
+        state.canvas.canvasContentW = contentW;
+        state.canvas.canvasContentH = contentH;
+        state.canvas.canvasOffsetX = 0;
+        state.canvas.canvasOffsetY = 0;
+        state.canvas.canvasZoom = 1.0f;
+        state.canvas.gridSnapLocked = state.questDetails.questDetailsGridSnapLocked;
+        try {
+            draw.run();
+        } finally {
+            state.canvas.canvasContentX = oldContentX;
+            state.canvas.canvasContentY = oldContentY;
+            state.canvas.canvasContentW = oldContentW;
+            state.canvas.canvasContentH = oldContentH;
+            state.canvas.canvasOffsetX = oldOffsetX;
+            state.canvas.canvasOffsetY = oldOffsetY;
+            state.canvas.canvasZoom = oldZoom;
+            state.canvas.gridSnapLocked = oldGridSnap;
+        }
+    }
+
+    private static boolean isSelectedText(UiState state, String id) {
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryTextId()) || state.questDetails.questDetailsDescriptionSelection.textIds().contains(id);
+    }
+
+    private static boolean isSelectedImage(UiState state, String id) {
+        return id.equals(state.questDetails.questDetailsDescriptionSelection.primaryImageId()) || state.questDetails.questDetailsDescriptionSelection.imageIds().contains(id);
+    }
+
+    private static int selectedCount(UiState state) {
+        return QuestDetailsDescriptionSelectionState.selectionSet(state).size();
+    }
+}

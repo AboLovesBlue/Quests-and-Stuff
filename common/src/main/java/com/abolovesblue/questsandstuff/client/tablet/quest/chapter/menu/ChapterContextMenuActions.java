@@ -1,0 +1,314 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.chapter.menu;
+
+import com.abolovesblue.questsandstuff.client.tablet.modal.SoundPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.IconPickerOpenActions;
+import java.util.List;
+
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.controls.EntityIconControls;
+import com.abolovesblue.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorCanvasCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorChapterCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory;
+
+public final class ChapterContextMenuActions {
+    private ChapterContextMenuActions() {
+    }
+
+    public static void rename(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        state.chapterPanel.chapterMenuOpen = false;
+        state.chapterPanel.chapterMenuTarget = target;
+        state.canvas.pendingChapterRename = target;
+        state.chapterPanel.chapterDraftName = target;
+        state.root.selectedChapter = target;
+        state.chapterPanel.chapterDraft = target;
+        UiFactory.persistUiState(state);
+        refresh.run();
+    }
+
+    public static void addChapter(UiState state, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        String drafted = EditorChapterCommandClient.uniqueChapterName(tr("ui.questsandstuff.chapter.default_name"), "");
+        state.canvas.pendingChapterRename = UiFactory.DRAFT_CHAPTER;
+        state.chapterPanel.chapterDraftName = drafted;
+        state.chapterPanel.chapterDraft = drafted;
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter add draft opened name={}", drafted);
+        refresh.run();
+    }
+
+    public static void delete(Player player, UiState state, String target) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "delete", target, "", 0);
+        if (target.equals(state.root.selectedChapter)) {
+            state.root.selectedChapter = ClientQuestStateFacade.chapterOrder().isEmpty() ? "" : ClientQuestStateFacade.chapterOrder().get(0);
+            state.chapterPanel.chapterDraft = state.root.selectedChapter;
+        }
+        UiFactory.persistUiState(state);
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter delete target={}", target);
+    }
+
+    public static void changeIcon(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EntityIconControls.openIconPicker(state, EntityIconControls.IconPickerTarget.chapter(target));
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeAssetIcon(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        AssetPickerOpenActions.openChapterAssetIconPicker(state, target);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeVariant(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EntityIconControls.openVariantPicker(state, ModalTargets.chapterIcon(target), ChapterContextMenuLayout.chapterIcon(target));
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon entity variant picker open chapter={}", target);
+        refresh.run();
+    }
+
+    public static void editMotion(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EntityMotionEditor.openChapterIcon(state, target, state.chapterPanel.chapterMenuX, state.chapterPanel.chapterMenuY);
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter icon motion editor requested chapter={}", target);
+        refresh.run();
+    }
+
+    public static void removeIcon(Player player, UiState state, String target) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "set_icon", target, "", 0);
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_icon target={}", target);
+    }
+
+    public static void changeBackground(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        AssetPickerOpenActions.openChapterBackgroundPicker(state, target, ClientQuestStateFacade.chapterBackground(target));
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeGameBackground(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        IconPickerOpenActions.openChapterGameTexturePicker(state, target);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void removeBackground(Player player, UiState state, String target) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "set_background", target, "default", 0);
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove_background target={}", target);
+    }
+
+    public static void changeCompletionHudBackground(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentBackground = firstQuestCompletionHud(questIds);
+        AssetPickerOpenActions.openBatchQuestCompletionHudBackgroundPicker(state, questIds, currentBackground);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeGameCompletionHudBackground(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        IconPickerOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, questIds);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeCompletionSoundGame(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentSound = firstQuestCompletionSound(questIds);
+        SoundPickerOpenActions.openBatchQuestGameSoundPicker(state, questIds, currentSound);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeCompletionSoundCustom(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        if (questIds.isEmpty()) {
+            return;
+        }
+        String currentSound = firstQuestCompletionSound(questIds);
+        SoundPickerOpenActions.openBatchQuestCustomCompletionSoundPicker(state, questIds, currentSound);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeConnectionTexture(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        List<String> targets = new java.util.ArrayList<>();
+        targets.addAll(questIds);
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {
+            targets.add(ec.id());
+        }
+        if (targets.isEmpty()) {
+            return;
+        }
+        AssetPickerOpenActions.openChapterConnectionTexturePicker(state, target, targets);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void changeGameConnectionTexture(UiState state, String target, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        List<String> targets = new java.util.ArrayList<>();
+        targets.addAll(questIds);
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {
+            targets.add(ec.id());
+        }
+        if (targets.isEmpty()) {
+            return;
+        }
+        IconPickerOpenActions.openChapterConnectionGameTexturePicker(state, target, targets);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void removeConnectionTexture(Player player, UiState state, String target) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        List<String> questIds = ClientQuestStateFacade.questIdsInChapter(target);
+        String chapter = target;
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest == null) continue;
+            ListTag prereqs = quest.getList("prerequisites", Tag.TAG_STRING);
+            for (int i = 0; i < prereqs.size(); i++) {
+                String prereqId = prereqs.getString(i);
+                EditorCanvasCommandClient.runConnectionTextureAction(player, questId, prereqId, "");
+                ConnectionRenderer.setConnectionTexture(state, chapter, prereqId, questId, "");
+            }
+        }
+        for (var ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(target, java.util.List.of())) {
+            for (String connectedId : ec.connectionQuestIds()) {
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, ec.id(), connectedId, "");
+            }
+            for (String prereqId : ec.prerequisiteQuestIds()) {
+                EditorCanvasCommandClient.runExclusiveChoiceConnectionTextureAction(state, ec.id(), prereqId, "");
+            }
+        }
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter remove connection textures target={} quests={}", target, questIds.size());
+    }
+
+    private static String firstQuestCompletionHud(List<String> questIds) {
+        return firstQuestField(questIds, "completion_hud_background");
+    }
+
+    private static String firstQuestCompletionSound(List<String> questIds) {
+        return firstQuestField(questIds, "completion_sound");
+    }
+
+    private static String firstQuestField(List<String> questIds, String field) {
+        if (questIds == null || questIds.isEmpty()) {
+            return "";
+        }
+        CompoundTag quest = ClientQuestStateFacade.quest(questIds.get(0));
+        return quest == null ? "" : quest.getString(field);
+    }
+
+    public static void setLockUntilUnlocked(Player player, UiState state, String target, boolean enabled, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "set_lock_until_unlocked", target, Boolean.toString(enabled), 0);
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=lock_until_unlocked chapter={} enabled={}", target, enabled);
+        refresh.run();
+    }
+
+    public static void setHideUntilUnlocked(Player player, UiState state, String target, boolean enabled, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "set_hide_until_unlocked", target, Boolean.toString(enabled), 0);
+        state.chapterPanel.chapterMenuOpen = false;
+        QuestsAndStuffMod.debugLog("[QnS:UI] chapter context action=hide_until_unlocked chapter={} enabled={}", target, enabled);
+        refresh.run();
+    }
+
+    public static void textStyle(UiState state, String target, Runnable refresh) {
+        state.chapterPanel.chapterTextMenuOpen = true;
+        state.chapterPanel.chapterTextMenuTarget = target;
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    public static void move(Player player, UiState state, String target, int offset, Runnable refresh) {
+        if (!EditorChapterCommandClient.canManageChapters(state)) {
+            return;
+        }
+        EditorChapterCommandClient.runChapterAction(player, state, "move", target, "", offset);
+        state.chapterPanel.chapterMenuOpen = false;
+        refresh.run();
+    }
+
+    private static String tr(String key, Object... args) {
+        return I18n.get(key, args);
+    }
+}

@@ -24,7 +24,7 @@ function Get-GroupOrder {
         return 4
     } elseif ($fqn.StartsWith("com.lowdragmc.")) {
         return 5
-    } elseif ($fqn.StartsWith("com.abo47.")) {
+    } elseif ($fqn.StartsWith("com.abolovesblue.")) {
         return 6
     } else {
         return 7

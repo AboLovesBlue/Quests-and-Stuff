@@ -1,0 +1,133 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.viewport;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGeometry;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapBounds;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.snap.CanvasSnapEngine;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+final class CanvasSmartSnapper {
+    private CanvasSmartSnapper() {
+    }
+
+    static CanvasSnapEngine.Bounds boundsForImage(UiState state, CanvasImageLayer image) {
+        return CanvasSnapBounds.forImage(image);
+    }
+
+    static CanvasSnapEngine.Bounds boundsForText(UiState state, CanvasTextLayer text) {
+        return CanvasSnapBounds.forText(text);
+    }
+
+    static CanvasSnapEngine.Bounds boundsForExclusiveChoice(UiState state, CanvasExclusiveChoice ec) {
+        return CanvasSnapBounds.forExclusiveChoice(ec);
+    }
+
+    static CanvasSnapEngine.SnapResult snap(
+            UiState state,
+            CanvasSnapEngine.Bounds moving,
+            List<QuestCardLayout> cards,
+            String chapter,
+            Set<String> movingQuestIds,
+            Set<String> movingImageIds,
+            Set<String> movingTextIds
+    ) {
+        return snap(state, moving, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, Set.of());
+    }
+
+    static CanvasSnapEngine.SnapResult snap(
+            UiState state,
+            CanvasSnapEngine.Bounds moving,
+            List<QuestCardLayout> cards,
+            String chapter,
+            Set<String> movingQuestIds,
+            Set<String> movingImageIds,
+            Set<String> movingTextIds,
+            Set<String> movingExclusiveChoiceIds
+    ) {
+        state.canvas.snapGuideXVisible = false;
+        state.canvas.snapGuideYVisible = false;
+        if (!moving.valid() || (!state.canvas.centerSnapXEnabled && !state.canvas.centerSnapYEnabled && !state.canvas.objectSnapEnabled)) {
+            return CanvasSnapEngine.SnapResult.NONE;
+        }
+
+        CanvasSnapEngine.SnapResult result = CanvasSnapEngine.snap(new CanvasSnapEngine.SnapContext(
+                moving,
+                snapTargets(state, cards, chapter, movingQuestIds, movingImageIds, movingTextIds, movingExclusiveChoiceIds),
+                new CanvasSnapEngine.SnapSettings(
+                        state.canvas.centerSnapXEnabled,
+                        state.canvas.centerSnapYEnabled,
+                        state.canvas.objectSnapEnabled,
+                        state.canvas.canvasContentW / 2.0D,
+                        state.canvas.canvasContentH / 2.0D,
+                        snapThresholdLogical(state)
+                )
+        ));
+        showGuides(state, result);
+        return result;
+    }
+
+    private static List<CanvasSnapEngine.Bounds> snapTargets(
+            UiState state,
+            List<QuestCardLayout> cards,
+            String chapter,
+            Set<String> movingQuestIds,
+            Set<String> movingImageIds,
+            Set<String> movingTextIds,
+            Set<String> movingExclusiveChoiceIds
+    ) {
+        if (!state.canvas.objectSnapEnabled) {
+            return List.of();
+        }
+        List<CanvasSnapEngine.Bounds> targets = new ArrayList<>();
+        for (QuestCardLayout card : cards) {
+            if (!movingQuestIds.contains(card.questId())) {
+                targets.add(CanvasSnapBounds.forQuestCard(card));
+            }
+        }
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of())) {
+            if (!movingImageIds.contains(image.id())) {
+                targets.add(CanvasSnapBounds.forImage(image));
+            }
+        }
+        for (CanvasTextLayer text : state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of())) {
+            if (!movingTextIds.contains(text.id())) {
+                targets.add(CanvasSnapBounds.forText(text));
+            }
+        }
+        for (CanvasExclusiveChoice ec : state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of())) {
+            if (!movingExclusiveChoiceIds.contains(ec.id())) {
+                targets.add(CanvasSnapBounds.forExclusiveChoice(ec));
+            }
+        }
+        return targets;
+    }
+
+    private static void showGuides(UiState state, CanvasSnapEngine.SnapResult result) {
+        if (result.guideXVisible()) {
+            state.canvas.snapGuideX = CanvasGeometry.screenX(state, result.guideX());
+            state.canvas.snapGuideXVisible = true;
+        }
+        if (result.guideYVisible()) {
+            state.canvas.snapGuideY = CanvasGeometry.screenY(state, result.guideY());
+            state.canvas.snapGuideYVisible = true;
+        }
+    }
+
+    private static int snapThresholdLogical(UiState state) {
+        float zoom = CanvasRenderer.clampZoom(state.canvas.canvasZoom);
+        int screenThreshold = Math.max(1, Math.round(5.0f / zoom));
+        if (!state.canvas.gridSnapLocked) {
+            return screenThreshold;
+        }
+        int gridReach = Math.max(1, (CanvasGeometry.gridSize(state) + 1) / 2);
+        return Math.max(screenThreshold, gridReach);
+    }
+}

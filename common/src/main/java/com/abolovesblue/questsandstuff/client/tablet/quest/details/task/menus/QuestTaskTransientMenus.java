@@ -1,0 +1,157 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.details.task.menus;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.controls.ActionButtons;
+import com.abolovesblue.questsandstuff.client.tablet.controls.StyledTextFields;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargetParser;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsEditController;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsPickerSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsTransientManager;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.QuestDetailsWindow;
+import com.abolovesblue.questsandstuff.client.tablet.quest.details.task.edit.QuestTaskXpEditor;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+import com.google.gson.JsonObject;
+
+import static com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.label;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.panel;
+
+final class QuestTaskTransientMenus {
+    private QuestTaskTransientMenus() {
+    }
+
+    static void render(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH) {
+        renderCommandRewardEditor(modal, state, player, refresh, modalW, modalH);
+        renderItemSourcePicker(modal, state, refresh, modalW, modalH);
+        QuestTaskXpEditor.render(modal, state, player, refresh, modalW, modalH);
+    }
+
+    private static void renderItemSourcePicker(WidgetGroup modal, UiState state, Runnable refresh, int modalW, int modalH) {
+        QuestDetailsPickerSession picker = state.questDetails.questDetailsPickerSession;
+        if (!picker.itemSourcePicker() || !QuestDetailsEditController.canEdit(state)) {
+            return;
+        }
+        String target = picker.itemSourceTarget() == null ? "" : picker.itemSourceTarget();
+        if (target.isBlank()) {
+            QuestDetailsTransientManager.closeItemSourcePicker(state);
+            return;
+        }
+        ContextMenuSections sections = new ContextMenuSections();
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.PICK_ITEM), "icon", ThemeColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestDetailsTransientManager.closeItemSourcePicker(state);
+            QuestDetailsWindow.openIconPicker(state, target);
+        }));
+        sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.action(TranslationKeys.text(QuestTranslationKeys.FROM_INVENTORY), "backpack", ThemeColors.INTERACTIVE, () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestDetailsTransientManager.closeItemSourcePicker(state);
+            QuestDetailsWindow.openItemInventoryPicker(state, inventoryTarget(target));
+        }));
+        List<ContextAction> actions = sections.build();
+        int rowCount = actions.size();
+        int menuW = 132;
+        int menuH = ContextMenuPanel.heightForRows(rowCount);
+        int mx = Math.max(4, Math.min(picker.x(), modalW - menuW - 4));
+        int my = Math.max(4, Math.min(picker.y(), modalH - menuH - 4));
+        WidgetGroup menu = ContextMenuPanel.build(mx, my, menuW, actions, 0, rowCount, ThemeColors.BORDER_ACCENT, state, action -> refresh.run(), modalW, modalH);
+        modal.addWidget(menu);
+    }
+
+    private static void renderCommandRewardEditor(WidgetGroup modal, UiState state, Player player, Runnable refresh, int modalW, int modalH) {
+        if (!state.questDetails.questDetailsCommandRewardEditorOpen || !QuestDetailsEditController.canEdit(state)) {
+            return;
+        }
+        int w = 232;
+        int h = 72;
+        int pad = 8;
+        int buttonW = 82;
+        int buttonH = 16;
+        int buttonY = 48;
+        int x = Math.max(4, Math.min(state.questDetails.questDetailsContextX, modalW - w - 4));
+        int y = Math.max(4, Math.min(state.questDetails.questDetailsContextY, modalH - h - 4));
+        WidgetGroup popup = panel(x, y, w, h, withAlpha(ThemeColors.SURFACE_BASE, 246), ThemeColors.BORDER_ACCENT);
+        popup.addWidget(label(pad, 6, TranslationKeys.text(QuestTranslationKeys.ENTER_COMMAND), ThemeColors.TEXT_PRIMARY));
+        TextFieldWidget commandField = StyledTextFields.commitField(
+                pad,
+                24,
+                w - pad * 2,
+                16,
+                () -> state.questDetails.questDetailsCommandRewardCommand,
+                value -> state.questDetails.questDetailsCommandRewardCommand = value == null ? "" : value,
+                () -> {
+                    commitCommandReward(player, state);
+                    refresh.run();
+                },
+                () -> {
+                    closeCommandRewardEditor(state);
+                    refresh.run();
+                },
+                () -> {
+                    if (state.questDetails.questDetailsCommandRewardEditorOpen) {
+                        commitCommandReward(player, state);
+                        refresh.run();
+                    }
+                }
+        );
+        commandField.setClientSideWidget();
+        commandField.setMaxStringLength(256);
+        StyledTextFields.applyStandardStyle(commandField, ThemeColors.SURFACE_PANEL_ALT, ThemeColors.BORDER_BASE);
+        popup.addWidget(commandField);
+        ActionButtons.iconAction(popup, pad, buttonY, buttonW, buttonH, "add", TranslationKeys.text(TranslationKeys.COMMON_SAVE), ThemeColors.SUCCESS, null, click -> {
+            commitCommandReward(player, state);
+            refresh.run();
+        });
+        ActionButtons.iconAction(popup, w - pad - buttonW, buttonY, buttonW, buttonH, "close", TranslationKeys.text(TranslationKeys.COMMON_CANCEL), ThemeColors.ERROR, null, click -> {
+            closeCommandRewardEditor(state);
+            refresh.run();
+        });
+        commandField.setFocus(true);
+        modal.addWidget(popup);
+    }
+
+    private static void commitCommandReward(Player player, UiState state) {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", state.questDetails.questDetailsCommandRewardId);
+        json.addProperty("type", "questsandstuff:command");
+        json.addProperty("command", state.questDetails.questDetailsCommandRewardCommand == null ? "" : state.questDetails.questDetailsCommandRewardCommand.trim());
+        EditorQuestCommandClient.putQuestRewardJson(player, state.questDetails.questDetailsCommandRewardQuestId, json.toString());
+        closeCommandRewardEditor(state);
+    }
+
+    private static void closeCommandRewardEditor(UiState state) {
+        QuestDetailsTransientManager.closeCommandRewardEditor(state);
+    }
+
+    private static String inventoryTarget(String target) {
+        ModalTargetParser.Target parsed = ModalTargetParser.parse(target);
+        if (!parsed.hasAtLeast(4)) {
+            return target;
+        }
+        if (parsed.isTaskItem()) {
+            return ModalTargets.taskInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
+        }
+        if (parsed.isRewardItem()) {
+            return ModalTargets.rewardInventoryItem(parsed.questId(), parsed.entryId(), parsed.type());
+        }
+        return target;
+    }
+}

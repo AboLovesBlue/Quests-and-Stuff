@@ -15,16 +15,16 @@
   ],
   "entrypoints": {
     "main": [
-      "com.abo47.questsandstuff.fabric.QuestsAndStuffFabric"
+      "com.abolovesblue.questsandstuff.fabric.QuestsAndStuffFabric"
     ],
     "client": [
-      "com.abo47.questsandstuff.fabric.QuestsAndStuffFabricClient"
+      "com.abolovesblue.questsandstuff.fabric.QuestsAndStuffFabricClient"
     ],
     "emi": [
-      "com.abo47.questsandstuff.client.compat.recipeviewer.emi.QuestEmiPlugin"
+      "com.abolovesblue.questsandstuff.client.compat.recipeviewer.emi.QuestEmiPlugin"
     ],
     "rei_client": [
-      "com.abo47.questsandstuff.fabric.compat.recipeviewer.FabricReiClientPlugin"
+      "com.abolovesblue.questsandstuff.fabric.compat.recipeviewer.FabricReiClientPlugin"
     ]
   },
   "depends": {

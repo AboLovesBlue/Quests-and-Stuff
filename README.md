@@ -1,6 +1,6 @@
 # Quests and Stuff
 
-[![Version](https://img.shields.io/badge/version-0.7.1--alpha-blue)](https://github.com/ABO47/Quests-and-Stuff/blob/main/changelogs/0.7.1-alpha.md)
+[![Version](https://img.shields.io/badge/version-0.7.1--alpha-blue)](https://github.com/AboLovesBlue/Quests-and-Stuff/blob/main/changelogs/0.7.1-alpha.md)
 [![Minecraft](https://img.shields.io/badge/minecraft-1.20.1-green)](https://www.minecraft.net/en-us/article/minecraft--java-edition-1-20-1)
 [![Forge](https://img.shields.io/badge/forge-47.4.10-orange)](https://files.minecraftforge.net/net/minecraftforge/forge/index_1.20.1.html)
 [![Fabric](https://img.shields.io/badge/fabric_api-0.92.2-yellow)](https://modrinth.com/mod/fabric-api/version/0.92.2+1.20.1)
@@ -82,7 +82,7 @@ Customize your experience in one place.
 ```
 MIT License
 
-Copyright (c) 2025 ABO47
+Copyright (c) 2025 Abo Loves Blue
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

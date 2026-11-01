@@ -1,0 +1,312 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.overlay;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.world.phys.Vec2;
+
+import com.lowdragmc.lowdraglib.client.utils.RenderBufferUtils;
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffConfig;
+import com.abolovesblue.questsandstuff.client.tablet.animation.UiAnimationProgress;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.model.CanvasPoint;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.card.QuestCardBackgroundRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.card.QuestMiniCardRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.viewport.CanvasCameraController;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.viewport.CanvasMinimapGeometry;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinFillOverride;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinOverrideKey;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinTargetKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+
+import static com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory.withAlpha;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abolovesblue.questsandstuff.util.MathUtils.clamp;
+
+final class CanvasMinimapPainter {
+    static final float BODY_REVEAL_START = 0.48f;
+
+    private static final int VISUAL_CONNECTION_GRID_STEP = 16;
+    private static final float MINIMAP_CHEVRON_SCALE = 0.45f;
+
+    private CanvasMinimapPainter() {
+    }
+
+    static void drawPanel(
+            GuiGraphics graphics,
+            UiState state,
+            int originX,
+            int originY,
+            CanvasMinimapGeometry.Layout layout,
+            CanvasMinimapGeometry.Layout collapsedLayout,
+            float holderProgress,
+            float bodyProgress,
+            int mouseX,
+            int mouseY
+    ) {
+        int handleX = originX + layout.toggleX();
+        int handleY = originY + UiAnimationProgress.interpolate(collapsedLayout.toggleY(), layout.toggleY(), holderProgress);
+        int handleW = layout.toggleW();
+        int handleH = UiAnimationProgress.interpolate(collapsedLayout.toggleH(), layout.toggleH(), holderProgress);
+        int visibleBodyW = Math.round((layout.panelW() - layout.toggleW()) * bodyProgress);
+        if (visibleBodyW > 0) {
+            int bodyX = handleX - visibleBodyW;
+            int bodyY = originY + layout.panelY();
+            int bodyH = layout.panelH();
+            boolean hasOverride = drawBodyFill(graphics, state, bodyX, bodyY, handleX - bodyX, bodyH);
+            if (!hasOverride) {
+                SurfaceFactory.fill(withAlpha(ThemeColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(ThemeColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY + bodyH - 1, handleX - bodyX, 1);
+                SurfaceFactory.fill(withAlpha(ThemeColors.BORDER_BASE, 150)).draw(graphics, 0, 0, bodyX, bodyY, 1, bodyH);
+            }
+        }
+        drawHandle(graphics, state, handleX, handleY, handleW, handleH, mouseX, mouseY);
+    }
+
+    private static boolean drawBodyFill(GuiGraphics graphics, UiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, SkinTargetKeys.MINIMAP_BODY);
+        if (override != null) {
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
+        }
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 248)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
+    }
+
+    private static boolean drawHandleFill(GuiGraphics graphics, UiState state, int x, int y, int w, int h) {
+        IGuiTexture override = skinOverrideTexture(state, SkinTargetKeys.MINIMAP_TOGGLE);
+        if (override != null) {
+            override.draw(graphics, 0, 0, x - 1, y - 1, w + 2, h + 2);
+            return true;
+        }
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_PANEL_ALT, 236)).draw(graphics, 0, 0, x, y, w, h);
+        return false;
+    }
+
+    private static IGuiTexture skinOverrideTexture(UiState state, String key) {
+        String raw = SkinOverrideKey.resolveOverride(state, key);
+        if (raw == null || raw.isBlank()) return null;
+        SkinFillOverride override = SkinFillOverride.parse(raw);
+        if (override == null) return null;
+        return override.createTexture();
+    }
+
+    static float stagedProgress(float progress, float start, float end) {
+        if (end <= start) {
+            return progress >= end ? 1.0f : 0.0f;
+        }
+        float staged = (progress - start) / (end - start);
+        staged = Math.max(0.0f, Math.min(1.0f, staged));
+        return staged * staged * (3.0f - 2.0f * staged);
+    }
+
+    static void drawSnapshot(
+            GuiGraphics graphics,
+            UiState state,
+            CanvasMinimapSnapshot snapshot,
+            int originX,
+            int originY,
+            int mouseX,
+            int mouseY,
+            float partialTicks
+    ) {
+        boolean visualMode = QuestsAndStuffConfig.visualMinimapEnabled();
+        for (CanvasMinimapConnection connection : snapshot.connections()) {
+            if (visualMode) {
+                drawMiniChevrons(graphics, connection, originX, originY);
+            } else {
+                drawMiniLineRouted(graphics, connection, originX, originY);
+            }
+        }
+        for (CanvasMinimapRect quest : snapshot.quests()) {
+            if (visualMode) {
+                drawQuestPreview(graphics, state, quest, originX, originY, mouseX, mouseY, partialTicks);
+            } else {
+                drawQuestBox(graphics, originX + quest.x(), originY + quest.y(), quest.w(), quest.h(), quest.color(), quest.alpha());
+            }
+        }
+        CanvasMinimapRect viewport = projectViewport(state, snapshot.projection());
+        drawBorder(graphics, originX + viewport.x(), originY + viewport.y(), viewport.w(), viewport.h(), withAlpha(viewport.color(), viewport.alpha()));
+    }
+
+    private static CanvasMinimapRect projectViewport(UiState state, CanvasMinimapGeometry.Projection projection) {
+        double left = CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX, true);
+        double top = CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY, true);
+        double right = CanvasCameraController.screenToLogicalX(state, state.canvas.canvasContentX + Math.max(1, state.canvas.canvasContentW), true);
+        double bottom = CanvasCameraController.screenToLogicalY(state, state.canvas.canvasContentY + Math.max(1, state.canvas.canvasContentH), true);
+        int x1 = clamp(CanvasMinimapGeometry.mapX(projection, left), projection.drawX(), projection.drawX() + projection.drawW());
+        int y1 = clamp(CanvasMinimapGeometry.mapY(projection, top), projection.drawY(), projection.drawY() + projection.drawH());
+        int x2 = clamp(CanvasMinimapGeometry.mapX(projection, right), projection.drawX(), projection.drawX() + projection.drawW());
+        int y2 = clamp(CanvasMinimapGeometry.mapY(projection, bottom), projection.drawY(), projection.drawY() + projection.drawH());
+        int x = Math.min(x1, x2);
+        int y = Math.min(y1, y2);
+        return new CanvasMinimapRect(x, y, Math.max(1, Math.abs(x2 - x1)), Math.max(1, Math.abs(y2 - y1)), ThemeColors.TEXT_PRIMARY, 230, null, null);
+    }
+
+    private static void drawQuestPreview(GuiGraphics graphics, UiState state, CanvasMinimapRect quest, int originX, int originY, int mouseX, int mouseY, float partialTicks) {
+        int x = originX + quest.x();
+        int y = originY + quest.y();
+        if (quest.tag() == null) {
+            QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
+            return;
+        }
+        if (quest.tag().contains("ec_background")) {
+            String bg = quest.tag().getString("ec_background");
+            if (!bg.isBlank()) {
+                com.lowdragmc.lowdraglib.gui.texture.IGuiTexture tex = com.abolovesblue.questsandstuff.client.tablet.assets.AssetLibrary.chapterBackgroundTexture(
+                        com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.ASSETS_ROOT_DIR, bg);
+                if (tex != null) {
+                    tex.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
+                } else {
+                    QuestCardBackgroundRenderer.EXCLUSIVE_CHOICE_TEXTURE.draw(graphics, mouseX, mouseY, x, y, quest.w(), quest.h());
+                }
+            }
+            return;
+        }
+
+        boolean hiddenOverlay = state.root.canEdit && quest.tag().getBoolean("visual_hidden") && !quest.tag().getBoolean("completed");
+        boolean highlighted = quest.questId() != null && state.canvas.canvasSelection.questIds().contains(quest.questId());
+        QuestMiniCardRenderer.drawTagCard(graphics, quest.tag(), x, y, quest.w(), quest.h(), mouseX, mouseY, partialTicks, quest.alpha(), hiddenOverlay, highlighted);
+    }
+
+    private static void drawQuestBox(GuiGraphics graphics, int x, int y, int w, int h, int color, int alpha) {
+        if (w < 5 || h < 5) {
+            SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x, y, w, h);
+            return;
+        }
+        SurfaceFactory.fill(withAlpha(ThemeColors.SURFACE_BASE, 255)).draw(graphics, 0, 0, x, y, w, h);
+        SurfaceFactory.fill(withAlpha(color, 255)).draw(graphics, 0, 0, x + GRID_1, y + GRID_1, w - GRID_2, h - GRID_2);
+    }
+
+    private static void drawMiniChevrons(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
+        List<CanvasPoint> path = connection.projectedPath() != null
+                ? offsetPath(connection.projectedPath(), originX, originY)
+                : visualConnectionPath(
+                        Math.round(originX + connection.x1()),
+                        Math.round(originY + connection.y1()),
+                        Math.round(originX + connection.x2()),
+                        Math.round(originY + connection.y2()),
+                        connection.direct()
+                );
+        if (connection.texture() != null) {
+            ConnectionRenderer.drawTexturedChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, connection.texture(), -4096, -4096, 8192, 8192);
+        } else {
+            ConnectionRenderer.drawStaticChevrons(graphics, path, connection.color(), connection.alpha(), MINIMAP_CHEVRON_SCALE, -4096, -4096, 8192, 8192);
+        }
+    }
+
+    private static List<CanvasPoint> offsetPath(List<CanvasPoint> path, int dx, int dy) {
+        List<CanvasPoint> result = new ArrayList<>(path.size());
+        for (CanvasPoint p : path) {
+            result.add(new CanvasPoint(p.x + dx, p.y + dy));
+        }
+        return result;
+    }
+
+    private static List<CanvasPoint> visualConnectionPath(int sourceX, int sourceY, int targetX, int targetY, boolean direct) {
+        if (direct) {
+            return List.of(new CanvasPoint(sourceX, sourceY), new CanvasPoint(targetX, targetY));
+        }
+        int midX = snapToStep((sourceX + targetX) / 2, VISUAL_CONNECTION_GRID_STEP);
+        if (Math.abs(midX - sourceX) < VISUAL_CONNECTION_GRID_STEP / 2) {
+            midX += targetX >= sourceX ? VISUAL_CONNECTION_GRID_STEP : -VISUAL_CONNECTION_GRID_STEP;
+        }
+        return List.of(
+                new CanvasPoint(sourceX, sourceY),
+                new CanvasPoint(midX, sourceY),
+                new CanvasPoint(midX, targetY),
+                new CanvasPoint(targetX, targetY)
+        );
+    }
+
+    private static int snapToStep(int value, int step) {
+        return Math.round(value / (float) Math.max(1, step)) * Math.max(1, step);
+    }
+
+    private static void drawHandle(GuiGraphics graphics, UiState state, int x, int y, int w, int h, int mouseX, int mouseY) {
+        boolean hovered = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+        boolean hasOverride = drawHandleFill(graphics, state, x, y, w, h);
+        if (!hasOverride) {
+            drawBorder(graphics, x, y, w, h, withAlpha(ThemeColors.BORDER_BASE, 180));
+        }
+        if (hovered) {
+            GlowShaderHelper.drawGlow(graphics, mouseX, mouseY, x, y, w, h);
+        }
+    }
+
+    private static void drawMiniLineRouted(GuiGraphics graphics, CanvasMinimapConnection connection, int originX, int originY) {
+        float x1 = originX + connection.x1();
+        float y1 = originY + connection.y1();
+        float x2 = originX + connection.x2();
+        float y2 = originY + connection.y2();
+        int color = withAlpha(connection.color(), connection.alpha());
+        if (x1 == x2 && y1 == y2) {
+            int x = Math.round(x1);
+            int y = Math.round(y1);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, 1, 1);
+            return;
+        }
+        if (connection.projectedPath() != null) {
+            List<CanvasPoint> path = connection.projectedPath();
+            for (int i = 0; i + 1 < path.size(); i++) {
+                CanvasPoint a = path.get(i);
+                CanvasPoint b = path.get(i + 1);
+                drawLineSegment(graphics, originX + a.x, originY + a.y, originX + b.x, originY + b.y, color);
+            }
+        } else {
+            drawLineSegment(graphics, x1, y1, x2, y2, color);
+        }
+    }
+
+    private static void drawLineSegment(GuiGraphics graphics, float x1f, float y1f, float x2f, float y2f, int color) {
+        int x1 = Math.round(x1f);
+        int y1 = Math.round(y1f);
+        int x2 = Math.round(x2f);
+        int y2 = Math.round(y2f);
+        if (x1 == x2 && y1 == y2) {
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x1, y1, 1, 1);
+            return;
+        }
+        if (x1 == x2) {
+            int minY = Math.min(y1, y2);
+            int maxY = Math.max(y1, y2);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, x1, minY, 1, maxY + 1 - minY);
+        } else if (y1 == y2) {
+            int minX = Math.min(x1, x2);
+            int maxX = Math.max(x1, x2);
+            SurfaceFactory.fill(color).draw(graphics, 0, 0, minX, y1, maxX + 1 - minX, 1);
+        } else {
+            List<Vec2> pts = List.of(new Vec2(x1, y1), new Vec2(x2, y2));
+            Tesselator tessellator = Tesselator.getInstance();
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            var buffer = tessellator.getBuilder();
+            buffer.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+            RenderBufferUtils.drawColorLines(graphics.pose(), buffer, pts, color, color, 0.55f);
+            tessellator.end();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.disableBlend();
+        }
+    }
+
+    private static void drawBorder(GuiGraphics graphics, int x, int y, int w, int h, int color) {
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, w, 1);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y + h - 1, w, 1);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x, y, 1, h);
+        SurfaceFactory.fill(color).draw(graphics, 0, 0, x + w - 1, y, 1, h);
+    }
+
+}

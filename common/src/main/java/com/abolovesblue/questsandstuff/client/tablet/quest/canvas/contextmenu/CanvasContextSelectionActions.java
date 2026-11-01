@@ -1,0 +1,589 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.contextmenu;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoAxis;
+import com.abolovesblue.questsandstuff.client.tablet.modal.SoundPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.AssetPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.AppOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.RegistryPickerOpenActions;
+import com.abolovesblue.questsandstuff.client.tablet.modal.IconPickerOpenActions;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextActionFactory;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSection;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuSections;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuTarget;
+import com.abolovesblue.questsandstuff.client.tablet.entity.EntityPreviewRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.entity.motion.EntityMotionEditor;
+import com.abolovesblue.questsandstuff.client.tablet.entity.variant.EntityVariantCatalog;
+import com.abolovesblue.questsandstuff.client.tablet.modal.target.ModalTargets;
+import com.abolovesblue.questsandstuff.client.tablet.preview.ModelAssetPreviewRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.geometry.CanvasGridFitController;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.layer.CanvasLayerMutations;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.CanvasRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.blueprint.CanvasBlueprintController;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.recipe.CanvasRecipeCardAsset;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmo;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.gizmo.CanvasTransformGizmoMenus;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionOps;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionActions;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.selection.CanvasSelectionSet;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.text.CanvasTextStyleSession;
+import com.abolovesblue.questsandstuff.client.tablet.quest.editor.EditorQuestCommandClient;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.text.QuestTranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.text.TranslationKeys;
+import com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors;
+import com.abolovesblue.questsandstuff.quest.model.QuestDisplay;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abolovesblue.questsandstuff.quest.model.task.QuestVisibilityMode;
+
+final class CanvasContextSelectionActions {
+    private CanvasContextSelectionActions() {
+    }
+
+    static void addSelectionActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player, String selectedChapter) {
+        if (state.contextMenu.contextMenuTarget != ContextMenuTarget.SELECTION || selectedChapter.isBlank()) {
+            return;
+        }
+        int totalCount = CanvasSelectionActions.totalCanvasSelectionCount(state);
+        List<CanvasContextMenuController.ConnectionRef> connectedConnections = CanvasContextMenuController.selectedConnections(state, selectedChapter);
+        boolean hasConnections = !connectedConnections.isEmpty();
+
+        if (totalCount > 0) {
+            sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.save_as_blueprint"), "scroll", ThemeColors.INTERACTIVE, () -> {
+                boolean saved = CanvasBlueprintController.saveSelectionWithNotice(canvasViewport, state, state.contextMenu.contextLastClickX, state.contextMenu.contextLastClickY);
+                ContextMenuController.close(state);
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI:Blueprint] context save_as_blueprint count={} saved={}", totalCount, saved);
+                canvasViewport.refresh();
+            }));
+            Set<String> entityImageIds = selectedEntityImageIds(state, selectedChapter);
+            if (totalCount > 1
+                    && state.canvas.canvasSelection.questIds().isEmpty()
+                    && state.canvas.canvasSelection.textIds().isEmpty()
+                    && state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()
+                    && !entityImageIds.isEmpty()
+                    && entityImageIds.size() == totalCount) {
+                String batchTarget = ModalTargets.canvasEntityChangeBatch(selectedChapter, entityImageIds.toArray(new String[0]));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.promoted(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ThemeColors.INTERACTIVE, () -> {
+                    int x = state.canvas.canvasImageLogicalX;
+                    int y = state.canvas.canvasImageLogicalY;
+                    IconPickerOpenActions.openCanvasEntityPicker(state, batchTarget, x, y);
+                    ContextMenuController.close(state);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_change_entity images={}", entityImageIds.size());
+                    canvasViewport.refresh();
+                }));
+            }
+            Set<String> questIds = state.canvas.canvasSelection.questIds();
+            if (totalCount > 1 && !questIds.isEmpty()) {
+                List<String> targets = new ArrayList<>(questIds);
+                CompoundTag first = firstQuest(targets);
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_QUEST_BACKGROUND), "background", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            AssetPickerOpenActions.openBatchQuestBackgroundPicker(
+                                    state,
+                                    targets,
+                                    first.getString("quest_background"),
+                                    first.getBoolean("quest_background_grayscale")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background quests={}", targets.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            IconPickerOpenActions.openBatchQuestGameTexturePicker(
+                                    state,
+                                    targets,
+                                    first.getBoolean("quest_background_grayscale")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_quest_background_game quests={}", targets.size());
+                            canvasViewport.refresh();
+                        })
+                )));
+                sections.add(ContextMenuSection.PRIMARY, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_HUD_BACKGROUND), "completion_hud_background", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            AssetPickerOpenActions.openBatchQuestCompletionHudBackgroundPicker(
+                                    state,
+                                    targets,
+                                    first.getString("completion_hud_background")
+                            );
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background quests={}", targets.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                            ContextMenuController.closeExclusiveSubmenus(state);
+                            IconPickerOpenActions.openBatchQuestCompletionHudGameTexturePicker(state, targets);
+                            ContextMenuController.clearDeleteConfirm(state);
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_hud_background_game quests={}", targets.size());
+                            canvasViewport.refresh();
+                        })
+                )));
+            }
+        }
+        if (totalCount > 1) {
+            ContextMenuController.closeExclusiveSubmenus(state);
+            if (hasConnections) {
+                sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CONNECTION_COLOR), "style_color", ThemeColors.INTERACTIVE, () -> {
+                    CanvasContextMenuController.ConnectionRef first = connectedConnections.get(0);
+                    int color = CanvasRenderer.connectionColor(state, selectedChapter, first.prerequisiteId(), first.questId());
+                    AppOpenActions.openColorPicker(state, ModalTargets.connectionSelection(selectedChapter), color);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_colors chapter={} connections={}", selectedChapter, connectedConnections.size());
+                    canvasViewport.refresh();
+                }));
+                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr("ui.questsandstuff.context.change_connection_texture"), "connect", ThemeColors.INTERACTIVE, List.of(
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                            AssetPickerOpenActions.openConnectionTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
+                            canvasViewport.refresh();
+                        }),
+                        ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                            IconPickerOpenActions.openConnectionGameTexturePicker(state, ModalTargets.connectionSelection(selectedChapter));
+                            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=patch_connection_textures_game chapter={} connections={}", selectedChapter, connectedConnections.size());
+                            canvasViewport.refresh();
+                        })
+                )));
+                if (selectionHasConnectionTexture(state, selectedChapter, connectedConnections)) {
+                    String selConnTexKey = "sel_remove_conn_tex:" + selectedChapter;
+                    sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selConnTexKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_connection_texture"), () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        for (var connection : connectedConnections) {
+                            String prereq = connection.prerequisiteId();
+                            String quest = connection.questId();
+                            ConnectionOps.applyTexture(state, player, selectedChapter, prereq, quest, "");
+                        }
+                        QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=remove_connection_textures chapter={} connections={}", selectedChapter, connectedConnections.size());
+                        canvasViewport.refresh();
+                    }));
+                }
+            }
+            addBatchElementActions(sections, canvasViewport, state, selectedChapter);
+            if (selectionSupportsGizmo(state, selectedChapter)) {
+                CanvasTransformGizmoMenus.addModeActions(sections, ContextMenuSection.ARRANGE, state, canvasViewport::refresh);
+            }
+            addBatchRemainingVisualActions(sections, canvasViewport, state, player);
+            addBatchBehaviorActions(sections, canvasViewport, state, player);
+            if (CanvasGridFitController.canFitSelectionToGrid(state, selectedChapter, canvasViewport.cardLookup())) {
+                sections.add(ContextMenuSection.ARRANGE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.fit_to_grid"), "fit_grid", ThemeColors.INTERACTIVE, () -> {
+                    boolean changed = CanvasGridFitController.fitSelectionToGrid(player, state, selectedChapter, canvasViewport.cardLookup());
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=fit_to_grid target=selection count={} changed={}", totalCount, changed);
+                    canvasViewport.refresh();
+                }));
+            }
+            addSelectionAlignmentActions(sections, canvasViewport, state, player);
+            addSelectionLayerActions(sections, canvasViewport, state, selectedChapter);
+            addBatchResetQuest(sections, canvasViewport, state, player);
+        }
+        addSelectionCopyAndDeleteActions(sections, canvasViewport, state, player);
+    }
+
+    private static boolean selectionSupportsGizmo(UiState state, String selectedChapter) {
+        if (!state.canvas.canvasSelection.questIds().isEmpty()) return false;
+        if (!state.canvas.canvasSelection.textIds().isEmpty()) return false;
+        if (!state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()) return false;
+        boolean hasGizmoImage = false;
+        for (CanvasImageLayer image : state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of())) {
+            if (CanvasSelectionActions.isImageSelected(state, image.id())) {
+                if (!CanvasTransformGizmoAxis.supports(image.asset())) {
+                    return false;
+                }
+                hasGizmoImage = true;
+            }
+        }
+        return hasGizmoImage;
+    }
+
+    private static void addBatchRemainingVisualActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        Set<String> questIds = state.canvas.canvasSelection.questIds();
+        if (questIds.size() <= 1) {
+            return;
+        }
+        List<String> targets = new ArrayList<>(questIds);
+        if (selectionHasQuestBackground(targets)) {
+            String selQuestBgKey = "sel_remove_quest_bg";
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selQuestBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_QUEST_TEXTURE), () -> {
+                ContextMenuController.clearDeleteConfirm(state);
+                for (String questId : targets) {
+                    EditorQuestCommandClient.setQuestBackground(player, questId, QuestDisplay.DEFAULT_QUEST_BACKGROUND, false);
+                }
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_quest_background quests={}", targets.size());
+                canvasViewport.refresh();
+            }));
+        }
+        if (selectionHasCompletionHudBackground(targets)) {
+            String selHudBgKey = "sel_remove_hud_bg";
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selHudBgKey, CanvasContextMenuController.tr("ui.questsandstuff.context.remove_completion_hud_background"), () -> {
+                EditorQuestCommandClient.setQuestCompletionHudBackground(player, new java.util.LinkedHashSet<>(targets), QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND);
+                ContextMenuController.clearDeleteConfirm(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_completion_hud_background quests={}", targets.size());
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addBatchBehaviorActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        Set<String> questIds = state.canvas.canvasSelection.questIds();
+        if (questIds.size() <= 1) {
+            return;
+        }
+        List<String> targets = new ArrayList<>(questIds);
+        CompoundTag first = firstQuest(targets);
+        boolean repeatable = first.getBoolean("repeatable");
+        String hiddenMode = first.getString("hidden_mode");
+        String locked = QuestVisibilityMode.LOCKED.serializedName();
+        String prerequisitesVisible = QuestVisibilityMode.PREREQUISITES_VISIBLE.serializedName();
+        boolean lockUntilUnlocked = locked.equals(hiddenMode);
+        boolean hidden = first.getBoolean("visual_hidden");
+        List<ContextAction> behaviorActions = new ArrayList<>();
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(repeatable ? QuestTranslationKeys.CONTEXT_MAKE_QUEST_NOT_REPEATABLE : QuestTranslationKeys.CONTEXT_MAKE_QUEST_REPEATABLE),
+                repeatable ? "repeat-off" : "repeat",
+                repeatable ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
+                () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorQuestCommandClient.setQuestRepeatable(player, questId, !repeatable);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_repeatable quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(lockUntilUnlocked ? QuestTranslationKeys.CONTEXT_SHOW_QUEST_BEFORE_UNLOCKED : QuestTranslationKeys.CONTEXT_LOCK_QUEST_UNTIL_UNLOCKED),
+                lockUntilUnlocked ? "unlock_quest" : "lock_quest",
+                lockUntilUnlocked ? ThemeColors.SUCCESS : ThemeColors.INTERACTIVE,
+                () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorQuestCommandClient.setQuestHiddenMode(player, questId, lockUntilUnlocked ? prerequisitesVisible : locked);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_lock quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        behaviorActions.add(new ContextAction(
+                CanvasContextMenuController.tr(hidden ? QuestTranslationKeys.CONTEXT_REVEAL_QUEST : QuestTranslationKeys.CONTEXT_HIDE_QUEST_UNTIL_UNLOCKED),
+                hidden ? "eye" : "eye-off",
+                hidden ? ThemeColors.SUCCESS : ThemeColors.WARNING,
+                () -> {
+                    ContextMenuController.clearDeleteConfirm(state);
+                    for (String questId : targets) {
+                        EditorQuestCommandClient.setQuestVisualHidden(player, questId, !hidden);
+                    }
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_behavior_hide quests={}", targets.size());
+                    canvasViewport.refresh();
+                }));
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_BEHAVIOR), "wrench", ThemeColors.INTERACTIVE, behaviorActions));
+
+        sections.add(ContextMenuSection.BEHAVIOR, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_CHANGE_COMPLETION_SOUND), "audio-lines", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_game_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> {
+                    SoundPickerOpenActions.openBatchQuestGameSoundPicker(state, targets, first.getString("completion_sound"));
+                    ContextMenuController.closeExclusiveSubmenus(state);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_game quests={}", targets.size());
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.use_custom_sound"), "audio-lines", ThemeColors.INTERACTIVE, () -> {
+                    SoundPickerOpenActions.openBatchQuestCustomCompletionSoundPicker(state, targets, first.getString("completion_sound"));
+                    ContextMenuController.closeExclusiveSubmenus(state);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_completion_sound_custom quests={}", targets.size());
+                    canvasViewport.refresh();
+                })
+        )));
+    }
+
+    private static void addBatchResetQuest(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        Set<String> questIds = state.canvas.canvasSelection.questIds();
+        if (questIds.size() <= 1) {
+            return;
+        }
+        List<String> targets = new ArrayList<>();
+        for (String questId : questIds) {
+            CompoundTag tag = ClientQuestStateFacade.quest(questId);
+            if (tag != null && (tag.getBoolean("completed") || tag.getBoolean("claimed") || tag.getFloat("progress") > 0.0f)) {
+                targets.add(questId);
+            }
+        }
+        if (targets.size() <= 1) {
+            return;
+        }
+        String selResetKey = "sel_reset_quests";
+        sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selResetKey, CanvasContextMenuController.tr("ui.questsandstuff.context.reset_quest"), () -> {
+            ContextMenuController.clearDeleteConfirm(state);
+            for (String questId : targets) {
+                EditorQuestCommandClient.resetQuestProgress(player, questId);
+            }
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_reset_quest quests={}", targets.size());
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static boolean selectionHasQuestBackground(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest != null && !QuestDisplay.DEFAULT_QUEST_BACKGROUND.equals(QuestDisplay.normalizeQuestBackground(quest.getString("quest_background")))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static CompoundTag firstQuest(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest != null && !quest.isEmpty()) {
+                return quest;
+            }
+        }
+        return new CompoundTag();
+    }
+
+    private static boolean selectionHasCompletionHudBackground(List<String> questIds) {
+        for (String questId : questIds) {
+            CompoundTag quest = ClientQuestStateFacade.quest(questId);
+            if (quest != null && !QuestDisplay.DEFAULT_COMPLETION_HUD_BACKGROUND.equals(QuestDisplay.normalizeCompletionHudBackground(quest.getString("completion_hud_background")))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean selectionHasConnectionTexture(UiState state, String chapter, List<CanvasContextMenuController.ConnectionRef> connections) {
+        for (var connection : connections) {
+            String prereq = connection.prerequisiteId();
+            String quest = connection.questId();
+            boolean isExclusiveChoice = ConnectionRenderer.isExclusiveChoiceId(state, chapter, prereq) || ConnectionRenderer.isExclusiveChoiceId(state, chapter, quest);
+            String texture = isExclusiveChoice
+                    ? ConnectionRenderer.exclusiveChoiceConnectionTexture(state, chapter, prereq, quest)
+                    : ConnectionRenderer.connectionTexture(state, chapter, prereq, quest);
+            if (!texture.isBlank()) return true;
+        }
+        return false;
+    }
+
+    private static void addSelectionLayerActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
+        CanvasSelectionSet selection = CanvasSelectionSet.current(state);
+        if (selection.layerKeys().isEmpty()) {
+            return;
+        }
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.bring_to_front"), "up", ThemeColors.INTERACTIVE, () -> {
+            CanvasLayerMutations.moveCanvasLayers(state, selectedChapter, selection.layerKeys(), true);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=bring_to_front target=selection count={}", selection.size());
+            canvasViewport.refresh();
+        }));
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.send_to_back"), "down", ThemeColors.TEXT_MUTED, () -> {
+            CanvasLayerMutations.moveCanvasLayers(state, selectedChapter, selection.layerKeys(), false);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=send_to_back target=selection count={}", selection.size());
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static void addSelectionCopyAndDeleteActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        if (CanvasContextMenuSupport.canCopyContext(canvasViewport, state)) {
+            sections.add(ContextMenuSection.CLIPBOARD, ContextActionFactory.copy(() -> {
+                CanvasContextMenuSupport.copyContextToClipboard(canvasViewport, state);
+                ContextMenuController.clearDeleteConfirm(state);
+                canvasViewport.refresh();
+            }));
+        }
+        if (CanvasContextDeleteController.canDeleteContext(state)) {
+            String deleteKey = CanvasContextDeleteController.deleteConfirmKey(state);
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.delete(state, deleteKey, TranslationKeys.text(TranslationKeys.COMMON_REMOVE), () -> {
+                CanvasContextDeleteController.runDeleteAction(player, state);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static Set<String> selectedEntityImageIds(UiState state, String selectedChapter) {
+        Set<String> ids = new LinkedHashSet<>();
+        String primary = state.canvas.canvasSelection.primaryImageId();
+        if (!primary.isBlank()) ids.add(primary);
+        ids.addAll(state.canvas.canvasSelection.imageIds());
+        if (ids.isEmpty()) return ids;
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(selectedChapter, List.of());
+        Set<String> entityIds = new LinkedHashSet<>();
+        for (CanvasImageLayer image : images) {
+            if (ids.contains(image.id()) && EntityPreviewRenderer.isEntityAsset(image.asset())) {
+                entityIds.add(image.id());
+            }
+        }
+        return entityIds;
+    }
+
+    private static void addBatchElementActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter) {
+        Set<String> imageIds = state.canvas.canvasSelection.imageIds();
+        Set<String> textIds = state.canvas.canvasSelection.textIds();
+        Set<String> exclusiveChoiceIds = state.canvas.canvasSelection.exclusiveChoiceIds();
+
+        boolean hasImages = !imageIds.isEmpty();
+        boolean hasTexts = !textIds.isEmpty();
+        boolean hasEcs = !exclusiveChoiceIds.isEmpty();
+
+        if (hasImages) {
+            addBatchImageOnlyActions(sections, canvasViewport, state, selectedChapter, imageIds);
+        }
+        if (hasTexts) {
+            addBatchTextOnlyActions(sections, canvasViewport, state, selectedChapter, textIds);
+        }
+        if (hasEcs) {
+            addBatchExclusiveChoiceOnlyActions(sections, canvasViewport, state, selectedChapter, exclusiveChoiceIds);
+        }
+    }
+
+    private static void addBatchImageOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> imageIds) {
+        String primaryId = state.canvas.canvasSelection.primaryImageId();
+        if (primaryId.isBlank()) {
+            primaryId = imageIds.iterator().next();
+        }
+        String finalPrimaryId = primaryId;
+        CanvasImageLayer primary = CanvasLayerMutations.findCanvasImage(state, selectedChapter, finalPrimaryId);
+        if (primary == null) return;
+
+        boolean isRecipeCard = CanvasRecipeCardAsset.isRecipeCardAsset(primary.asset());
+        boolean isEntity = EntityPreviewRenderer.isEntityAsset(primary.asset());
+        boolean isItem = ModelAssetPreviewRenderer.isItemAsset(primary.asset());
+        boolean isBlock = ModelAssetPreviewRenderer.isBlockModelAsset(primary.asset());
+        boolean allEntitySelection = state.canvas.canvasSelection.questIds().isEmpty()
+                && state.canvas.canvasSelection.textIds().isEmpty()
+                && state.canvas.canvasSelection.exclusiveChoiceIds().isEmpty()
+                && !imageIds.isEmpty()
+                && selectedEntityImageIds(state, selectedChapter).size() == imageIds.size();
+
+        if (isRecipeCard) {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_RECIPE_CARD), "recipe", ThemeColors.INTERACTIVE, () -> {
+                RegistryPickerOpenActions.openCanvasRecipePicker(state, ModalTargets.canvasRecipeChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
+                ContextMenuController.close(state);
+                canvasViewport.refresh();
+            }));
+        } else if (isEntity) {
+            if (!allEntitySelection) {
+                sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_entity"), "entity", ThemeColors.INTERACTIVE, () -> {
+                    IconPickerOpenActions.openCanvasEntityPicker(state, ModalTargets.canvasEntityChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
+                    ContextMenuController.close(state);
+                    canvasViewport.refresh();
+                }));
+            }
+            Set<String> batchEntityIds = selectedEntityImageIds(state, selectedChapter);
+            batchEntityIds.remove(finalPrimaryId);
+            state.questDetails.entityMotionEditorBatchImageIds = String.join(",", batchEntityIds);
+            String entityId = EntityPreviewRenderer.entityId(primary.asset());
+            String variantTarget = ModalTargets.canvasImage(selectedChapter, finalPrimaryId);
+            if (EntityVariantCatalog.hasVariants(entityId)) {
+                sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.changeVariant(() -> {
+                    RegistryPickerOpenActions.openEntityVariantPicker(state, variantTarget, primary.asset());
+                    ContextMenuController.clearDeleteConfirm(state);
+                    canvasViewport.refresh();
+                }));
+            }
+            sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.promoted(
+                    TranslationKeys.text(QuestTranslationKeys.CONTEXT_EDIT_MOTION),
+                    "motion", ThemeColors.INTERACTIVE, () -> {
+                        ContextMenuController.clearDeleteConfirm(state);
+                        EntityMotionEditor.openMainCanvas(state, selectedChapter, finalPrimaryId, state.contextMenu.contextMenuX, state.contextMenu.contextMenuY);
+                        canvasViewport.refresh();
+                    }));
+        } else if (isItem) {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_item"), "icon", ThemeColors.INTERACTIVE, () -> {
+                IconPickerOpenActions.openCanvasItemPicker(state, ModalTargets.canvasItemChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
+                ContextMenuController.close(state);
+                canvasViewport.refresh();
+            }));
+        } else if (isBlock) {
+            sections.add(ContextMenuSection.PRIMARY, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.context.change_block"), "box", ThemeColors.INTERACTIVE, () -> {
+                RegistryPickerOpenActions.openCanvasBlockPicker(state, ModalTargets.canvasBlockChange(selectedChapter, finalPrimaryId), primary.x(), primary.y());
+                ContextMenuController.close(state);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addBatchExclusiveChoiceOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> exclusiveChoiceIds) {
+        String primaryId = state.canvas.canvasSelection.primaryExclusiveChoiceId();
+        if (primaryId.isBlank()) {
+            primaryId = exclusiveChoiceIds.iterator().next();
+        }
+        String finalPrimaryId = primaryId;
+        CanvasExclusiveChoice ec = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, finalPrimaryId);
+        if (ec == null) return;
+
+        sections.add(ContextMenuSection.APPEARANCE, ContextActionFactory.submenu(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_CHANGE_EXCLUSIVE_CHOICE_TEXTURE), "background", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_ASSET_TEXTURE), "image", ThemeColors.INTERACTIVE, () -> {
+                    AssetPickerOpenActions.openExclusiveChoiceBackgroundPicker(state, selectedChapter, finalPrimaryId, ec.background());
+                    ContextMenuController.close(state);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_USE_BUILTIN_TEXTURE), "brick-wall", ThemeColors.INTERACTIVE, () -> {
+                    IconPickerOpenActions.openExclusiveChoiceGameTexturePicker(state, selectedChapter, finalPrimaryId);
+                    ContextMenuController.close(state);
+                    canvasViewport.refresh();
+                })
+        )));
+        if (!ec.background().isBlank()) {
+            String selExclusiveChoiceBgKey = "sel_remove_ec_bg:" + selectedChapter;
+            sections.add(ContextMenuSection.DANGER, ContextActionFactory.warningDelete(state, selExclusiveChoiceBgKey, CanvasContextMenuController.tr(QuestTranslationKeys.CONTEXT_REMOVE_EXCLUSIVE_CHOICE_TEXTURE), () -> {
+                for (String batchExclusiveChoiceId : exclusiveChoiceIds) {
+                    CanvasExclusiveChoice batchExclusiveChoice = CanvasLayerMutations.findCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoiceId);
+                    if (batchExclusiveChoice != null && !batchExclusiveChoice.background().isBlank()) {
+                        CanvasLayerMutations.putCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoice.withBackground(""));
+                        CanvasLayerMutations.persistCanvasExclusiveChoice(state, selectedChapter, batchExclusiveChoiceId);
+                    }
+                }
+                ContextMenuController.close(state);
+                QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_remove_ec_background ecs={}", exclusiveChoiceIds);
+                canvasViewport.refresh();
+            }));
+        }
+    }
+
+    private static void addBatchTextOnlyActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, String selectedChapter, Set<String> textIds) {
+        String primaryId = state.canvas.canvasSelection.primaryTextId();
+        if (primaryId.isBlank()) {
+            primaryId = textIds.iterator().next();
+        }
+        String finalPrimaryId = primaryId;
+        sections.add(ContextMenuSection.APPEARANCE, new ContextAction(CanvasContextMenuController.tr("ui.questsandstuff.menu.text_style"), "style", ThemeColors.INTERACTIVE, false, () -> {
+            CanvasTextStyleSession.openMainCanvas(state, finalPrimaryId);
+            ContextMenuController.clearDeleteConfirm(state);
+            QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=batch_text_style id={}", finalPrimaryId);
+            canvasViewport.refresh();
+        }));
+    }
+
+    private static void addSelectionAlignmentActions(ContextMenuSections sections, CanvasViewport canvasViewport, UiState state, Player player) {
+        sections.add(ContextMenuSection.ARRANGE, ContextActionFactory.submenu(TranslationKeys.text(QuestTranslationKeys.CONTEXT_ALIGN), "align-center-horizontal", ThemeColors.INTERACTIVE, List.of(
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_horizontal_center"), "align-center-horizontal", ThemeColors.INTERACTIVE, () -> {
+                    boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, false);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_horizontal_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
+                    canvasViewport.refresh();
+                }),
+                ContextActionFactory.action(CanvasContextMenuController.tr("ui.questsandstuff.context.align_vertical_center"), "align-center-vertical", ThemeColors.INTERACTIVE, () -> {
+                    boolean changed = CanvasSelectionActions.alignSelectedToCanvasCenter(player, state, true);
+                    ContextMenuController.clearDeleteConfirm(state);
+                    QuestsAndStuffMod.debugLog("[QnS:UI] canvas context action=align_vertical_center target=selection count={} changed={}", CanvasSelectionActions.totalCanvasSelectionCount(state), changed);
+                    canvasViewport.refresh();
+                })
+        )));
+    }
+}

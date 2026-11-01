@@ -115,7 +115,7 @@ tasks.named('processResources', ProcessResources).configure {
 
 tasks.named('jar', Jar).configure {
     archiveClassifier = 'dev'
-    exclude 'com/abo47/questsandstuff/gametest/**'
+    exclude 'com/abolovesblue/questsandstuff/gametest/**'
     exclude 'gameteststructures/**'
     exclude 'data/questsandstuff/structures/gameteststructures/**'
     exclude 'META-INF/MANIFEST.MF'

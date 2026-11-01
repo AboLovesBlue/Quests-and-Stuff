@@ -162,7 +162,7 @@ tasks.register('generateUiIconPngs') {
         }
         javaexec {
             classpath = sourceSets.assetTools.runtimeClasspath
-            mainClass = 'com.abo47.questsandstuff.tools.SvgIconRasterizer'
+            mainClass = 'com.abolovesblue.questsandstuff.tools.SvgIconRasterizer'
             args iconSize, outputDir.absolutePath
             args sanitizedFiles.collect { it.absolutePath }
         }
@@ -202,7 +202,7 @@ tasks.register('generateUiTexturePngs') {
         }
         javaexec {
             classpath = sourceSets.assetTools.runtimeClasspath
-            mainClass = 'com.abo47.questsandstuff.tools.SvgIconRasterizer'
+            mainClass = 'com.abolovesblue.questsandstuff.tools.SvgIconRasterizer'
             args textureSize, outputDir.absolutePath
             args sanitizedFiles.collect { it.absolutePath }
         }
@@ -224,7 +224,7 @@ tasks.register('generateModLogoPng') {
         outputDir.mkdirs()
         javaexec {
             classpath = sourceSets.assetTools.runtimeClasspath
-            mainClass = 'com.abo47.questsandstuff.tools.SvgIconRasterizer'
+            mainClass = 'com.abolovesblue.questsandstuff.tools.SvgIconRasterizer'
             args logoSize, outputDir.absolutePath, modLogoSvgFile.asFile.absolutePath
         }
     }

@@ -1,0 +1,18 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.prerequisite;
+
+import com.abolovesblue.questsandstuff.quest.model.connection.QuestConnectionMetadata;
+
+record PrerequisiteConnectionRow(
+        String sourceId,
+        String targetId,
+        String sourceTitle,
+        String targetTitle,
+        String otherTitle,
+        String icon,
+        PrerequisiteConnectionKind kind,
+        boolean exclusiveChoice
+) {
+    String key() {
+        return QuestConnectionMetadata.connectionKey(sourceId, targetId);
+    }
+}

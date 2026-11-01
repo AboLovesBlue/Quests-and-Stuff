@@ -1,0 +1,174 @@
+package com.abolovesblue.questsandstuff.client.tablet.chunkclaimer;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib.gui.widget.ButtonWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.client.tablet.app.TabletAppRegistry;
+import com.abolovesblue.questsandstuff.client.tablet.bootstrap.Bootstrap;
+import com.abolovesblue.questsandstuff.client.tablet.bootstrap.Lifecycle;
+import com.abolovesblue.questsandstuff.client.tablet.layout.SplitPanelLayout;
+import com.abolovesblue.questsandstuff.client.tablet.modal.ModalDismissGuard;
+import com.abolovesblue.questsandstuff.client.tablet.modal.panel.ModalPanelRouter;
+import com.abolovesblue.questsandstuff.client.tablet.root.RootWidget;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.GlowShaderHelper;
+import com.abolovesblue.questsandstuff.client.tablet.theme.render.SurfaceFactory;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinAnchorRegistry;
+import com.abolovesblue.questsandstuff.client.tablet.theme.skin.SkinEditManager;
+import com.abolovesblue.questsandstuff.network.ModNetwork;
+import com.abolovesblue.questsandstuff.network.chunkclaim.C2SChunkClaimActionPacket;
+
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors.BORDER_ACCENT;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors.BORDER_BASE;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors.SURFACE_BASE;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors.SURFACE_PANEL_ALT;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.ThemeColors.subtleBorder;
+import static com.abolovesblue.questsandstuff.client.tablet.theme.tokens.UiThemeTokens.*;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_X;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.BODY_Y;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.HEADER_H;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_H;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_X;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_PAD_Y;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.ROOT_W;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.applyRootSize;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.chapterHeight;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.refreshActiveTablet;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletRefresh;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.setActiveTabletState;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.state.StateQueries.rootHeight;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.state.StateQueries.rootWidth;
+
+public final class ChunkClaimerAppComposer {
+    private static final int HOME_BTN_SIZE = GRID_10;
+    private static final int CONTENT_INSET = GRID_6;
+    private static final int LIST_INSET = GRID_9;
+    private static final int GUTTER = GRID_6;
+    private static final int HEADER_LIST_GAP = GRID_5;
+
+    private ChunkClaimerAppComposer() {
+    }
+
+    public static WidgetGroup create(Player player) {
+        return create(player, ROOT_W, ROOT_H, false);
+    }
+
+    public static WidgetGroup create(Player player, int requestedRootW, int requestedRootH, boolean fullScreenMode) {
+        UiState state = Bootstrap.prepare(player);
+        Lifecycle.rememberMainWindow();
+        state.root.currentApp = TabletAppRegistry.APP_CHUNKCLAIMER;
+        applyRootSize(state, requestedRootW, requestedRootH, fullScreenMode);
+
+        int crw = rootWidth(state);
+        int crh = rootHeight(state);
+
+        RootWidget root = new RootWidget(0, 0, crw, crh, state);
+        root.setBackground(fullScreenMode
+                ? SurfaceFactory.transparent()
+                : SurfaceFactory.transparentBorder(BORDER_BASE));
+
+        int bodyH = chapterHeight(state);
+        int bodyW = crw - ROOT_PAD_X * 2;
+        WidgetGroup mainPanel = SplitPanelLayout.leftPanel(BODY_X, BODY_Y, bodyW, bodyH, state);
+
+        int homeBtnX = crw - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
+        int homeBtnY = ROOT_PAD_Y + ((crh - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
+        ButtonWidget homeBtn = new ButtonWidget(homeBtnX, homeBtnY, HOME_BTN_SIZE, HOME_BTN_SIZE,
+                SurfaceFactory.bordered(SURFACE_PANEL_ALT, subtleBorder()),
+                cd -> Lifecycle.openTabletUiHome(player));
+        homeBtn.setClientSideWidget();
+        GlowShaderHelper.glowHit(homeBtn);
+        homeBtn.setClickedTexture(SurfaceFactory.bordered(SURFACE_PANEL_ALT, BORDER_ACCENT));
+        root.addWidget(homeBtn);
+        root.setHomeButton(homeBtn);
+
+        int headerY = CONTENT_INSET;
+        ChunkClaimerHeaderControls headers = ChunkClaimerHeaderControls.create(state, () -> refreshActiveTablet(), headerY, bodyW);
+
+        int listY = headerY + HEADER_H + HEADER_LIST_GAP;
+        int listH = Math.max(1, bodyH - listY - GUTTER);
+        WidgetGroup mapPanel = new WidgetGroup(LIST_INSET, listY, bodyW - LIST_INSET * 2, listH);
+        mapPanel.setBackground(SurfaceFactory.bordered(SURFACE_BASE, BORDER_BASE));
+        ChunkMapWidget map = new ChunkMapWidget(0, 0, mapPanel.getSizeWidth(), mapPanel.getSizeHeight(), state);
+        mapPanel.addWidget(map);
+
+        Runnable[] refresh = new Runnable[1];
+        WidgetGroup modalLayer = new ModalDismissGuard(0, 0, crw, crh, state, () -> refresh[0].run());
+
+        ModNetwork.sendToServer(requestSync(player));
+
+        refresh[0] = () -> {
+            SkinAnchorRegistry.clear();
+            int rcrw = rootWidth(state);
+            int rcrh = rootHeight(state);
+            root.setSize(rcrw, rcrh);
+            RootWidget.refreshRootBackground(root, state);
+
+            int rcbw = rcrw - ROOT_PAD_X * 2;
+            int rcbh = chapterHeight(state);
+            mainPanel.setSize(rcbw, rcbh);
+
+            int hbx = rcrw - ROOT_PAD_X + (ROOT_PAD_X - HOME_BTN_SIZE) / 2;
+            int hby = ROOT_PAD_Y + ((rcrh - 2 * ROOT_PAD_Y) - HOME_BTN_SIZE) / 2;
+            homeBtn.setSelfPosition(hbx, hby);
+            homeBtn.setBackground(SurfaceFactory.bordered(SURFACE_PANEL_ALT, subtleBorder()));
+
+            mainPanel.setBackground((IGuiTexture) null);
+
+            headers.layout(headerY, rcbw);
+            headers.updateCount();
+
+            int rListY = headerY + HEADER_H + HEADER_LIST_GAP;
+            int rListH = Math.max(1, rcbh - rListY - GUTTER);
+            mapPanel.setSize(rcbw - LIST_INSET * 2, rListH);
+            map.setSize(mapPanel.getSizeWidth(), mapPanel.getSizeHeight());
+
+            SkinAnchorRegistry.registerRootChrome(root, homeBtn);
+            SkinAnchorRegistry.register("chunkclaimer_main_panel", mainPanel);
+            SkinAnchorRegistry.register("chunkclaimer_claim_btn", headers.claimBtn());
+            SkinAnchorRegistry.register("chunkclaimer_force_btn", headers.forceBtn());
+            SkinAnchorRegistry.register("chunkclaimer_grid_btn", headers.gridBtn());
+            SkinAnchorRegistry.register("chunkclaimer_scan_btn", headers.scanBtn());
+            SkinAnchorRegistry.register("chunkclaimer_opacity_btn", headers.opacityBtn());
+            SkinAnchorRegistry.register("chunkclaimer_count_label", headers.countLabel());
+            SkinAnchorRegistry.register("chunkclaimer_map", mapPanel);
+            ModalPanelRouter.rebuildChapterModal(modalLayer, state, player, refresh[0]);
+            SkinEditManager.reapplyOverrides(state, root);
+        };
+
+        setActiveTabletState(state);
+        setActiveTabletRefresh(refresh[0]);
+        root.setRefresher(refresh[0]);
+        root.setModalLayer(modalLayer);
+
+        root.addWidget(mainPanel);
+        headers.addTo(mainPanel);
+        mainPanel.addWidget(mapPanel);
+        root.addWidget(modalLayer);
+
+        refresh[0].run();
+        return root;
+    }
+
+    private static C2SChunkClaimActionPacket requestSync(Player player) {
+        var mcPlayer = Minecraft.getInstance().player;
+        ResourceLocation dim;
+        int cx;
+        int cz;
+        if (mcPlayer != null) {
+            dim = mcPlayer.level().dimension().location();
+            cx = mcPlayer.blockPosition().getX() >> 4;
+            cz = mcPlayer.blockPosition().getZ() >> 4;
+        } else {
+            dim = new ResourceLocation("minecraft", "overworld");
+            cx = 0;
+            cz = 0;
+        }
+        return new C2SChunkClaimActionPacket(C2SChunkClaimActionPacket.Action.REQUEST, dim, cx, cz);
+    }
+}

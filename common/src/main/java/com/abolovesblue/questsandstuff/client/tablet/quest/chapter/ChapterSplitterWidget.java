@@ -1,0 +1,138 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.chapter;
+
+import com.abolovesblue.questsandstuff.client.tablet.layout.BaseSplitterWidget;
+import com.abolovesblue.questsandstuff.client.tablet.layout.ResizeCursor;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+import static com.abolovesblue.questsandstuff.client.tablet.layout.GridControls.snapExpandedChapterWidth;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_H;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_ICON;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_ICON_SNAP;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MAX;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_W_MIN;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CHAPTER_Y;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.SPLITTER_W;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.chapterPanelWidth;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.isChapterPanelCollapsed;
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.persistUiState;
+
+public final class ChapterSplitterWidget extends BaseSplitterWidget {
+    private static final int DRAG_THRESHOLD_PX = 3;
+
+    public ChapterSplitterWidget(UiState state, Runnable refresh, int x) {
+        super(x, CHAPTER_Y, SPLITTER_W, CHAPTER_H, state, refresh, "quests_splitter");
+    }
+
+    @Override
+    protected boolean isSplitterLocked() {
+        return state.chapterPanel.chapterSplitterLocked;
+    }
+
+    @Override
+    protected boolean isSplitterDragging() {
+        return state.canvas.draggingChapterSplitter;
+    }
+
+    @Override
+    protected void setSplitterDragging(boolean dragging) {
+        state.canvas.draggingChapterSplitter = dragging;
+    }
+
+    @Override
+    protected int splitterDragStartX() {
+        return state.chapterPanel.chapterSplitterDragStartX;
+    }
+
+    @Override
+    protected void setSplitterDragStartX(int x) {
+        state.chapterPanel.chapterSplitterDragStartX = x;
+    }
+
+    @Override
+    protected int splitterStartWidth() {
+        return state.chapterPanel.chapterSplitterStartWidth;
+    }
+
+    @Override
+    protected void setSplitterStartWidth(int width) {
+        state.chapterPanel.chapterSplitterStartWidth = width;
+    }
+
+    @Override
+    protected int getLeftPanelWidth() {
+        return chapterPanelWidth(state);
+    }
+
+    @Override
+    protected void setLeftPanelWidth(int width) {
+        state.chapterPanel.chapterPanelWidth = width;
+    }
+
+    @Override
+    protected int dragThresholdPx() {
+        return DRAG_THRESHOLD_PX;
+    }
+
+    @Override
+    protected boolean hasDragMoved() {
+        return state.chapterPanel.chapterSplitterDragMoved;
+    }
+
+    @Override
+    protected void setDragMoved(boolean moved) {
+        state.chapterPanel.chapterSplitterDragMoved = moved;
+    }
+
+    @Override
+    protected int computeDragWidth(int rawWidth) {
+        return snapExpandedChapterWidth(rawWidth);
+    }
+
+    @Override
+    protected boolean canCollapseOnDrag() {
+        return true;
+    }
+
+    @Override
+    protected int collapseThresholdWidth() {
+        return CHAPTER_W_ICON_SNAP;
+    }
+
+    @Override
+    protected int collapsedPanelWidth() {
+        return CHAPTER_W_ICON;
+    }
+
+    @Override
+    protected boolean isPanelCollapsed() {
+        return state.chapterPanel.chapterPanelCollapsed;
+    }
+
+    @Override
+    protected void setPanelCollapsed(boolean collapsed) {
+        state.chapterPanel.chapterPanelCollapsed = collapsed;
+    }
+
+    @Override
+    protected void onSplitterClick() {
+        if (isChapterPanelCollapsed(state)) {
+            int expandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, state.chapterPanel.chapterPanelLastExpandedWidth));
+            state.chapterPanel.chapterPanelWidth = expandedWidth;
+            state.chapterPanel.chapterPanelCollapsed = false;
+        } else {
+            state.chapterPanel.chapterPanelLastExpandedWidth = Math.max(CHAPTER_W_MIN, Math.min(CHAPTER_W_MAX, chapterPanelWidth(state)));
+            state.chapterPanel.chapterPanelWidth = CHAPTER_W_ICON;
+            state.chapterPanel.chapterPanelCollapsed = true;
+        }
+        persistUiState(state);
+        ResizeCursor.update(false);
+        refresh.run();
+    }
+
+    @Override
+    protected void onSplitterRelease() {
+        state.chapterPanel.chapterPanelWidth = chapterPanelWidth(state);
+        state.chapterPanel.chapterPanelCollapsed = isChapterPanelCollapsed(state);
+        persistUiState(state);
+    }
+}

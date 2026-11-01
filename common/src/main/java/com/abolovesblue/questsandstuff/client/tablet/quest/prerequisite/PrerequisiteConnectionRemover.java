@@ -1,0 +1,32 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.prerequisite;
+
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+final class PrerequisiteConnectionRemover {
+    private PrerequisiteConnectionRemover() {
+    }
+
+    static boolean canRemove(PrerequisiteConnectionRow row) {
+        return row != null
+                && row.sourceId() != null
+                && !row.sourceId().isBlank()
+                && row.targetId() != null
+                && !row.targetId().isBlank();
+    }
+
+    static void clearAfterRemove(UiState state, PrerequisiteConnectionRow row) {
+        if (state == null || row == null) {
+            return;
+        }
+        if (row.key().equals(state.modal.prerequisitesManagerSelectedConnectionKey)) {
+            state.modal.prerequisitesManagerSelectedConnectionKey = "";
+        }
+        if (row.key().equals(state.modal.prerequisitesManagerHoveredConnectionKey)) {
+            state.modal.prerequisitesManagerHoveredConnectionKey = "";
+        }
+        state.modal.prerequisitesManagerContextOpen = false;
+        state.modal.prerequisitesManagerContextPrerequisiteId = "";
+        ContextMenuController.clearDeleteConfirm(state);
+    }
+}

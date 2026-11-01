@@ -1,0 +1,62 @@
+package com.abolovesblue.questsandstuff.client.tablet.modal.entity;
+
+import net.minecraft.world.entity.player.Player;
+
+import com.lowdragmc.lowdraglib.gui.widget.TextFieldWidget;
+import com.lowdragmc.lowdraglib.gui.widget.WidgetGroup;
+
+import com.abolovesblue.questsandstuff.QuestsAndStuffMod;
+import com.abolovesblue.questsandstuff.client.tablet.controls.SearchFilter;
+import com.abolovesblue.questsandstuff.client.tablet.modal.ModalPreviewLayout;
+import com.abolovesblue.questsandstuff.client.tablet.modal.ModalShell;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+
+import static com.abolovesblue.questsandstuff.client.tablet.modal.ModalCloseActions.closeAll;
+import com.abolovesblue.questsandstuff.client.tablet.modal.ModalCloseActions;
+
+public final class EntityVariantModal {
+    private EntityVariantModal() {
+    }
+
+    public static TextFieldWidget rebuild(WidgetGroup modal, UiState state, Player player, Runnable refresh, int w, int h) {
+        EntityVariantPickerModel model = EntityVariantPickerModel.create(state);
+        if (model == null) {
+            closeAll(state);
+            refresh.run();
+            return null;
+        }
+
+        ModalShell.addTitleAndClose(modal, "Entity variants", w, state, refresh);
+        EntityVariantTiles.addPreview(modal, player, state, refresh, model, h);
+        TextFieldWidget search = addControls(modal, state, refresh, model, w);
+        EntityVariantTiles.addTiles(modal, player, state, refresh, model, w, h);
+        return search;
+    }
+
+    private static TextFieldWidget addControls(WidgetGroup modal, UiState state, Runnable refresh, EntityVariantPickerModel model, int w) {
+        int rightX = ModalPreviewLayout.RIGHT_X;
+        int rightW = w - ModalPreviewLayout.RIGHT_X - ModalPreviewLayout.PREVIEW_X;
+        int controlsY = 2;
+        int controlsH = 16;
+        int backY = 1;
+        int backSize = 18;
+        int backX = rightX + rightW - backSize - 22;
+        int searchW = model.browsingFolder() ? Math.max(40, backX - rightX - 3) : Math.max(40, rightW - 22);
+        TextFieldWidget search = ModalShell.addSearchField(modal, rightX, controlsY, searchW, controlsH, state.pickers.entityVariantSearch, ModalShell.SEARCH_MAX_LENGTH, value -> {
+            state.pickers.entityVariantSearch = SearchFilter.normalizeUserInput(value);
+            state.pickers.entityVariantScroll = 0;
+            refresh.run();
+        }, focused -> state.pickers.entityVariantSearchFocused = focused);
+
+        if (model.browsingFolder()) {
+            EntityVariantTiles.addBackButton(modal, backX, backY, backSize, backSize, () -> {
+                state.pickers.entityVariantFolder = "";
+                state.pickers.entityVariantSearch = "";
+                state.pickers.entityVariantScroll = 0;
+                QuestsAndStuffMod.debugLog("[QnS:UI] entity variant folder back target={} entity={}", model.target(), model.entityId());
+                refresh.run();
+            });
+        }
+        return search;
+    }
+}

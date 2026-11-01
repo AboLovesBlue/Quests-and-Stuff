@@ -1,0 +1,192 @@
+package com.abolovesblue.questsandstuff.client.tablet.quest.canvas.contextmenu;
+
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
+
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardCopy;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.clipboard.CanvasClipboardPaste;
+import com.abolovesblue.questsandstuff.client.sync.state.ClientQuestStateFacade;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextAction;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuAnimationBridge;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuController;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuPanel;
+import com.abolovesblue.questsandstuff.client.tablet.contextmenu.ContextMenuRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.controls.ScrollMath;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.CanvasViewport;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.model.QuestCardLayout;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.geometry.CanvasLayerOrdering;
+import com.abolovesblue.questsandstuff.client.tablet.quest.canvas.render.connection.ConnectionRenderer;
+import com.abolovesblue.questsandstuff.client.tablet.state.UiState;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasExclusiveChoice;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasImageLayer;
+import com.abolovesblue.questsandstuff.quest.model.canvas.CanvasTextLayer;
+
+import static com.abolovesblue.questsandstuff.client.tablet.ui.factory.UiFactory.CONTEXT_ROW_H;
+
+public final class CanvasContextMenuSupport {
+    private CanvasContextMenuSupport() {
+    }
+
+    public static int contextMenuWidth(List<ContextAction> actions, int maxAvailableWidth) {
+        return ContextMenuRenderer.CONTEXT_MENU_WIDTH;
+    }
+
+    public static int contextMenuWidth(UiState state) {
+        return state.contextMenu.contextMenuWidthPx > 0 ? state.contextMenu.contextMenuWidthPx : ContextMenuRenderer.CONTEXT_MENU_WIDTH;
+    }
+
+    public static int contextMenuHeight(int visibleRows) {
+        return ContextMenuPanel.heightForRows(visibleRows);
+    }
+
+    public static int maxContextVisibleRows(CanvasViewport canvasViewport) {
+        int usable = Math.max(CONTEXT_ROW_H, canvasViewport.getSize().height - 16);
+        return Math.max(3, Math.min(10, usable / CONTEXT_ROW_H));
+    }
+
+    public static boolean isContextMenuHit(UiState state, int x, int y) {
+        int w = contextMenuWidth(state);
+        int h = state.contextMenu.contextMenuHeightPx > 0 ? state.contextMenu.contextMenuHeightPx : contextMenuHeight(Math.max(1, state.contextMenu.contextMenuRows));
+        return x >= state.contextMenu.contextMenuX && y >= state.contextMenu.contextMenuY
+                && x <= state.contextMenu.contextMenuX + w
+                && y <= state.contextMenu.contextMenuY + h;
+    }
+
+    public static boolean clickContextMenu(CanvasViewport canvasViewport, UiState state, int x, int y) {
+        if (!ContextMenuController.isOpen(state) || !isContextMenuHit(state, x, y)) {
+            return false;
+        }
+        List<ContextAction> actions = CanvasContextMenuController.buildContextActions(canvasViewport, state);
+        if (actions.isEmpty()) {
+            ContextMenuController.close(state);
+            return true;
+        }
+
+        int maxVisibleRows = maxContextVisibleRows(canvasViewport);
+        List<ContextAction> promoted = ContextMenuPanel.promotedActions(actions);
+        List<ContextAction> rows = ContextMenuPanel.rowActions(actions);
+        int visibleRows = ContextMenuPanel.safeVisibleRows(rows.size(), maxVisibleRows);
+        int scrollMax = Math.max(0, rows.size() - visibleRows);
+        int scroll = ScrollMath.clamp(state.contextMenu.contextMenuScroll, scrollMax);
+        boolean needsScroll = scrollMax > 0;
+        int menuW = contextMenuWidth(actions, canvasViewport.getSize().width);
+        int rowWidth = needsScroll ? menuW - 14 : menuW - 8;
+
+        int relX = x - state.contextMenu.contextMenuX;
+        int relY = y - state.contextMenu.contextMenuY;
+        if (handlePromotedClick(promoted, relX, relY, menuW, state)) {
+            return true;
+        }
+
+        int rowTop = ContextMenuPanel.rowTop(promoted);
+        if (relY < rowTop || relY >= rowTop + visibleRows * CONTEXT_ROW_H) {
+            return true;
+        }
+        if (relX < 4 || relX > 4 + rowWidth) {
+            return true;
+        }
+
+        int row = (relY - rowTop) / CONTEXT_ROW_H;
+        int actionIndex = scroll + row;
+        if (actionIndex >= 0 && actionIndex < rows.size()) {
+            ContextAction action = rows.get(actionIndex);
+            ContextMenuController.setLastClick(state, x, y);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
+            action.action().run();
+            if (!action.closeAfterClick()) {
+                return true;
+            }
+        }
+        ContextMenuController.close(state);
+        return true;
+    }
+
+    private static boolean handlePromotedClick(List<ContextAction> promoted, int relX, int relY, int menuW, UiState state) {
+        if (promoted.isEmpty() || relY < 4 || relY >= 4 + ContextMenuPanel.PROMOTED_BAR_H) {
+            return false;
+        }
+        List<ContextAction> visiblePromoted = ContextMenuPanel.visiblePromotedActions(promoted, menuW);
+        int visible = visiblePromoted.size();
+        int y = 4 + Math.max(0, (ContextMenuPanel.PROMOTED_BAR_H - ContextMenuPanel.PROMOTED_BUTTON) / 2);
+        for (int i = 0; i < visible; i++) {
+            int buttonX = ContextMenuPanel.promotedButtonX(menuW, visible, i);
+            if (relX < buttonX || relX >= buttonX + ContextMenuPanel.PROMOTED_BUTTON || relY < y || relY >= y + ContextMenuPanel.PROMOTED_BUTTON) {
+                continue;
+            }
+            ContextAction action = visiblePromoted.get(i);
+            ContextMenuController.setLastClick(state, state.contextMenu.contextMenuX + relX, state.contextMenu.contextMenuY + relY);
+            ContextMenuAnimationBridge.finish(state, ContextMenuAnimationBridge.DEFAULT_KEY);
+            action.action().run();
+            if (!action.closeAfterClick()) {
+                return true;
+            }
+            ContextMenuController.close(state);
+            return true;
+        }
+        return true;
+    }
+
+    public static void scrollContextMenu(UiState state, double wheelDelta) {
+        ContextMenuController.scrollByWheel(state, wheelDelta);
+    }
+
+    public static boolean canCopyContext(CanvasViewport canvasViewport, UiState state) {
+        return CanvasClipboardCopy.canCopyContext(canvasViewport, state);
+    }
+
+    public static void copyContextToClipboard(CanvasViewport canvasViewport, UiState state) {
+        CanvasClipboardCopy.copyContextToClipboard(canvasViewport, state);
+    }
+
+    public static void pasteClipboard(Player player, UiState state) {
+        CanvasClipboardPaste.pasteAtContext(player, state);
+    }
+
+    public static boolean hasOtherQuest(CanvasViewport canvasViewport, String questId) {
+        if (questId == null || questId.isBlank()) {
+            return false;
+        }
+        for (String candidate : ClientQuestStateFacade.questIds()) {
+            if (!questId.equals(candidate)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean canMoveLayer(CanvasViewport canvasViewport, UiState state, String chapter, String key, boolean front) {
+        if (chapter == null || chapter.isBlank() || key == null || key.isBlank()) {
+            return false;
+        }
+        List<CanvasExclusiveChoice> ecs = state.canvas.canvasExclusiveChoicesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasImageLayer> images = state.canvas.canvasImagesByChapter.getOrDefault(chapter, List.of());
+        List<CanvasTextLayer> texts = state.canvas.canvasTextsByChapter.getOrDefault(chapter, List.of());
+        List<QuestCardLayout> cards = canvasViewport.cardCache();
+        Map<String, QuestCardLayout> byQuestId = new HashMap<>();
+        for (QuestCardLayout card : cards) {
+            byQuestId.put(card.questId(), card);
+        }
+        List<String> connectionKeys = ConnectionRenderer.prerequisiteConnectionLayerKeys(state, cards, byQuestId, canvasViewport.getSize().width, canvasViewport.getSize().height);
+        List<String> order = CanvasLayerOrdering.normalize(state, chapter, cards, images, texts, connectionKeys, ecs);
+        int index = order.indexOf(key);
+        if (index < 0 || order.size() <= 1) {
+            return false;
+        }
+        return front ? index < order.size() - 1 : index > 0;
+    }
+
+    public static String readableQuestTitle(String questId) {
+        CompoundTag quest = ClientQuestStateFacade.quest(questId);
+        String title = quest.getString("title");
+        String value = title == null || title.isBlank() ? questId : title;
+        if (value == null) {
+            return "";
+        }
+        return value.length() <= 18 ? value : value.substring(0, 15) + "...";
+    }
+}
